@@ -284,7 +284,7 @@ export const ForBusinessesPage: React.FC = () => {
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-white">Zero Verification Overhead for Business Owners</h3>
+                  <h2 className="text-base font-bold text-white">Zero Verification Overhead for Business Owners</h2>
                   <span className="px-2.5 py-0.5 rounded-full bg-[#16B364]/20 text-[#16B364] border border-[#16B364]/30 text-[10px] font-black uppercase">
                     100% Automated & Admin Audited
                   </span>

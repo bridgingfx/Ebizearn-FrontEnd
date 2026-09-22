@@ -1,47 +1,9 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { faqPageFaqs as faqs } from '../../seo/faqData';
 
 export const FaqPage: React.FC = () => {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
-
-  const faqs = [
-    {
-      q: 'Is eBizEarn free?',
-      a: 'Yes, 100% free for contributors. There are strictly NO registration fees, NO deposit requirements, NO $50 or $200 earning upgrade plans, and NO pay-to-work schemes. You sign up, complete tasks, and get paid.',
-    },
-    {
-      q: 'How do I receive tasks?',
-      a: 'Once you create an account and complete your basic onboarding preferences (country, language, and interests), available tasks from verified businesses will automatically populate in your dashboard.',
-    },
-    {
-      q: 'How much can I earn?',
-      a: 'Earnings depend on task complexity and your contributor tier. Simple social tasks range from $0.30 to $0.50, surveys $1.00 to $2.00, app testing $2.50 to $4.00, and UGC video clips $5.00 to $15.00+.',
-    },
-    {
-      q: 'When do I get paid?',
-      a: 'As soon as your task proof is verified by AI and moderator review, funds are instantly credited to your available wallet balance. You can withdraw anytime once your balance reaches $50.00 USD. Withdrawals are queued for manual processing.',
-    },
-    {
-      q: 'Why did my task get rejected?',
-      a: 'Tasks may be rejected if proof is missing, screenshots are cropped, timestamps do not match the campaign window, or if duplicate proofs are submitted. Moderators always provide an explicit audit reason.',
-    },
-    {
-      q: 'Which countries are supported?',
-      a: 'eBizEarn supports contributors in the UAE and worldwide. Campaign availability varies by region — check the open task marketplace for tasks available in your country.',
-    },
-    {
-      q: 'How does verification work?',
-      a: 'We use an automated AI vision pre-check that assesses screenshot resolution, timestamp authenticity, text relevance, and duplicate image hashing. Once pre-screened, our operations team conducts rapid final verification.',
-    },
-    {
-      q: 'How do businesses create campaigns?',
-      a: 'Businesses can create a business profile and use our 6-step self-serve campaign wizard to define objectives, select target geographies, set contributor requirements, fund the escrow budget, and launch in minutes.',
-    },
-    {
-      q: 'How does eBizEarn prevent fraud?',
-      a: 'We maintain multi-signal fraud scoring including duplicate screenshot hash matching, duplicate URL tracking, rapid-completion speed limits, IP/VPN anomaly detection, and account reliability ratings.',
-    },
-  ];
 
   return (
     <div className="pt-24 pb-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-8">

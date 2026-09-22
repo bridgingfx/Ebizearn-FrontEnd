@@ -282,7 +282,7 @@ export const PublicTasksPage: React.FC = () => {
           2. MARKETPLACE CATALOG (HIGH DENSITY CARDS)
          ========================================================================= */}
       <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto">
-        
+        <h2 className="sr-only">Open task marketplace</h2>
         {/* Secondary Category Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           {loadError && (

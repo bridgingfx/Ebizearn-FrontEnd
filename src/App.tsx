@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { PlatformDataProvider } from './context/PlatformDataContext';
 import { LiveChatWidget } from './components/common/LiveChatWidget';
 import { CookieConsent } from './components/common/CookieConsent';
+import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
 
 // Layouts
@@ -112,6 +113,7 @@ export const App: React.FC = () => {
       <PlatformDataProvider>
         <BrowserRouter>
         <ScrollToTop />
+        <RouteSeo />
         <BootAuth />
         <Routes>
           {/* Public Marketing Routes */}

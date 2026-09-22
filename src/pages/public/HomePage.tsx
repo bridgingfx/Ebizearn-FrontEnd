@@ -62,6 +62,7 @@ import {
   TelegramLogo,
 } from '../../components/common/PlatformIcons';
 import { RequestDemoModal } from '../../components/common/RequestDemoModal';
+import { homeFaqs } from '../../seo/faqData';
 
 export const HomePage: React.FC = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -154,28 +155,7 @@ export const HomePage: React.FC = () => {
     return item.platform.toLowerCase() === selectedSocialTab.toLowerCase();
   });
 
-  const faqs = [
-    {
-      q: 'How do I earn money using my social media accounts?',
-      a: 'Brands list verified social media tasks on eBizEarn (such as sharing a story with a brand sticker, doing a 15-second TikTok duet, or posting in a niche Facebook group). You choose any open task, complete it on your phone, upload a screenshot or live link as proof, and our automated AI verifies your submission in seconds to credit your wallet balance.',
-    },
-    {
-      q: 'Do I need a large follower count or influencer status?',
-      a: 'No! You do not need thousands of followers. Over 90% of our tasks are designed for everyday social media users. Brands want authentic word-of-mouth engagement and peer recommendations from genuine people, not just sponsored influencer posts.',
-    },
-    {
-      q: 'Is eBizEarn 100% free? Are there any hidden fees?',
-      a: 'eBizEarn is 100% free to join and will always remain free. We will never ask you for an upfront registration fee, membership fee, deposit, or account unlock charge. You complete tasks and earn real cash.',
-    },
-    {
-      q: 'How fast can I cash out and what is the minimum payout?',
-      a: 'The minimum withdrawal threshold is $50.00. You can cash out anytime directly to your PayPal, Wise transfer, direct bank account, Revolut, or digital currency (USDT/USDC). Payouts are processed reliably with double-entry ledger security.',
-    },
-    {
-      q: 'How does AI proof verification work?',
-      a: 'When you submit a screenshot, our proprietary computer vision algorithm checks the post timestamp, image dimensions, text content, and account handle in seconds. Once verified, funds transfer immediately into your available balance.',
-    },
-  ];
+  const faqs = homeFaqs;
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] text-[#101828] dark:text-gray-100 font-sans text-left">

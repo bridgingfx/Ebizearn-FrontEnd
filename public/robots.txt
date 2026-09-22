@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Member portals (require sign-in; also noindexed via meta robots)
+Disallow: /app/
+Disallow: /business/
+Disallow: /admin/
+Disallow: /secure-control-panel/
+
+# Auth & account flows (noindexed via meta robots)
+Disallow: /login
+Disallow: /contributor/
+Disallow: /moderator/
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /onboarding
+
+# API endpoints
+Disallow: /api/
+
+Sitemap: https://ebizearn.com/sitemap.xml

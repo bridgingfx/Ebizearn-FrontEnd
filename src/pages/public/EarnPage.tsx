@@ -14,6 +14,7 @@ import {
   Building2,
   Users,
   ChevronRight,
+  ChevronDown,
   HelpCircle,
   Star,
   Layers,
@@ -36,11 +37,13 @@ import {
   WhatsAppLogo,
   TelegramLogo,
 } from '../../components/common/PlatformIcons';
+import { earnFaqs } from '../../seo/faqData';
 
 export const EarnPage: React.FC = () => {
   // Hero Interactive Social Matrix State
   const [activeChannel, setActiveChannel] = useState<'instagram' | 'tiktok' | 'youtube' | 'facebook' | 'whatsapp'>('instagram');
   const [tasksPerDay, setTasksPerDay] = useState<number>(12);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const channelData = {
     instagram: {
@@ -490,7 +493,55 @@ export const EarnPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          5. BOTTOM CONVERSION BANNER
+          5. EARNING FAQ — factual GEO block (mirrored in FAQPage JSON-LD)
+         ========================================================================= */}
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+              Earning Questions
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
+              Frequently Asked Questions About Earning
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              Straight answers about how eBizEarn works, what it costs, and how you get paid.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {earnFaqs.map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div
+                  key={idx}
+                  className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-2xl border border-[#E4EAF2] dark:border-white/10 overflow-hidden transition-all"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-gray-900 dark:text-gray-100 hover:text-[#168BFF] transition-colors"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <HelpCircle className="w-4 h-4 text-[#168BFF] shrink-0" />
+                      <span>{faq.q}</span>
+                    </span>
+                    <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${isOpen ? 'rotate-180 text-[#168BFF]' : ''}`} />
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-6 sm:px-6 text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-white/10 pt-3">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          6. BOTTOM CONVERSION BANNER
          ========================================================================= */}
       <section className="py-14 sm:py-16 bg-[#07182F] text-white relative overflow-hidden text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 relative z-10">

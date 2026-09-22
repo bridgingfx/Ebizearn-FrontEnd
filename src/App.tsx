@@ -72,7 +72,6 @@ import { AdminWalletsPage } from './pages/admin/AdminWalletsPage';
 import { AdminReferralsPage } from './pages/admin/AdminReferralsPage';
 import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 import { BusinessTeamPage } from './pages/business/BusinessTeamPage';
-import { SuperAdminPage } from './pages/admin/SuperAdminPage';
 import { EmailSettingsPanel } from './pages/admin/email/EmailSettingsPanel';
 
 const ScrollToTop: React.FC = () => {
@@ -172,13 +171,14 @@ export const App: React.FC = () => {
             <Route path="support" element={<BusinessSupportPage />} />
           </Route>
 
-          {/* Admin & Super Admin Command Center Routes.
-              Moderator support is pending: it requires a coordinated change to
-              src/pages/auth/LoginPage.tsx (team-portal accepted roles) and
-              UserRole, which live outside this phase's scope. */}
-          <Route path="/admin" element={<RoleGuard allowedRoles={['admin', 'superadmin']}><AdminLayout /></RoleGuard>}>
+          {/* Admin & Super Admin Command Center Routes. Moderators share the
+              admin shell; superadmin-only pages (ops, email) stay restricted. */}
+          <Route path="/admin" element={<RoleGuard allowedRoles={['admin', 'superadmin', 'moderator']}><AdminLayout /></RoleGuard>}>
             <Route index element={<AdminOverviewPage />} />
-            <Route path="super" element={<RoleGuard allowedRoles={['superadmin']}><SuperAdminPage /></RoleGuard>} />
+            {/* Super-admin landing (from /ops/console): real platform overview,
+                no demo data. Dedicated super-admin provisioning UI arrives with
+                the ops provisioning API. */}
+            <Route path="super" element={<RoleGuard allowedRoles={['superadmin']}><AdminOverviewPage /></RoleGuard>} />
             <Route path="email" element={<RoleGuard allowedRoles={['superadmin']}><EmailSettingsPanel /></RoleGuard>} />
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="businesses" element={<AdminBusinessesPage />} />

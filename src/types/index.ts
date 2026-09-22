@@ -1,4 +1,4 @@
-export type UserRole = 'contributor' | 'business' | 'admin' | 'superadmin';
+export type UserRole = 'contributor' | 'business' | 'moderator' | 'admin' | 'superadmin';
 export type UserStatus = 'active' | 'suspended' | 'pending_verification';
 export type ContributorLevel = 'starter' | 'explorer' | 'trusted' | 'pro' | 'elite';
 export type TaskDifficulty = 'easy' | 'medium' | 'hard';

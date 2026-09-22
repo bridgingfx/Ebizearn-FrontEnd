@@ -19,7 +19,7 @@ const portalRoutes: Record<PortalKey | 'superadmin', string> = {
 const portalAcceptedRoles: Record<PortalKey, UserRole[]> = {
   contributor: ['contributor'],
   business: ['business'],
-  team: ['admin'],
+  team: ['admin', 'moderator'],
 };
 
 const portalConfig: Record<PortalKey, { label: string; headline: string; subline: string; icon: typeof Users; accent: string }> = {
@@ -82,7 +82,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ portal }) => {
           );
           return;
         }
-        navigate(portalRoutes[role === 'admin' ? 'team' : role] || portalRoutes[requestedPortal], { replace: true });
+        navigate(portalRoutes[role === 'admin' || role === 'moderator' ? 'team' : role] || portalRoutes[requestedPortal], { replace: true });
       } else {
         setError('Invalid email or password. Please check your account details and try again.');
       }

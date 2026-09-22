@@ -72,10 +72,10 @@ export const Navbar: React.FC = () => {
 
           {user ? (
             <Link
-              to={role === 'business' ? '/business' : role === 'admin' || role === 'superadmin' ? '/admin' : '/app'}
+              to={role === 'business' ? '/business' : role === 'admin' || role === 'superadmin' || role === 'moderator' ? '/admin' : '/app'}
               className="flex items-center gap-2 text-sm font-semibold text-white bg-gradient-brand px-5 py-2.5 rounded-full shadow-md hover:opacity-95 transition-all"
             >
-              <span>Go to {role === 'business' ? 'Business CRM' : role === 'admin' ? 'Admin Panel' : 'Contributor App'}</span>
+              <span>Go to {role === 'business' ? 'Business CRM' : role === 'admin' || role === 'moderator' ? 'Admin Panel' : 'Contributor App'}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           ) : (

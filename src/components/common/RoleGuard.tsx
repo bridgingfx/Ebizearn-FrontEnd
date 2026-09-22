@@ -23,7 +23,7 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
   if (!allowedRoles.includes(user.role)) {
     const destination = user.role === 'business'
       ? '/business'
-      : user.role === 'admin' || user.role === 'superadmin'
+      : user.role === 'admin' || user.role === 'superadmin' || user.role === 'moderator'
         ? '/admin'
         : '/app';
     return <Navigate to={destination} replace />;

@@ -34,4 +34,13 @@ export const adminApi = {
     api.post(`/admin/payments/gateways/${id}/active`, { is_active }).then((r) => r.data),
   testPaymentGateway: (id: number | string) => api.post(`/admin/payments/gateways/${id}/test`).then((r) => r.data),
   paymentLogs: () => api.get('/admin/payments/logs').then((r) => r.data),
+  // Phase 11: staff campaign oversight (GET /staff/campaigns). Paginated by
+  // the backend; returns { data: { data: Campaign[], ... } } (Laravel pager).
+  staffCampaigns: (params?: { status?: string; search?: string; business_id?: number; per_page?: number; page?: number }) =>
+    api.get('/staff/campaigns', { params }).then((r) => r.data),
+  updateStaffCampaignStatus: (id: number | string, status: 'active' | 'paused' | 'cancelled') =>
+    api.patch(`/staff/campaigns/${id}/status`, { status }).then((r) => r.data),
+  // Phase 11: platform-wide referral overview (read-only aggregate).
+  referralOverview: () =>
+    api.get('/admin/referrals/overview').then((r) => r.data),
 };

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Users } from 'lucide-react';
 import { EmptyState } from '../../components/common/EmptyState';
+import { PageHeader } from '../../components/common/ui';
 
 /**
  * Honest placeholder. There is no backend endpoint exposing a business's
@@ -8,16 +10,19 @@ import { EmptyState } from '../../components/common/EmptyState';
  * are invented to fill the space.
  */
 export const BusinessContributorsPage: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Contributors</h1>
-        <p className="text-sm text-gray-500 mt-1">People completing your tasks.</p>
-      </div>
+      <PageHeader
+        title="Contributors"
+        subtitle="People completing your tasks."
+      />
       <EmptyState
         icon={Users}
-        title="Contributor directory coming soon"
-        description="A directory of contributors who have worked on your campaigns needs backend support that isn't available yet. Individual submissions are already visible in the Proof Gallery."
+        title="No contributor directory yet"
+        description="A cross-campaign contributor directory is not available yet — and no sample people are shown. Every real submission on your tasks is visible today in the Proof Gallery."
+        actionLabel="Open Proof Gallery"
+        onAction={() => navigate("/business/proofs")}
       />
     </div>
   );

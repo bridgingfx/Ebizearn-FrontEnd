@@ -111,6 +111,8 @@ export interface Campaign {
   business?: Business;
   category?: TaskCategory;
   tasks?: Task[];
+  /** From StaffCampaignController::index ->withCount('tasks'). */
+  tasks_count?: number;
 }
 
 export interface Task {

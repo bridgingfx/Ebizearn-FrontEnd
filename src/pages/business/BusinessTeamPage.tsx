@@ -1,6 +1,7 @@
 import React from 'react';
 import { Users } from 'lucide-react';
 import { EmptyState } from '../../components/common/EmptyState';
+import { PageHeader } from '../../components/common/ui';
 
 /**
  * Team access placeholder. The backend has no business team-member or
@@ -10,14 +11,14 @@ import { EmptyState } from '../../components/common/EmptyState';
 export const BusinessTeamPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Team Access</h1>
-        <p className="text-sm text-gray-500 mt-1">Invite colleagues to manage your campaigns.</p>
-      </div>
+      <PageHeader
+        title="Team Access"
+        subtitle="Invite colleagues to manage your campaigns."
+      />
       <EmptyState
         icon={Users}
-        title="Team invitations coming soon"
-        description="Inviting team members needs backend support that isn't available yet. Until then, your campaigns are managed from this single business account."
+        title="Single-seat account for now"
+        description="Team invitations are not supported yet, so this business account is managed by one login. Campaigns, billing and reports remain fully available to you here."
       />
     </div>
   );

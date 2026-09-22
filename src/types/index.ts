@@ -93,7 +93,8 @@ export interface Campaign {
   objective?: string;
   description: string;
   instructions_markdown?: string;
-  proof_requirements_json?: Record<string, boolean>;
+  /** Wizard submits an array (["Screenshot", …]); older campaigns store a map ({ screenshot: true }). */
+  proof_requirements_json?: Record<string, unknown> | string[];
   status: 'draft' | 'active' | 'paused' | 'completed' | 'cancelled';
   total_budget_cents: number;
   remaining_budget_cents: number;

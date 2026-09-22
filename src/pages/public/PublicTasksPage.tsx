@@ -2,21 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Search,
-  Filter,
   Clock,
-  ArrowRight,
-  ShieldCheck,
-  Zap,
-  Star,
-  Users,
   CheckCircle2,
   ChevronRight,
-  Sparkles,
-  SlidersHorizontal,
   Flame,
-  Globe,
-  Layers,
-  Smartphone,
+  AlertCircle,
 } from 'lucide-react';
 import {
   InstagramLogo,
@@ -29,7 +19,6 @@ import {
   TrustpilotLogo,
   GoogleReviewLogo,
 } from '../../components/common/PlatformIcons';
-import { usePlatform } from '../../context/PlatformDataContext';
 import { tasksApi } from '../../api';
 import { getApiError } from '../../api/client';
 import { mapTaskForUi } from '../../utils/apiMappers';
@@ -40,19 +29,30 @@ export const PublicTasksPage: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('all');
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
-  const { tasks: platformTasks } = usePlatform();
   const [liveTasks, setLiveTasks] = useState<any[]>([]);
   const [loadError, setLoadError] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    tasksApi.list({ per_page: 60 })
+  const loadTasks = () => {
+    setLoading(true);
+    setLoadError('');
+    tasksApi
+      .list({ per_page: 60 })
       .then((res) => {
         if (res.success) {
           setLiveTasks(res.data.map(mapTaskForUi));
           setLoadError('');
+        } else {
+          setLoadError(res.message || 'Could not load tasks.');
         }
       })
-      .catch((error) => setLoadError(getApiError(error)));
+      .catch((error) => setLoadError(getApiError(error)))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const categories = [
@@ -87,7 +87,8 @@ export const PublicTasksPage: React.FC = () => {
     { id: 'facebook', name: 'Facebook', icon: FacebookLogo },
   ];
 
-  const taskSource = liveTasks.length > 0 ? liveTasks : platformTasks;
+  // Live catalog only — never fall back to sample data on a public page.
+  const taskSource = liveTasks;
   const sampleTasks = taskSource.map((task) => {
     const p = task.platform.toLowerCase();
     const icon = p.includes('trustpilot')
@@ -111,8 +112,25 @@ export const PublicTasksPage: React.FC = () => {
     return {
       ...task,
       icon,
+      // Guarantee string fields the region filters expect on live data.
+      region: (task.country as string) || 'Global',
+      description: (task.description as string) || '',
     };
   });
+
+  // Honest live stats — computed from the real catalog, never invented.
+  const openCount = liveTasks.length;
+  const avgRewardAed =
+    openCount > 0
+      ? (liveTasks.reduce((sum, t) => sum + (t.reward_cents || 0), 0) / openCount / 100).toFixed(2)
+      : '—';
+  const brandCount = new Set(liveTasks.map((t) => t.brandName || 'Brand')).size;
+
+  const heroStatus = loading
+    ? 'Loading live tasks…'
+    : loadError
+      ? 'Live marketplace'
+      : `${openCount} open task${openCount === 1 ? '' : 's'} live right now`;
 
   const filteredTasks = sampleTasks.filter((task) => {
     const matchesCategory =
@@ -167,7 +185,7 @@ export const PublicTasksPage: React.FC = () => {
             <div className="space-y-2.5 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
                 <Flame className="w-3.5 h-3.5 fill-[#20C4E8]" />
-                <span>1,842 Active Tasks Live in Global Marketplace</span>
+                <span>{heroStatus}</span>
               </div>
               
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
@@ -183,11 +201,11 @@ export const PublicTasksPage: React.FC = () => {
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 grid grid-cols-2 sm:grid-cols-3 gap-4 shrink-0 text-center font-mono">
               <div>
                 <span className="text-[10px] text-gray-400 uppercase block font-sans">Avg Reward</span>
-                <span className="text-lg font-black text-[#16B364]">AED 4.50</span>
+                <span className="text-lg font-black text-[#16B364]">{avgRewardAed === '—' ? '—' : `AED ${avgRewardAed}`}</span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-400 uppercase block font-sans">AI Verification</span>
-                <span className="text-lg font-black text-[#20C4E8]">12.4s</span>
+                <span className="text-[10px] text-gray-400 uppercase block font-sans">Brands Hiring</span>
+                <span className="text-lg font-black text-[#20C4E8]">{loading ? '…' : brandCount}</span>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <span className="text-[10px] text-gray-400 uppercase block font-sans">Min Cashout</span>
@@ -268,8 +286,15 @@ export const PublicTasksPage: React.FC = () => {
         {/* Secondary Category Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           {loadError && (
-            <div className="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
-              Live task data could not load: {loadError}
+            <div className="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-semibold text-amber-800 flex items-center justify-between gap-3">
+              <span>Live task data could not load: {loadError}</span>
+              <button
+                type="button"
+                onClick={loadTasks}
+                className="shrink-0 text-xs font-black text-amber-900 underline"
+              >
+                Retry
+              </button>
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2">
@@ -295,7 +320,32 @@ export const PublicTasksPage: React.FC = () => {
         </div>
 
         {/* Task Cards Grid */}
-        {filteredTasks.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-white rounded-3xl p-6 border border-[#E4EAF2] space-y-4 animate-pulse">
+                <div className="h-4 bg-gray-100 rounded w-1/3" />
+                <div className="h-5 bg-gray-100 rounded w-3/4" />
+                <div className="h-3 bg-gray-50 rounded w-full" />
+                <div className="h-3 bg-gray-50 rounded w-5/6" />
+                <div className="h-8 bg-gray-100 rounded-xl w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : loadError && filteredTasks.length === 0 ? (
+          <div className="bg-white rounded-3xl p-12 text-center border border-[#E4EAF2] shadow-sm space-y-3">
+            <AlertCircle className="w-12 h-12 text-amber-400 mx-auto" />
+            <h3 className="text-base font-bold text-gray-900">Couldn't load the live marketplace</h3>
+            <p className="text-xs text-gray-500">{loadError}</p>
+            <button
+              type="button"
+              onClick={loadTasks}
+              className="mt-2 px-5 py-2.5 rounded-xl bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-bold transition-colors"
+            >
+              Try again
+            </button>
+          </div>
+        ) : filteredTasks.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-[#E4EAF2] shadow-sm space-y-3">
             <CheckCircle2 className="w-12 h-12 text-gray-300 mx-auto" />
             <h3 className="text-base font-bold text-gray-900">No tasks found matching your filters</h3>

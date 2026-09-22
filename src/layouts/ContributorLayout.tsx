@@ -10,11 +10,13 @@ import {
   LogOut,
   Zap,
   HelpCircle,
+  Bell,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { ConfirmModal } from '../components/common/ConfirmModal';
+import { useUnreadNotifications } from '../pages/contributor/ContributorNotificationsPage';
 
 /**
  * Contributor app shell — mobile-first.
@@ -35,6 +37,8 @@ export const ContributorLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [logoutOpen, setLogoutOpen] = React.useState(false);
+  const unreadCount = useUnreadNotifications();
+  const badge = unreadCount != null && unreadCount > 0 ? (unreadCount > 9 ? '9+' : String(unreadCount)) : null;
 
   const handleLogout = () => {
     setLogoutOpen(false);
@@ -91,6 +95,24 @@ export const ContributorLayout: React.FC = () => {
               <HelpCircle className="w-4 h-4" />
               Support
             </NavLink>
+            <NavLink
+              to="/app/notifications"
+              className={({ isActive: active }) =>
+                `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  active ? 'bg-[#168BFF] text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                }`
+              }
+            >
+              <span className="relative">
+                <Bell className="w-4 h-4" />
+                {badge && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">
+                    {badge}
+                  </span>
+                )}
+              </span>
+              Notifications
+            </NavLink>
           </nav>
         </div>
 
@@ -110,6 +132,14 @@ export const ContributorLayout: React.FC = () => {
           <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
         </Link>
         <div className="flex items-center gap-2">
+          <Link to="/app/notifications" aria-label="Notifications" className="relative p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
+            <Bell className="w-4 h-4" />
+            {badge && (
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">
+                {badge}
+              </span>
+            )}
+          </Link>
           <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} size="sm" />
           <button
             type="button"

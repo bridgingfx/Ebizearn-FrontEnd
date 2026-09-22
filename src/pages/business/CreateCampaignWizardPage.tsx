@@ -7,15 +7,60 @@ import {
   AlertCircle,
   Loader2,
   Target,
-  ClipboardList,
   Globe,
   Wallet,
-  Eye,
+  Users,
+  ClipboardList,
   Rocket,
   CheckCircle2,
 } from 'lucide-react';
 import { businessApi, getApiError, api } from '../../api';
 import { COUNTRY_OPTIONS } from '../../config/geoLocations';
+import { useAuth } from '../../context/AuthContext';
+import { TaskPreview, TaskPreviewSummary, classifyTaskPreview } from '../../components/task/TaskPreview';
+import type { UiTask } from '../../types';
+import {
+  InstagramLogo,
+  TikTokLogo,
+  YouTubeLogo,
+  FacebookLogo,
+  XTwitterLogo,
+  WhatsAppLogo,
+  TrustpilotLogo,
+  GoogleReviewLogo,
+} from '../../components/common/PlatformIcons';
+
+/**
+ * 6-step campaign wizard, in the owner-specified order:
+ *  1 Goal → 2 Platform → 3 Task type → 4 Reward & budget → 5 Target audience → 6 Review & submit
+ *
+ * Step 6 renders a live TaskPreview built from the wizard state, so the
+ * business sees exactly what contributors will see before spending budget.
+ *
+ * NOTE: the platform choice drives the preview (frontend-only) until the
+ * backend ships a dedicated platform field; the category_id remains the
+ * API field of record for the task type.
+ */
+
+const STEPS = [
+  { id: 1, label: 'Goal', icon: Target },
+  { id: 2, label: 'Platform', icon: Globe },
+  { id: 3, label: 'Task Type', icon: ClipboardList },
+  { id: 4, label: 'Reward', icon: Wallet },
+  { id: 5, label: 'Audience', icon: Users },
+  { id: 6, label: 'Review', icon: Rocket },
+];
+
+const PLATFORMS = [
+  { name: 'Instagram', icon: InstagramLogo, hint: 'Follows, likes, story shares' },
+  { name: 'TikTok', icon: TikTokLogo, hint: 'Video views, follows, shares' },
+  { name: 'YouTube', icon: YouTubeLogo, hint: 'Subscribes, likes, comments' },
+  { name: 'Facebook', icon: FacebookLogo, hint: 'Page likes, shares, posts' },
+  { name: 'X', icon: XTwitterLogo, hint: 'Follows, reposts, likes' },
+  { name: 'WhatsApp', icon: WhatsAppLogo, hint: 'Group shares, invites' },
+  { name: 'Google Reviews', icon: GoogleReviewLogo, hint: 'Honest business reviews' },
+  { name: 'Trustpilot', icon: TrustpilotLogo, hint: 'Verified service reviews' },
+];
 
 interface TaskCategory {
   id: number;
@@ -23,15 +68,6 @@ interface TaskCategory {
   description?: string | null;
   is_active?: boolean;
 }
-
-const STEPS = [
-  { id: 1, label: 'Goal', icon: Target },
-  { id: 2, label: 'Task Type', icon: ClipboardList },
-  { id: 3, label: 'Audience', icon: Globe },
-  { id: 4, label: 'Budget & Proof', icon: Wallet },
-  { id: 5, label: 'Review', icon: Eye },
-  { id: 6, label: 'Launch', icon: Rocket },
-];
 
 const MIN_REWARD_USD = 0.2;
 const MIN_CONTRIBUTORS = 5;
@@ -45,8 +81,7 @@ const CONTRIBUTOR_LEVELS = ['starter', 'explorer', 'trusted', 'pro', 'elite'] as
 /** Template → category-name matching used when the Task Library links here. */
 const TEMPLATE_TO_CATEGORY = (template: string, categories: TaskCategory[]): TaskCategory | undefined => {
   const t = template.toLowerCase();
-  const byName = (needle: string) =>
-    categories.find((c) => c.name.toLowerCase().includes(needle));
+  const byName = (needle: string) => categories.find((c) => c.name.toLowerCase().includes(needle));
   if (t.includes('tiktok') || t.includes('video')) return byName('ugc') || byName('video') || byName('content');
   if (t.includes('comment') || t.includes('youtube')) return byName('comment') || byName('engagement');
   if (t.includes('share') || t.includes('story') || t.includes('repost') || t.includes('whatsapp'))
@@ -55,34 +90,47 @@ const TEMPLATE_TO_CATEGORY = (template: string, categories: TaskCategory[]): Tas
   return categories[0];
 };
 
+/** Template → platform pre-selection (purely drives the preview, frontend-only). */
+const TEMPLATE_TO_PLATFORM: Record<string, string> = {
+  tiktok: 'TikTok',
+  share: 'Instagram',
+  comment: 'YouTube',
+  whatsapp: 'WhatsApp',
+  app: 'Instagram',
+};
+
 export const CreateCampaignWizardPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const templateHint = searchParams.get('template');
+  const { user } = useAuth();
 
   const [step, setStep] = useState(1);
   const [categories, setCategories] = useState<TaskCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
 
-  // Step 1
+  // Step 1 — Goal
   const [title, setTitle] = useState('');
   const [objective, setObjective] = useState('');
   const [description, setDescription] = useState('');
 
-  // Step 2
+  // Step 2 — Platform
+  const [platform, setPlatform] = useState<string>('Instagram');
+
+  // Step 3 — Task type
   const [categoryId, setCategoryId] = useState<number | null>(null);
 
-  // Step 3
-  const [country, setCountry] = useState('GLOBAL');
-  const [minLevel, setMinLevel] = useState<string>('');
-  const [retentionHours, setRetentionHours] = useState('');
-
-  // Step 4
+  // Step 4 — Reward
   const [rewardUsd, setRewardUsd] = useState<string>('0.20');
   const [contributors, setContributors] = useState<string>('5');
   const [instructions, setInstructions] = useState('');
   const [proofRequirements, setProofRequirements] = useState<string[]>(['Screenshot']);
+
+  // Step 5 — Audience
+  const [country, setCountry] = useState('GLOBAL');
+  const [minLevel, setMinLevel] = useState<string>('');
+  const [retentionHours, setRetentionHours] = useState('');
 
   // Launch
   const [launching, setLaunching] = useState(false);
@@ -102,6 +150,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
         if (templateHint && cats.length > 0) {
           const match = TEMPLATE_TO_CATEGORY(templateHint, cats);
           if (match) setCategoryId(match.id);
+          const plat = TEMPLATE_TO_PLATFORM[templateHint.toLowerCase()];
+          if (plat) setPlatform(plat);
         }
       } catch (e) {
         setCategoriesError(getApiError(e, 'Could not load task categories.'));
@@ -121,8 +171,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
     return { tasksBudget, fee, total: tasksBudget + fee };
   }, [rewardCents, contributorCount]);
 
-  const fmtUsd = (cents: number) =>
-    (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const fmtUsd = (cents: number) => (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
   const validateStep = (s: number): boolean => {
     setFieldErrors({});
@@ -134,10 +183,18 @@ export const CreateCampaignWizardPage: React.FC = () => {
       return Object.keys(errs).length === 0;
     }
     if (s === 2) {
+      if (!platform) {
+        setFieldErrors({ platform: ['Pick the platform where contributors will act.'] });
+        return false;
+      }
+      return true;
+    }
+    if (s === 3) {
       if (categoryId == null) {
         setFieldErrors({ category_id: ['Pick the task type that best matches this campaign.'] });
         return false;
       }
+      return true;
     }
     if (s === 4) {
       const errs: Record<string, string[]> = {};
@@ -162,13 +219,11 @@ export const CreateCampaignWizardPage: React.FC = () => {
   };
 
   const toggleProofRequirement = (req: string) => {
-    setProofRequirements((prev) =>
-      prev.includes(req) ? prev.filter((r) => r !== req) : [...prev, req],
-    );
+    setProofRequirements((prev) => (prev.includes(req) ? prev.filter((r) => r !== req) : [...prev, req]));
   };
 
   const handleLaunch = async () => {
-    if (launching || !validateStep(4) || !validateStep(1) || categoryId == null) return;
+    if (launching || !validateStep(4) || !validateStep(1) || categoryId == null || !platform) return;
     setLaunching(true);
     setLaunchError(null);
     setFieldErrors({});
@@ -185,8 +240,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
       };
       if (objective.trim()) payload.objective = objective.trim();
       if (minLevel) payload.min_contributor_level = minLevel;
-      if (retentionHours && parseInt(retentionHours, 10) >= 0)
-        payload.retention_hours = parseInt(retentionHours, 10);
+      if (retentionHours && parseInt(retentionHours, 10) >= 0) payload.retention_hours = parseInt(retentionHours, 10);
 
       const res = await businessApi.createCampaign(payload);
       if (res.success && res.data) {
@@ -196,7 +250,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
       }
     } catch (e: unknown) {
       // Surface real API errors — especially the 422 funding gate — honestly.
-      const apiErr = e as { response?: { status?: number; data?: { errors?: Record<string, string[]>; message?: string } } };
+      const apiErr = e as {
+        response?: { status?: number; data?: { errors?: Record<string, string[]>; message?: string } };
+      };
       const status = apiErr.response?.status;
       const errors = apiErr.response?.data?.errors;
       if (status === 422 && errors) setFieldErrors(errors);
@@ -213,8 +269,64 @@ export const CreateCampaignWizardPage: React.FC = () => {
 
   const progress = Math.round((step / STEPS.length) * 100);
   const err = (key: string) => fieldErrors[key]?.[0];
-
   const selectedCategory = categories.find((c) => c.id === categoryId);
+
+  /** Synthesized task payload for the live preview — built only from wizard fields. */
+  const previewTask: UiTask = {
+    id: 0,
+    uuid: 'preview',
+    campaign_id: 0,
+    category_id: categoryId ?? 0,
+    title: title.trim() || 'Your campaign title',
+    reward_cents: rewardCents || 20,
+    estimated_minutes: 5,
+    difficulty: 'easy',
+    status: 'available',
+    slots_total: contributorCount || 5,
+    slots_taken: 0,
+    platform,
+    categoryName: selectedCategory?.name || 'Social Media',
+    description: description.trim() || title.trim() || 'Your campaign description will appear here.',
+    country: country === 'GLOBAL' ? 'Global' : country,
+    retentionHours: parseInt(retentionHours, 10) >= 0 ? parseInt(retentionHours, 10) : 24,
+    brandName: user?.business?.company_name || user?.name || 'Your brand',
+    targetUrl: user?.business?.website,
+    postCopy: instructions.trim() || 'Your step-by-step instructions will appear here.',
+    campaign: {
+      id: 0,
+      uuid: 'preview',
+      business_id: 0,
+      category_id: categoryId ?? 0,
+      title: title.trim() || 'Your campaign title',
+      description: description.trim(),
+      instructions_markdown: instructions.trim(),
+      proof_requirements_json: proofRequirements,
+      status: 'draft',
+      total_budget_cents: estimate.total,
+      remaining_budget_cents: estimate.total,
+      reserved_budget_cents: 0,
+      reward_per_task_cents: rewardCents,
+      platform_fee_cents: estimate.fee,
+      target_contributors_count: contributorCount || 5,
+      completed_contributors_count: 0,
+      min_contributor_level: 'starter',
+      retention_hours: parseInt(retentionHours, 10) >= 0 ? parseInt(retentionHours, 10) : 24,
+    } as UiTask['campaign'],
+  };
+  const previewVariant = classifyTaskPreview(previewTask);
+
+  const reviewRows: [string, string][] = [
+    ['Title', previewTask.title],
+    ['Platform', platform],
+    ['Task type', selectedCategory?.name || '—'],
+    ['Target audience', COUNTRY_OPTIONS.find((c) => c.code === country)?.label || country],
+    ['Reward / task', fmtUsd(rewardCents)],
+    ['Contributors', String(contributorCount || 0)],
+    ['Proof required', proofRequirements.join(', ') || '—'],
+    ['Min. contributor level', minLevel || 'Any'],
+    ['Retention', retentionHours ? `${retentionHours} hours` : '24 hours (default)'],
+    ['Estimated total', `${fmtUsd(estimate.total)} (incl. est. ${ESTIMATED_FEE_PERCENT}% fee)`],
+  ];
 
   if (launchSuccessId != null) {
     return (
@@ -238,7 +350,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Create Campaign</h1>
@@ -293,7 +405,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
             <input
               value={objective}
               onChange={(e) => setObjective(e.target.value)}
-              placeholder="e.g. Drive 500 authentic reviews this month"
+              placeholder="e.g. Drive 500 authentic follows this month"
               className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
             />
           </div>
@@ -311,10 +423,52 @@ export const CreateCampaignWizardPage: React.FC = () => {
         </div>
       )}
 
-      {/* ============ STEP 2: TASK TYPE ============ */}
+      {/* ============ STEP 2: PLATFORM ============ */}
       {step === 2 && (
         <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-4">
-          <h3 className="text-sm font-extrabold text-gray-900">What should contributors do?</h3>
+          <div>
+            <h3 className="text-sm font-extrabold text-gray-900">Where will contributors act?</h3>
+            <p className="text-[11px] text-gray-500 mt-0.5">
+              Choose the platform for this campaign. It drives the task preview contributors will see.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {PLATFORMS.map((p) => {
+              const Icon = p.icon;
+              const selected = platform === p.name;
+              return (
+                <button
+                  key={p.name}
+                  type="button"
+                  onClick={() => setPlatform(p.name)}
+                  className={`text-left p-4 rounded-xl border-2 transition-all ${
+                    selected ? 'border-[#168BFF] bg-blue-50 shadow-sm' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  aria-pressed={selected}
+                >
+                  <Icon className="w-7 h-7" />
+                  <p className="text-xs font-extrabold text-gray-900 mt-2.5 flex items-center gap-1.5">
+                    {selected && <Check className="w-3.5 h-3.5 text-[#168BFF]" />}
+                    {p.name}
+                  </p>
+                  <p className="text-[10px] text-gray-500 mt-0.5 leading-snug">{p.hint}</p>
+                </button>
+              );
+            })}
+          </div>
+          {err('platform') && <p className="text-[11px] font-bold text-red-600">{err('platform')}</p>}
+        </div>
+      )}
+
+      {/* ============ STEP 3: TASK TYPE ============ */}
+      {step === 3 && (
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-gray-900">What should contributors do?</h3>
+            <p className="text-[11px] text-gray-500 mt-0.5">
+              Task type for <span className="font-bold text-gray-700">{platform}</span> tasks.
+            </p>
+          </div>
           {categoriesLoading && (
             <div className="flex items-center gap-2 text-gray-500 text-sm py-6">
               <Loader2 className="w-5 h-5 animate-spin" /> Loading task categories…
@@ -341,10 +495,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
                   type="button"
                   onClick={() => setCategoryId(c.id)}
                   className={`text-left p-4 rounded-xl border-2 transition-all ${
-                    categoryId === c.id
-                      ? 'border-[#168BFF] bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    categoryId === c.id ? 'border-[#168BFF] bg-blue-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
+                  aria-pressed={categoryId === c.id}
                 >
                   <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
                     {categoryId === c.id && <Check className="w-4 h-4 text-[#168BFF]" />}
@@ -359,57 +512,10 @@ export const CreateCampaignWizardPage: React.FC = () => {
         </div>
       )}
 
-      {/* ============ STEP 3: AUDIENCE ============ */}
-      {step === 3 && (
-        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5">
-          <div>
-            <label className="text-xs font-bold text-gray-700 block mb-1.5">Target country</label>
-            <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] bg-white"
-            >
-              {COUNTRY_OPTIONS.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.flag} {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-bold text-gray-700 block mb-1.5">Minimum contributor level (optional)</label>
-            <select
-              value={minLevel}
-              onChange={(e) => setMinLevel(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] bg-white"
-            >
-              <option value="">Any level</option>
-              {CONTRIBUTOR_LEVELS.map((l) => (
-                <option key={l} value={l} className="capitalize">
-                  {l}
-                </option>
-              ))}
-            </select>
-            <p className="text-[11px] text-gray-400 mt-1">Higher levels restrict the campaign to more experienced contributors.</p>
-          </div>
-          <div>
-            <label className="text-xs font-bold text-gray-700 block mb-1.5">Retention period, hours (optional)</label>
-            <input
-              type="number"
-              min={0}
-              value={retentionHours}
-              onChange={(e) => setRetentionHours(e.target.value)}
-              placeholder="e.g. 72"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
-            />
-            <p className="text-[11px] text-gray-400 mt-1">How long the completed action must stay live (e.g. a post stays up for 72 hours).</p>
-          </div>
-        </div>
-      )}
-
-      {/* ============ STEP 4: BUDGET & PROOF ============ */}
+      {/* ============ STEP 4: REWARD ============ */}
       {step === 4 && (
         <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5">
+          <h3 className="text-sm font-extrabold text-gray-900">Reward &amp; task instructions</h3>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-bold text-gray-700 block mb-1.5">Reward per task (USD) *</label>
@@ -458,6 +564,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                   key={p}
                   type="button"
                   onClick={() => toggleProofRequirement(p)}
+                  aria-pressed={proofRequirements.includes(p)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold border-2 transition-all ${
                     proofRequirements.includes(p)
                       ? 'border-[#168BFF] bg-blue-50 text-[#168BFF]'
@@ -473,7 +580,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
           {/* Honest budget preview */}
           <div className="bg-[#F7F9FC] border border-[#E7ECF3] rounded-xl p-4 space-y-2 text-sm">
             <div className="flex justify-between text-gray-600">
-              <span>Task payouts ({contributorCount || 0} × {fmtUsd(rewardCents)})</span>
+              <span>
+                Task payouts ({contributorCount || 0} × {fmtUsd(rewardCents)})
+              </span>
               <span className="font-bold text-gray-900">{fmtUsd(estimate.tasksBudget)}</span>
             </div>
             <div className="flex justify-between text-gray-600">
@@ -492,90 +601,134 @@ export const CreateCampaignWizardPage: React.FC = () => {
         </div>
       )}
 
-      {/* ============ STEP 5: REVIEW ============ */}
+      {/* ============ STEP 5: AUDIENCE ============ */}
       {step === 5 && (
-        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-4">
-          <h3 className="text-sm font-extrabold text-gray-900">Review before launch</h3>
-          <dl className="text-sm space-y-2.5">
-            {[
-              ['Title', title],
-              ['Task type', selectedCategory?.name || '—'],
-              ['Target country', COUNTRY_OPTIONS.find((c) => c.code === country)?.label || country],
-              ['Reward / task', fmtUsd(rewardCents)],
-              ['Contributors', String(contributorCount || 0)],
-              ['Proof', proofRequirements.join(', ') || '—'],
-              ['Min. contributor level', minLevel || 'Any'],
-              ['Retention', retentionHours ? `${retentionHours} hours` : 'None'],
-              ['Estimated total', `${fmtUsd(estimate.total)} (incl. est. ${ESTIMATED_FEE_PERCENT}% fee)`],
-            ].map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-4 border-b border-gray-50 pb-2">
-                <dt className="text-gray-500">{k}</dt>
-                <dd className="font-bold text-gray-900 text-right">{v}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-800">
-            <p className="font-bold mb-1">What happens at launch</p>
-            <p>
-              The server creates your campaign, calculates the real platform fee, and holds the total from your
-              balance. If your balance is too low, the launch is stopped with a clear funding error — nothing is
-              created and nothing is charged.
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5">
+          <h3 className="text-sm font-extrabold text-gray-900">Target audience</h3>
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Target country</label>
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] bg-white"
+            >
+              {COUNTRY_OPTIONS.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.flag} {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Minimum contributor level (optional)</label>
+            <select
+              value={minLevel}
+              onChange={(e) => setMinLevel(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] bg-white"
+            >
+              <option value="">Any level</option>
+              {CONTRIBUTOR_LEVELS.map((l) => (
+                <option key={l} value={l} className="capitalize">
+                  {l}
+                </option>
+              ))}
+            </select>
+            <p className="text-[11px] text-gray-400 mt-1">
+              Higher levels restrict the campaign to more experienced contributors.
+            </p>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Retention period, hours (optional)</label>
+            <input
+              type="number"
+              min={0}
+              value={retentionHours}
+              onChange={(e) => setRetentionHours(e.target.value)}
+              placeholder="e.g. 72"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            />
+            <p className="text-[11px] text-gray-400 mt-1">
+              How long the completed action must stay live (e.g. a post stays up for 72 hours). Defaults to 24h.
             </p>
           </div>
         </div>
       )}
 
-      {/* ============ STEP 6: LAUNCH ============ */}
+      {/* ============ STEP 6: REVIEW & SUBMIT ============ */}
       {step === 6 && (
-        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-[#168BFF]/10 text-[#168BFF] flex items-center justify-center mx-auto">
-            <Rocket className="w-7 h-7" />
-          </div>
-          <div>
-            <h3 className="text-lg font-extrabold text-gray-900">Ready to go live?</h3>
-            <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
-              Launching creates the campaign and holds an estimated {fmtUsd(estimate.total)} from your balance.
-              You can pause it anytime afterwards.
-            </p>
-          </div>
-
-          {launchError && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 text-left">
-              <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
-              <div className="text-sm">
-                <p className="font-bold text-red-700">Launch failed</p>
-                <p className="text-red-600 mt-1">{launchError}</p>
-                {Object.keys(fieldErrors).length > 0 && (
-                  <ul className="text-red-600 mt-2 space-y-1 list-disc list-inside">
-                    {Object.entries(fieldErrors).map(([k, msgs]) =>
-                      msgs.map((m, i) => (
-                        <li key={`${k}-${i}`} className="text-xs">
-                          <span className="font-bold">{k}:</span> {m}
-                        </li>
-                      )),
-                    )}
-                  </ul>
-                )}
+        <div className="space-y-5">
+          <div className="grid lg:grid-cols-2 gap-5 items-start">
+            {/* Live task preview — what contributors will see */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-extrabold text-gray-900">What contributors will see</h3>
+                <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">
+                  {platform} · {previewVariant.replace(/_/g, ' ')}
+                </span>
               </div>
+              <TaskPreview task={previewTask} variant={previewVariant} />
+              <TaskPreviewSummary task={previewTask} />
             </div>
-          )}
 
-          <button
-            type="button"
-            disabled={launching}
-            onClick={() => void handleLaunch()}
-            className="w-full px-6 py-3.5 bg-[#168BFF] hover:bg-[#1275DD] disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2"
-          >
-            {launching ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" /> Launching…
-              </>
-            ) : (
-              <>
-                <Rocket className="w-4 h-4" /> Launch Campaign
-              </>
-            )}
-          </button>
+            {/* Review summary + launch */}
+            <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-4 lg:sticky lg:top-6">
+              <h3 className="text-sm font-extrabold text-gray-900">Review before launch</h3>
+              <dl className="text-sm space-y-2.5">
+                {reviewRows.map(([k, v]) => (
+                  <div key={k} className="flex justify-between gap-4 border-b border-gray-50 pb-2">
+                    <dt className="text-gray-500 shrink-0">{k}</dt>
+                    <dd className="font-bold text-gray-900 text-right break-words">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-800">
+                <p className="font-bold mb-1">What happens at launch</p>
+                <p>
+                  The server creates your campaign, calculates the real platform fee, and holds an estimated{' '}
+                  {fmtUsd(estimate.total)} from your balance. If your balance is too low, the launch is stopped
+                  with a clear funding error — nothing is created and nothing is charged.
+                </p>
+              </div>
+
+              {launchError && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 text-left">
+                  <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-bold text-red-700">Launch failed</p>
+                    <p className="text-red-600 mt-1">{launchError}</p>
+                    {Object.keys(fieldErrors).length > 0 && (
+                      <ul className="text-red-600 mt-2 space-y-1 list-disc list-inside">
+                        {Object.entries(fieldErrors).map(([k, msgs]) =>
+                          msgs.map((m, i) => (
+                            <li key={`${k}-${i}`} className="text-xs">
+                              <span className="font-bold">{k}:</span> {m}
+                            </li>
+                          )),
+                        )}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="button"
+                disabled={launching}
+                onClick={() => void handleLaunch()}
+                className="w-full px-6 py-3.5 bg-[#168BFF] hover:bg-[#1275DD] disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2"
+              >
+                {launching ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Launching…
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="w-4 h-4" /> Launch Campaign
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -593,13 +746,13 @@ export const CreateCampaignWizardPage: React.FC = () => {
           <button
             type="button"
             onClick={next}
-            disabled={categoriesLoading && step === 2}
+            disabled={(categoriesLoading && step === 3) || launching}
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#07182F] hover:bg-[#168BFF] disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-colors"
           >
             Continue <ArrowRight className="w-4 h-4" />
           </button>
         ) : (
-          <span className="text-[11px] text-gray-400">Review the summary above, then launch.</span>
+          <span className="text-[11px] text-gray-400">Review the preview and summary above, then launch.</span>
         )}
       </div>
     </div>

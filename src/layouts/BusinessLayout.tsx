@@ -38,7 +38,7 @@ export const BusinessLayout: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/business/login');
   };
 
   const companyName = user?.business?.company_name || user?.name || 'Business';

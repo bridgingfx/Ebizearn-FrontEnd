@@ -17,7 +17,15 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
   }
 
   if (!user || !token) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    // Send unauthenticated visitors to the login portal that matches the area
+    // they were trying to reach — never to a generic login hub.
+    const path = location.pathname;
+    const destination = path.startsWith('/business')
+      ? '/business/login'
+      : path.startsWith('/admin')
+        ? '/moderator/login'
+        : '/login';
+    return <Navigate to={destination} replace state={{ from: location.pathname }} />;
   }
 
   if (!allowedRoles.includes(user.role)) {

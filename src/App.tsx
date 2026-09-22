@@ -40,6 +40,7 @@ import { ContributorWalletPage } from './pages/contributor/ContributorWalletPage
 import { ContributorEarningsPage } from './pages/contributor/ContributorEarningsPage';
 import { ContributorMyTasksPage } from './pages/contributor/ContributorMyTasksPage';
 import { ContributorReferralsPage } from './pages/contributor/ContributorReferralsPage';
+import { ContributorNotificationsPage } from './pages/contributor/ContributorNotificationsPage';
 import { ContributorProfilePage } from './pages/contributor/ContributorProfilePage';
 import { ContributorSupportPage } from './pages/contributor/ContributorSupportPage';
 
@@ -158,6 +159,7 @@ export const App: React.FC = () => {
             <Route path="earnings" element={<ContributorEarningsPage />} />
             <Route path="wallet" element={<ContributorWalletPage />} />
             <Route path="referrals" element={<ContributorReferralsPage />} />
+            <Route path="notifications" element={<ContributorNotificationsPage />} />
             <Route path="profile" element={<ContributorProfilePage />} />
             <Route path="support" element={<ContributorSupportPage />} />
           </Route>

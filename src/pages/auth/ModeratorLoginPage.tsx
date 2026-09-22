@@ -106,7 +106,7 @@ export const ModeratorLoginPage: React.FC = () => {
             </div>
           </div>
           <h1 className="mt-4 text-4xl sm:text-5xl font-black tracking-tight text-white leading-[1.05]">
-            Review campaigns. <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">Verify submissions.</span> Protect marketplace quality.
+            Review tasks. <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">Maintain marketplace quality.</span>
           </h1>
           <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-md mx-auto lg:mx-0 leading-relaxed">
             You keep the marketplace honest: audit campaigns, verify contributor proof, and act on fraud signals.

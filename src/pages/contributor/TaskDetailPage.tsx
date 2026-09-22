@@ -19,7 +19,7 @@ import { mapTaskForUi, money } from '../../utils/apiMappers';
 import type { UiTask, TaskSubmission } from '../../types';
 import { PlatformPreview } from '../../components/task/PlatformPreview';
 import { VerificationTimeline } from '../../components/task/VerificationTimeline';
-import { humanizeRetention, initials } from '../../components/task/TaskCard';
+import { humanizeRetention, initials, proofRequirementLabels } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
 
 /**
@@ -186,11 +186,7 @@ export const TaskDetailPage: React.FC = () => {
     );
   }
 
-  const requirements = task.campaign?.proof_requirements_json
-    ? Object.entries(task.campaign.proof_requirements_json)
-        .filter(([, required]) => required)
-        .map(([key]) => key.replace(/_/g, ' '))
-    : [];
+  const requirements = proofRequirementLabels(task.campaign?.proof_requirements_json);
 
   return (
     <div className="max-w-6xl mx-auto space-y-5 text-left">

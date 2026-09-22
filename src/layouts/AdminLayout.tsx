@@ -51,8 +51,12 @@ export const AdminLayout: React.FC = () => {
   const [logoutOpen, setLogoutOpen] = React.useState(false);
 
   const handleLogout = () => {
+    // Capture the role BEFORE logout clears the session, then return the
+    // operator to the correct portal: super admins go back to the hidden
+    // console sign-in; moderators/admins return to the moderator login.
+    const role = user?.role;
     logout();
-    navigate('/moderator/login');
+    navigate(role === 'superadmin' ? '/secure-control-panel/login' : '/moderator/login', { replace: true });
   };
 
   const initials = (user?.name || 'Admin')

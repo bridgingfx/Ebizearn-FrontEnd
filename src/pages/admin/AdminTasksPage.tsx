@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ClipboardList, Search, Loader2, AlertCircle } from 'lucide-react';
+import { ClipboardList, Search, Loader2, AlertCircle, X, Eye } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
 import type { Task } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
+import { mapTaskForUi } from '../../utils/apiMappers';
+import { TaskPreview, TaskPreviewSummary } from '../../components/task/TaskPreview';
 
 /**
  * Task listing for moderation. There is no dedicated admin task endpoint, so
@@ -15,6 +17,7 @@ export const AdminTasksPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [previewTask, setPreviewTask] = useState<Task | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -123,7 +126,17 @@ export const AdminTasksPage: React.FC = () => {
               <tbody>
                 {filtered.map((t) => (
                   <tr key={t.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
-                    <td className="py-3 px-4 font-bold text-gray-900">{t.title}</td>
+                    <td className="py-3 px-4 font-bold text-gray-900">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewTask(t)}
+                        className="text-left hover:text-[#168BFF] hover:underline inline-flex items-center gap-1.5"
+                        title="Preview what contributors see"
+                      >
+                        <span>{t.title}</span>
+                        <Eye className="w-3.5 h-3.5 text-gray-400" />
+                      </button>
+                    </td>
                     <td className="py-3 px-4 text-xs text-gray-600">{t.campaign?.title || `Campaign #${t.campaign_id}`}</td>
                     <td className="py-3 px-4 text-xs font-bold text-gray-900">
                       ${((t.reward_cents || 0) / 100).toFixed(2)}
@@ -142,6 +155,46 @@ export const AdminTasksPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Task preview modal — exactly what contributors see for this task. */}
+      {previewTask && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setPreviewTask(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Task preview"
+        >
+          <div
+            className="bg-[#F7F9FC] rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-5 sm:p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-base font-black text-gray-900">Contributor preview</h2>
+                <p className="text-[11px] text-gray-500">What contributors see for this task, from live task data.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewTask(null)}
+                className="p-2 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-gray-900"
+                aria-label="Close preview"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {(() => {
+              const ui = mapTaskForUi(previewTask);
+              return (
+                <div className="grid sm:grid-cols-2 gap-4 items-start">
+                  <TaskPreview task={ui} />
+                  <TaskPreviewSummary task={ui} />
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}

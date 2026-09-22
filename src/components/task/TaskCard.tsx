@@ -22,6 +22,23 @@ export function humanizeRetention(hours: number): string {
   return days === 1 ? '24-hour retention' : `${days}-day retention`;
 }
 
+/**
+ * Normalize proof requirements into a label list.
+ * The campaign wizard submits an array (["Screenshot", …]); older campaigns
+ * store an object map ({ screenshot: true, … }). Both must render correctly.
+ */
+export function proofRequirementLabels(
+  json?: Record<string, unknown> | string[] | null,
+): string[] {
+  if (Array.isArray(json)) return json.map((v) => String(v));
+  if (json && typeof json === 'object') {
+    return Object.entries(json)
+      .filter(([, required]) => Boolean(required))
+      .map(([key]) => key.replace(/_/g, ' '));
+  }
+  return [];
+}
+
 export function initials(name: string): string {
   return name
     .split(/\s+/)
@@ -48,11 +65,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
   const reward = money(task.reward_cents, 'USD');
   const deadline = formatDeadline(task.campaign?.ends_at);
   const retention = humanizeRetention(task.retentionHours);
-  const requirements = task.campaign?.proof_requirements_json
-    ? Object.entries(task.campaign.proof_requirements_json)
-        .filter(([, required]) => required)
-        .map(([key]) => key.replace(/_/g, ' '))
-    : [];
+  const requirements = proofRequirementLabels(task.campaign?.proof_requirements_json);
   const slotsLeft = Math.max(0, task.slots_total - task.slots_taken);
 
   if (compact) {
@@ -93,7 +106,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
         </div>
 
         {/* Meta chips */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
+        <div className="flex flex-wrap gap-1.5 mb-2.5">
           <span className={`text-[10px] font-bold px-2 py-1 rounded-lg border ${badge}`}>{task.platform}</span>
           <span className="text-[10px] font-bold px-2 py-1 rounded-lg border bg-gray-50 text-gray-600 border-gray-200">
             {task.categoryName}
@@ -107,6 +120,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
             </span>
           )}
         </div>
+
+        {/* Instructions excerpt */}
+        {task.postCopy && (
+          <p className="text-[11px] text-gray-500 leading-snug line-clamp-2 mb-3">
+            {task.postCopy}
+          </p>
+        )}
 
         {/* Reward / time / deadline */}
         <div className="flex items-center gap-4 text-[11px] text-gray-600 mb-3">

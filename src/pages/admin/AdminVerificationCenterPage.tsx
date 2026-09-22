@@ -11,15 +11,12 @@ import {
   Check,
   FileText,
   HelpCircle,
-  ChevronDown,
-  ChevronUp,
   Info,
   RefreshCw,
   Eye,
   AlertCircle,
 } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
-import { useAuth } from '../../context/AuthContext';
 import { UserAvatar } from '../../components/common/UserAvatar';
 import type { TaskSubmission } from '../../types';
 
@@ -54,7 +51,6 @@ const mapSubmissionForReview = (submission: TaskSubmission) => {
 };
 
 export const AdminVerificationCenterPage: React.FC = () => {
-  const { user } = useAuth();
   const [realQueue, setRealQueue] = useState<ReturnType<typeof mapSubmissionForReview>[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

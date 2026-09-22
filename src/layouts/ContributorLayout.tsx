@@ -18,6 +18,7 @@ import { RegionSelector } from '../components/common/RegionSelector';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { ThemeToggle } from '../components/common/ThemeToggle';
+import { AppFooter } from '../components/common/AppFooter';
 import { useUnreadNotifications } from '../pages/contributor/ContributorNotificationsPage';
 
 /**
@@ -168,6 +169,7 @@ export const ContributorLayout: React.FC = () => {
       {/* Main content — bottom padding so content clears the mobile tab bar */}
       <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 pb-28 md:pb-10 max-w-6xl mx-auto w-full">
         <Outlet />
+        <AppFooter />
       </main>
 
       {/* Mobile bottom tab bar */}

@@ -75,7 +75,7 @@ export const BusinessSettingsPage: React.FC = () => {
         <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-4">API & Webhooks</h3>
         <EmptyState
           icon={Building}
-          title="Integrations coming soon"
+          title="Integrations not available yet"
           description="API keys and webhooks are not supported by the current backend API. This section will appear once the backend ships them."
         />
       </div>

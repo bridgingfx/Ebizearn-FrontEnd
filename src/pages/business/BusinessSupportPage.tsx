@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Mail, HelpCircle, BookOpen, FileText, MessagesSquare } from 'lucide-react';
 
 /**
@@ -64,11 +65,11 @@ export const BusinessSupportPage: React.FC = () => {
             <h4 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-1">{c.title}</h4>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed mb-3">{c.text}</p>
             {c.available && c.href ? (
-              <a href={c.href} className="text-xs font-bold text-[#168BFF] hover:underline inline-flex items-center gap-1">
+              <Link to={c.href} className="text-xs font-bold text-[#168BFF] hover:underline inline-flex items-center gap-1">
                 <HelpCircle className="w-3.5 h-3.5" /> Open
-              </a>
+              </Link>
             ) : (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Coming soon</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Not available yet</span>
             )}
           </div>
         ))}

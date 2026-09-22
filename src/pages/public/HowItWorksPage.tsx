@@ -40,7 +40,7 @@ export const HowItWorksPage: React.FC = () => {
       num: '01',
       title: 'Create Your Free Account in 45 Seconds',
       subtitle: 'Zero Fees • Instant Access',
-      desc: 'Sign up with just your phone number or email. BizNetwork will never charge you an upfront registration fee, membership cost, or deposit. You instantly unlock our open social marketplace.',
+      desc: 'Sign up with just your phone number or email. eBizEarn will never charge you an upfront registration fee, membership cost, or deposit. You instantly unlock our open social marketplace.',
       actionTitle: 'Instant Registration',
       actionBadge: '100% Free Forever',
       icon: UserPlus,
@@ -280,11 +280,11 @@ export const HowItWorksPage: React.FC = () => {
     },
     {
       num: '03',
-      title: 'Mobilize Over 500,000+ Real Micro-Contributors',
+      title: 'Mobilize Real Micro-Contributors',
       subtitle: 'Authentic Organic Reach • No Bots',
       desc: 'Your campaign instantly goes live across verified mobile earners worldwide. Real people post your media, generate organic impressions, and interact naturally with their own followers.',
       actionTitle: 'Decentralized Workforce',
-      actionBadge: '528k+ Active Earners',
+      actionBadge: 'Verified Workforce',
       icon: Users,
       screenMock: (
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
@@ -309,7 +309,7 @@ export const HowItWorksPage: React.FC = () => {
       num: '04',
       title: 'Automated Computer Vision & Anti-Fraud Audit',
       subtitle: 'Zero Effort Proof Validation',
-      desc: 'BizNetwork proprietary vision AI scans every submitted screenshot, validates timestamp against server clock, extracts hashtags with OCR, and detects duplicate image hashes.',
+      desc: 'eBizEarn proprietary vision AI scans every submitted screenshot, validates timestamp against server clock, extracts hashtags with OCR, and detects duplicate image hashes.',
       actionTitle: 'AI Fraud Radar',
       actionBadge: 'Perceptual Hashing',
       icon: ShieldCheck,
@@ -369,15 +369,15 @@ export const HowItWorksPage: React.FC = () => {
 
   const faqs = [
     {
-      q: 'Is BizNetwork 100% free for earners to join?',
-      a: 'Yes, absolutely. BizNetwork will never charge any registration fee, monthly subscription, or account deposit to contributors. You keep 100% of the rewards you earn with zero withdrawal fees.',
+      q: 'Is eBizEarn 100% free for earners to join?',
+      a: 'Yes, absolutely. eBizEarn will never charge any registration fee, monthly subscription, or account deposit to contributors. You keep 100% of the rewards you earn with zero withdrawal fees.',
     },
     {
       q: 'What is the minimum cashout amount and how do payouts work?',
       a: 'The minimum withdrawal is $50.00 USD. Payouts are queued for manual processing by our payouts team. We support PayPal, Wise, Direct Bank Wire / IBAN, and USDC Crypto rails.',
     },
     {
-      q: 'How does BizNetwork verify that tasks are done correctly?',
+      q: 'How does eBizEarn verify that tasks are done correctly?',
       a: 'We utilize an advanced AI Computer Vision and OCR pipeline. When a contributor uploads a screenshot or post link, our system verifies device timestamps, hashtag accuracy, account handles, and image uniqueness within ~12 seconds.',
     },
     {
@@ -404,7 +404,7 @@ export const HowItWorksPage: React.FC = () => {
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white">
-            How BizNetwork Works For <br />
+            How eBizEarn Works For <br />
             <span className="bg-gradient-to-r from-[#20C4E8] via-[#168BFF] to-[#7357FF] bg-clip-text text-transparent">
               {activeTab === 'contributor' ? 'Earners & Social Creators' : 'Brands & Enterprise Advertisers'}
             </span>
@@ -528,7 +528,7 @@ export const HowItWorksPage: React.FC = () => {
               Frequently Asked Questions
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-              Everything you need to know about BizNetwork's policies, payments, and security.
+              Everything you need to know about eBizEarn's policies, payments, and security.
             </p>
           </div>
 

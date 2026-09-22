@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { authApi, getApiError } from '../../api';
 import { ArrowRight } from 'lucide-react';
 import { AuthFavicon } from './AuthFavicon';
+import { AppFooter } from '../../components/common/AppFooter';
 import { PasswordInput } from './PasswordInput';
 
 export const ResetPasswordPage: React.FC = () => {
@@ -72,6 +73,9 @@ export const ResetPasswordPage: React.FC = () => {
         <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
           <Link to="/login" className="text-[#168BFF] font-bold hover:underline">Back to login</Link>
         </div>
+      </div>
+      <div className="max-w-md w-full">
+        <AppFooter />
       </div>
     </div>
   );

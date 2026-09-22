@@ -498,7 +498,7 @@ export const EarnPage: React.FC = () => {
             Ready to Start Earning From Your Social Accounts?
           </h2>
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
-            Join over 520,000 verified contributors globally. 100% free to join. Instant task availability.
+            Join eBizEarn — 100% free to join. Browse open tasks and start earning right away.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

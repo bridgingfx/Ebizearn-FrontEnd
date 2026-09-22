@@ -50,10 +50,10 @@ export const AboutPage: React.FC = () => {
   ];
 
   const milestones = [
-    { year: '2024', title: 'Platform Launch', desc: 'Introduced BizNetwork with 1,000 pilot contributors and initial social campaigns.' },
-    { year: '2025', title: 'Computer Vision AI', desc: 'Deployed automated screenshot and URL verification, cutting review turnaround to under 30 seconds.' },
-    { year: '2025', title: 'Global Multi-Rail Payouts', desc: 'Expanded direct payouts to Wise, PayPal, and digital currencies with a $50.00 cashout threshold.' },
-    { year: '2026', title: '500,000+ Contributors', desc: 'Surpassed $2.4M in total disbursed rewards across 150+ countries with 99.1% fraud detection accuracy.' },
+    { year: '2024', title: 'Founded in Dubai, UAE', desc: 'eBizEarn started with a simple idea: brands should pay real people for real engagement — and earning online should be free and transparent.' },
+    { year: '2025', title: 'Proof Verification Pipeline', desc: 'Built our verification workflow combining automated screenshot checks with human review, so brands only pay for genuine work.' },
+    { year: '2025', title: 'Multi-Rail Payouts', desc: 'Added payouts via PayPal, Wise, direct bank transfer, and digital currency, with a $50.00 minimum cashout and zero withdrawal fees.' },
+    { year: '2026', title: 'Open Marketplace', desc: 'eBizEarn opens its task marketplace: contributors join free, pick real tasks on the social apps they already use, and earn.' },
   ];
 
   return (
@@ -81,7 +81,7 @@ export const AboutPage: React.FC = () => {
           </h1>
 
           <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-2xl mx-auto font-normal">
-            BizNetwork bridges growing brands needing genuine human engagement with a global mobile workforce seeking flexible, transparent, and immediate income from social media and digital tasks.
+            eBizEarn bridges growing brands needing genuine human engagement with a global mobile workforce seeking flexible, transparent, and immediate income from social media and digital tasks.
           </p>
 
           <div className="pt-1 flex flex-wrap justify-center gap-3">
@@ -103,26 +103,27 @@ export const AboutPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          KEY GLOBAL METRICS STRIP
+          PLATFORM PILLARS — honest product facts only (previously fabricated
+          user/payout statistics were shown here; they are removed).
          ========================================================================= */}
       <section className="bg-white dark:bg-[#0C1322] border-b border-[#E4EAF2] dark:border-white/10 py-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div className="text-3xl font-black text-[#101828] dark:text-gray-100">520,000+</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Verified Contributors</p>
+              <div className="text-3xl font-black text-[#168BFF]">$0</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Cost to Join for Contributors</p>
             </div>
             <div>
-              <div className="text-3xl font-black text-[#168BFF]">150+</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Countries Represented</p>
+              <div className="text-3xl font-black text-[#168BFF]">$50</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Minimum Cashout Threshold</p>
             </div>
             <div>
-              <div className="text-3xl font-black text-[#16B364]">$2.45M+</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Disbursed to Workers</p>
+              <div className="text-3xl font-black text-[#16B364]">100%</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Submissions Reviewed Before Payout</p>
             </div>
             <div>
-              <div className="text-3xl font-black text-[#7357FF]">99.1%</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Fraud Detection Accuracy</p>
+              <div className="text-3xl font-black text-[#7357FF]">4</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Payout Rails: PayPal, Wise, Bank, Crypto</p>
             </div>
           </div>
         </div>
@@ -163,13 +164,13 @@ export const AboutPage: React.FC = () => {
 
             <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-4">
               <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
-                The BizNetwork Solution
+                The eBizEarn Solution
               </span>
               <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-gray-100">
                 A Transparent, Verification-First Human Marketplace.
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                BizNetwork replaces guesswork with verified outcomes. Brands set clear task parameters and escrow funds safely. Contributors complete tasks from their smartphones and upload uncropped proof. Our computer vision engine screens submissions in seconds, releasing funds directly to immutable ledger accounts.
+                eBizEarn replaces guesswork with verified outcomes. Brands set clear task parameters and escrow funds safely. Contributors complete tasks from their smartphones and upload uncropped proof. Our computer vision engine screens submissions in seconds, releasing funds directly to immutable ledger accounts.
               </p>
               <div className="space-y-2.5">
                 {[
@@ -265,7 +266,7 @@ export const AboutPage: React.FC = () => {
             Be Part of the Future of Digital Work.
           </h2>
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
-            Whether you want to earn real income on your own terms, or deploy high-impact verified campaigns worldwide, BizNetwork is built for you.
+            Whether you want to earn real income on your own terms, or deploy high-impact verified campaigns worldwide, eBizEarn is built for you.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

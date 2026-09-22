@@ -1,0 +1,34 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+/**
+ * Compact footer for authenticated app shells (contributor / business / admin)
+ * and standalone auth pages. Slim single-line bar: copyright + core links.
+ * Keeps the full marketing Footer reserved for public pages.
+ */
+export const AppFooter: React.FC = () => {
+  return (
+    <footer className="border-t border-gray-200 dark:border-white/10 py-5 mt-10">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-gray-500 dark:text-gray-400">
+        <p>© 2026 eBiz Network (ebizearn.com). All rights reserved.</p>
+        <nav className="flex items-center gap-4" aria-label="Footer">
+          <Link to="/how-it-works" className="hover:text-[#168BFF] transition-colors">
+            How It Works
+          </Link>
+          <Link to="/faq" className="hover:text-[#168BFF] transition-colors">
+            Help Center
+          </Link>
+          <Link to="/contact" className="hover:text-[#168BFF] transition-colors">
+            Contact
+          </Link>
+          <Link to="/legal/terms" className="hover:text-[#168BFF] transition-colors">
+            Terms
+          </Link>
+          <Link to="/legal/privacy" className="hover:text-[#168BFF] transition-colors">
+            Privacy
+          </Link>
+        </nav>
+      </div>
+    </footer>
+  );
+};

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { EBizLogo } from '../common/EBizLogo';
+import { AppFooter } from '../common/AppFooter';
 import type { UserRole } from '../../types';
 
 /** Post-login landing per role — shared by every portal auth page. */
@@ -113,8 +114,11 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
       </div>
 
       {/* ── Form side ────────────────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center bg-white dark:bg-[#0B0F19] px-5 sm:px-10 py-10 lg:py-14 transition-colors">
-        <div className="w-full max-w-[430px]">{children}</div>
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0B0F19] px-5 sm:px-10 py-10 lg:py-14 transition-colors">
+        <div className="w-full max-w-[430px] flex-1 flex items-center">{children}</div>
+        <div className="w-full max-w-[430px]">
+          <AppFooter />
+        </div>
       </div>
     </div>
   );

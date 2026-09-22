@@ -27,7 +27,6 @@ import {
   ThumbsUp,
   MessageSquare,
   Award,
-  Star,
   CheckCheck,
 } from 'lucide-react';
 import {
@@ -42,12 +41,14 @@ import {
   GoogleReviewLogo,
 } from '../../components/common/PlatformIcons';
 import { EBizLogo } from '../../components/common/EBizLogo';
+import { RequestDemoModal } from '../../components/common/RequestDemoModal';
 
 export const ForBusinessesPage: React.FC = () => {
   // Interactive Campaign Simulator State
   const [objective, setObjective] = useState<'reviews' | 'social' | 'testing' | 'survey' | 'ugc'>('reviews');
   const [contributorCount, setContributorCount] = useState<number>(500);
   const [rewardPerTask, setRewardPerTask] = useState<number>(15.00);
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
 
   const objectiveConfig = {
     reviews: { defaultReward: 15.00, minReward: 10.00, label: 'Trustpilot & Google Reviews', badge: 'Reputation Shield' },
@@ -94,33 +95,9 @@ export const ForBusinessesPage: React.FC = () => {
     },
     {
       feature: 'Capital Protection',
-      eBiz: 'UAE Central Bank compliant escrow: Pay only for approved proofs',
+      eBiz: 'Protected escrow: Pay only for approved proofs',
       agencies: 'Non-refundable upfront retainers regardless of output',
       botFarms: 'Zero buyer recourse or financial protection',
-    },
-  ];
-
-  const caseStudies = [
-    {
-      brand: 'Royal Crescent Hospitality',
-      industry: 'Luxury Hotels & Resorts • Dubai, UAE',
-      goal: 'Trustpilot & Google Business Review Sprint',
-      stats: '4.9★ Average Rating • 850 Verified Reviews in 48h',
-      quote: 'eBiz Network mobilized hundreds of genuine UAE travelers to review their authentic stays on Google and Trustpilot. Our organic local search bookings doubled in 3 weeks without paying exorbitant ad commissions.',
-    },
-    {
-      brand: 'NovaFin GCC Banking',
-      industry: 'FinTech & Digital Neobank • Abu Dhabi',
-      goal: 'Pre-Release App Store Testing & KYC Flow UX',
-      stats: '1,200 Verified Installs • 99.4% Approval Rate',
-      quote: 'Before our national rollout, eBiz Network verified users tested our biometric onboarding flow and caught 18 critical device-specific edge cases within 24 hours.',
-    },
-    {
-      brand: 'Al Noor Organic Skincare',
-      industry: 'E-Commerce & Luxury Wellness • UAE & KSA',
-      goal: 'Instagram Story Repost & TikTok Duet Surge',
-      stats: '2,500 Stories Shared • 4.8x ROAS Achieved',
-      quote: 'The reach was unprecedented. Rather than paying an agency 20,000 AED for 2 influencers, we mobilized 2,500 everyday beauty lovers across the UAE who generated millions of authentic impressions.',
     },
   ];
 
@@ -156,7 +133,7 @@ export const ForBusinessesPage: React.FC = () => {
               </h1>
 
               <p className="text-xs sm:text-sm text-gray-300 max-w-xl leading-relaxed font-normal">
-                Deploy 10,000+ Emirates ID-verified human contributors across <strong>Trustpilot, Google Business, Instagram, TikTok, and App Stores</strong>. Safeguard your online prestige with automated AI OCR auditing and zero administrative overhead.
+                Deploy verified human contributors across <strong>Trustpilot, Google Business, Instagram, TikTok, and App Stores</strong>. Safeguard your online prestige with automated AI OCR auditing and zero administrative overhead.
               </p>
 
               {/* Supported Platforms Strip */}
@@ -477,52 +454,42 @@ export const ForBusinessesPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          4. REAL BUSINESS CASE STUDIES
+          4. LAUNCH CTA — replaced fabricated "case studies" (invented brand
+          names, quotes, and metrics). Never re-add fake testimonials.
          ========================================================================= */}
       <section className="py-14 sm:py-16 bg-[#F7F9FC] dark:bg-[#0B0F19] border-y border-[#E4EAF2] dark:border-white/10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
-              GCC & Global Outcomes
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
-              Enterprise Reputation • Verified Case Studies
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              How hospitality chains, retail conglomerates, and fintechs use eBiz Network to solidify online authority.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {caseStudies.map((cs, idx) => (
-              <div key={idx} className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-base font-bold text-gray-900 dark:text-gray-100">{cs.brand}</h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">
-                      {cs.industry}
-                    </span>
-                  </div>
-                  <div className="text-xs font-bold text-[#168BFF] flex items-center gap-1.5">
-                    <Star className="w-3.5 h-3.5 fill-[#168BFF]" />
-                    <span>{cs.goal}</span>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 italic leading-relaxed">
-                    "{cs.quote}"
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-gray-100 dark:border-white/10">
-                  <span className="text-xs font-bold text-[#16B364] flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>{cs.stats}</span>
-                  </span>
-                </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-[#07182F] rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden">
+            <div className="absolute top-0 right-10 w-72 h-72 bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="relative z-10 space-y-4">
+              <span className="px-3.5 py-1.5 rounded-full bg-white/10 text-[#20C4E8] text-xs font-bold uppercase tracking-wider border border-white/15">
+                Self-Serve Campaign Builder
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Launch Your First Campaign in Minutes
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-300 max-w-xl mx-auto leading-relaxed">
+                Define your objective, pick your audience, fund the escrow budget, and go live.
+                You only pay for verified, approved proof of work — unused budget is refundable.
+              </p>
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+                <Link
+                  to="/business/register"
+                  className="px-8 py-3.5 bg-[#168BFF] hover:bg-[#1277dc] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl transition-all flex items-center gap-2"
+                >
+                  <span>Create Business Account</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setDemoModalOpen(true)}
+                  className="px-7 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 transition-all"
+                >
+                  Request Demo
+                </button>
               </div>
-            ))}
+            </div>
           </div>
-
         </div>
       </section>
 
@@ -604,6 +571,7 @@ export const ForBusinessesPage: React.FC = () => {
         </div>
       </section>
 
+      <RequestDemoModal open={demoModalOpen} onClose={() => setDemoModalOpen(false)} />
     </div>
   );
 };

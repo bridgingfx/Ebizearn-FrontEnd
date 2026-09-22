@@ -33,6 +33,7 @@ import {
   HelpCircle,
   Lock,
   Flame,
+  BadgeCheck,
   MessageCircle,
   Share2,
   ThumbsUp,
@@ -153,29 +154,18 @@ export const HomePage: React.FC = () => {
     return item.platform.toLowerCase() === selectedSocialTab.toLowerCase();
   });
 
-  const tickerItems = [
-    { name: 'Sarah K.', action: 'withdrew $18.40 via PayPal', time: '2m ago', flag: '🇦🇪' },
-    { name: 'Ahmed R.', action: 'completed TikTok Duet (+$3.50)', time: '4m ago', flag: '🇪🇬' },
-    { name: 'Maria L.', action: 'withdrew $32.00 to Wise', time: '5m ago', flag: '🇬🇧' },
-    { name: 'David P.', action: 'completed Instagram Story (+$0.65)', time: '7m ago', flag: '🇺🇸' },
-    { name: 'Chen W.', action: 'withdrew $45.00 to Bank', time: '9m ago', flag: '🇸🇬' },
-    { name: 'Elena M.', action: 'completed YouTube Review (+$2.20)', time: '11m ago', flag: '🇩🇪' },
-    { name: 'Rajesh S.', action: 'withdrew $21.50 via UPI / Bank', time: '12m ago', flag: '🇮🇳' },
-    { name: 'Chloe B.', action: 'completed App Testing (+$4.00)', time: '14m ago', flag: '🇨🇦' },
-  ];
-
   const faqs = [
     {
       q: 'How do I earn money using my social media accounts?',
-      a: 'Brands list verified social media tasks on BizNetwork (such as sharing a story with a brand sticker, doing a 15-second TikTok duet, or posting in a niche Facebook group). You choose any open task, complete it on your phone, upload a screenshot or live link as proof, and our automated AI verifies your submission in seconds to credit your wallet balance.',
+      a: 'Brands list verified social media tasks on eBizEarn (such as sharing a story with a brand sticker, doing a 15-second TikTok duet, or posting in a niche Facebook group). You choose any open task, complete it on your phone, upload a screenshot or live link as proof, and our automated AI verifies your submission in seconds to credit your wallet balance.',
     },
     {
       q: 'Do I need a large follower count or influencer status?',
       a: 'No! You do not need thousands of followers. Over 90% of our tasks are designed for everyday social media users. Brands want authentic word-of-mouth engagement and peer recommendations from genuine people, not just sponsored influencer posts.',
     },
     {
-      q: 'Is BizNetwork 100% free? Are there any hidden fees?',
-      a: 'BizNetwork is 100% free to join and will always remain free. We will never ask you for an upfront registration fee, membership fee, deposit, or account unlock charge. You complete tasks and earn real cash.',
+      q: 'Is eBizEarn 100% free? Are there any hidden fees?',
+      a: 'eBizEarn is 100% free to join and will always remain free. We will never ask you for an upfront registration fee, membership fee, deposit, or account unlock charge. You complete tasks and earn real cash.',
     },
     {
       q: 'How fast can I cash out and what is the minimum payout?',
@@ -223,7 +213,7 @@ export const HomePage: React.FC = () => {
 
               {/* Subheadline: Large, Readable, Generous Spacing */}
               <p className="text-base sm:text-lg text-gray-300 leading-relaxed max-w-xl font-normal mx-auto lg:mx-0">
-                BizNetwork connects forward-thinking brands with verified mobile contributors worldwide. Complete simple tasks on Instagram, TikTok, YouTube, and WhatsApp — get verified in seconds, and cash out starting from $50.00.
+                eBizEarn connects forward-thinking brands with verified mobile contributors worldwide. Complete simple tasks on Instagram, TikTok, YouTube, and WhatsApp — get verified in seconds, and cash out starting from $50.00.
               </p>
 
               {/* Action Buttons: High-Contrast Neon Green Primary CTA + Minimal Outline Secondary CTA */}
@@ -236,12 +226,12 @@ export const HomePage: React.FC = () => {
                   <ArrowRight className="w-5 h-5 text-[#07182F] group-hover:translate-x-0.5 transition-transform" />
                 </Link>
 
-                <a
-                  href="#proof-section"
+                <Link
+                  to="/tasks"
                   className="bg-white/5 hover:bg-white/10 text-white font-bold text-sm sm:text-base px-6 py-4 rounded-xl border border-white/20 hover:border-white/40 backdrop-blur-md hover:-translate-y-0.5 transition-all flex items-center gap-2"
                 >
-                  <span>View Proof</span>
-                </a>
+                  <span>View Tasks</span>
+                </Link>
               </div>
 
             </div>
@@ -451,96 +441,56 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          DEDICATED HORIZONTAL TRUST BAR (AS SEEN ON & VERIFIED METRICS)
-          - Directly below hero section as requested
+          PLATFORM GUARANTEES STRIP — honest feature claims only.
+          (Previously this held fabricated "As Seen On" press logos and made-up
+          payout/user statistics; both are removed. Never re-add invented stats.)
          ========================================================================= */}
       <section className="bg-white dark:bg-[#0C1322] border-b border-gray-200/90 py-5 sm:py-6 shadow-sm relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
-            
-            {/* Left: As Seen On + Partner Brand Badges */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-7">
-              <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest shrink-0">
-                As Seen On
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="flex items-center gap-3">
+              <span className="w-9 h-9 rounded-xl bg-emerald-50 text-[#16B364] flex items-center justify-center shrink-0">
+                <BadgeCheck className="w-5 h-5" />
               </span>
-              <div className="flex items-center gap-5 sm:gap-8 text-gray-400 dark:text-gray-500">
-                
-                {/* Bloomberg */}
-                <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-extrabold text-sm sm:text-base tracking-tight text-gray-800 dark:text-gray-200">Bloomberg</span>
-                </div>
-
-                {/* CNBC */}
-                <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-black text-xs sm:text-sm tracking-wider text-gray-800 dark:text-gray-200 border-2 border-gray-800 px-1.5 py-0.2 rounded">CNBC</span>
-                </div>
-
-                {/* Forbes */}
-                <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-serif italic font-bold text-sm sm:text-base tracking-tight text-gray-800 dark:text-gray-200">Forbes</span>
-                </div>
-
-                {/* TechCrunch */}
-                <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-black text-xs sm:text-sm tracking-tight text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">TC</span>
-                  <span className="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-200 hidden sm:inline">TechCrunch</span>
-                </div>
-
-                {/* WSJ */}
-                <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-serif font-black text-xs sm:text-sm tracking-widest text-gray-800 dark:text-gray-200">WSJ</span>
-                </div>
-
+              <div>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">Free for Contributors</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">No fees, no deposits — ever</p>
               </div>
             </div>
-
-            {/* Right: Key Platform Stats (Total Paid Out & Active Users) */}
-            <div className="flex items-center justify-center gap-8 sm:gap-12 shrink-0 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-100 dark:border-white/10">
-              <div className="text-center lg:text-left lg:border-l lg:border-gray-200 dark:lg:border-white/10 lg:pl-8">
-                <div className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                  Total Paid Out
-                </div>
-                <div className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100 tracking-tight">
-                  $10,000,000+
-                </div>
-              </div>
-
-              <div className="text-center lg:text-left lg:border-l lg:border-gray-200 dark:lg:border-white/10 lg:pl-8">
-                <div className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                  Active Users
-                </div>
-                <div className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100 tracking-tight">
-                  5,000,000+
-                </div>
+            <div className="flex items-center gap-3">
+              <span className="w-9 h-9 rounded-xl bg-blue-50 text-[#168BFF] flex items-center justify-center shrink-0">
+                <Wallet className="w-5 h-5" />
+              </span>
+              <div>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">$50 Minimum Cashout</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">PayPal, Wise, bank, or digital currency</p>
               </div>
             </div>
-
+            <div className="flex items-center gap-3">
+              <span className="w-9 h-9 rounded-xl bg-purple-50 text-[#7357FF] flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </span>
+              <div>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">Proof Verification</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">Every submission checked before payout</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <Lock className="w-5 h-5" />
+              </span>
+              <div>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">Escrow Protected</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">Brand funds held safely until approval</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* =========================================================================
-          2. LIVE PAYOUT MARQUEE TICKER (SOCIAL PROOF IN MOTION)
-         ========================================================================= */}
-      <section id="proof-section" className="bg-[#040F1E] border-b border-white/10 py-3 overflow-hidden text-xs text-white scroll-mt-20">
-        <div className="flex items-center">
-          <div className="bg-[#168BFF] text-white font-black px-4 py-1 rounded-r-full text-[10px] uppercase tracking-wider z-10 shrink-0 flex items-center gap-1.5">
-            <Flame className="w-3 h-3 fill-white" />
-            <span>Live Stream</span>
-          </div>
-
-          <div className="animate-marquee flex items-center gap-8 pl-6">
-            {tickerItems.concat(tickerItems).map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2 whitespace-nowrap">
-                <span>{item.flag}</span>
-                <span className="font-bold text-gray-200">{item.name}</span>
-                <span className="text-[#20C4E8] font-semibold">{item.action}</span>
-                <span className="text-gray-500 dark:text-gray-400 font-mono text-[10px]">• {item.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Live payout ticker removed: it displayed fabricated contributor names and
+          withdrawal amounts labeled as a "Live Stream". Never re-add fake
+          social proof. */}
 
       {/* =========================================================================
           3. HOW SOCIAL MEDIA EARNING WORKS (ELIMINATING EMPTY WHITE SPACE)
@@ -716,13 +666,13 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right: The BizNetwork Way */}
+            {/* Right: The eBizEarn Way */}
             <div className="bg-[#07182F] text-white rounded-3xl p-8 shadow-2xl border border-white/15 space-y-6 flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#168BFF]/20 rounded-full blur-2xl pointer-events-none" />
 
               <div className="space-y-4 relative z-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-[#16B364] text-xs font-extrabold uppercase border border-emerald-500/30">
-                  <span>⚡ The BizNetwork Way</span>
+                  <span>⚡ The eBizEarn Way</span>
                 </div>
                 <h3 className="text-2xl font-black text-white">Monetized Spare Time</h3>
                 <p className="text-xs text-gray-300 leading-relaxed">
@@ -964,7 +914,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-xs font-bold text-[#20C4E8] border border-white/15">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Join 520,000+ Verified Earners Today</span>
+            <span>Start Earning Today</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">

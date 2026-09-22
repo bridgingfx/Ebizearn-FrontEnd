@@ -9,7 +9,7 @@ export const TrustSafetyPage: React.FC = () => {
           Security & Integrity
         </span>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
-          Trust & Safety at BizNetwork
+          Trust & Safety at eBizEarn
         </h1>
         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
           How we protect contributors from scams, ensure brands receive genuine human activity, and enforce zero tolerance for fraud.

@@ -35,12 +35,12 @@ export const ContributorSupportPage: React.FC = () => {
       a: 'Submissions are checked by computer vision OCR for live timestamps, correct hashtags, and your verified username. If you cropped the header or submitted a screenshot older than 24 hours, the AI may flag it. You can dispute any decision here for human review.',
     },
     {
-      q: 'How long does a withdrawal take to hit my account?',
-      a: 'CBUAE Wages Protection System (WPS) and Emirates NBD/FAB instant bank transfers are dispatched within minutes. Digital payouts clear immediately through our automated ledger.',
+      q: 'How long does a withdrawal take to reach me?',
+      a: 'Payouts are processed to your chosen method — PayPal, Wise, direct bank transfer, or digital currency. Processing times vary by method; withdrawals are queued for manual processing and you can track the status in your wallet.',
     },
     {
       q: 'Can I change my connected TikTok or Instagram account?',
-      a: 'Yes, head to your Profile -> Connected Social Accounts tab to submit a handle change. Our compliance team verifies handle ownership within a few hours.',
+      a: 'Yes, head to your Profile -> Connected Social Accounts tab to submit a handle change. Our compliance team verifies handle ownership before the change goes live.',
     },
     {
       q: 'What is the minimum cashout threshold?',
@@ -126,8 +126,10 @@ export const ContributorSupportPage: React.FC = () => {
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block">Average Resolution Time</span>
-            <span className="text-2xl font-black text-gray-900 dark:text-gray-100 mt-0.5 block">1.8 Hours</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block">Email Support</span>
+            <a href="mailto:support@ebizearn.com" className="text-sm font-black text-[#168BFF] hover:underline mt-0.5 block break-all">
+              support@ebizearn.com
+            </a>
           </div>
         </div>
       </div>

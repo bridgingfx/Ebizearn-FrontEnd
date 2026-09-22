@@ -18,6 +18,7 @@ import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { ThemeToggle } from '../components/common/ThemeToggle';
+import { AppFooter } from '../components/common/AppFooter';
 
 export const BusinessLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -161,6 +162,7 @@ export const BusinessLayout: React.FC = () => {
         {/* Dynamic Page Outlet */}
         <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
           <Outlet />
+          <AppFooter />
         </main>
 
       </div>

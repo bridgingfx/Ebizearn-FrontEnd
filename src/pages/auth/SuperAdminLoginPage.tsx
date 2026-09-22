@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ArrowRight, Fingerprint, Lock } from 'lucide-react';
 import { PasswordInput } from './PasswordInput';
+import { AppFooter } from '../../components/common/AppFooter';
 import type { UserRole } from '../../types';
 
 const roleRoute: Record<UserRole, string> = {
@@ -54,12 +55,12 @@ export const SuperAdminLoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#050608] flex items-center justify-center px-4">
+    <div className="min-h-screen relative overflow-hidden bg-[#050608] flex flex-col items-center justify-center px-4 py-10">
       {/* Faint scan-line texture + single cold glow */}
       <div className="absolute inset-0 opacity-[0.35]" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)', backgroundSize: '100% 4px' }} />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] bg-emerald-500/[0.07] blur-3xl rounded-full" />
 
-      <div className="relative z-10 w-full max-w-sm">
+      <div className="relative z-10 w-full max-w-sm flex-1 flex items-center justify-center">
         <div className="bg-[#0b0d12] rounded-2xl p-8 border border-white/[0.07] shadow-2xl shadow-black">
           <div className="text-center mb-7">
             <div className="mx-auto mb-5 w-11 h-11 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
@@ -114,6 +115,12 @@ export const SuperAdminLoginPage: React.FC = () => {
         <p className="mt-6 text-center text-[10px] text-slate-600 dark:text-gray-400">
           Internal systems only. Unauthorized access is prohibited.
         </p>
+      </div>
+
+      <div className="relative z-10 w-full max-w-sm">
+        <div className="[&_footer]:border-white/10 [&_footer]:text-gray-500">
+          <AppFooter />
+        </div>
       </div>
     </div>
   );

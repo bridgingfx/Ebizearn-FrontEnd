@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { authApi, getApiError } from '../../api';
 import { ArrowRight } from 'lucide-react';
 import { AuthFavicon } from './AuthFavicon';
+import { AppFooter } from '../../components/common/AppFooter';
 
 export const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -62,6 +63,9 @@ export const ForgotPasswordPage: React.FC = () => {
         <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
           Remember your password? <Link to="/login" className="text-[#168BFF] font-bold hover:underline">Back to login</Link>
         </div>
+      </div>
+      <div className="max-w-md w-full">
+        <AppFooter />
       </div>
     </div>
   );

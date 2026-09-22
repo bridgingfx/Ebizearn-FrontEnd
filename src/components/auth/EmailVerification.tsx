@@ -14,6 +14,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { authApi, getApiError } from '../../api';
 import { EBizLogo } from '../common/EBizLogo';
+import { AppFooter } from '../common/AppFooter';
 import type { User, UserRole } from '../../types';
 import { roleRoute } from './AuthSplitLayout';
 
@@ -280,6 +281,12 @@ export const VerifyEmailPage: React.FC = () => {
           <p className="mt-6 text-xs text-slate-400 dark:text-gray-500">
             Didn't get the email? Check your spam folder, or wait a minute and resend.
           </p>
+        </div>
+      </div>
+
+      <div className="px-5 sm:px-10">
+        <div className="max-w-[520px] mx-auto">
+          <AppFooter />
         </div>
       </div>
     </div>

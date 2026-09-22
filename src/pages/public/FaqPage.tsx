@@ -6,7 +6,7 @@ export const FaqPage: React.FC = () => {
 
   const faqs = [
     {
-      q: 'Is BizNetwork free?',
+      q: 'Is eBizEarn free?',
       a: 'Yes, 100% free for contributors. There are strictly NO registration fees, NO deposit requirements, NO $50 or $200 earning upgrade plans, and NO pay-to-work schemes. You sign up, complete tasks, and get paid.',
     },
     {
@@ -27,7 +27,7 @@ export const FaqPage: React.FC = () => {
     },
     {
       q: 'Which countries are supported?',
-      a: 'BizNetwork supports contributors worldwide across 150+ countries including UAE, United States, United Kingdom, India, Pakistan, Bangladesh, Sri Lanka, Philippines, and Nigeria.',
+      a: 'eBizEarn supports contributors in the UAE and worldwide. Campaign availability varies by region — check the open task marketplace for tasks available in your country.',
     },
     {
       q: 'How does verification work?',
@@ -38,7 +38,7 @@ export const FaqPage: React.FC = () => {
       a: 'Businesses can create a business profile and use our 6-step self-serve campaign wizard to define objectives, select target geographies, set contributor requirements, fund the escrow budget, and launch in minutes.',
     },
     {
-      q: 'How does BizNetwork prevent fraud?',
+      q: 'How does eBizEarn prevent fraud?',
       a: 'We maintain multi-signal fraud scoring including duplicate screenshot hash matching, duplicate URL tracking, rapid-completion speed limits, IP/VPN anomaly detection, and account reliability ratings.',
     },
   ];

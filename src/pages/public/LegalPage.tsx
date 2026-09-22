@@ -78,14 +78,14 @@ export const LegalPage: React.FC = () => {
               <div>
                 <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">1. Agreement to Terms</h2>
                 <p>
-                  By accessing or using BizNetwork, you agree to be bound by these Terms of Service. If you do not agree to these terms, you must not use our platform as either an earner or an advertiser.
+                  By accessing or using eBizEarn, you agree to be bound by these Terms of Service. If you do not agree to these terms, you must not use our platform as either an earner or an advertiser.
                 </p>
               </div>
 
               <div>
                 <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">2. Contributor Accounts & Free Access</h2>
                 <p>
-                  Contributor accounts are strictly 100% free to create. BizNetwork will never demand registration fees, membership upgrades, or deposit requirements. You must be at least 18 years of age or possess legal guardian consent.
+                  Contributor accounts are strictly 100% free to create. eBizEarn will never demand registration fees, membership upgrades, or deposit requirements. You must be at least 18 years of age or possess legal guardian consent.
                 </p>
               </div>
 
@@ -99,7 +99,7 @@ export const LegalPage: React.FC = () => {
               <div>
                 <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">4. Payouts & Escrow Guarantee</h2>
                 <p>
-                  Payouts are issued starting from a minimum threshold of $50.00 USD. Withdrawal requests are queued for manual processing. Rewards are credited upon computer vision or moderator verification. Zero withdrawal fees are deducted by BizNetwork.
+                  Payouts are issued starting from a minimum threshold of $50.00 USD. Withdrawal requests are queued for manual processing. Rewards are credited upon computer vision or moderator verification. Zero withdrawal fees are deducted by eBizEarn.
                 </p>
               </div>
             </div>
@@ -125,7 +125,7 @@ export const LegalPage: React.FC = () => {
               <div>
                 <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">3. Zero Data Resale Guarantee</h2>
                 <p>
-                  BizNetwork will never sell, rent, or monetize your personal information to third-party data brokers.
+                  eBizEarn will never sell, rent, or monetize your personal information to third-party data brokers.
                 </p>
               </div>
             </div>

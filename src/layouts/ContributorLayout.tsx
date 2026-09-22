@@ -1,231 +1,164 @@
 import React from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
+  Home,
   Compass,
-  CheckSquare,
+  ClipboardList,
   Wallet,
-  Gift,
-  Bell,
+  Users,
   User as UserIcon,
   LogOut,
-  TrendingUp,
+  Zap,
   HelpCircle,
-  Share2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-
 import { EBizLogo } from '../components/common/EBizLogo';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { ConfirmModal } from '../components/common/ConfirmModal';
+
+/**
+ * Contributor app shell — mobile-first.
+ * Bottom tab bar on mobile (7 tabs), sidebar on desktop.
+ */
+const TABS = [
+  { name: 'Home', path: '/app', icon: Home, exact: true },
+  { name: 'Tasks', path: '/app/tasks', icon: Compass },
+  { name: 'My Tasks', path: '/app/my-tasks', icon: ClipboardList },
+  { name: 'Wallet', path: '/app/wallet', icon: Wallet },
+  { name: 'Referrals', path: '/app/referrals', icon: Users },
+  { name: 'Feed', path: '/app/feed', icon: Zap },
+  { name: 'Profile', path: '/app/profile', icon: UserIcon },
+];
 
 export const ContributorLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-
-  const navItems = [
-    { name: 'Dashboard', path: '/app', icon: LayoutDashboard, exact: true },
-    { name: 'Browse Tasks', path: '/app/tasks', icon: Compass },
-    { name: 'My Tasks', path: '/app/my-tasks', icon: CheckSquare },
-    { name: 'Earnings', path: '/app/earnings', icon: TrendingUp },
-    { name: 'Wallet', path: '/app/wallet', icon: Wallet },
-    { name: 'Referrals', path: '/app/referrals', icon: Gift },
-    { name: 'Profile', path: '/app/profile', icon: UserIcon },
-    { name: 'Support', path: '/app/support', icon: HelpCircle },
-  ];
-
   const [logoutOpen, setLogoutOpen] = React.useState(false);
 
   const handleLogout = () => {
+    setLogoutOpen(false);
     logout();
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
+
+  const isActive = (tab: (typeof TABS)[number]) =>
+    tab.exact ? location.pathname === tab.path : location.pathname.startsWith(tab.path);
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] flex flex-col md:flex-row text-left font-sans">
-      
-      {/* =========================================================================
-          DESKTOP SIDEBAR
-         ========================================================================= */}
+      {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-[#07182F] text-white sticky top-0 h-screen p-5 justify-between shadow-xl z-30 shrink-0">
         <div>
-          {/* Logo */}
-          <Link to="/" className="flex items-center pb-5 border-b border-white/10 mb-5">
-            <EBizLogo variant="dark" size="sm" subtitleText="Contributor Portal" />
+          <Link to="/app" className="flex items-center pb-5 border-b border-white/10 mb-5">
+            <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
           </Link>
 
-          {/* User Quick Card in Sidebar */}
           <div className="bg-white/5 rounded-2xl p-3 border border-white/10 mb-6 flex items-center gap-3">
             <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} className="ring-2 ring-[#168BFF]" />
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">{user?.name || 'Sarah Khan'}</p>
-              <span className="text-[10px] text-gray-300 block truncate">
-                Client Contributor
-              </span>
+              <p className="text-xs font-black truncate">{user?.name || 'Contributor'}</p>
+              <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
             </div>
           </div>
 
-          {/* Navigation Items */}
-          <nav className="space-y-1.5">
-            {navItems.map((item) => {
-              const isActive = item.exact
-                ? location.pathname === item.path
-                : location.pathname.startsWith(item.path);
-              const Icon = item.icon;
+          <nav className="space-y-1">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const active = isActive(tab);
               return (
-                <Link
-                  key={item.name}
-                  to={item.path}
+                <NavLink
+                  key={tab.path}
+                  to={tab.path}
+                  end={tab.exact}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    isActive
-                      ? 'bg-[#168BFF] text-white shadow-md'
-                      : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                    active ? 'bg-[#168BFF] text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  <span>{item.name}</span>
-                </Link>
+                  {tab.name}
+                </NavLink>
               );
             })}
+            <NavLink
+              to="/app/support"
+              className={({ isActive: active }) =>
+                `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  active ? 'bg-[#168BFF] text-white shadow-md' : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                }`
+              }
+            >
+              <HelpCircle className="w-4 h-4" />
+              Support
+            </NavLink>
           </nav>
         </div>
 
-        {/* Sidebar Bottom: Invite Friends Promo Card & Logout */}
-        <div className="space-y-3 pt-4 border-t border-white/10">
-          
-          {/* Invite Friends Card */}
-          <div className="p-3 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 text-left">
-            <div className="flex items-center gap-2 text-xs font-bold text-white mb-1">
-              <Share2 className="w-4 h-4 text-[#20C4E8]" />
-              <span>Invite Friends</span>
-            </div>
-            <p className="text-[10px] text-gray-300 leading-tight mb-2">
-              Share your referral link and earn together!
-            </p>
-            <Link
-              to="/app/referrals"
-              className="block w-full py-1.5 rounded-lg bg-[#168BFF] hover:bg-[#2F80FF] text-white text-center font-bold text-xs shadow-xs transition-colors"
-            >
-              Get Link
-            </Link>
-          </div>
+        <button
+          type="button"
+          onClick={() => setLogoutOpen(true)}
+          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-300 hover:bg-red-500/10 hover:text-red-300 transition-all w-full"
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </button>
+      </aside>
 
-          {/* Logout button */}
+      {/* Mobile top bar */}
+      <header className="md:hidden sticky top-0 z-30 bg-[#07182F] text-white px-4 py-3 flex items-center justify-between shadow-md">
+        <Link to="/app" className="flex items-center">
+          <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
+        </Link>
+        <div className="flex items-center gap-2">
+          <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} size="sm" />
           <button
             type="button"
             onClick={() => setLogoutOpen(true)}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+            aria-label="Sign out"
+            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
           >
             <LogOut className="w-4 h-4" />
-            <span>Log Out</span>
           </button>
-          <ConfirmModal
-            open={logoutOpen}
-            title="Log out?"
-            message="Are you sure you want to log out?"
-            confirmLabel="Yes, log out"
-            cancelLabel="No"
-            variant="danger"
-            onConfirm={handleLogout}
-            onCancel={() => setLogoutOpen(false)}
-          />
         </div>
-      </aside>
+      </header>
 
-      {/* =========================================================================
-          MAIN CONTENT WRAPPER
-         ========================================================================= */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-10">
-        
-        {/* Top App Header */}
-        <header className="bg-white border-b border-[#E7ECF3] sticky top-0 z-20 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
-          <div>
-            <h1 className="text-base sm:text-lg font-black text-[#101828]">
-              Client CRM Dashboard
-            </h1>
-            <p className="text-[11px] text-[#667085] hidden sm:block">
-              Track your tasks, earnings and performance in one place.
-            </p>
-          </div>
+      {/* Main content — bottom padding so content clears the mobile tab bar */}
+      <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-6 pb-28 md:pb-10 max-w-6xl mx-auto w-full">
+        <Outlet />
+      </main>
 
-          <div className="flex items-center gap-3 sm:gap-4">
-            {/* Live Wallet Balance Pill */}
-            <Link
-              to="/app/wallet"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-xs font-black text-emerald-800 transition-colors shadow-2xs"
-            >
-              <span className="text-sm">🇦🇪</span>
-              <Wallet className="w-3.5 h-3.5 text-[#16B364]" />
-              <span>AED {((user?.wallet?.available_balance_cents ?? 10450) / 100).toFixed(2)}</span>
-            </Link>
-
-            <button
-              type="button"
-              className="w-9 h-9 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 relative transition-colors"
-              aria-label="Notifications"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#168BFF]" />
-            </button>
-
-            <div className="flex items-center gap-2">
-              <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} size="sm" className="ring-2 ring-[#168BFF]/30" />
-              <span className="text-xs font-bold text-gray-900 hidden sm:block">
-                {user?.name || 'Sarah Khan'}
-              </span>
-            </div>
-          </div>
-        </header>
-
-        {/* Dynamic Outlet Page Content */}
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
-          <Outlet />
-        </main>
-      </div>
-
-      {/* =========================================================================
-          MOBILE BOTTOM DOCK NAVIGATION (44px touch targets)
-         ========================================================================= */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#07182F] border-t border-white/10 px-4 py-2 flex items-center justify-around shadow-2xl">
-        <Link
-          to="/app"
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-bold ${
-            location.pathname === '/app' ? 'text-[#168BFF]' : 'text-gray-400'
-          }`}
-        >
-          <LayoutDashboard className="w-5 h-5" />
-          <span>Home</span>
-        </Link>
-        <Link
-          to="/app/tasks"
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-bold ${
-            location.pathname.startsWith('/app/tasks') ? 'text-[#168BFF]' : 'text-gray-400'
-          }`}
-        >
-          <Compass className="w-5 h-5" />
-          <span>Tasks</span>
-        </Link>
-        <Link
-          to="/app/wallet"
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-bold ${
-            location.pathname.startsWith('/app/wallet') ? 'text-[#168BFF]' : 'text-gray-400'
-          }`}
-        >
-          <Wallet className="w-5 h-5" />
-          <span>Wallet</span>
-        </Link>
-        <Link
-          to="/app/my-tasks"
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-lg text-[10px] font-bold ${
-            location.pathname.startsWith('/app/my-tasks') ? 'text-[#168BFF]' : 'text-gray-400'
-          }`}
-        >
-          <CheckSquare className="w-5 h-5" />
-          <span>My Tasks</span>
-        </Link>
+      {/* Mobile bottom tab bar */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+        <div className="grid grid-cols-7 px-1 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const active = isActive(tab);
+            return (
+              <Link
+                key={tab.path}
+                to={tab.path}
+                className={`flex flex-col items-center gap-0.5 py-1.5 rounded-xl transition-colors ${
+                  active ? 'text-[#168BFF]' : 'text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 2} />
+                <span className="text-[9px] font-bold leading-none">{tab.name}</span>
+                {active && <span className="w-1 h-1 rounded-full bg-[#168BFF] mt-0.5" />}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
+      <ConfirmModal
+        open={logoutOpen}
+        title="Sign out?"
+        message="You'll need to sign in again to access your tasks and wallet."
+        confirmLabel="Sign Out"
+        cancelLabel="Stay"
+        onConfirm={handleLogout}
+        onCancel={() => setLogoutOpen(false)}
+      />
     </div>
   );
 };

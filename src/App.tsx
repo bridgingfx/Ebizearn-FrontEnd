@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider, DEMO_MODE } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { PlatformDataProvider } from './context/PlatformDataContext';
-import { RoleSwitcher } from './components/common/RoleSwitcher';
 import { LiveChatWidget } from './components/common/LiveChatWidget';
 import { RoleGuard } from './components/common/RoleGuard';
 
@@ -24,6 +23,7 @@ import { TrustSafetyPage } from './pages/public/TrustSafetyPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { LegalPage } from './pages/public/LegalPage';
 import { LoginPage } from './pages/auth/LoginPage';
+import { SuperAdminLoginPage } from './pages/auth/SuperAdminLoginPage';
 import { ContributorSignupPage } from './pages/auth/ContributorSignupPage';
 import { BusinessSignupPage } from './pages/auth/BusinessSignupPage';
 import { OnboardingWizardPage } from './pages/auth/OnboardingWizardPage';
@@ -33,7 +33,7 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 // Contributor Pages
 import { ContributorDashboardPage } from './pages/contributor/ContributorDashboardPage';
 import { TaskDetailPage } from './pages/contributor/TaskDetailPage';
-import { SubmitProofPage } from './pages/contributor/SubmitProofPage';
+import { TaskFeedPage } from './pages/contributor/TaskFeedPage';
 import { ContributorWalletPage } from './pages/contributor/ContributorWalletPage';
 import { ContributorEarningsPage } from './pages/contributor/ContributorEarningsPage';
 import { ContributorMyTasksPage } from './pages/contributor/ContributorMyTasksPage';
@@ -79,12 +79,25 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
+/** On boot, rehydrate the session against the real API if a token is stored. */
+const BootAuth: React.FC = () => {
+  const { refreshMe } = useAuth();
+
+  useEffect(() => {
+    refreshMe().catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return null;
+};
+
 export const App: React.FC = () => {
   return (
     <AuthProvider>
       <PlatformDataProvider>
         <BrowserRouter>
         <ScrollToTop />
+        <BootAuth />
         <Routes>
           {/* Public Marketing Routes */}
           <Route element={<PublicLayout />}>
@@ -105,12 +118,11 @@ export const App: React.FC = () => {
             <Route path="/legal/cookies" element={<LegalPage />} />
             <Route path="/legal/task-policy" element={<LegalPage />} />
             
-            {/* Auth Routes */}
+            {/* Auth Routes — separate portals. Super Admin console is /ops/console (unlinked). */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/login/contributor" element={<LoginPage portal="contributor" />} />
             <Route path="/login/business" element={<LoginPage portal="business" />} />
-            <Route path="/login/moderator" element={<LoginPage portal="admin" />} />
-            <Route path="/login/superadmin" element={<LoginPage portal="superadmin" />} />
+            <Route path="/login/team" element={<LoginPage portal="team" />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/signup" element={<ContributorSignupPage />} />
@@ -119,12 +131,16 @@ export const App: React.FC = () => {
             <Route path="/onboarding" element={<OnboardingWizardPage />} />
           </Route>
 
+          {/* Hidden Super Admin console sign-in (no public chrome; unlinked everywhere). */}
+          <Route path="/ops/console" element={<SuperAdminLoginPage />} />
+
           {/* Contributor Portal Routes */}
           <Route path="/app" element={<RoleGuard allowedRoles={['contributor']}><ContributorLayout /></RoleGuard>}>
             <Route index element={<ContributorDashboardPage />} />
-            <Route path="tasks" element={<PublicTasksPage />} />
+            <Route path="tasks" element={<TaskFeedPage variant="cards" />} />
+            <Route path="feed" element={<TaskFeedPage variant="feed" />} />
             <Route path="tasks/:id" element={<TaskDetailPage />} />
-            <Route path="tasks/:id/submit" element={<SubmitProofPage />} />
+            <Route path="tasks/:id/submit" element={<TaskDetailPage />} />
             <Route path="my-tasks" element={<ContributorMyTasksPage />} />
             <Route path="earnings" element={<ContributorEarningsPage />} />
             <Route path="wallet" element={<ContributorWalletPage />} />
@@ -166,7 +182,6 @@ export const App: React.FC = () => {
           </Route>
 
           {/* SuperAdmin alias */}
-          <Route path="/superadmin" element={<Navigate to="/admin/super" replace />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -174,9 +189,6 @@ export const App: React.FC = () => {
 
         {/* Global Floating Live Chat Support Desk (Bottom-Right) */}
         <LiveChatWidget />
-
-        {/* Global Floating Demo Persona Switcher (Bottom-Left) */}
-        {DEMO_MODE && <RoleSwitcher />}
       </BrowserRouter>
       </PlatformDataProvider>
     </AuthProvider>

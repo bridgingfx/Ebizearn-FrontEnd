@@ -104,6 +104,8 @@ export interface Campaign {
   target_languages_json?: string[];
   min_contributor_level: ContributorLevel;
   retention_hours: number;
+  starts_at?: string;
+  ends_at?: string;
   business?: Business;
   category?: TaskCategory;
   tasks?: Task[];
@@ -224,4 +226,45 @@ export interface AuditLog {
   ip_address?: string;
   created_at: string;
   actor?: User;
+}
+
+/** Referral row from GET /contributor/referrals (real API). */
+export interface ReferralEntry {
+  id: number;
+  status: string;
+  reward_cents: number;
+  created_at: string;
+  /** Present once the backend ships multi-level affiliate data. */
+  level?: number;
+  referred_user?: { id: number; name: string; email: string };
+}
+
+/** Referrals payload from GET /contributor/referrals. */
+export interface ReferralsData {
+  referral_code: string;
+  referral_link: string;
+  total_referred: number;
+  qualified_referrals: number;
+  total_earned_cents: number;
+  reward_per_referral_cents: number;
+  referrals: ReferralEntry[];
+}
+
+/**
+ * Task enriched for UI display. `platform` is derived client-side from the
+ * category/task title until the backend ships a dedicated platform field
+ * (Phase 4, Worker B) — the mapping is heuristic, not task data.
+ */
+export interface UiTask extends Task {
+  platform: string;
+  categoryName: string;
+  description: string;
+  country: string;
+  retentionHours: number;
+  brandName: string;
+  targetUrl?: string;
+  postCopy: string;
+  hashtags?: string;
+  flyerUrl?: string;
+  badgeColor?: string;
 }

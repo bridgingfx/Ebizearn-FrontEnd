@@ -7,6 +7,8 @@ interface PasswordInputProps {
   placeholder?: string;
   minLength?: number;
   autoComplete?: string;
+  /** Dark variant for the hidden ops console. */
+  dark?: boolean;
 }
 
 export const PasswordInput: React.FC<PasswordInputProps> = ({
@@ -15,6 +17,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   placeholder = 'Password',
   minLength,
   autoComplete,
+  dark = false,
 }) => {
   const [visible, setVisible] = useState(false);
   const Icon = visible ? EyeOff : Eye;
@@ -30,7 +33,11 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        className="w-full pl-9 pr-10 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+        className={
+          dark
+            ? 'w-full pl-9 pr-10 py-2 text-sm bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-[#7357FF]'
+            : 'w-full pl-9 pr-10 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]'
+        }
       />
       <button
         type="button"

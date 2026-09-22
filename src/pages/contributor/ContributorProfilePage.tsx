@@ -25,12 +25,13 @@ import {
   XTwitterLogo,
 } from '../../components/common/PlatformIcons';
 import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 import { AvatarUploadControl } from '../../components/common/AvatarUploadControl';
 
 export const ContributorProfilePage: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'socials' | 'payouts' | 'security'>('profile');
-  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [payoutMethod] = useState<'paypal' | 'wise' | 'bank'>('paypal');
 
   const profile = user?.profile;
   const levelLabels: Record<string, string> = {
@@ -48,13 +49,9 @@ export const ContributorProfilePage: React.FC = () => {
   const [phone, setPhone] = useState(profile?.phone || '');
   const [country, setCountry] = useState('');
   const [bio, setBio] = useState(profile?.bio || '');
-  const [payoutMethod, setPayoutMethod] = useState<'paypal' | 'wise' | 'bank' | 'crypto'>('paypal');
-  const [paypalEmail, setPaypalEmail] = useState('');
-  const [bankIban, setBankIban] = useState('');
-  const [cryptoAddress, setCryptoAddress] = useState('');
 
   // Social Connections State — no accounts connected by default; connects are not persisted yet.
-  const [socials, setSocials] = useState([
+  const [socials] = useState([
     {
       id: 'instagram',
       name: 'Instagram',
@@ -102,10 +99,13 @@ export const ContributorProfilePage: React.FC = () => {
     },
   ]);
 
+  /**
+   * No profile-update endpoint exists on the backend yet (only avatar
+   * upload). The form is honestly read-only until the API ships — the
+   * avatar above saves through the real /profile/avatar endpoint.
+   */
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
   };
 
   return (
@@ -198,14 +198,8 @@ export const ContributorProfilePage: React.FC = () => {
           <div className="flex items-center justify-between pb-4 border-b border-gray-100">
             <div>
               <h2 className="text-base font-black text-gray-900">Personal &amp; Contact Details</h2>
-              <p className="text-xs text-gray-500 mt-0.5">Keep your contributor credentials up-to-date for automated verification.</p>
+              <p className="text-xs text-gray-500 mt-0.5">Your contributor credentials, as registered.</p>
             </div>
-            {savedSuccess && (
-              <span className="text-xs text-[#16B364] font-bold flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Changes saved successfully!</span>
-              </span>
-            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -263,10 +257,16 @@ export const ContributorProfilePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gray-100 flex justify-end">
+          <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <p className="text-[11px] text-gray-400">
+              Profile editing isn't available yet — the API for saving these fields ships with the next backend update.
+              Your avatar above saves through the real upload endpoint.
+            </p>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] text-white font-bold text-xs shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all"
+              disabled
+              title="Profile update API not available yet"
+              className="px-6 py-2.5 rounded-xl bg-gray-200 text-gray-400 font-bold text-xs flex items-center gap-2 cursor-not-allowed shrink-0"
             >
               <Save className="w-4 h-4" />
               <span>Save Changes</span>
@@ -282,7 +282,7 @@ export const ContributorProfilePage: React.FC = () => {
             <div>
               <h2 className="text-base font-black text-gray-900">Verified Social Media Channels</h2>
               <p className="text-xs text-gray-500 mt-0.5">
-                Connect your authentic profiles. Automated AI verifies task links and OCR screenshots against these handles.
+                Social account linking ships with a future update — once live, the handle you use to complete tasks is recorded at submission time.
               </p>
             </div>
             <span className="text-xs font-bold text-[#168BFF] bg-blue-50 px-3 py-1 rounded-full border border-blue-100 self-start sm:self-auto">
@@ -327,14 +327,18 @@ export const ContributorProfilePage: React.FC = () => {
                     {platform.verified ? (
                       <button
                         type="button"
-                        className="px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 hover:border-gray-400 text-xs font-bold text-gray-700 transition-colors"
+                        disabled
+                        title="Re-verification opens when handle linking is live"
+                        className="px-3.5 py-1.5 rounded-xl bg-gray-100 border border-gray-200 text-xs font-bold text-gray-400 cursor-not-allowed"
                       >
                         Re-Verify Handle
                       </button>
                     ) : (
                       <button
                         type="button"
-                        className="px-4 py-1.5 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] text-xs font-bold text-white shadow-xs transition-colors"
+                        disabled
+                        title="Social account linking is not available yet"
+                        className="px-4 py-1.5 rounded-xl bg-gray-200 text-xs font-bold text-gray-400 cursor-not-allowed"
                       >
                         Connect Channel
                       </button>
@@ -351,105 +355,48 @@ export const ContributorProfilePage: React.FC = () => {
       {activeTab === 'payouts' && (
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] shadow-xs space-y-6">
           <div className="pb-4 border-b border-gray-100">
-            <h2 className="text-base font-black text-gray-900">Configured Payout Destinations</h2>
+            <h2 className="text-base font-black text-gray-900">Payout Methods</h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              Choose your default cashout route. Minimum withdrawal threshold is $50.00 USD with zero platform fees.
+              Supported rails for withdrawals. Minimum withdrawal is $50.00 with zero platform fees. Crypto payouts are not offered.
             </p>
           </div>
 
-          {/* Payout Rail Selector */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          {/* Supported rails (informational — details are entered per withdrawal) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
-              { id: 'paypal', label: 'PayPal Instant', fee: '0% Fee', icon: '🅿️' },
+              { id: 'paypal', label: 'PayPal', fee: '0% Fee', icon: '🅿️' },
               { id: 'wise', label: 'Wise Transfer', fee: '0% Fee', icon: '🌐' },
-              { id: 'bank', label: 'Direct Bank ACH/Wire', fee: '0% Fee', icon: '🏦' },
-              { id: 'crypto', label: 'USDC / USDT (Crypto)', fee: 'Network Gas', icon: '💎' },
+              { id: 'bank', label: 'Direct Bank Transfer', fee: '0% Fee', icon: '🏦' },
             ].map((rail) => (
-              <button
+              <div
                 key={rail.id}
-                type="button"
-                onClick={() => setPayoutMethod(rail.id as any)}
                 className={`p-4 rounded-2xl border text-left transition-all ${
                   payoutMethod === rail.id
                     ? 'border-[#168BFF] bg-blue-50/40 ring-1 ring-[#168BFF]'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                    : 'border-gray-200 bg-white'
                 }`}
               >
                 <span className="text-2xl block mb-2">{rail.icon}</span>
                 <span className="text-xs font-black text-gray-900 block">{rail.label}</span>
                 <span className="text-[10px] text-[#16B364] font-bold block">{rail.fee}</span>
-              </button>
+              </div>
             ))}
           </div>
 
-          {/* Active Rail Details Input */}
-          <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-4">
-            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider">
-              {payoutMethod === 'paypal' && 'PayPal Account Details'}
-              {payoutMethod === 'wise' && 'Wise Multi-Currency Tag / Email'}
-              {payoutMethod === 'bank' && 'Local / International Bank Details'}
-              {payoutMethod === 'crypto' && 'Digital Asset Wallet Address'}
-            </h3>
-
-            {payoutMethod === 'paypal' && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">PayPal Email or @Handle</label>
-                <input
-                  type="text"
-                  value={paypalEmail}
-                  onChange={(e) => setPaypalEmail(e.target.value)}
-                  className="w-full px-4 py-2 rounded-xl bg-white border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none focus:border-[#168BFF]"
-                />
-              </div>
-            )}
-
-            {payoutMethod === 'bank' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">IBAN / Account Number</label>
-                  <input
-                    type="text"
-                    value={bankIban}
-                    onChange={(e) => setBankIban(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl bg-white border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none focus:border-[#168BFF]"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">Bank SWIFT / BIC Code</label>
-                  <input
-                    type="text"
-                    defaultValue="ENBDXXXX"
-                    className="w-full px-4 py-2 rounded-xl bg-white border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none focus:border-[#168BFF]"
-                  />
-                </div>
-              </div>
-            )}
-
-            {payoutMethod === 'crypto' && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-700">Polygon / Solana Wallet (USDC)</label>
-                <input
-                  type="text"
-                  value={cryptoAddress}
-                  onChange={(e) => setCryptoAddress(e.target.value)}
-                  className="w-full px-4 py-2 rounded-xl bg-white border border-gray-200 text-xs font-medium text-gray-900 focus:outline-none focus:border-[#168BFF]"
-                />
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-gray-500">Payout details are stored securely with your account</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setSavedSuccess(true);
-                  setTimeout(() => setSavedSuccess(false), 3000);
-                }}
-                className="px-4 py-2 rounded-xl bg-[#168BFF] text-white font-bold text-xs shadow-xs hover:bg-[#1277dc]"
-              >
-                Save Payout Account
-              </button>
-            </div>
+          <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Payout account details are collected each time you request a withdrawal in the{' '}
+              <Link to="/app/wallet" className="text-[#168BFF] font-bold hover:underline">
+                Wallet
+              </Link>{' '}
+              — nothing is stored here. Every withdrawal is queued and paid manually by the platform team after a compliance check.
+            </p>
+            <Link
+              to="/app/wallet"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#16B364] hover:bg-[#12995a] text-white text-xs font-bold transition-colors"
+            >
+              Go to Wallet
+            </Link>
           </div>
         </div>
       )}
@@ -473,8 +420,8 @@ export const ContributorProfilePage: React.FC = () => {
                   <span className="text-[10px] text-gray-500">Protect cashouts with an authenticator app (TOTP).</span>
                 </div>
               </div>
-              <span className="px-3 py-1 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200 text-xs font-bold">
-                Active &check;
+              <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-500 border border-gray-200 text-xs font-bold" title="2FA enrollment is not available yet">
+                Not enabled
               </span>
             </div>
 

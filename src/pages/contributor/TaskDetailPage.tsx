@@ -1,411 +1,424 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Clock,
   ShieldCheck,
+  ShieldAlert,
   AlertCircle,
   ArrowRight,
-  Heart,
-  MessageCircle,
-  Share2,
   CheckCircle2,
-  Sparkles,
-  Copy,
-  Check,
-  Download,
-  Lock,
-  XCircle,
-  Info,
+  Upload,
+  Link as LinkIcon,
+  X,
+  FileCheck,
+  Loader2,
 } from 'lucide-react';
-import {
-  InstagramLogo,
-  TikTokLogo,
-  YouTubeLogo,
-  GoogleLogo,
-  FacebookLogo,
-  WhatsAppLogo,
-  TrustpilotLogo,
-  GoogleReviewLogo,
-} from '../../components/common/PlatformIcons';
-import type { Task } from '../../types';
-import { tasksApi } from '../../api';
-import { usePlatform } from '../../context/PlatformDataContext';
-import { LivePostMockup } from '../../components/common/LivePostMockup';
-import { getApiError } from '../../api/client';
-import { mapTaskForUi } from '../../utils/apiMappers';
+import { tasksApi, getApiError } from '../../api';
+import { mapTaskForUi, money } from '../../utils/apiMappers';
+import type { UiTask, TaskSubmission } from '../../types';
+import { PlatformPreview } from '../../components/task/PlatformPreview';
+import { VerificationTimeline } from '../../components/task/VerificationTimeline';
+import { humanizeRetention, initials } from '../../components/task/TaskCard';
+import { EmptyState } from '../../components/common/EmptyState';
 
+/**
+ * Phase 5 — split-screen task execution.
+ * LEFT: platform preview mockup (driven by task platform/type from the API).
+ * RIGHT: contributor action panel (start task, upload screenshot, proof URL,
+ * submit → real submission endpoint, then the live verification status flow).
+ */
 export const TaskDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { tasks: platformTasks } = usePlatform();
-  const [task, setTask] = useState<any | null>(null);
+  const [task, setTask] = useState<UiTask | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState('');
-  const [startError, setStartError] = useState('');
-  const navigate = useNavigate();
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const matchedPlatformTask = platformTasks.find((t) => t.id === Number(id));
+  // Execution state
+  const [started, setStarted] = useState(false);
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
 
-  const sampleCaption =
-    task?.platform?.toLowerCase().includes('trustpilot') || task?.platform?.toLowerCase().includes('google')
-      ? "Exceptional service, highly attentive staff, and rapid delivery in Dubai! Highly recommended for anyone seeking premium quality and genuine hospitality in the UAE."
-      : "Better choices, Brighter days. Discover our nourishing organic botanical face oil for radiant daily wellness. #lifestyle #goodvibes #healthy #skincare #UAE";
+  // Proof form
+  const [proofUrl, setProofUrl] = useState('');
+  const [note, setNote] = useState('');
+  const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [screenshotName, setScreenshotName] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submission, setSubmission] = useState<TaskSubmission | null>(null);
 
   useEffect(() => {
+    if (!id) return;
     setLoading(true);
-    tasksApi.get(id as string).then((res) => {
-      if (res.success) {
-        setTask(mapTaskForUi(res.data));
-        setLoadError('');
-      }
-    }).catch((error) => {
-      setLoadError(getApiError(error));
-      if (matchedPlatformTask) {
-        setTask({
-          id: matchedPlatformTask.id,
-          uuid: `task-${matchedPlatformTask.id}`,
-          campaign_id: 1,
-          category_id: 1,
-          title: matchedPlatformTask.title,
-          platform: matchedPlatformTask.platform,
-          description: matchedPlatformTask.description,
-          reward_cents: matchedPlatformTask.reward_cents,
-          estimated_minutes: matchedPlatformTask.estimated_minutes,
-          difficulty: matchedPlatformTask.difficulty,
-          status: 'available',
-          slots_total: matchedPlatformTask.slots_total,
-          slots_taken: matchedPlatformTask.slots_taken,
-          category: { id: 1, slug: 'social', name: matchedPlatformTask.platform, icon: matchedPlatformTask.platform, is_active: true, sort_order: 1 },
-          flyerUrl: matchedPlatformTask.flyerUrl || '/assets/demo/task-creative.jpg',
-          postCopy: matchedPlatformTask.postCopy || matchedPlatformTask.description,
-          hashtags: matchedPlatformTask.hashtags || '#VerifiedBrandSponsor #Global #Community',
-          targetUrl: matchedPlatformTask.targetUrl || 'https://ebizearn.com',
-          targetGroupRequirement: matchedPlatformTask.targetGroupRequirement || 'Global & Regional Community Network 🌐',
-          country: matchedPlatformTask.country || 'Global 🌐',
-          emirateState: matchedPlatformTask.emirateState || 'Worldwide',
-          cityArea: matchedPlatformTask.cityArea || 'All Regions',
-          brandName: matchedPlatformTask.categoryName || 'Ebiz Sponsor Client',
-        });
-        return;
-      }
-      // Fallback matching reference
-      setTask({
-        id: Number(id) || 1,
-        uuid: 'task-insta-01',
-        campaign_id: 1,
-        category_id: 1,
-        title: 'Instagram Post — Brand Awareness',
-        platform: 'Instagram',
-        reward_cents: 250,
-        estimated_minutes: 5,
-        difficulty: 'easy',
-        status: 'available',
-        slots_total: 500,
-        slots_taken: 180,
-        category: { id: 1, slug: 'social', name: 'Social Media', icon: 'Instagram', is_active: true, sort_order: 1 },
-        flyerUrl: '/assets/demo/task-creative.jpg',
-        postCopy: 'Better choices, Brighter days. Discover our nourishing organic botanical face oil for radiant daily wellness. #lifestyle #goodvibes #healthy #skincare #global',
-        hashtags: '#lifestyle #goodvibes #healthy #skincare #global',
-        targetUrl: 'https://ebizearn.com',
-        targetGroupRequirement: 'Global Creator & Business Network 🌐',
-        country: 'Global 🌐',
-        emirateState: 'Worldwide',
-        cityArea: 'All Regions',
-        brandName: 'Apex Botanical Labs',
-      });
-    }).finally(() => setLoading(false));
-  }, [id, matchedPlatformTask]);
+    tasksApi
+      .get(id)
+      .then((res) => {
+        if (res.success && res.data) {
+          setTask(mapTaskForUi(res.data));
+          setLoadError(null);
+        } else {
+          setLoadError('Task not found or no longer available.');
+        }
+      })
+      .catch((err) => setLoadError(getApiError(err, 'Could not load this task.')))
+      .finally(() => setLoading(false));
 
-  const handleStartTask = async () => {
+    // Check whether the contributor already submitted for this task.
+    tasksApi
+      .myTasks()
+      .then((res) => {
+        if (res.success && res.data) {
+          const mine = res.data.find((s) => String(s.task_id) === String(id) || s.task?.uuid === id);
+          if (mine) {
+            setSubmission(mine);
+            setStarted(true);
+          }
+        }
+      })
+      .catch(() => undefined);
+  }, [id]);
+
+  const handleStart = async () => {
+    if (!task) return;
+    setStarting(true);
+    setStartError(null);
     try {
-      await tasksApi.start(id as string);
-      setStartError('');
-      navigate(`/app/tasks/${id}/submit`);
-    } catch {
-      setStartError('Could not reserve this task right now. Please sign in as a contributor and try again.');
+      const res = await tasksApi.start(task.uuid || task.id);
+      if (res.success !== false) {
+        setStarted(true);
+      } else {
+        setStartError(res.message || 'Could not reserve this task right now.');
+      }
+    } catch (err) {
+      setStartError(getApiError(err, 'Could not reserve this task right now.'));
+    } finally {
+      setStarting(false);
     }
   };
 
-  if (!task) {
+  const handleFile = (file: File | undefined) => {
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      setSubmitError('Screenshot must be under 8 MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setScreenshot(reader.result as string);
+      setScreenshotName(file.name);
+      setSubmitError(null);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!task) return;
+    setSubmitError(null);
+
+    const url = proofUrl.trim();
+    if (!url && !screenshot && !note.trim()) {
+      setSubmitError('Add a proof URL, upload a screenshot, or write a note — at least one is required.');
+      return;
+    }
+    if (url && !/^https?:\/\//i.test(url)) {
+      setSubmitError('Proof URL must start with http:// or https://');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await tasksApi.submit(task.uuid || task.id, {
+        proof_url: url || undefined,
+        proof_screenshot: screenshot,
+        note: note.trim() || undefined,
+      });
+      if (res.success) {
+        const fresh: TaskSubmission = {
+          id: res.data?.submission?.id || Date.now(),
+          uuid: res.data?.submission?.uuid || '',
+          task_id: task.id,
+          user_id: 0,
+          status: 'under_review',
+          proof_data_json: { url, note: note.trim() || undefined },
+          created_at: new Date().toISOString(),
+        };
+        setSubmission(fresh);
+        // Refresh real status from the API to show the true verification stage.
+        tasksApi
+          .myTasks()
+          .then((r) => {
+            const mine = r.data?.find((s) => String(s.task_id) === String(task.id) || s.task?.uuid === task.uuid);
+            if (mine) setSubmission(mine);
+          })
+          .catch(() => undefined);
+      } else {
+        setSubmitError(res.message || 'Submission failed. Please try again.');
+      }
+    } catch (err) {
+      setSubmitError(getApiError(err, 'Submission failed. Please try again.'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="p-12 text-center text-gray-500 font-medium">
-        Loading task guidelines...
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-3xl border border-[#E7ECF3] h-96 animate-pulse" />
+        <div className="bg-white rounded-3xl border border-[#E7ECF3] h-96 animate-pulse" />
       </div>
     );
   }
 
-  const rewardFormatted = (task.reward_cents / 100).toFixed(2);
+  if (loadError || !task) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <EmptyState
+          title="Task unavailable"
+          description={loadError || 'This task could not be loaded. It may have been paused or completed.'}
+          icon={AlertCircle}
+          actionLabel="Back to available tasks"
+          onAction={() => (window.location.href = '/app/tasks')}
+        />
+      </div>
+    );
+  }
+
+  const requirements = task.campaign?.proof_requirements_json
+    ? Object.entries(task.campaign.proof_requirements_json)
+        .filter(([, required]) => required)
+        .map(([key]) => key.replace(/_/g, ' '))
+    : [];
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 text-left font-sans">
-      
-      {/* Back button & Breadcrumb */}
-      {(loadError || startError) && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
-          {startError || `Live task detail could not load: ${loadError}`}
-        </div>
-      )}
+    <div className="max-w-6xl mx-auto space-y-5 text-left">
       <div className="flex items-center justify-between">
-        <Link
-          to="/app/tasks"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Marketplace</span>
+        <Link to="/app/tasks" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back to tasks
         </Link>
-        <span className="text-[11px] font-mono text-gray-400">Task Reference: #TASK-{task.id}</span>
+        <span className="text-[11px] font-mono text-gray-400">#{task.uuid?.slice(0, 8) || task.id}</span>
       </div>
 
-      {/* Main Task Header Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] shadow-xs">
-        
-        {/* Title row */}
-        {(() => {
-          const p = (task.platform || '').toLowerCase();
-          const TaskIcon = p.includes('trustpilot')
-            ? TrustpilotLogo
-            : p.includes('google')
-            ? GoogleReviewLogo
-            : p.includes('tiktok')
-            ? TikTokLogo
-            : p.includes('youtube')
-            ? YouTubeLogo
-            : p.includes('facebook')
-            ? FacebookLogo
-            : InstagramLogo;
+      <div className="grid lg:grid-cols-2 gap-6 items-start">
+        {/* LEFT — platform preview + task facts */}
+        <div className="space-y-5">
+          <PlatformPreview task={task} />
 
-          return (
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-700 text-white flex items-center justify-center shrink-0 shadow-sm p-2">
-                  <TaskIcon className="w-7 h-7" />
-                </div>
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="text-xl sm:text-2xl font-black text-[#101828]">
-                      {task.title}
-                    </h1>
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-[#168BFF] text-[10px] font-bold uppercase">
-                      {task.platform || task.category?.name || 'Social Media'}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold">
-                      🇦🇪 UAE Verified
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#16B364] text-[10px] font-bold uppercase flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#16B364] animate-pulse" />
-                      {task.slots_total - task.slots_taken} Slots Available
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-[#475467] leading-relaxed">
-                    {task.description || 'Follow all official instructions carefully, maintain genuine constructive engagement, and upload screenshot proof for automated AI verification.'}
-                  </p>
-                </div>
+          <div className="bg-white rounded-3xl border border-[#E7ECF3] p-5 sm:p-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#07182F] text-white flex items-center justify-center text-sm font-black shrink-0">
+                {initials(task.brandName)}
               </div>
-
-              {/* Quick Escrow Guarantee Pill */}
-              <div className="bg-[#F0FDF4] border border-[#DCFCE7] rounded-2xl p-3 sm:text-right shrink-0">
-                <span className="text-[10px] font-bold uppercase text-emerald-800 flex items-center sm:justify-end gap-1">
-                  <Lock className="w-3 h-3 text-[#16B364]" /> Escrow Secured
-                </span>
-                <span className="text-lg font-black text-[#16B364] block mt-0.5">+AED {rewardFormatted}</span>
-                <span className="text-[10px] text-gray-500 block">Funds pre-locked by UAE sponsor</span>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold text-gray-500">{task.brandName}</p>
+                <h1 className="text-lg sm:text-xl font-black text-gray-900 leading-snug">{task.title}</h1>
               </div>
             </div>
-          );
-        })()}
 
-        {/* 4 Detail Specification Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-100">
-          <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-            <span className="text-[10px] text-gray-400 font-semibold uppercase block">Payout Reward</span>
-            <span className="text-lg font-black text-[#16B364] mt-0.5 block">+AED {rewardFormatted}</span>
-            <span className="text-[10px] text-gray-400">Zero platform deduction</span>
-          </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
+                <p className="text-[10px] font-bold uppercase text-gray-400">Reward</p>
+                <p className="text-sm font-black text-[#16B364] mt-0.5">{money(task.reward_cents)}</p>
+              </div>
+              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
+                <p className="text-[10px] font-bold uppercase text-gray-400">Est. time</p>
+                <p className="text-sm font-black text-gray-900 mt-0.5 inline-flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-gray-400" /> {task.estimated_minutes} min
+                </p>
+              </div>
+              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
+                <p className="text-[10px] font-bold uppercase text-gray-400">Platform</p>
+                <p className="text-sm font-black text-gray-900 mt-0.5">{task.platform}</p>
+              </div>
+              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
+                <p className="text-[10px] font-bold uppercase text-gray-400">Type</p>
+                <p className="text-sm font-black text-gray-900 mt-0.5 capitalize">{task.categoryName}</p>
+              </div>
+            </div>
 
-          <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-            <span className="text-[10px] text-gray-400 font-semibold uppercase block">Time to Complete</span>
-            <span className="text-sm font-bold text-gray-900 mt-0.5 block flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5 text-gray-400" />
-              {task.estimated_minutes} minutes
-            </span>
-            <span className="text-[10px] text-gray-400">Fast mobile submission</span>
-          </div>
+            {task.description && task.description !== task.title && (
+              <p className="text-xs text-gray-600 leading-relaxed">{task.description}</p>
+            )}
 
-          <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-            <span className="text-[10px] text-gray-400 font-semibold uppercase block">Difficulty & Tier</span>
-            <span className="text-sm font-bold text-gray-900 mt-0.5 block capitalize">
-              {task.difficulty} (All Tiers)
-            </span>
-            <span className="text-[10px] text-gray-400">Open to new contributors</span>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-            <span className="text-[10px] text-gray-400 font-semibold uppercase block">Account Requirement</span>
-            <span className="text-sm font-bold text-gray-900 mt-0.5 block truncate">
-              Public Instagram Profile
-            </span>
-            <span className="text-[10px] text-gray-400">Active &gt; 30 days</span>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Two Column Section: Creative Preview & Task Steps */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* Left 6 Cols: Creative Preview Card with 1-Click Copy & Download */}
-        {/* Left 6 Cols: Real-Time Live Post Mockup & Direct Deep Link Action */}
-        <div className="lg:col-span-6 space-y-4">
-          <LivePostMockup
-            platform={task.platform || 'Instagram'}
-            brandName={task.brandName || 'Verified Sponsor'}
-            title={task.title}
-            postCopy={task.postCopy || task.description || sampleCaption}
-            hashtags={task.hashtags || '#lifestyle #goodvibes #healthy #skincare'}
-            flyerUrl={task.flyerUrl || '/assets/demo/task-creative.jpg'}
-            targetUrl={task.targetUrl || 'https://ebizearn.com'}
-            country={task.country || 'Global 🌐'}
-            emirateState={task.emirateState || 'Worldwide'}
-            cityArea={task.cityArea || 'All Regions'}
-            targetGroupName={task.targetGroupRequirement || `${task.emirateState || 'Worldwide'} Community & Business Network 🌐`}
-            isContributorView={true}
-          />
-        </div>
-
-        {/* Right 6 Cols: Task Steps & Do's and Don'ts Checklist */}
-        <div className="lg:col-span-6 space-y-6">
-          
-          {/* Step Sequence Card */}
-          <div className="bg-white rounded-3xl p-6 border border-[#E7ECF3] shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+            {requirements.length > 0 && (
               <div>
-                <h3 className="text-sm font-bold text-gray-900">Execution Steps</h3>
-                <p className="text-[11px] text-gray-400">Complete in order for automatic verification</p>
-              </div>
-              <span className="text-xs font-semibold text-[#18B76A] flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> Fast AI Verification
-              </span>
-            </div>
-
-            <div className="space-y-3.5">
-              
-              <div className="flex items-start gap-3.5 p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-                <div className="w-7 h-7 rounded-full bg-[#168BFF] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                  1
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900">Download &amp; Save Creative</p>
-                  <p className="text-[11px] text-gray-500 mt-0.5">
-                    Save the official sponsor image to your mobile device or desktop.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5 p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-                <div className="w-7 h-7 rounded-full bg-[#168BFF] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                  2
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900">Post on Instagram</p>
-                  <p className="text-[11px] text-gray-500 mt-0.5">
-                    Paste the copied caption with all 4 hashtags and publish as a public post.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5 p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-                <div className="w-7 h-7 rounded-full bg-[#168BFF] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                  3
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900">Take Screenshot with Timestamp</p>
-                  <p className="text-[11px] text-gray-500 mt-0.5">
-                    Capture your published post ensuring device clock and your username are visible.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3.5 p-3 rounded-2xl bg-[#F8FAFC] border border-gray-100">
-                <div className="w-7 h-7 rounded-full bg-[#18B76A] text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                  4
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900">Submit Proof &amp; Instant Cashout</p>
-                  <p className="text-[11px] text-gray-500 mt-0.5">
-                    Upload your proof screenshot. AI verifies in ~12 seconds and credits +${rewardFormatted} directly to your wallet.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Large Start Task CTA Button */}
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={handleStartTask}
-                className="w-full py-4 bg-[#168BFF] hover:bg-[#2F80FF] text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-[#168BFF]/25 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2"
-              >
-                <span>Proceed to Submit Proof</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Do's and Don'ts Checklist Card */}
-          <div className="bg-white rounded-3xl p-6 border border-[#E7ECF3] shadow-xs space-y-4">
-            <h3 className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-[#168BFF]" />
-              <span>Acceptance Rules: Do's &amp; Don'ts</span>
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-2">
-                <span className="font-bold text-emerald-800 flex items-center gap-1 text-[11px] uppercase tracking-wider">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#16B364]" /> Do Follow
-                </span>
-                <ul className="space-y-1.5 text-[11px] text-emerald-950">
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-[#16B364] font-bold">&bull;</span>
-                    <span>Keep post visible for at least 24 hours.</span>
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-[#16B364] font-bold">&bull;</span>
-                    <span>Include all 4 hashtags exactly as provided.</span>
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-[#16B364] font-bold">&bull;</span>
-                    <span>Capture full screenshot showing device time.</span>
-                  </li>
+                <p className="text-[11px] font-black uppercase tracking-wider text-gray-400 mb-2">Requirements</p>
+                <ul className="space-y-1.5">
+                  {requirements.map((req) => (
+                    <li key={req} className="text-xs text-gray-700 flex items-start gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#16B364] shrink-0 mt-px" />
+                      <span className="capitalize">{req}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
+            )}
 
-              <div className="p-3 rounded-2xl bg-red-50/60 border border-red-100 space-y-2">
-                <span className="font-bold text-red-800 flex items-center gap-1 text-[11px] uppercase tracking-wider">
-                  <XCircle className="w-3.5 h-3.5 text-red-500" /> Don't Do
-                </span>
-                <ul className="space-y-1.5 text-[11px] text-red-950">
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-red-500 font-bold">&bull;</span>
-                    <span>Do not delete or archive post within 48h.</span>
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-red-500 font-bold">&bull;</span>
-                    <span>Do not crop out the header or timestamp.</span>
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-red-500 font-bold">&bull;</span>
-                    <span>Do not submit duplicate or recycled images.</span>
-                  </li>
-                </ul>
-              </div>
+            <div className="flex items-start gap-2 p-3 rounded-2xl bg-amber-50/70 border border-amber-200/60">
+              <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-px" />
+              <p className="text-[11px] text-amber-800 leading-snug">
+                <span className="font-black">Retention rule:</span> reversing this action before the{' '}
+                {humanizeRetention(task.retentionHours)} period ends can reverse this reward.
+              </p>
             </div>
           </div>
-
         </div>
 
-      </div>
+        {/* RIGHT — action panel */}
+        <div className="lg:sticky lg:top-6 space-y-5">
+          <div className="bg-white rounded-3xl border border-[#E7ECF3] p-5 sm:p-6 shadow-xs">
+            {submission ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                    <FileCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-black text-gray-900">Proof submitted</h2>
+                    <p className="text-[11px] text-gray-500">Track your verification below — it's updated from the platform.</p>
+                  </div>
+                </div>
+                <div className="pt-1">
+                  <VerificationTimeline status={submission.status} aiResult={submission.aiResult} />
+                </div>
+                {submission.review_notes && (
+                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs">
+                    <span className="text-amber-800 font-bold block mb-0.5">Reviewer note</span>
+                    <p className="text-amber-900">{submission.review_notes}</p>
+                  </div>
+                )}
+                <Link
+                  to="/app/my-tasks"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
+                >
+                  View all my tasks <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            ) : !started ? (
+              <div className="space-y-4 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#168BFF] flex items-center justify-center mx-auto">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-gray-900">Ready to complete this task?</h2>
+                  <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                    Reserve a slot first. Then complete the real action on {task.platform} (see the preview for guidance),
+                    and submit your proof here.
+                  </p>
+                </div>
+                {startError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl text-left">{startError}</div>
+                )}
+                <button
+                  type="button"
+                  onClick={handleStart}
+                  disabled={starting}
+                  className="w-full py-3.5 bg-[#168BFF] hover:bg-[#2F80FF] text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-[#168BFF]/25 disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {starting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+                  <span>{starting ? 'Reserving…' : 'Start task — reserve my slot'}</span>
+                </button>
+                <p className="text-[10px] text-gray-400">
+                  Reserving holds one of the task's slots under your account while you work.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <h2 className="text-base font-black text-gray-900">Submit your proof</h2>
+                  <p className="text-[11px] text-gray-500 mt-0.5">
+                    Upload a screenshot of the completed action and/or paste the proof link.
+                  </p>
+                </div>
 
+                {submitError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">{submitError}</div>
+                )}
+
+                {/* Screenshot upload */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1.5">Screenshot proof</label>
+                  {screenshot ? (
+                    <div className="relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-900">
+                      <img src={screenshot} alt="Proof screenshot" className="w-full max-h-56 object-contain" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setScreenshot(null);
+                          setScreenshotName(null);
+                        }}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80"
+                        aria-label="Remove screenshot"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      <p className="absolute bottom-2 left-2 text-[10px] text-white/80 bg-black/50 rounded px-2 py-0.5 truncate max-w-[70%]">
+                        {screenshotName}
+                      </p>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#168BFF] rounded-2xl p-6 cursor-pointer transition-colors bg-gray-50/50">
+                      <Upload className="w-6 h-6 text-gray-400" />
+                      <span className="text-xs font-bold text-gray-700">Tap to upload screenshot</span>
+                      <span className="text-[10px] text-gray-400">PNG or JPG, up to 8 MB — sent with your submission</span>
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        className="hidden"
+                        onChange={(e) => handleFile(e.target.files?.[0])}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* Proof URL */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1.5">Proof link (optional)</label>
+                  <div className="relative">
+                    <LinkIcon className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                    <input
+                      type="url"
+                      value={proofUrl}
+                      onChange={(e) => setProofUrl(e.target.value)}
+                      placeholder="https://… link to your completed action"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                    />
+                  </div>
+                </div>
+
+                {/* Note */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1.5">Note for the reviewer (optional)</label>
+                  <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    rows={2}
+                    maxLength={1000}
+                    placeholder="Anything the reviewer should know…"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF] resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-3.5 bg-[#16B364] hover:bg-[#12995a] text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                  <span>{submitting ? 'Submitting…' : 'Submit proof for verification'}</span>
+                </button>
+
+                <p className="text-[10px] text-gray-400 leading-relaxed">
+                  Every submission is checked for duplicates, wrong URLs, and missing requirements before a moderator
+                  approves it. Rewards move Submitted → Checking → Moderator review → Approved → Pending → Available.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

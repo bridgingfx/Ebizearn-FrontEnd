@@ -1,4 +1,4 @@
-import type { Campaign, Task, TaskSubmission } from '../types';
+import type { Campaign, Task, TaskSubmission, UiTask } from '../types';
 
 export const money = (cents = 0, currency = 'AED') => `${currency} ${(Number(cents || 0) / 100).toFixed(2)}`;
 
@@ -20,7 +20,7 @@ const formatDate = (value?: string) => {
   return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
-export const mapTaskForUi = (task: Task) => {
+export const mapTaskForUi = (task: Task): UiTask => {
   const categoryName = task.category?.name || task.category?.icon || task.campaign?.category?.name || 'Social Media';
   const platform = detectPlatform(`${task.title} ${categoryName} ${task.campaign?.title || ''}`);
   const campaign = task.campaign;
@@ -28,22 +28,16 @@ export const mapTaskForUi = (task: Task) => {
   return {
     ...task,
     platform,
-    category: task.category?.slug || 'social',
     categoryName,
     description: campaign?.description || campaign?.objective || task.title,
     badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
     country: campaign?.target_countries_json?.join(', ') || 'Global',
-    region: campaign?.target_countries_json?.join(', ') || 'Worldwide',
-    emirateState: campaign?.target_countries_json?.[0] || 'Worldwide',
-    cityArea: undefined,
     retentionHours: campaign?.retention_hours || 24,
-    targetChannelType: undefined,
-    targetChannelName: `${platform} verified post`,
-    flyerUrl: '/assets/demo/task-creative.jpg',
+    flyerUrl: undefined,
     postCopy: campaign?.instructions_markdown || campaign?.description || task.title,
-    hashtags: '#VerifiedBrandSponsor #EbizEarn',
-    targetUrl: campaign?.business?.website || 'https://ebizearn.com',
-    brandName: campaign?.business?.company_name || 'Ebiz Sponsor Client',
+    hashtags: undefined,
+    targetUrl: campaign?.business?.website || undefined,
+    brandName: campaign?.business?.company_name || 'Brand partner',
   };
 };
 

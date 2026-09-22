@@ -3,14 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
-  BadgeCheck,
   Banknote,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
 import {
   AuthSplitLayout,
-  AuthBadge,
+  PortalBanner,
   AuthField,
   AuthError,
   AuthSubmitButton,
@@ -71,9 +70,7 @@ export const ContributorLoginPage: React.FC = () => {
     <AuthSplitLayout
       image="/images/auth/contributor-login.jpg"
       imageAlt="Contributor completing tasks on a phone and earning rewards"
-      badge={
-        <AuthBadge icon={<BadgeCheck className="w-3.5 h-3.5" />} label="Contributor portal" />
-      }
+      badge={<PortalBanner label="Contributor portal" />}
       headline={
         <>
           Complete tasks. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#20C4E8] to-[#168BFF]">Build rewards.</span>

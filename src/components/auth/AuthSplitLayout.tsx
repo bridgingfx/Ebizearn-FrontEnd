@@ -20,7 +20,7 @@ export const roleRoute: Record<UserRole, string> = {
 interface AuthSplitLayoutProps {
   image: string;
   imageAlt: string;
-  /** Small uppercase pill above the headline, e.g. "Contributor portal". */
+  /** Portal label above the headline — pass a <PortalBanner/> for the prominent glass banner, or an <AuthBadge/> pill. */
   badge: React.ReactNode;
   headline: React.ReactNode;
   subtext: string;
@@ -64,7 +64,7 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
           </Link>
 
           <div className="mt-10 lg:mt-0 max-w-xl">
-            <div className="mb-4">{badge}</div>
+            <div className="mb-6">{badge}</div>
             <h1 className="text-3xl sm:text-4xl xl:text-[3.4rem] font-black tracking-tight text-white leading-[1.08]">
               {headline}
             </h1>
@@ -93,6 +93,53 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
     </div>
   );
 };
+
+/** AI neural-network glyph — the portal banner's signature icon (inline SVG, not an emoji). */
+const PortalAIIcon: React.FC<{ className?: string }> = ({ className = 'w-5 h-5' }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <circle cx="4.5" cy="5.5" r="1.9" />
+    <circle cx="19.5" cy="5.5" r="1.9" />
+    <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none" opacity="0.95" />
+    <circle cx="4.5" cy="18.5" r="1.9" />
+    <circle cx="19.5" cy="18.5" r="1.9" />
+    <path d="M6.1 6.5 10 10.4M17.9 6.5 14 10.4M6.1 17.5 10 13.6M17.9 17.5 14 13.6" />
+  </svg>
+);
+
+/**
+ * Prominent full-width glassmorphism portal banner for the photographic
+ * login pages, replacing the old subtle pill. Wide translucent band with a
+ * slow shimmer sweep, an AI-style neural-network icon, and wide-tracked
+ * uppercase typography. Shimmer animation is disabled under
+ * prefers-reduced-motion (see index.css).
+ */
+export const PortalBanner: React.FC<{ label: string; className?: string }> = ({ label, className = '' }) => (
+  <div
+    className={`relative flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-white/25 bg-white/10 px-5 py-4 backdrop-blur-xl shadow-[0_10px_36px_rgba(0,0,0,0.28)] ${className}`}
+    role="presentation"
+  >
+    <span aria-hidden="true" className="portal-banner-shimmer" />
+    <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#168BFF] to-[#7257FF] text-white shadow-lg shadow-blue-500/30">
+      <PortalAIIcon className="h-5 w-5" />
+    </span>
+    <span className="relative text-sm sm:text-[0.95rem] font-extrabold uppercase tracking-[0.3em] text-white [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]">
+      {label}
+    </span>
+    <span
+      aria-hidden="true"
+      className="relative ml-auto hidden h-px w-24 shrink-0 bg-gradient-to-r from-transparent via-white/50 to-transparent sm:block"
+    />
+  </div>
+);
 
 /** Pill badge used above the auth headline. */
 export const AuthBadge: React.FC<{ icon: React.ReactNode; label: string; className?: string }> = ({

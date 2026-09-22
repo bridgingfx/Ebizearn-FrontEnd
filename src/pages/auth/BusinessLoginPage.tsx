@@ -3,14 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
-  Building2,
   Landmark,
   ScanSearch,
   HandCoins,
 } from 'lucide-react';
 import {
   AuthSplitLayout,
-  AuthBadge,
+  PortalBanner,
   AuthField,
   AuthError,
   AuthSubmitButton,
@@ -71,9 +70,7 @@ export const BusinessLoginPage: React.FC = () => {
     <AuthSplitLayout
       image="/images/auth/business-login.jpg"
       imageAlt="Business team launching a verified marketing campaign"
-      badge={
-        <AuthBadge icon={<Building2 className="w-3.5 h-3.5" />} label="Business portal" />
-      }
+      badge={<PortalBanner label="Business portal" />}
       headline={
         <>
           Launch verified campaigns with{' '}

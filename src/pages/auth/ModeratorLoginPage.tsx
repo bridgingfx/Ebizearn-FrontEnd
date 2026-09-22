@@ -3,14 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
-  ShieldCheck,
   FileSearch,
   History,
   BadgeCheck,
 } from 'lucide-react';
 import {
   AuthSplitLayout,
-  AuthBadge,
+  PortalBanner,
   AuthField,
   AuthError,
   AuthSubmitButton,
@@ -71,9 +70,7 @@ export const ModeratorLoginPage: React.FC = () => {
     <AuthSplitLayout
       image="/images/auth/moderator-login.jpg"
       imageAlt="Moderator reviewing verification tasks to keep the marketplace fair"
-      badge={
-        <AuthBadge icon={<ShieldCheck className="w-3.5 h-3.5" />} label="Moderator access" />
-      }
+      badge={<PortalBanner label="Moderator access" />}
       headline={
         <>
           Review tasks.{' '}

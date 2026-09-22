@@ -60,7 +60,7 @@ export const BusinessBillingPage: React.FC = () => {
           </div>
 
           <div>
-            <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+            <span className="text-3xl sm:text-4xl font-black text-white tracking-tight tabular-nums">
               {balance || '—'}
             </span>
             <span className="text-xs text-gray-300 block mt-1">

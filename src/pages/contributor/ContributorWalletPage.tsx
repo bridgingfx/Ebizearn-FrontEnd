@@ -226,7 +226,7 @@ export const ContributorWalletPage: React.FC = () => {
               </div>
 
               <p className="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Total balance</p>
-              <p className="mt-1 text-[2.75rem] sm:text-5xl font-black tracking-tight leading-none">
+              <p className="mt-1 text-[2.75rem] sm:text-5xl font-black tracking-tight leading-none tabular-nums">
                 {displayMoney(totalCents)}
               </p>
 
@@ -234,12 +234,12 @@ export const ContributorWalletPage: React.FC = () => {
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <div className="rounded-2xl bg-white/[0.07] border border-white/10 p-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#16B364]">Available</p>
-                  <p className="mt-1 text-xl font-black">{displayMoney(availableCents)}</p>
+                  <p className="mt-1 text-xl font-black tabular-nums">{displayMoney(availableCents)}</p>
                   <p className="text-[11px] text-slate-400 mt-0.5">Ready to withdraw</p>
                 </div>
                 <div className="rounded-2xl bg-white/[0.07] border border-white/10 p-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-300">Pending</p>
-                  <p className="mt-1 text-xl font-black">{displayMoney(pendingCents)}</p>
+                  <p className="mt-1 text-xl font-black tabular-nums">{displayMoney(pendingCents)}</p>
                   <p className="text-[11px] text-slate-400 mt-0.5">Releasing soon</p>
                 </div>
               </div>

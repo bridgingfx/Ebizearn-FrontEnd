@@ -12,6 +12,8 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   referral_code?: string;
+  /** Returned by the API for every user; optional here for legacy mocks. */
+  created_at?: string;
   profile?: Profile;
   wallet?: Wallet;
   business?: Business;
@@ -267,4 +269,41 @@ export interface UiTask extends Task {
   hashtags?: string;
   flyerUrl?: string;
   badgeColor?: string;
+}
+
+/** Generic platform setting row from GET /admin/system-settings (real API). */
+export interface SystemSetting {
+  key: string;
+  value: string | number | boolean | null;
+  description?: string;
+  updated_at?: string;
+}
+
+/** Withdrawal-threshold options per the owner mission brief (default $50). */
+export const WITHDRAWAL_THRESHOLD_OPTIONS = [10, 25, 50, 100] as const;
+
+/** Metrics from GET /business/dashboard (real API). */
+export interface BusinessDashboardData {
+  business?: Business;
+  metrics: {
+    active_campaigns: number;
+    total_campaigns: number;
+    verified_tasks: number;
+    total_budget_cents: number;
+    spent_budget_cents: number;
+    remaining_budget_cents: number;
+    average_cost_cents: number;
+  };
+  recent_submissions: TaskSubmission[];
+  active_campaigns_list: Campaign[];
+}
+
+/** Metrics from GET /admin/dashboard (real API). */
+export interface AdminDashboardMetrics {
+  total_contributors: number;
+  total_businesses: number;
+  active_campaigns: number;
+  pending_verification: number;
+  pending_payouts: number;
+  fraud_alerts_count: number;
 }

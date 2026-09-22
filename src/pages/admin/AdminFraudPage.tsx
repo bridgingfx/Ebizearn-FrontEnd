@@ -1,170 +1,155 @@
-import React, { useEffect, useState } from 'react';
-import { ShieldAlert, AlertTriangle, CheckCircle2, User, Eye, ArrowRight } from 'lucide-react';
-import { adminApi } from '../../api/admin';
-import { getApiError } from '../../api/client';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ShieldAlert, AlertTriangle, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
+import { adminApi, getApiError } from '../../api';
 import type { FraudEvent } from '../../types';
+import { EmptyState } from '../../components/common/EmptyState';
 
+/**
+ * Fraud alerts come only from GET /admin/fraud-alerts. No demo alerts, no
+ * fabricated severity counts, no invented incident values.
+ */
 export const AdminFraudPage: React.FC = () => {
-  const [filterSeverity, setFilterSeverity] = useState('all');
-  const [liveEvents, setLiveEvents] = useState<any[]>([]);
-  const [loadError, setLoadError] = useState('');
+  const [alerts, setAlerts] = useState<FraudEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [severity, setSeverity] = useState('all');
 
-  const fallbackEvents = [
-    {
-      id: 1,
-      eventType: 'duplicate_screenshot_reused',
-      userName: 'Alex K.',
-      userId: 44,
-      severity: 'high',
-      score: 68,
-      details: 'Identical perceptual hash detected across 2 different accounts on Task #101.',
-      ip: '192.168.1.88',
-      time: '12 mins ago',
-      status: 'flagged',
-    },
-    {
-      id: 2,
-      eventType: 'rapid_completion_anomaly',
-      userName: 'Farhan T.',
-      userId: 78,
-      severity: 'medium',
-      score: 42,
-      details: 'Task completed in 8 seconds (expected minimum 5 minutes).',
-      ip: '192.168.4.12',
-      time: '45 mins ago',
-      status: 'flagged',
-    },
-    {
-      id: 3,
-      eventType: 'duplicate_url_cluster',
-      userName: 'Samir D.',
-      userId: 102,
-      severity: 'critical',
-      score: 85,
-      details: 'Same Facebook permalink submitted by 3 separate user IDs within 10 minutes.',
-      ip: '192.168.9.22',
-      time: '2 hours ago',
-      status: 'under_investigation',
-    },
-  ];
-  const fraudEvents = liveEvents.length > 0 ? liveEvents : fallbackEvents;
-
-  useEffect(() => {
-    adminApi.fraudAlerts()
-      .then((res) => {
-        if (res.success) {
-          setLiveEvents(res.data.map((event: FraudEvent) => ({
-            id: event.id,
-            eventType: event.event_type,
-            userName: event.user?.name || 'Unknown user',
-            userId: event.user_id || 0,
-            severity: event.severity,
-            score: Math.round(((event.details_json as any)?.risk_score || 0.5) * 100),
-            details: (event.details_json as any)?.summary || JSON.stringify(event.details_json || {}),
-            ip: (event.details_json as any)?.ip_address || 'n/a',
-            time: event.created_at,
-            status: event.status,
-          })));
-          setLoadError('');
-        }
-      })
-      .catch((error) => setLoadError(getApiError(error)));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await adminApi.fraudAlerts();
+      if (res.success) {
+        setAlerts(res.data || []);
+      } else {
+        setError(res.message || 'Could not load fraud alerts.');
+      }
+    } catch (e) {
+      setError(getApiError(e, 'Could not load fraud alerts.'));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const filtered = fraudEvents.filter((ev) => {
-    if (filterSeverity === 'all') return true;
-    return ev.severity === filterSeverity;
-  });
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const filtered = useMemo(() => {
+    if (severity === 'all') return alerts;
+    return alerts.filter((a) => a.severity === severity);
+  }, [alerts, severity]);
+
+  const riskStyle = (sev?: string) => {
+    switch (sev) {
+      case 'critical':
+      case 'high':
+        return 'bg-red-100 text-red-700';
+      case 'medium':
+        return 'bg-amber-100 text-amber-700';
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  };
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-[#101828]">Fraud Detection &amp; Risk Center</h2>
-        <p className="text-xs text-[#667085] mt-0.5">
-          Real-time signal analysis: duplicate proof hashing, rapid submission limits, and cluster detection.
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Fraud &amp; Risk</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Alerts raised by the platform fraud service. {alerts.length} open alert{alerts.length === 1 ? '' : 's'}.
         </p>
       </div>
-      {loadError && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
-          Live fraud alerts could not load: {loadError}
-        </div>
-      )}
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
-        {['all', 'critical', 'high', 'medium'].map((sev) => (
+      <div className="flex gap-2 flex-wrap">
+        {['all', 'critical', 'high', 'medium', 'low'].map((s) => (
           <button
-            key={sev}
+            key={s}
             type="button"
-            onClick={() => setFilterSeverity(sev)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
-              filterSeverity === sev
-                ? 'bg-[#07182F] text-white'
-                : 'text-gray-600 hover:bg-gray-100'
+            onClick={() => setSeverity(s)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-colors ${
+              severity === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {sev}
+            {s}
           </button>
         ))}
       </div>
 
-      {/* Fraud Cards List */}
-      <div className="space-y-3">
-        {filtered.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-          >
-            <div className="flex items-start gap-3.5">
-              <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                  item.severity === 'critical'
-                    ? 'bg-red-100 text-red-700'
-                    : item.severity === 'high'
-                    ? 'bg-orange-100 text-orange-700'
-                    : 'bg-amber-100 text-amber-700'
-                }`}
-              >
-                <ShieldAlert className="w-5 h-5" />
-              </div>
+      {loading && (
+        <div className="flex items-center justify-center py-16 text-gray-500">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading fraud alerts…
+        </div>
+      )}
 
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span
-                    className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                      item.severity === 'critical'
-                        ? 'bg-red-50 text-red-700'
-                        : item.severity === 'high'
-                        ? 'bg-orange-50 text-orange-700'
-                        : 'bg-amber-50 text-amber-700'
-                    }`}
-                  >
-                    Risk: {item.severity} ({item.score}%)
-                  </span>
-                  <span className="text-[10px] text-gray-400">&bull; {item.time}</span>
-                </div>
-
-                <h4 className="text-sm font-bold text-gray-900 font-mono">{item.eventType}</h4>
-                <p className="text-xs text-gray-500 mt-0.5">{item.details}</p>
-                <div className="flex items-center gap-4 text-[10px] text-gray-400 mt-1">
-                  <span>User: <strong>{item.userName}</strong> (#{item.userId})</span>
-                  <span>IP: {item.ip}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => alert(`Reviewing user #${item.userId}`)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition-colors"
-              >
-                Inspect User
-              </button>
-            </div>
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <div className="text-sm">
+            <p className="font-bold text-red-700">Could not load fraud alerts</p>
+            <p className="text-red-600 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+              Retry
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {!loading && !error && filtered.length === 0 && (
+        <EmptyState
+          icon={ShieldAlert}
+          title={alerts.length === 0 ? 'No open fraud alerts' : 'No alerts at this severity'}
+          description={
+            alerts.length === 0
+              ? 'The fraud service has not raised any alerts. New alerts will appear here automatically.'
+              : 'Try a different severity filter.'
+          }
+        />
+      )}
+
+      {!loading && !error && filtered.length > 0 && (
+        <div className="space-y-3">
+          {filtered.map((a) => (
+            <div
+              key={a.id}
+              className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+            >
+              <div className="p-2.5 rounded-xl bg-red-50 text-red-600 w-fit">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${riskStyle(a.severity)}`}
+                  >
+                    {a.severity} severity
+                  </span>
+                  <span className="text-[11px] text-gray-400">
+                    {a.status ? `· ${a.status.replace(/_/g, ' ')} ` : ''}· {new Date(a.created_at).toLocaleString()}
+                  </span>
+                </div>
+                <p className="text-sm font-bold text-gray-900">
+                  {a.event_type ? a.event_type.replace(/_/g, ' ') : `Alert #${a.id}`}
+                </p>
+                {a.details_json && (
+                  <p className="text-[11px] text-gray-500 mt-1 line-clamp-2 font-mono">
+                    {JSON.stringify(a.details_json)}
+                  </p>
+                )}
+              </div>
+              {a.user_id != null && (
+                <Link
+                  to={`/admin/users?search=${a.user_id}`}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-700 transition-colors shrink-0"
+                >
+                  View user <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

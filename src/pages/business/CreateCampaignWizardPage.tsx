@@ -1,570 +1,607 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Check,
   ArrowRight,
   ArrowLeft,
-  DollarSign,
-  ShieldCheck,
-  Sparkles,
+  AlertCircle,
+  Loader2,
+  Target,
+  ClipboardList,
+  Globe,
+  Wallet,
+  Eye,
   Rocket,
   CheckCircle2,
 } from 'lucide-react';
-import { businessApi } from '../../api';
-import { usePlatform } from '../../context/PlatformDataContext';
-import { COUNTRY_OPTIONS, REGIONAL_REGIONS } from '../../config/geoLocations';
+import { businessApi, getApiError, api } from '../../api';
+import { COUNTRY_OPTIONS } from '../../config/geoLocations';
+
+interface TaskCategory {
+  id: number;
+  name: string;
+  description?: string | null;
+  is_active?: boolean;
+}
+
+const STEPS = [
+  { id: 1, label: 'Goal', icon: Target },
+  { id: 2, label: 'Task Type', icon: ClipboardList },
+  { id: 3, label: 'Audience', icon: Globe },
+  { id: 4, label: 'Budget & Proof', icon: Wallet },
+  { id: 5, label: 'Review', icon: Eye },
+  { id: 6, label: 'Launch', icon: Rocket },
+];
+
+const MIN_REWARD_USD = 0.2;
+const MIN_CONTRIBUTORS = 5;
+/** Estimated platform fee mirrored from backend config (platform.platformFeePercent, default 15).
+ *  The backend is the source of truth — it recalculates the fee and verifies
+ *  the balance at launch. This number is only a preview. */
+const ESTIMATED_FEE_PERCENT = 15;
+
+const CONTRIBUTOR_LEVELS = ['starter', 'explorer', 'trusted', 'pro', 'elite'] as const;
+
+/** Template → category-name matching used when the Task Library links here. */
+const TEMPLATE_TO_CATEGORY = (template: string, categories: TaskCategory[]): TaskCategory | undefined => {
+  const t = template.toLowerCase();
+  const byName = (needle: string) =>
+    categories.find((c) => c.name.toLowerCase().includes(needle));
+  if (t.includes('tiktok') || t.includes('video')) return byName('ugc') || byName('video') || byName('content');
+  if (t.includes('comment') || t.includes('youtube')) return byName('comment') || byName('engagement');
+  if (t.includes('share') || t.includes('story') || t.includes('repost') || t.includes('whatsapp'))
+    return byName('share') || byName('engagement') || byName('social');
+  if (t.includes('app')) return byName('test') || byName('survey') || categories[0];
+  return categories[0];
+};
 
 export const CreateCampaignWizardPage: React.FC = () => {
-  const [step, setStep] = useState(1);
   const navigate = useNavigate();
-  const { createCampaign } = usePlatform();
+  const [searchParams] = useSearchParams();
+  const templateHint = searchParams.get('template');
 
-  // Form State
+  const [step, setStep] = useState(1);
+  const [categories, setCategories] = useState<TaskCategory[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+
+  // Step 1
   const [title, setTitle] = useState('');
   const [objective, setObjective] = useState('');
   const [description, setDescription] = useState('');
-  const [taskType, setTaskType] = useState('community-broadcast');
+
+  // Step 2
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+
+  // Step 3
   const [country, setCountry] = useState('GLOBAL');
-  const [emirateState, setEmirateState] = useState('Worldwide (All Regions)');
-  const [cityArea, setCityArea] = useState('Global Remote');
-  const [targetChannelType, setTargetChannelType] = useState('whatsapp_group');
-  const [targetChannelName, setTargetChannelName] = useState('Global Creator & Business Network 🌐');
-  const [retentionHours, setRetentionHours] = useState(72);
-  const [minLevel, setMinLevel] = useState('starter');
-  const [instructions, setInstructions] = useState('1. Share approved commercial flyer & promo link into an active community or business group (WhatsApp, LinkedIn, or Facebook).\n2. Proof screenshot must verify group title, member count > 1,000, and message delivery checkmarks.');
-  const [rewardPerTask, setRewardPerTask] = useState('22.00');
-  const [numContributors, setNumContributors] = useState('100');
-  const [submitting, setSubmitting] = useState(false);
-  const [launchedSuccess, setLaunchedSuccess] = useState(false);
+  const [minLevel, setMinLevel] = useState<string>('');
+  const [retentionHours, setRetentionHours] = useState('');
 
-  // Calculations (AED Cents)
-  const rewardCents = Math.round(parseFloat(rewardPerTask || '0') * 100);
-  const contributorsCount = parseInt(numContributors || '0', 10);
-  const taskSubtotalCents = rewardCents * contributorsCount;
-  const feePercent = 15; // 15% platform fee for 100% automated & admin verification
-  const feeCents = Math.round(taskSubtotalCents * (feePercent / 100));
-  const totalBudgetCents = taskSubtotalCents + feeCents;
+  // Step 4
+  const [rewardUsd, setRewardUsd] = useState<string>('0.20');
+  const [contributors, setContributors] = useState<string>('5');
+  const [instructions, setInstructions] = useState('');
+  const [proofRequirements, setProofRequirements] = useState<string[]>(['Screenshot']);
 
-  const handleLaunch = async () => {
-    setSubmitting(true);
+  // Launch
+  const [launching, setLaunching] = useState(false);
+  const [launchError, setLaunchError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [launchSuccessId, setLaunchSuccessId] = useState<number | null>(null);
 
-    const resolvedPlatform =
-      taskType === 'community-broadcast'
-        ? 'WhatsApp / LinkedIn'
-        : taskType === 'reviews'
-        ? 'Trustpilot'
-        : taskType === 'google-reviews'
-        ? 'Google Reviews'
-        : taskType === 'social'
-        ? 'Instagram'
-        : taskType === 'video' || taskType === 'ugc'
-        ? 'TikTok'
-        : 'Web Portal';
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setCategoriesLoading(true);
+      setCategoriesError(null);
+      try {
+        const res = await api.get<TaskCategory[]>('/task-categories');
+        const list = (res.data as unknown as { data?: TaskCategory[] }).data ?? (res.data as unknown as TaskCategory[]);
+        const cats = Array.isArray(list) ? list : [];
+        setCategories(cats);
+        if (templateHint && cats.length > 0) {
+          const match = TEMPLATE_TO_CATEGORY(templateHint, cats);
+          if (match) setCategoryId(match.id);
+        }
+      } catch (e) {
+        setCategoriesError(getApiError(e, 'Could not load task categories.'));
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    void fetchCategories();
+  }, [templateHint]);
 
-    // Add into shared reactive platform state in AED with granular geo & channel metadata
-    createCampaign({
-      title: title || `${emirateState} Community Group Brand Broadcast`,
-      objective: objective || `Promote in ${emirateState} local community channels`,
-      platform: resolvedPlatform,
-      rewardAED: parseFloat(rewardPerTask || '22.00'),
-      targetContributors: contributorsCount || 100,
-      instructions: instructions || `Post in verified ${emirateState} groups and submit screenshot proof.`,
-      country: country || 'GLOBAL',
-      emirateState: emirateState || 'Worldwide (All Regions)',
-      cityArea: cityArea || 'Global Remote',
-      targetChannelType: taskType === 'community-broadcast' ? targetChannelType : undefined,
-      targetChannelName: taskType === 'community-broadcast' ? targetChannelName : undefined,
-      retentionHours: retentionHours || 72,
-    });
+  const rewardCents = Math.round((parseFloat(rewardUsd) || 0) * 100);
+  const contributorCount = parseInt(contributors, 10) || 0;
 
-    try {
-      await businessApi.createCampaign({
-        title: title || `${emirateState} Community Group Brand Broadcast`,
-        objective: objective || `Promote in ${emirateState} community channels`,
-        description,
-        category_id: taskType.includes('review') ? 2 : 1,
-        reward_per_task_cents: rewardCents,
-        target_contributors_count: contributorsCount,
-        instructions_markdown: instructions || 'Follow verified campaign guidelines.',
-        target_countries: [country],
-        min_contributor_level: minLevel,
-      });
-    } catch {
-      // allow fallback launch in demo
+  const estimate = useMemo(() => {
+    const tasksBudget = rewardCents * contributorCount;
+    const fee = Math.round(tasksBudget * (ESTIMATED_FEE_PERCENT / 100));
+    return { tasksBudget, fee, total: tasksBudget + fee };
+  }, [rewardCents, contributorCount]);
+
+  const fmtUsd = (cents: number) =>
+    (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+  const validateStep = (s: number): boolean => {
+    setFieldErrors({});
+    if (s === 1) {
+      const errs: Record<string, string[]> = {};
+      if (title.trim().length < 5) errs.title = ['Give your campaign a clear title (min 5 characters).'];
+      if (description.trim().length < 20) errs.description = ['Describe the campaign in at least 20 characters.'];
+      setFieldErrors(errs);
+      return Object.keys(errs).length === 0;
     }
-    setSubmitting(false);
-    setLaunchedSuccess(true);
+    if (s === 2) {
+      if (categoryId == null) {
+        setFieldErrors({ category_id: ['Pick the task type that best matches this campaign.'] });
+        return false;
+      }
+    }
+    if (s === 4) {
+      const errs: Record<string, string[]> = {};
+      if (!(parseFloat(rewardUsd) >= MIN_REWARD_USD))
+        errs.reward = [`Reward must be at least $${MIN_REWARD_USD.toFixed(2)} per task (platform minimum).`];
+      if (!(contributorCount >= MIN_CONTRIBUTORS))
+        errs.contributors = [`You need at least ${MIN_CONTRIBUTORS} contributors.`];
+      if (instructions.trim().length < 10)
+        errs.instructions = ['Write clear step-by-step instructions (min 10 characters).'];
+      setFieldErrors(errs);
+      return Object.keys(errs).length === 0;
+    }
+    return true;
   };
 
-  const stepsList = [
-    { num: 1, title: 'Details' },
-    { num: 2, title: 'Task Type' },
-    { num: 3, title: 'Audience' },
-    { num: 4, title: 'Content & Proof' },
-    { num: 5, title: 'Budget & Fee' },
-    { num: 6, title: 'Launch' },
-  ];
+  const next = () => {
+    if (validateStep(step)) setStep((s) => Math.min(6, s + 1));
+  };
+  const back = () => {
+    setLaunchError(null);
+    setStep((s) => Math.max(1, s - 1));
+  };
 
-  if (launchedSuccess) {
+  const toggleProofRequirement = (req: string) => {
+    setProofRequirements((prev) =>
+      prev.includes(req) ? prev.filter((r) => r !== req) : [...prev, req],
+    );
+  };
+
+  const handleLaunch = async () => {
+    if (launching || !validateStep(4) || !validateStep(1) || categoryId == null) return;
+    setLaunching(true);
+    setLaunchError(null);
+    setFieldErrors({});
+    try {
+      const payload: Record<string, unknown> = {
+        title: title.trim(),
+        description: description.trim(),
+        category_id: categoryId,
+        reward_per_task_cents: rewardCents,
+        target_contributors_count: contributorCount,
+        instructions_markdown: instructions.trim(),
+        proof_requirements_json: proofRequirements,
+        target_countries: [country],
+      };
+      if (objective.trim()) payload.objective = objective.trim();
+      if (minLevel) payload.min_contributor_level = minLevel;
+      if (retentionHours && parseInt(retentionHours, 10) >= 0)
+        payload.retention_hours = parseInt(retentionHours, 10);
+
+      const res = await businessApi.createCampaign(payload);
+      if (res.success && res.data) {
+        setLaunchSuccessId(res.data.id);
+      } else {
+        setLaunchError(res.message || 'Campaign could not be created. Please try again.');
+      }
+    } catch (e: unknown) {
+      // Surface real API errors — especially the 422 funding gate — honestly.
+      const apiErr = e as { response?: { status?: number; data?: { errors?: Record<string, string[]>; message?: string } } };
+      const status = apiErr.response?.status;
+      const errors = apiErr.response?.data?.errors;
+      if (status === 422 && errors) setFieldErrors(errors);
+      const msg = apiErr.response?.data?.message || getApiError(e, 'Campaign could not be created.');
+      setLaunchError(
+        status === 422 && msg.includes('funds')
+          ? `${msg} Top up your balance (Billing & Invoices → contact support) and try again.`
+          : msg,
+      );
+    } finally {
+      setLaunching(false);
+    }
+  };
+
+  const progress = Math.round((step / STEPS.length) * 100);
+  const err = (key: string) => fieldErrors[key]?.[0];
+
+  const selectedCategory = categories.find((c) => c.id === categoryId);
+
+  if (launchSuccessId != null) {
     return (
-      <div className="max-w-xl mx-auto py-12 text-center">
-        <div className="bg-white rounded-3xl p-8 border border-[#E4EAF2] shadow-floating space-y-5">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-[#16B364] flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-9 h-9" />
-          </div>
-          <h2 className="text-2xl font-black text-gray-900">Campaign Launched Successfully!</h2>
-          <p className="text-xs text-gray-500 max-w-sm mx-auto">
-            Your campaign <strong>"{title || 'New Task Campaign'}"</strong> is now live on the marketplace. Contributor submissions will begin appearing in your dashboard.
-          </p>
-          <div className="pt-2 flex justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => navigate('/business')}
-              className="px-6 py-2.5 bg-[#07182F] hover:bg-[#168BFF] text-white rounded-xl text-xs font-bold transition-colors"
-            >
-              Go to Business Dashboard
-            </button>
-          </div>
+      <div className="max-w-2xl mx-auto text-center py-16 space-y-5">
+        <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-8 h-8" />
         </div>
+        <h1 className="text-2xl font-extrabold text-gray-900">Campaign launched</h1>
+        <p className="text-sm text-gray-500">
+          Your campaign is live and the budget hold is on file. Contributors can start completing tasks right away.
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate(`/business/campaigns/${launchSuccessId}`)}
+          className="px-6 py-3 bg-[#168BFF] hover:bg-[#1275DD] text-white text-sm font-bold rounded-xl transition-colors"
+        >
+          View campaign
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 text-left">
-      
-      {/* Stepper Indicator */}
-      <div className="bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          {stepsList.map((s, idx) => (
-            <React.Fragment key={s.num}>
-              <div className="flex flex-col items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                    step === s.num
-                      ? 'bg-[#168BFF] text-white shadow-md'
-                      : step > s.num
-                      ? 'bg-[#16B364] text-white'
-                      : 'bg-gray-100 text-gray-400'
-                  }`}
-                >
-                  {step > s.num ? <Check className="w-4 h-4" /> : s.num}
-                </div>
-                <span className="text-[10px] font-medium text-gray-500 mt-1 hidden sm:block">
-                  {s.title}
-                </span>
-              </div>
-              {idx < stepsList.length - 1 && (
-                <div
-                  className={`flex-1 h-[2px] mx-2 ${
-                    step > idx + 1 ? 'bg-[#16B364]' : 'bg-gray-200'
-                  }`}
-                />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Create Campaign</h1>
+        <p className="text-sm text-gray-500 mt-1">Real budget, real contributors, real verification.</p>
+      </div>
 
-        <div className="text-center pt-2">
-          <h2 className="text-xl font-bold text-[#101828]">
-            {step === 1 && 'Step 1: Campaign Details'}
-            {step === 2 && 'Step 2: Choose Task Type'}
-            {step === 3 && 'Step 3: Target Audience & Requirements'}
-            {step === 4 && 'Step 4: Campaign Content & Instructions'}
-            {step === 5 && 'Step 5: Budget & Reward Calculator'}
-            {step === 6 && 'Step 6: Review & Instant Launch'}
-          </h2>
+      {/* Progress */}
+      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-5">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-bold text-gray-900">
+            Step {step} of {STEPS.length} — {STEPS[step - 1].label}
+          </span>
+          <span className="text-xs font-bold text-[#168BFF]">{progress}%</span>
+        </div>
+        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full bg-[#168BFF] rounded-full transition-all" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex gap-1.5 mt-4 flex-wrap">
+          {STEPS.map((s) => (
+            <div
+              key={s.id}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold ${
+                s.id === step
+                  ? 'bg-[#168BFF] text-white'
+                  : s.id < step
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-gray-100 text-gray-400'
+              }`}
+            >
+              {s.id < step ? <Check className="w-3 h-3" /> : <s.icon className="w-3 h-3" />}
+              {s.label}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Step Content */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4EAF2] shadow-sm">
-        
-        {/* Step 1: Details */}
-        {step === 1 && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Campaign Title</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Middle East Product Launch Social Campaign"
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Campaign Objective</label>
-              <input
-                type="text"
-                value={objective}
-                onChange={(e) => setObjective(e.target.value)}
-                placeholder="e.g. Generate 500 organic community shares and genuine impressions"
-                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Description</label>
-              <textarea
-                rows={4}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Provide a clear high-level summary of your brand and what you want contributors to accomplish..."
-                className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
-              />
-            </div>
+      {/* ============ STEP 1: GOAL ============ */}
+      {step === 1 && (
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5">
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Campaign title *</label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Launch our new coffee brand on Instagram"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            />
+            {err('title') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('title')}</p>}
           </div>
-        )}
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Objective (optional)</label>
+            <input
+              value={objective}
+              onChange={(e) => setObjective(e.target.value)}
+              placeholder="e.g. Drive 500 authentic reviews this month"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Campaign description *</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              placeholder="What is this campaign about? What will contributors be doing?"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] resize-none"
+            />
+            {err('description') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('description')}</p>}
+          </div>
+        </div>
+      )}
 
-        {/* Step 2: Task Type */}
-        {step === 2 && (
-          <div className="space-y-3">
-            <p className="text-xs text-gray-600 font-medium">Select the primary campaign objective or review service:</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {[
-                { id: 'community-broadcast', name: '📢 Community Groups', desc: 'Worldwide WhatsApp, LinkedIn & FB' },
-                { id: 'reviews', name: '⭐ Trustpilot Reviews', desc: '5-star trust badge & review' },
-                { id: 'google-reviews', name: '⭐ Google Reviews', desc: 'Verified Google Maps feedback' },
-                { id: 'social', name: 'Social Campaigns', desc: 'Posts, shares & reach' },
-                { id: 'ugc', name: 'UGC & Video', desc: 'Short testimonials & clips' },
-                { id: 'survey', name: 'Consumer Surveys', desc: 'Opinions & market research' },
-              ].map((t) => (
+      {/* ============ STEP 2: TASK TYPE ============ */}
+      {step === 2 && (
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-4">
+          <h3 className="text-sm font-extrabold text-gray-900">What should contributors do?</h3>
+          {categoriesLoading && (
+            <div className="flex items-center gap-2 text-gray-500 text-sm py-6">
+              <Loader2 className="w-5 h-5 animate-spin" /> Loading task categories…
+            </div>
+          )}
+          {categoriesError && !categoriesLoading && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
+              <p className="font-bold text-red-700">Could not load categories</p>
+              <p className="text-red-600 mt-1">{categoriesError}</p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-2 text-xs font-bold text-red-700 underline"
+              >
+                Reload
+              </button>
+            </div>
+          )}
+          {!categoriesLoading && !categoriesError && (
+            <div className="grid sm:grid-cols-2 gap-3">
+              {categories.map((c) => (
                 <button
-                  key={t.id}
+                  key={c.id}
                   type="button"
-                  onClick={() => setTaskType(t.id)}
-                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-                    taskType === t.id
-                      ? 'border-[#168BFF] bg-blue-50/50 shadow-sm ring-2 ring-[#168BFF]/20'
+                  onClick={() => setCategoryId(c.id)}
+                  className={`text-left p-4 rounded-xl border-2 transition-all ${
+                    categoryId === c.id
+                      ? 'border-[#168BFF] bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <p className={`text-xs font-bold ${taskType === t.id ? 'text-[#168BFF]' : 'text-gray-900'}`}>
-                    {t.name}
+                  <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
+                    {categoryId === c.id && <Check className="w-4 h-4 text-[#168BFF]" />}
+                    {c.name}
                   </p>
-                  <p className="text-[10px] text-gray-400 mt-0.5">{t.desc}</p>
+                  {c.description && <p className="text-[11px] text-gray-500 mt-1">{c.description}</p>}
+                </button>
+              ))}
+            </div>
+          )}
+          {err('category_id') && <p className="text-[11px] font-bold text-red-600">{err('category_id')}</p>}
+        </div>
+      )}
+
+      {/* ============ STEP 3: AUDIENCE ============ */}
+      {step === 3 && (
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5">
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Target country</label>
+            <select
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] bg-white"
+            >
+              {COUNTRY_OPTIONS.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.flag} {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Minimum contributor level (optional)</label>
+            <select
+              value={minLevel}
+              onChange={(e) => setMinLevel(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] bg-white"
+            >
+              <option value="">Any level</option>
+              {CONTRIBUTOR_LEVELS.map((l) => (
+                <option key={l} value={l} className="capitalize">
+                  {l}
+                </option>
+              ))}
+            </select>
+            <p className="text-[11px] text-gray-400 mt-1">Higher levels restrict the campaign to more experienced contributors.</p>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Retention period, hours (optional)</label>
+            <input
+              type="number"
+              min={0}
+              value={retentionHours}
+              onChange={(e) => setRetentionHours(e.target.value)}
+              placeholder="e.g. 72"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            />
+            <p className="text-[11px] text-gray-400 mt-1">How long the completed action must stay live (e.g. a post stays up for 72 hours).</p>
+          </div>
+        </div>
+      )}
+
+      {/* ============ STEP 4: BUDGET & PROOF ============ */}
+      {step === 4 && (
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-gray-700 block mb-1.5">Reward per task (USD) *</label>
+              <input
+                type="number"
+                min={MIN_REWARD_USD}
+                step="0.01"
+                value={rewardUsd}
+                onChange={(e) => setRewardUsd(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+              />
+              {err('reward') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('reward')}</p>}
+              <p className="text-[11px] text-gray-400 mt-1">Platform minimum: ${MIN_REWARD_USD.toFixed(2)}.</p>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-700 block mb-1.5">Number of contributors *</label>
+              <input
+                type="number"
+                min={MIN_CONTRIBUTORS}
+                value={contributors}
+                onChange={(e) => setContributors(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+              />
+              {err('contributors') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('contributors')}</p>}
+              <p className="text-[11px] text-gray-400 mt-1">Minimum: {MIN_CONTRIBUTORS}.</p>
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-1.5">Step-by-step instructions for contributors *</label>
+            <textarea
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              rows={5}
+              placeholder={'1. Follow @yourbrand on Instagram\n2. Like the pinned post\n3. Leave a genuine comment\n4. Take a screenshot as proof'}
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] resize-none"
+            />
+            {err('instructions') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('instructions')}</p>}
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-gray-700 block mb-2">Required proof</label>
+            <div className="flex gap-2 flex-wrap">
+              {['Screenshot', 'Screen Recording', 'Link / URL', 'Text Answer'].map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => toggleProofRequirement(p)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold border-2 transition-all ${
+                    proofRequirements.includes(p)
+                      ? 'border-[#168BFF] bg-blue-50 text-[#168BFF]'
+                      : 'border-gray-200 text-gray-500'
+                  }`}
+                >
+                  {p}
                 </button>
               ))}
             </div>
           </div>
-        )}
 
-        {/* Step 3: Audience & Granular Geographic Targeting */}
-        {step === 3 && (
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Target Country</label>
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl font-medium"
-                >
-                  <option value="AE">United Arab Emirates (AED 🇦🇪)</option>
-                  <option value="SA">Saudi Arabia (KSA 🇸🇦)</option>
-                  <option value="QA">Qatar (QAR 🇶🇦)</option>
-                  <option value="KW">Kuwait (KWD 🇰🇼)</option>
-                  <option value="US">United States (USD 🇺🇸)</option>
-                  <option value="GB">United Kingdom (GBP 🇬🇧)</option>
-                  <option value="ALL">Worldwide (Global Contributors)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Min Contributor Level</label>
-                <select
-                  value={minLevel}
-                  onChange={(e) => setMinLevel(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl"
-                >
-                  <option value="starter">Starter (Open to all)</option>
-                  <option value="explorer">Explorer (5+ tasks completed)</option>
-                  <option value="trusted">Trusted (98%+ approval rate)</option>
-                  <option value="pro">Pro (Tier 3 Emirates ID KYC Verified)</option>
-                </select>
-              </div>
+          {/* Honest budget preview */}
+          <div className="bg-[#F7F9FC] border border-[#E7ECF3] rounded-xl p-4 space-y-2 text-sm">
+            <div className="flex justify-between text-gray-600">
+              <span>Task payouts ({contributorCount || 0} × {fmtUsd(rewardCents)})</span>
+              <span className="font-bold text-gray-900">{fmtUsd(estimate.tasksBudget)}</span>
             </div>
-
-            {/* Granular Regional UAE Emirate & City Drilldown */}
-            {country === 'AE' && (
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                    <span className="text-base">📍</span> Pinpoint Geographic Targeting (Country → State/Region → District)
-                  </span>
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md">
-                    OCR Geofenced
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Target Country</label>
-                    <select
-                      value={country}
-                      onChange={(e) => {
-                        const newCountry = e.target.value;
-                        setCountry(newCountry);
-                        const availableStates = Object.keys(REGIONAL_REGIONS[newCountry] || {});
-                        const firstState = availableStates[0] || 'Worldwide';
-                        setEmirateState(firstState);
-                        const availableCities = REGIONAL_REGIONS[newCountry]?.[firstState] || [];
-                        setCityArea(availableCities[0] || 'All Areas');
-                        setTargetChannelName(`${firstState} Community & Business Network`);
-                      }}
-                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl font-semibold text-slate-800"
-                    >
-                      {COUNTRY_OPTIONS.map((c) => (
-                        <option key={c.code} value={c.code}>
-                          {c.label} ({c.currency})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-600 mb-1">State / Province / Region</label>
-                    <select
-                      value={emirateState}
-                      onChange={(e) => {
-                        const newSt = e.target.value;
-                        setEmirateState(newSt);
-                        const availableCities = REGIONAL_REGIONS[country]?.[newSt] || [];
-                        setCityArea(availableCities[0] || `${newSt} Center`);
-                        setTargetChannelName(`${newSt} Community & Business Network`);
-                      }}
-                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl font-semibold text-slate-800"
-                    >
-                      {Object.keys(REGIONAL_REGIONS[country] || { 'Worldwide (All Regions)': [] }).map((st) => (
-                        <option key={st} value={st}>
-                          {st}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-600 mb-1">City / District / Area</label>
-                    <input
-                      type="text"
-                      value={cityArea}
-                      onChange={(e) => setCityArea(e.target.value)}
-                      placeholder="e.g. Manhattan, Downtown Dubai, or All Areas"
-                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl"
-                    />
-                  </div>
-                </div>
-
-                {/* Community Channel & Target Group */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200">
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Target Community Platform</label>
-                    <select
-                      value={targetChannelType}
-                      onChange={(e) => setTargetChannelType(e.target.value)}
-                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl"
-                    >
-                      <option value="whatsapp_group">WhatsApp Community Groups (Regional / Local)</option>
-                      <option value="linkedin_group">LinkedIn Professional &amp; Industry Network</option>
-                      <option value="facebook_group">Facebook Community &amp; Expat Hubs</option>
-                      <option value="telegram_group">Telegram Regional Broadcast Channel</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-600 mb-1">Target Group Name / Theme</label>
-                    <input
-                      type="text"
-                      value={targetChannelName}
-                      onChange={(e) => setTargetChannelName(e.target.value)}
-                      placeholder="e.g. Global Tech Founders / Local Business Network"
-                      className="w-full px-3 py-2 text-xs bg-white border border-gray-200 rounded-xl"
-                    />
-                  </div>
-                </div>
-
-                <div className="text-[11px] text-slate-500 bg-white p-2.5 rounded-xl border border-slate-200 flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
-                  <span>
-                    Contributors will be required to publish exclusively inside active groups matching{' '}
-                    <strong>"{emirateState}"</strong> and submit verification showing the group name and member count.
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Retention & Anti-Deletion Lock */}
-            <div className="p-4 bg-amber-50/70 rounded-2xl border border-amber-200/80">
-              <label className="block text-xs font-bold text-amber-900 mb-1">
-                Anti-Fraud Retention Lock (PDF Compliance T+0, T+24h, T+72h)
-              </label>
-              <select
-                value={retentionHours}
-                onChange={(e) => setRetentionHours(parseInt(e.target.value, 10))}
-                className="w-full px-3 py-2 text-xs bg-white border border-amber-300 rounded-xl font-medium text-amber-950"
-              >
-                <option value={72}>72 Hours Hold (Recommended • Guarantees No Deletion &amp; CBUAE Escrow)</option>
-                <option value={24}>24 Hours Hold (Fast Turnaround)</option>
-                <option value={168}>7 Days Hold (Brand Ambassador &amp; Long-Term Posts)</option>
-              </select>
-              <p className="text-[10px] text-amber-800 mt-1.5">
-                Reward funds remain locked in the contributor's <strong>Pending Retention Balance</strong> until the hold expires, preventing immediate post deletion.
-              </p>
+            <div className="flex justify-between text-gray-600">
+              <span>Platform fee (est. {ESTIMATED_FEE_PERCENT}%)</span>
+              <span className="font-bold text-gray-900">{fmtUsd(estimate.fee)}</span>
             </div>
+            <div className="flex justify-between text-base pt-2 border-t border-[#E7ECF3]">
+              <span className="font-bold text-gray-900">Estimated total</span>
+              <span className="font-extrabold text-[#168BFF]">{fmtUsd(estimate.total)}</span>
+            </div>
+            <p className="text-[11px] text-gray-400">
+              Estimate only. At launch the server recalculates the fee (currently 15%) and checks your balance
+              before holding funds. If funds are insufficient, launch is blocked with a clear message.
+            </p>
           </div>
-        )}
-
-        {/* Step 4: Content & Instructions */}
-        {step === 4 && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Step-by-Step Instructions for Contributor</label>
-              <textarea
-                rows={5}
-                value={instructions}
-                onChange={(e) => setInstructions(e.target.value)}
-                placeholder="1. Visit our verified profile at...\n2. Share genuine feedback or publish the creative post...\n3. Take full screenshot with timestamp and submit..."
-                className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl font-mono focus:outline-none focus:border-[#168BFF]"
-              />
-            </div>
-            <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-900 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#168BFF] shrink-0" />
-              <span>eBiz AI vision system &amp; human moderators use these instructions to audit 100% of proof authenticity.</span>
-            </div>
-          </div>
-        )}
-
-        {/* Step 5: Budget Calculator */}
-        {step === 5 && (
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Reward Per Contributor (AED 🇦🇪)</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2 text-gray-400 font-bold text-xs font-mono">AED</span>
-                  <input
-                    type="number"
-                    step="0.50"
-                    min="2.00"
-                    value={rewardPerTask}
-                    onChange={(e) => setRewardPerTask(e.target.value)}
-                    className="w-full pl-12 pr-3 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl font-bold font-mono"
-                  />
-                </div>
-                <span className="text-[10px] text-gray-400 mt-1 block">Recommended: AED 12 - 25 for Trustpilot / Google reviews</span>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Target Number of Contributors</label>
-                <input
-                  type="number"
-                  min="5"
-                  value={numContributors}
-                  onChange={(e) => setNumContributors(e.target.value)}
-                  className="w-full px-3 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl font-bold font-mono"
-                />
-                <span className="text-[10px] text-gray-400 mt-1 block">Verified contributors only</span>
-              </div>
-            </div>
-
-            {/* Live Cost Breakdown Card */}
-            <div className="p-5 rounded-2xl bg-[#F7F9FC] border border-[#E4EAF2] space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                  Budget Calculation Summary (AED 🇦🇪)
-                </h4>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  CBUAE Escrow Protected
-                </span>
-              </div>
-              
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-600">Contributor Rewards ({contributorsCount} &times; AED {rewardPerTask})</span>
-                <span className="font-bold text-gray-900 font-mono">AED {(taskSubtotalCents / 100).toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-600">Platform Fee (15% - 100% AI &amp; Admin Auditing Included)</span>
-                <span className="font-bold text-gray-900 font-mono">AED {(feeCents / 100).toFixed(2)}</span>
-              </div>
-
-              <div className="pt-2 border-t border-gray-200 flex justify-between text-sm">
-                <div>
-                  <span className="font-bold text-gray-900 block">Total Escrow Budget</span>
-                  <span className="text-[10px] text-gray-500">Refundable balance if slots are unfilled</span>
-                </div>
-                <span className="font-black text-[#168BFF] text-lg font-mono">AED {(totalBudgetCents / 100).toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 6: Review & Launch */}
-        {step === 6 && (
-          <div className="space-y-4">
-            <h3 className="text-base font-bold text-gray-900">Ready to Deploy on eBiz Network</h3>
-            <div className="space-y-2.5 p-4 rounded-2xl bg-gray-50 text-xs">
-              <p><strong>Title:</strong> {title || `${emirateState} Community Group Brand Broadcast`}</p>
-              <p><strong>Campaign Type:</strong> {taskType === 'community-broadcast' ? 'Local Community Group Broadcast' : taskType.toUpperCase()}</p>
-              <p><strong>Geographic Target:</strong> <span className="font-semibold text-emerald-800">🇦🇪 UAE → {emirateState} → {cityArea}</span></p>
-              {taskType === 'community-broadcast' && (
-                <p><strong>Community Channel:</strong> <span className="font-semibold text-blue-700">{targetChannelName} ({targetChannelType})</span></p>
-              )}
-              <p><strong>Retention Escrow Lock:</strong> <span className="font-mono text-amber-800 font-semibold">{retentionHours} Hours (T+0, T+24h, T+72h Anti-Deletion Hold)</span></p>
-              <p><strong>Contributors:</strong> {contributorsCount} Verified Identity Contributors</p>
-              <p><strong>Total Escrow:</strong> <span className="font-mono font-bold text-[#168BFF]">AED {(totalBudgetCents / 100).toFixed(2)}</span></p>
-            </div>
-
-            {/* Zero Overhead Banner */}
-            <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 text-xs text-emerald-900 space-y-1">
-              <div className="flex items-center gap-2 font-bold">
-                <ShieldCheck className="w-4 h-4 text-[#16B364] shrink-0" />
-                <span>Zero Verification Overhead for Business Owners</span>
-              </div>
-              <p className="text-[11px] text-emerald-800 leading-relaxed">
-                All proof screenshots and URLs are 100% verified by eBiz AI computer vision and our dedicated admin compliance team. Payouts are only released after validation.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Wizard Controls */}
-        <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
-          {step > 1 ? (
-            <button
-              type="button"
-              onClick={() => setStep(step - 1)}
-              className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 flex items-center gap-1.5"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Previous</span>
-            </button>
-          ) : <div />}
-
-          {step < 6 ? (
-            <button
-              type="button"
-              onClick={() => setStep(step + 1)}
-              className="px-6 py-2.5 bg-[#07182F] hover:bg-[#168BFF] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
-            >
-              <span>Next</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleLaunch}
-              disabled={submitting}
-              className="px-8 py-3.5 bg-gradient-brand text-white rounded-xl text-xs font-black shadow-md hover:shadow-lg transition-all flex items-center gap-2"
-            >
-              <Rocket className="w-4 h-4" />
-              <span>{submitting ? 'Escrowing Budget & Deploying...' : 'Launch Campaign'}</span>
-            </button>
-          )}
         </div>
+      )}
 
+      {/* ============ STEP 5: REVIEW ============ */}
+      {step === 5 && (
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-4">
+          <h3 className="text-sm font-extrabold text-gray-900">Review before launch</h3>
+          <dl className="text-sm space-y-2.5">
+            {[
+              ['Title', title],
+              ['Task type', selectedCategory?.name || '—'],
+              ['Target country', COUNTRY_OPTIONS.find((c) => c.code === country)?.label || country],
+              ['Reward / task', fmtUsd(rewardCents)],
+              ['Contributors', String(contributorCount || 0)],
+              ['Proof', proofRequirements.join(', ') || '—'],
+              ['Min. contributor level', minLevel || 'Any'],
+              ['Retention', retentionHours ? `${retentionHours} hours` : 'None'],
+              ['Estimated total', `${fmtUsd(estimate.total)} (incl. est. ${ESTIMATED_FEE_PERCENT}% fee)`],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-4 border-b border-gray-50 pb-2">
+                <dt className="text-gray-500">{k}</dt>
+                <dd className="font-bold text-gray-900 text-right">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-800">
+            <p className="font-bold mb-1">What happens at launch</p>
+            <p>
+              The server creates your campaign, calculates the real platform fee, and holds the total from your
+              balance. If your balance is too low, the launch is stopped with a clear funding error — nothing is
+              created and nothing is charged.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ============ STEP 6: LAUNCH ============ */}
+      {step === 6 && (
+        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 space-y-5 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-[#168BFF]/10 text-[#168BFF] flex items-center justify-center mx-auto">
+            <Rocket className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="text-lg font-extrabold text-gray-900">Ready to go live?</h3>
+            <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+              Launching creates the campaign and holds an estimated {fmtUsd(estimate.total)} from your balance.
+              You can pause it anytime afterwards.
+            </p>
+          </div>
+
+          {launchError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 text-left">
+              <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+              <div className="text-sm">
+                <p className="font-bold text-red-700">Launch failed</p>
+                <p className="text-red-600 mt-1">{launchError}</p>
+                {Object.keys(fieldErrors).length > 0 && (
+                  <ul className="text-red-600 mt-2 space-y-1 list-disc list-inside">
+                    {Object.entries(fieldErrors).map(([k, msgs]) =>
+                      msgs.map((m, i) => (
+                        <li key={`${k}-${i}`} className="text-xs">
+                          <span className="font-bold">{k}:</span> {m}
+                        </li>
+                      )),
+                    )}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            disabled={launching}
+            onClick={() => void handleLaunch()}
+            className="w-full px-6 py-3.5 bg-[#168BFF] hover:bg-[#1275DD] disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2"
+          >
+            {launching ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Launching…
+              </>
+            ) : (
+              <>
+                <Rocket className="w-4 h-4" /> Launch Campaign
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
+      {/* Nav buttons */}
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={back}
+          disabled={step === 1 || launching}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 disabled:opacity-40 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </button>
+        {step < 6 ? (
+          <button
+            type="button"
+            onClick={next}
+            disabled={categoriesLoading && step === 2}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#07182F] hover:bg-[#168BFF] disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-colors"
+          >
+            Continue <ArrowRight className="w-4 h-4" />
+          </button>
+        ) : (
+          <span className="text-[11px] text-gray-400">Review the summary above, then launch.</span>
+        )}
       </div>
-
     </div>
   );
 };

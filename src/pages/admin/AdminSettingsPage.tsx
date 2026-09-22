@@ -1,222 +1,263 @@
-import React, { useState } from 'react';
-import {
-  Settings,
-  Sliders,
-  DollarSign,
-  ShieldAlert,
-  Save,
-  CheckCircle2,
-  RefreshCw,
-  Lock,
-  Cpu,
-} from 'lucide-react';
-import { AvatarUploadControl } from '../../components/common/AvatarUploadControl';
-import { useAuth } from '../../context/AuthContext';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Settings, Save, Loader2, AlertCircle, CheckCircle2, Sliders, ShieldAlert, ToggleLeft } from 'lucide-react';
+import { adminApi, getApiError } from '../../api';
+import type { FeatureFlag, SystemSetting } from '../../types';
+import { WITHDRAWAL_THRESHOLD_OPTIONS } from '../../types';
+import { EmptyState } from '../../components/common/EmptyState';
+
+/**
+ * Platform settings. Reads/writes real system settings (GET + PATCH
+ * /admin/system-settings) and real feature flags (GET /admin/feature-flags).
+ * There are no payment-gateway toggles here — crypto is out of scope per the
+ * owner decision, and gateways live under the superadmin payments endpoints.
+ *
+ * Withdrawal threshold: stored on the `withdrawal_minimum_usd` system-setting
+ * key as a provisional control (default $50 per the mission brief). The
+ * canonical withdrawal-rule source is the ops withdrawal-rules API managed by
+ * Worker C; this control should be reconciled with it.
+ */
+const WITHDRAWAL_KEY = 'withdrawal_minimum_usd';
+const DEFAULT_THRESHOLD = 50;
+
+const toMap = (list: SystemSetting[]): Record<string, string> => {
+  const m: Record<string, string> = {};
+  for (const s of list) m[s.key] = s.value == null ? '' : String(s.value);
+  return m;
+};
 
 export const AdminSettingsPage: React.FC = () => {
-  const { user } = useAuth();
-  const [takeRate, setTakeRate] = useState('15.0');
-  const [minCashout, setMinCashout] = useState('5.00');
-  const [aiThreshold, setAiThreshold] = useState('95.0');
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [enablePayPal, setEnablePayPal] = useState(true);
-  const [enableWise, setEnableWise] = useState(true);
-  const [enableBank, setEnableBank] = useState(true);
-  const [enableCrypto, setEnableCrypto] = useState(true);
-  const [savedSuccess, setSavedSuccess] = useState(false);
+  const [settings, setSettings] = useState<SystemSetting[]>([]);
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [flags, setFlags] = useState<FeatureFlag[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [togglingKey, setTogglingKey] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [sRes, fRes] = await Promise.all([adminApi.systemSettings(), adminApi.featureFlags()]);
+      const sList: SystemSetting[] = (sRes as { data?: SystemSetting[] }).data ?? [];
+      const fList: FeatureFlag[] = (fRes as { data?: FeatureFlag[] }).data ?? [];
+      setSettings(sList);
+      setDrafts(toMap(sList));
+      setFlags(fList);
+    } catch (e) {
+      setError(getApiError(e, 'Could not load platform settings.'));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const saveSetting = async (key: string) => {
+    setSavingKey(key);
+    setNotice(null);
+    try {
+      const res = await adminApi.updateSystemSetting(key, drafts[key]);
+      if ((res as { success?: boolean }).success !== false) {
+        setNotice({ kind: 'ok', text: `Setting "${key}" saved.` });
+        await load();
+      } else {
+        setNotice({ kind: 'err', text: (res as { message?: string }).message || `Could not save "${key}".` });
+      }
+    } catch (e) {
+      setNotice({ kind: 'err', text: getApiError(e, `Could not save "${key}".`) });
+    } finally {
+      setSavingKey(null);
+    }
   };
 
-  return (
-    <div className="space-y-6 text-left font-sans max-w-5xl mx-auto">
-      
-      {/* =========================================================================
-          1. HEADER
-         ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
-            Global Platform Configuration
-          </h1>
-          <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
-            Configure system fees, automated verification tolerance thresholds, and financial disbursement gates.
-          </p>
-        </div>
+  const toggleFlag = async (flag: FeatureFlag) => {
+    setTogglingKey(flag.key);
+    setNotice(null);
+    try {
+      const res = await adminApi.updateFeatureFlag(flag.key, !flag.is_enabled);
+      if (res.success) {
+        setFlags((prev) => prev.map((f) => (f.key === flag.key ? { ...f, is_enabled: !flag.is_enabled } : f)));
+      } else {
+        setNotice({ kind: 'err', text: (res as { message?: string }).message || 'Could not update feature flag.' });
+      }
+    } catch (e) {
+      setNotice({ kind: 'err', text: getApiError(e, 'Could not update feature flag.') });
+    } finally {
+      setTogglingKey(null);
+    }
+  };
 
-        {savedSuccess && (
-          <span className="text-xs text-[#16B364] font-bold flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Settings saved successfully!</span>
-          </span>
+  const threshold = useMemo(() => {
+    const v = parseInt(drafts[WITHDRAWAL_KEY] || '', 10);
+    return WITHDRAWAL_THRESHOLD_OPTIONS.includes(v as (typeof WITHDRAWAL_THRESHOLD_OPTIONS)[number])
+      ? v
+      : DEFAULT_THRESHOLD;
+  }, [drafts]);
+
+  const saveThreshold = async (usd: number) => {
+    setSavingKey(WITHDRAWAL_KEY);
+    setNotice(null);
+    try {
+      const res = await adminApi.updateSystemSetting(WITHDRAWAL_KEY, String(usd));
+      if ((res as { success?: boolean }).success !== false) {
+        setNotice({ kind: 'ok', text: `Withdrawal threshold set to $${usd}.` });
+        await load();
+      } else {
+        setNotice({ kind: 'err', text: (res as { message?: string }).message || 'Could not save threshold.' });
+      }
+    } catch (e) {
+      setNotice({ kind: 'err', text: getApiError(e, 'Could not save threshold.') });
+    } finally {
+      setSavingKey(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16 text-gray-500">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading settings…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+        <div className="text-sm">
+          <p className="font-bold text-red-700">Could not load settings</p>
+          <p className="text-red-600 mt-1">{error}</p>
+          <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 max-w-4xl">
+      <div>
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Platform Settings</h1>
+        <p className="text-sm text-gray-500 mt-1">Every value below is read from and written to the live API.</p>
+      </div>
+
+      {notice && (
+        <div
+          className={`rounded-xl px-4 py-3 text-xs font-bold flex items-center gap-2 ${
+            notice.kind === 'ok' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'
+          }`}
+        >
+          {notice.kind === 'ok' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          {notice.text}
+        </div>
+      )}
+
+      {/* Withdrawal threshold */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-1">
+          <ShieldAlert className="w-4 h-4 text-[#168BFF]" /> Withdrawal Threshold
+        </h3>
+        <p className="text-xs text-gray-500 mb-4">
+          Minimum balance a contributor must hold before they can request a withdrawal. Default ${DEFAULT_THRESHOLD}.
+          Currently provisional — stored as a system setting and reconciled with the ops withdrawal-rules API.
+        </p>
+        <div className="flex gap-2 flex-wrap">
+          {WITHDRAWAL_THRESHOLD_OPTIONS.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              disabled={savingKey === WITHDRAWAL_KEY}
+              onClick={() => void saveThreshold(opt)}
+              className={`px-5 py-2.5 rounded-xl text-sm font-extrabold transition-colors disabled:opacity-50 ${
+                threshold === opt
+                  ? 'bg-[#07182F] text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              ${opt}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* System settings */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-4">
+          <Settings className="w-4 h-4 text-[#168BFF]" /> System Settings
+        </h3>
+        {settings.length === 0 ? (
+          <EmptyState icon={Settings} title="No system settings" description="No system settings have been defined on the backend yet." />
+        ) : (
+          <div className="space-y-3">
+            {settings.map((s) => (
+              <div key={s.key} className="flex flex-col sm:flex-row sm:items-center gap-2.5">
+                <div className="sm:w-64 shrink-0">
+                  <p className="text-xs font-bold text-gray-900 font-mono">{s.key}</p>
+                  {s.description && <p className="text-[11px] text-gray-400">{s.description}</p>}
+                </div>
+                <input
+                  value={drafts[s.key] ?? ''}
+                  onChange={(e) => setDrafts((d) => ({ ...d, [s.key]: e.target.value }))}
+                  className="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+                />
+                <button
+                  type="button"
+                  disabled={savingKey === s.key}
+                  onClick={() => void saveSetting(s.key)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#07182F] hover:bg-[#168BFF] disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-colors shrink-0"
+                >
+                  {savingKey === s.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  Save
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
-      {/* =========================================================================
-          2. SETTINGS FORM
-         ========================================================================= */}
-      <form onSubmit={handleSave} className="space-y-6">
-        <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#E7ECF3] shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6">
-            <div className="shrink-0">
-              <AvatarUploadControl size="lg" showRemove />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <div>
-                  <h2 className="text-base font-black text-gray-900">Admin Profile Photo</h2>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Updates {user?.name || 'your admin account'} across the command center top bar and profile surfaces.
-                  </p>
+      {/* Feature flags */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-4">
+          <Sliders className="w-4 h-4 text-[#168BFF]" /> Feature Flags
+        </h3>
+        {flags.length === 0 ? (
+          <EmptyState icon={ToggleLeft} title="No feature flags" description="No feature flags are defined on the backend yet." />
+        ) : (
+          <div className="space-y-2.5">
+            {flags.map((f) => (
+              <div
+                key={f.key}
+                className="flex items-center justify-between gap-4 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl"
+              >
+                <div className="min-w-0">
+                  <p className="text-xs font-extrabold text-gray-900 font-mono">{f.key}</p>
+                  <p className="text-[11px] text-gray-500">{f.description || f.name || '—'}</p>
                 </div>
-                <span className="inline-flex w-fit items-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-[#168BFF]">
-                  Synced instantly
-                </span>
+                <button
+                  type="button"
+                  disabled={togglingKey === f.key}
+                  onClick={() => void toggleFlag(f)}
+                  className={`relative w-12 h-7 rounded-full transition-colors shrink-0 disabled:opacity-50 ${
+                    f.is_enabled ? 'bg-emerald-500' : 'bg-gray-300'
+                  }`}
+                  title={f.is_enabled ? 'Disable' : 'Enable'}
+                >
+                  <span
+                    className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                      f.is_enabled ? 'left-6' : 'left-1'
+                    }`}
+                  />
+                </button>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
-
-        
-        {/* Core Financial Margins */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] shadow-xs space-y-5">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-gray-100">
-            <DollarSign className="w-5 h-5 text-[#168BFF]" />
-            <h2 className="text-base font-black text-gray-900">Financial Rules &amp; Margins</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700">Platform Take-Rate Margin (%)</label>
-              <input
-                type="number"
-                step="0.1"
-                value={takeRate}
-                onChange={(e) => setTakeRate(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
-                required
-              />
-              <span className="text-[10px] text-gray-400">Escrow deduction percentage collected on campaign creation.</span>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700">Minimum Contributor Cashout Threshold ($)</label>
-              <input
-                type="number"
-                step="0.50"
-                value={minCashout}
-                onChange={(e) => setMinCashout(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
-                required
-              />
-              <span className="text-[10px] text-gray-400">Enforces minimum wallet balance before withdrawal is permitted.</span>
-            </div>
-          </div>
-        </div>
-
-        {/* AI Verification Guardrails */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] shadow-xs space-y-5">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-gray-100">
-            <Cpu className="w-5 h-5 text-[#168BFF]" />
-            <h2 className="text-base font-black text-gray-900">Computer Vision OCR Tolerance</h2>
-          </div>
-
-          <div className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700">Auto-Approval Confidence Threshold (%)</label>
-              <input
-                type="number"
-                step="0.5"
-                value={aiThreshold}
-                onChange={(e) => setAiThreshold(e.target.value)}
-                className="w-full max-w-xs px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
-                required
-              />
-              <span className="text-[10px] text-gray-400 block">
-                Submissions with OCR match scores above this threshold are approved instantly. Below this, routed to manual review queue.
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Payout Rails Gateways */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] shadow-xs space-y-5">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-gray-100">
-            <Lock className="w-5 h-5 text-[#168BFF]" />
-            <h2 className="text-base font-black text-gray-900">Active Payout Rail Gateways</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between">
-              <div>
-                <span className="font-bold text-gray-900 block">PayPal Instant API</span>
-                <span className="text-[10px] text-gray-500">Zero fee automated disbursals</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={enablePayPal}
-                onChange={() => setEnablePayPal(!enablePayPal)}
-                className="rounded text-[#168BFF]"
-              />
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between">
-              <div>
-                <span className="font-bold text-gray-900 block">Wise Transfer Gateway</span>
-                <span className="text-[10px] text-gray-500">Multi-currency cross-border accounts</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={enableWise}
-                onChange={() => setEnableWise(!enableWise)}
-                className="rounded text-[#168BFF]"
-              />
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between">
-              <div>
-                <span className="font-bold text-gray-900 block">Direct Bank ACH / Wire</span>
-                <span className="text-[10px] text-gray-500">Direct deposit for US &amp; EU</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={enableBank}
-                onChange={() => setEnableBank(!enableBank)}
-                className="rounded text-[#168BFF]"
-              />
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between">
-              <div>
-                <span className="font-bold text-gray-900 block">Polygon USDC / USDT (Crypto)</span>
-                <span className="text-[10px] text-gray-500">Smart contract treasury vault</span>
-              </div>
-              <input
-                type="checkbox"
-                checked={enableCrypto}
-                onChange={() => setEnableCrypto(!enableCrypto)}
-                className="rounded text-[#168BFF]"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Action Button */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="px-6 py-3 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] text-white font-bold text-xs shadow-md shadow-blue-500/20 flex items-center gap-2 transition-all"
-          >
-            <Save className="w-4 h-4" />
-            <span>Save Global Settings</span>
-          </button>
-        </div>
-
-      </form>
-
+        )}
+      </div>
     </div>
   );
 };

@@ -1,341 +1,297 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Megaphone,
   Plus,
   Search,
-  Filter,
-  MoreVertical,
   Play,
   Pause,
-  ArrowRight,
-  TrendingUp,
-  DollarSign,
-  Users,
-  CheckCircle2,
+  Eye,
+  Loader2,
   AlertCircle,
-  Copy,
-  ExternalLink,
+  Zap,
+  Wallet,
+  CheckSquare,
+  Target,
 } from 'lucide-react';
-import {
-  InstagramLogo,
-  TikTokLogo,
-  YouTubeLogo,
-  FacebookLogo,
-  WhatsAppLogo,
-} from '../../components/common/PlatformIcons';
-import { usePlatform } from '../../context/PlatformDataContext';
-import { businessApi } from '../../api/business';
-import { getApiError } from '../../api/client';
-import { mapCampaignForUi } from '../../utils/apiMappers';
+import { businessApi, getApiError } from '../../api';
+import type { Campaign } from '../../types';
+import { money } from '../../utils/apiMappers';
+import { EmptyState } from '../../components/common/EmptyState';
+
+type Tab = 'active' | 'draft' | 'paused' | 'all';
 
 export const BusinessCampaignsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'all' | 'active' | 'paused' | 'completed' | 'draft'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedChannel, setSelectedChannel] = useState<string>('all');
-  const { campaigns: platformCampaigns, toggleCampaignStatus } = usePlatform();
-  const [liveCampaigns, setLiveCampaigns] = useState<any[]>([]);
-  const [loadError, setLoadError] = useState('');
-  const usingLiveData = liveCampaigns.length > 0;
+  const navigate = useNavigate();
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [tab, setTab] = useState<Tab>('all');
+  const [togglingId, setTogglingId] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  useEffect(() => {
-    businessApi.campaigns()
-      .then((res) => {
-        if (res.success) {
-          setLiveCampaigns(res.data.map(mapCampaignForUi));
-          setLoadError('');
-        }
-      })
-      .catch((error) => setLoadError(getApiError(error)));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await businessApi.campaigns();
+      if (res.success) {
+        setCampaigns(res.data || []);
+      } else {
+        setError(res.message || 'Could not load campaigns.');
+      }
+    } catch (e) {
+      setError(getApiError(e, 'Could not load campaigns.'));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const sourceCampaigns = usingLiveData ? liveCampaigns : platformCampaigns;
-  const campaigns = sourceCampaigns.map((c) => {
-    const isInstagram = c.platform.toLowerCase().includes('instagram');
-    const isTikTok = c.platform.toLowerCase().includes('tiktok');
-    const isYouTube = c.platform.toLowerCase().includes('youtube');
-    const isFacebook = c.platform.toLowerCase().includes('facebook');
-    const icon = isInstagram ? InstagramLogo : isTikTok ? TikTokLogo : isYouTube ? YouTubeLogo : isFacebook ? FacebookLogo : WhatsAppLogo;
+  useEffect(() => {
+    void load();
+  }, [load]);
 
-    const statusColor =
-      c.status === 'Live'
-        ? 'bg-emerald-50 text-[#16B364] border-emerald-200'
-        : c.status === 'Paused'
-        ? 'bg-amber-50 text-amber-700 border-amber-200'
-        : c.status === 'Completed'
-        ? 'bg-blue-50 text-[#168BFF] border-blue-200'
-        : 'bg-red-50 text-red-700 border-red-200';
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return campaigns.filter((c) => {
+      const tabOk =
+        tab === 'all' ||
+        (tab === 'active' && c.status === 'active') ||
+        (tab === 'draft' && c.status === 'draft') ||
+        (tab === 'paused' && c.status === 'paused');
+      const qOk = !q || c.title.toLowerCase().includes(q);
+      return tabOk && qOk;
+    });
+  }, [campaigns, search, tab]);
 
-    return {
-      id: c.id,
-      title: c.title,
-      platform: c.platform,
-      icon,
-      status: c.status === 'Live' ? 'Active' : c.status,
-      statusColor,
-      completed: c.slotsTaken,
-      target: c.slotsTotal,
-      reward: c.reward,
-      spent: c.spent,
-      budget: c.totalBudget,
-      matchRate: '99.2%',
-      created: c.created,
-    };
-  });
+  const kpis = useMemo(() => {
+    const active = campaigns.filter((c) => c.status === 'active').length;
+    const totalBudget = campaigns.reduce((s, c) => s + (c.total_budget_cents ?? 0), 0);
+    const verified = campaigns.reduce((s, c) => s + (c.completed_contributors_count ?? 0), 0);
+    const avgCost =
+      campaigns.length > 0
+        ? Math.round(campaigns.reduce((s, c) => s + (c.reward_per_task_cents ?? 0), 0) / campaigns.length)
+        : 0;
+    return { active, totalBudget, verified, avgCost };
+  }, [campaigns]);
 
-  const handleToggleCampaignStatus = async (campaign: any) => {
-    if (!usingLiveData) {
-      toggleCampaignStatus(campaign.id);
-      return;
-    }
-
-    const nextStatus = campaign.status === 'Active' ? 'paused' : 'active';
+  const handleToggle = async (c: Campaign) => {
+    const next = c.status === 'active' ? 'paused' : 'active';
+    if (c.status !== 'active' && c.status !== 'paused') return;
+    setTogglingId(c.id);
+    setActionError(null);
     try {
-      const res = await businessApi.updateCampaignStatus(campaign.rawId || campaign.id, nextStatus);
-      if (res.success) {
-        setLiveCampaigns((items) => items.map((item) => String(item.id) === String(campaign.id) ? mapCampaignForUi(res.data) : item));
-        setLoadError('');
+      const res = await businessApi.updateCampaignStatus(c.id, next);
+      if (res.success && res.data) {
+        setCampaigns((prev) => prev.map((p) => (p.id === c.id ? res.data : p)));
+      } else {
+        setActionError(res.message || 'Could not update campaign status.');
       }
-    } catch (error) {
-      setLoadError(getApiError(error));
+    } catch (e) {
+      setActionError(getApiError(e, 'Could not update campaign status.'));
+    } finally {
+      setTogglingId(null);
     }
   };
 
-  const filteredCampaigns = campaigns.filter((c) => {
-    const matchesTab =
-      activeTab === 'all' ? true : c.status.toLowerCase() === activeTab.toLowerCase();
-    const matchesSearch =
-      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesChannel =
-      selectedChannel === 'all'
-        ? true
-        : c.platform.toLowerCase() === selectedChannel.toLowerCase();
-    return matchesTab && matchesSearch && matchesChannel;
-  });
+  const tabs: { id: Tab; label: string; count: number }[] = [
+    { id: 'active', label: 'Active', count: campaigns.filter((c) => c.status === 'active').length },
+    { id: 'draft', label: 'Drafts', count: campaigns.filter((c) => c.status === 'draft').length },
+    { id: 'paused', label: 'Paused', count: campaigns.filter((c) => c.status === 'paused').length },
+    { id: 'all', label: 'All', count: campaigns.length },
+  ];
+
+  const statusStyle = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-emerald-100 text-emerald-700';
+      case 'draft':
+        return 'bg-gray-100 text-gray-600';
+      case 'paused':
+        return 'bg-amber-100 text-amber-700';
+      case 'completed':
+        return 'bg-blue-100 text-blue-700';
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  };
+
+  const spentOf = (c: Campaign) => Math.max(0, (c.total_budget_cents ?? 0) - (c.remaining_budget_cents ?? 0));
+
+  const kpiCards = [
+    { icon: Zap, label: 'Active Campaigns', value: String(kpis.active), tone: 'text-[#168BFF]', bg: 'bg-blue-100' },
+    { icon: Wallet, label: 'Total Budget', value: money(kpis.totalBudget, 'USD'), tone: 'text-violet-600', bg: 'bg-violet-100' },
+    { icon: CheckSquare, label: 'Verified Tasks', value: kpis.verified.toLocaleString(), tone: 'text-emerald-600', bg: 'bg-emerald-100' },
+    { icon: Target, label: 'Avg. Reward / Task', value: money(kpis.avgCost, 'USD'), tone: 'text-amber-600', bg: 'bg-amber-100' },
+  ];
 
   return (
-    <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
-      
-      {/* =========================================================================
-          1. TITLE BAR & ACTION
-         ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
-            Campaigns Management
-          </h1>
-          <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
-            Monitor, pause, scale, and launch real-user social media task campaigns.
-          </p>
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Campaigns</h1>
+          <p className="text-sm text-gray-500 mt-1">Every campaign you have created, live from the server.</p>
         </div>
-
         <Link
           to="/business/campaigns/create"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
         >
           <Plus className="w-4 h-4" />
-          <span>Launch New Campaign</span>
+          <span>Create Campaign</span>
         </Link>
       </div>
 
-      {/* =========================================================================
-          2. CORE KPI STRIP
-         ========================================================================= */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs">
-          <span className="text-xs text-gray-500 font-medium block">Total Active Budget</span>
-          <span className="text-2xl font-black text-[#101828] mt-1 block">$2,347.50</span>
-          <span className="text-[10px] text-[#16B364] font-bold block mt-0.5">&uarr; $620 added this week</span>
+      {loading && (
+        <div className="flex items-center justify-center py-16 text-gray-500">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading campaigns…
         </div>
+      )}
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs">
-          <span className="text-xs text-gray-500 font-medium block">Total Verified Proofs</span>
-          <span className="text-2xl font-black text-[#101828] mt-1 block">1,555</span>
-          <span className="text-[10px] text-gray-400 block mt-0.5">Across 4 active channels</span>
-        </div>
-
-        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs">
-          <span className="text-xs text-gray-500 font-medium block">Avg. AI Verification Match</span>
-          <span className="text-2xl font-black text-[#16B364] mt-1 block">99.2%</span>
-          <span className="text-[10px] text-gray-400 block mt-0.5">12s median OCR speed</span>
-        </div>
-
-        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs">
-          <span className="text-xs text-gray-500 font-medium block">Active Campaigns</span>
-          <span className="text-2xl font-black text-[#168BFF] mt-1 block">
-            {campaigns.filter((c) => c.status === 'Active').length}
-          </span>
-          <span className="text-[10px] text-gray-400 block mt-0.5">1 in draft queue</span>
-        </div>
-      </div>
-
-      {/* =========================================================================
-          3. CAMPAIGNS TABLE & CONTROLS
-         ========================================================================= */}
-      <div className="bg-white rounded-3xl border border-[#E7ECF3] shadow-xs overflow-hidden space-y-4">
-        {loadError && (
-          <div className="mx-5 mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
-            Live campaign data could not load: {loadError}
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <div className="text-sm">
+            <p className="font-bold text-red-700">Could not load campaigns</p>
+            <p className="text-red-600 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+              Retry
+            </button>
           </div>
-        )}
-        
-        {/* Search, Status Tabs & Filters */}
-        <div className="p-5 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          
-          {/* Status Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0">
-            {[
-              { id: 'all', label: 'All Campaigns' },
-              { id: 'active', label: 'Active' },
-              { id: 'paused', label: 'Paused' },
-              { id: 'completed', label: 'Completed' },
-              { id: 'draft', label: 'Drafts' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-[#07182F] text-white shadow-xs'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {tab.label}
-              </button>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {/* KPI strip — derived from real campaigns only */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {kpiCards.map((c) => (
+              <div key={c.label} className="bg-white rounded-2xl p-4 border border-[#E7ECF3] shadow-xs">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-xl ${c.bg}`}>
+                    <c.icon className={`w-4 h-4 ${c.tone}`} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{c.label}</p>
+                    <p className="text-lg font-extrabold text-gray-900 truncate">{c.value}</p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
-          {/* Search & Channel Filter */}
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search campaigns..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-medium text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
-              />
+          {/* Tabs + search */}
+          <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex gap-2 flex-wrap">
+                {tabs.map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setTab(t.id)}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                      tab === t.id ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {t.label} <span className="opacity-70">({t.count})</span>
+                  </button>
+                ))}
+              </div>
+              <div className="relative sm:ml-auto sm:w-72">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search campaigns…"
+                  className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+                />
+              </div>
             </div>
-
-            <select
-              value={selectedChannel}
-              onChange={(e) => setSelectedChannel(e.target.value)}
-              className="w-full sm:w-40 px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 focus:outline-none focus:border-[#168BFF]"
-            >
-              <option value="all">All Channels</option>
-              <option value="instagram">Instagram</option>
-              <option value="tiktok">TikTok</option>
-              <option value="youtube">YouTube</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="facebook">Facebook</option>
-            </select>
           </div>
-        </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                <th className="py-3.5 px-5">Campaign / Platform</th>
-                <th className="py-3.5 px-5">Status</th>
-                <th className="py-3.5 px-5">Progress</th>
-                <th className="py-3.5 px-5">Reward &bull; Spend</th>
-                <th className="py-3.5 px-5">Match Rate</th>
-                <th className="py-3.5 px-5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-xs">
-              {filteredCampaigns.map((c) => {
-                const Icon = c.icon;
-                const percent = Math.round((c.completed / c.target) * 100);
+          {actionError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs font-bold text-red-700">
+              {actionError}
+            </div>
+          )}
+
+          {/* Campaign grid */}
+          {filtered.length === 0 ? (
+            <EmptyState
+              icon={Megaphone}
+              title={campaigns.length === 0 ? 'No campaigns yet' : 'No campaigns match your filter'}
+              description={
+                campaigns.length === 0
+                  ? 'Create your first campaign to start collecting verified task completions.'
+                  : 'Try a different search term or tab.'
+              }
+              {...(campaigns.length === 0
+                ? { actionLabel: 'Create Campaign', onAction: () => navigate('/business/campaigns/create') }
+                : {})}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              {filtered.map((c) => {
+                const status = c.status;
+                const canToggle = status === 'active' || status === 'paused';
                 return (
-                  <tr key={c.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 px-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <Link
-                            to={`/business/campaigns/${c.id}`}
-                            className="font-bold text-gray-900 hover:text-[#168BFF] transition-colors line-clamp-1 block"
-                          >
-                            {c.title}
-                          </Link>
-                          <span className="text-[10px] text-gray-400 font-mono">
-                            {c.id} &bull; Created {c.created}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-5">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${c.statusColor}`}>
-                        {c.status}
+                  <div
+                    key={c.id}
+                    className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-5 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${statusStyle(status)}`}
+                      >
+                        {status}
                       </span>
-                    </td>
-
-                    <td className="py-4 px-5 min-w-[160px]">
-                      <div className="flex items-center justify-between text-[11px] font-bold mb-1">
-                        <span className="text-gray-900">{c.completed} / {c.target}</span>
-                        <span className="text-gray-500 font-mono">{percent}%</span>
-                      </div>
-                      <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          style={{ width: `${percent}%` }}
-                          className={`h-full rounded-full transition-all ${
-                            percent === 100 ? 'bg-[#16B364]' : 'bg-[#168BFF]'
-                          }`}
-                        />
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-5">
-                      <div className="font-bold text-gray-900">{c.reward} <span className="text-[10px] text-gray-400 font-normal">/ action</span></div>
-                      <div className="text-[10px] text-gray-500 font-mono">
-                        {c.spent} of {c.budget}
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-5">
-                      <span className="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 font-mono">
-                        {c.matchRate}
-                      </span>
-                    </td>
-
-                    <td className="py-4 px-5 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {c.status !== 'Completed' && c.status !== 'Draft' && (
-                          <button
-                            type="button"
-                            onClick={() => handleToggleCampaignStatus(c)}
-                            className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 text-gray-600 transition-colors"
-                            title={c.status === 'Active' ? 'Pause Campaign' : 'Resume Campaign'}
-                          >
-                            {c.status === 'Active' ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                          </button>
-                        )}
-                        <Link
-                          to={`/business/campaigns/${c.id}`}
-                          className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-[#168BFF] hover:text-white text-gray-700 font-bold text-xs transition-colors"
+                      {canToggle && (
+                        <button
+                          type="button"
+                          disabled={togglingId === c.id}
+                          onClick={() => void handleToggle(c)}
+                          title={status === 'active' ? 'Pause campaign' : 'Resume campaign'}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-[#168BFF] hover:bg-blue-50 transition-colors disabled:opacity-50"
                         >
-                          Details
-                        </Link>
+                          {status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        </button>
+                      )}
+                    </div>
+
+                    <h3 className="text-sm font-extrabold text-gray-900 mb-1">{c.title}</h3>
+                    <p className="text-[11px] text-gray-500 line-clamp-2 mb-4">{c.description}</p>
+
+                    <div className="grid grid-cols-3 gap-2 text-center mb-4">
+                      <div className="bg-gray-50 rounded-xl py-2 px-1">
+                        <p className="text-xs font-extrabold text-gray-900">{money(c.reward_per_task_cents, 'USD')}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase">per task</p>
                       </div>
-                    </td>
-                  </tr>
+                      <div className="bg-gray-50 rounded-xl py-2 px-1">
+                        <p className="text-xs font-extrabold text-gray-900">
+                          {(c.completed_contributors_count ?? 0)}/{(c.target_contributors_count ?? 0)}
+                        </p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase">done</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl py-2 px-1">
+                        <p className="text-xs font-extrabold text-gray-900">{money(spentOf(c), 'USD')}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase">spent</p>
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/business/campaigns/${c.id}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
+                    >
+                      <Eye className="w-3.5 h-3.5" /> View details
+                    </Link>
+                  </div>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };

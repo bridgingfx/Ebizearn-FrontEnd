@@ -1,317 +1,176 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Activity,
-  DollarSign,
   Users,
+  Megaphone,
   ShieldCheck,
   Receipt,
-  Megaphone,
-  CheckCircle2,
-  AlertTriangle,
+  FileCheck,
+  AlertCircle,
+  Loader2,
   ArrowRight,
-  ShieldAlert,
-  Clock,
-  TrendingUp,
-  Cpu,
-  RefreshCw,
 } from 'lucide-react';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { usePlatform } from '../../context/PlatformDataContext';
-import { useAuth } from '../../context/AuthContext';
-import { adminApi } from '../../api/admin';
-import { getApiError } from '../../api/client';
+import { adminApi, getApiError } from '../../api';
+import type { AdminDashboardMetrics } from '../../types';
+import { EmptyState } from '../../components/common/EmptyState';
 
+/**
+ * Admin overview. Every number comes from GET /admin/dashboard. There are no
+ * GMV charts, no fabricated event streams, and no demo fallbacks — when the
+ * API has no data, the queues simply show as empty.
+ */
 export const AdminOverviewPage: React.FC = () => {
-  const { campaigns, payouts, submissions } = usePlatform();
-  const { user } = useAuth();
-  const isSuperAdmin = user?.role === 'superadmin';
-  const [dashboardMetrics, setDashboardMetrics] = useState<any | null>(null);
-  const [loadError, setLoadError] = useState('');
+  const [metrics, setMetrics] = useState<AdminDashboardMetrics | null>(null);
+  const [verificationQueue, setVerificationQueue] = useState<unknown[]>([]);
+  const [fraudAlerts, setFraudAlerts] = useState<unknown[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    adminApi.dashboard()
-      .then((res) => {
-        if (res.success) {
-          setDashboardMetrics(res.data.metrics);
-          setLoadError('');
-        }
-      })
-      .catch((error) => setLoadError(getApiError(error)));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [dash, ver, fraud] = await Promise.all([
+        adminApi.dashboard(),
+        adminApi.verificationQueue(),
+        adminApi.fraudAlerts(),
+      ]);
+      if (dash.success) setMetrics(dash.data.metrics);
+      if (ver.success) setVerificationQueue((ver.data || []).slice(0, 5));
+      if (fraud.success) setFraudAlerts((fraud.data || []).slice(0, 5));
+    } catch (e) {
+      setError(getApiError(e, 'Could not load admin dashboard.'));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const pendingVerificationCount = dashboardMetrics?.pending_verification ?? submissions.filter((s) => s.status === 'under_review').length;
-  const pendingPayouts = payouts.filter((p) => p.status === 'requested' || p.status === 'processing');
-  const pendingPayoutsTotalCents = pendingPayouts.reduce((acc, p) => acc + (p.amountCents || 0), 0);
-  const pendingPayoutsCount = dashboardMetrics?.pending_payouts ?? pendingPayouts.length;
-  const activeCampaignCount = dashboardMetrics?.active_campaigns ?? campaigns.length;
+  useEffect(() => {
+    void load();
+  }, [load]);
 
-  const gmvData = [
-    { day: 'Apr 1', gmv: 34000, revenue: 5100 },
-    { day: 'Apr 6', gmv: 42000, revenue: 6300 },
-    { day: 'Apr 11', gmv: 58000, revenue: 8700 },
-    { day: 'Apr 16', gmv: 71000, revenue: 10650 },
-    { day: 'Apr 21', gmv: 85000, revenue: 12750 },
-    { day: 'Apr 26', gmv: 98000, revenue: 14700 },
-    { day: 'Apr 30', gmv: 115000, revenue: 17250 },
+  const cards = [
+    { icon: Users, label: 'Total Contributors', value: metrics?.total_contributors ?? '—', tone: 'text-blue-600', bg: 'bg-blue-100' },
+    { icon: Megaphone, label: 'Active Campaigns', value: metrics?.active_campaigns ?? '—', tone: 'text-emerald-600', bg: 'bg-emerald-100' },
+    { icon: FileCheck, label: 'Pending Verification', value: metrics?.pending_verification ?? '—', tone: 'text-amber-600', bg: 'bg-amber-100' },
+    { icon: Receipt, label: 'Pending Payouts', value: metrics?.pending_payouts ?? '—', tone: 'text-violet-600', bg: 'bg-violet-100' },
+    { icon: ShieldCheck, label: 'Open Fraud Alerts', value: metrics?.fraud_alerts_count ?? '—', tone: 'text-red-600', bg: 'bg-red-100' },
   ];
 
-  const liveActivity = [
-    { type: 'payout', title: 'Automated PayPal Payout ($18.50)', user: 'Sarah K. (UAE)', time: '1m ago', tag: 'Double-Entry OK' },
-    { type: 'submission', title: 'TikTok Duet Proof Verified (+$3.50)', user: 'Marcus V. (USA)', time: '3m ago', tag: 'AI 99.4% Match' },
-    { type: 'campaign', title: 'New Campaign Created: $1,500 Escrow', user: 'Acme Brands Inc.', time: '7m ago', tag: 'Funded' },
-    { type: 'kyc', title: 'Contributor KYC Verified (Level 3 Pro)', user: 'Chen W. (Singapore)', time: '12m ago', tag: 'ID Approved' },
-    { type: 'fraud', title: 'Duplicate IP Submission Blocked', user: 'Flagged Contributor #9021', time: '18m ago', tag: 'Auto-Blocked' },
-  ];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16 text-gray-500">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading overview…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+        <div className="text-sm">
+          <p className="font-bold text-red-700">Could not load admin dashboard</p>
+          <p className="text-red-600 mt-1">{error}</p>
+          <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
-      
-      {/* =========================================================================
-          1. HEADER & SYSTEM STATUS PILL
-         ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
-            {isSuperAdmin ? 'Super Admin Command Center' : 'Moderator Operations Hub'}
-          </h1>
-          <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
-            {isSuperAdmin
-              ? 'Network-wide financial telemetry, user governance, AI proof queue, and system health.'
-              : 'Daily verification, payout review, campaign moderation, and support operations.'}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <span className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200 text-xs font-bold">
-            <span className="w-2 h-2 rounded-full bg-[#16B364] animate-ping" />
-            <span>All Systems Nominal &bull; OCR AI 99.98%</span>
-          </span>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Admin Overview</h1>
+        <p className="text-sm text-gray-500 mt-1">Live platform state — every figure is served by the API.</p>
       </div>
 
-      {loadError && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
-          Live admin dashboard metrics could not load: {loadError}
-        </div>
-      )}
-
-      {/* =========================================================================
-          2. CORE EXECUTIVE METRICS
-         ========================================================================= */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {isSuperAdmin ? (
-          <>
-            <div className="p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs">
-              <span className="text-xs text-gray-500 font-medium block">Total Platform GMV</span>
-              <span className="text-2xl sm:text-3xl font-black text-[#101828] mt-1 block">$1,480,250</span>
-              <span className="text-[10px] text-[#16B364] font-bold block mt-1">&uarr; +24.8% vs last month</span>
+      {/* Metric cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        {cards.map((c) => (
+          <div key={c.label} className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs">
+            <div className={`p-2 rounded-xl ${c.bg} w-fit mb-3`}>
+              <c.icon className={`w-4 h-4 ${c.tone}`} />
             </div>
-
-            <div className="p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs">
-              <span className="text-xs text-gray-500 font-medium block">Platform Net Revenue (15%)</span>
-              <span className="text-2xl sm:text-3xl font-black text-[#168BFF] mt-1 block">$222,037.50</span>
-              <span className="text-[10px] text-gray-400 block mt-1">Escrow fees automatically taken</span>
-            </div>
-          </>
-        ) : (
-          <>
-            <Link to="/admin/verification" className="p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs hover:border-blue-300 transition-colors block">
-              <span className="text-xs text-gray-500 font-medium block">Proofs Awaiting Review</span>
-              <span className="text-2xl sm:text-3xl font-black text-[#168BFF] mt-1 block">{pendingVerificationCount}</span>
-              <span className="text-[10px] text-blue-700 font-bold block mt-1">Open verification queue &rarr;</span>
-            </Link>
-
-            <Link to="/admin/support" className="p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs hover:border-purple-300 transition-colors block">
-              <span className="text-xs text-gray-500 font-medium block">Support Watchlist</span>
-              <span className="text-2xl sm:text-3xl font-black text-purple-600 mt-1 block">12</span>
-              <span className="text-[10px] text-purple-700 font-bold block mt-1">Tickets needing action</span>
-            </Link>
-          </>
-        )}
-
-        <div className="p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs">
-          <span className="text-xs text-gray-500 font-medium block">Active Campaigns</span>
-          <span className="text-2xl sm:text-3xl font-black text-[#101828] mt-1 block">{activeCampaignCount}</span>
-          <span className="text-[10px] text-[#16B364] font-bold block mt-1">Live in marketplace</span>
-        </div>
-
-        <Link to="/admin/payouts" className="p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs hover:border-amber-300 transition-colors block">
-          <span className="text-xs text-gray-500 font-medium block">Pending Payout Queue</span>
-          <span className="text-2xl sm:text-3xl font-black text-amber-600 mt-1 block">
-            ${(pendingPayoutsTotalCents / 100).toFixed(2)}
-          </span>
-          <span className="text-[10px] text-amber-700 font-bold block mt-1">
-            {pendingPayoutsCount} requests ready for release &rarr;
-          </span>
-        </Link>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{c.label}</p>
+            <p className="text-xl font-extrabold text-gray-900">{c.value}</p>
+          </div>
+        ))}
       </div>
 
-      {/* =========================================================================
-          3. REVENUE VOLUME CHART & QUICK ACTIONS
-         ========================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Chart */}
-        <div className="lg:col-span-8 bg-white rounded-3xl p-6 border border-[#E7ECF3] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
+      {/* Quick actions */}
+      <div className="grid sm:grid-cols-3 gap-4">
+        {[
+          { to: '/admin/verification', label: 'Verification queue', count: metrics?.pending_verification ?? 0 },
+          { to: '/admin/withdrawals', label: 'Withdrawal queue', count: metrics?.pending_payouts ?? 0 },
+          { to: '/admin/fraud', label: 'Fraud alerts', count: metrics?.fraud_alerts_count ?? 0 },
+        ].map((a) => (
+          <Link
+            key={a.to}
+            to={a.to}
+            className="bg-[#0E1C2F] hover:bg-[#16293f] text-white rounded-2xl p-5 flex items-center justify-between transition-colors"
+          >
             <div>
-              <h2 className="text-base font-black text-gray-900">
-                {isSuperAdmin ? 'Gross Merchandise Value & Net Take-Rate' : 'Operational Review Throughput'}
-              </h2>
-              <p className="text-xs text-gray-500">
-                {isSuperAdmin ? 'Trailing 30 days platform throughput' : 'Queue volume trend for day-to-day moderation'}
-              </p>
+              <p className="text-xs font-bold text-gray-300">{a.label}</p>
+              <p className="text-2xl font-extrabold mt-1">{a.count}</p>
             </div>
-            <span className="text-xs font-bold text-gray-500 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100">
-              {isSuperAdmin ? '30D GMV' : '30D queues'}
-            </span>
-          </div>
-
-          <div className="h-64 w-full pt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={gmvData}>
-                <defs>
-                  <linearGradient id="gmvGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#168BFF" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#168BFF" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="day" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Area type="monotone" dataKey="gmv" stroke="#168BFF" strokeWidth={3} fillOpacity={1} fill="url(#gmvGrad)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Quick Action Rails */}
-        <div className="lg:col-span-4 bg-white rounded-3xl p-6 border border-[#E7ECF3] shadow-xs space-y-4 flex flex-col justify-between">
-          <div>
-            <h2 className="text-base font-black text-gray-900">Administrative Actions</h2>
-            <p className="text-xs text-gray-500">Quick routing for high-priority operations</p>
-          </div>
-
-          <div className="space-y-2.5">
-            <Link
-              to="/admin/payouts"
-              className="p-3.5 rounded-2xl bg-amber-50/60 hover:bg-amber-100/70 border border-amber-200/80 flex items-center justify-between text-xs font-bold text-amber-900 transition-colors"
-            >
-              <div className="flex items-center gap-2.5">
-                <Receipt className="w-4 h-4 text-amber-700" />
-                <span>Review Pending Payouts ({pendingPayoutsCount} pending)</span>
-              </div>
-              <ArrowRight className="w-3.5 h-3.5 text-amber-700" />
-            </Link>
-
-            <Link
-              to="/admin/verification"
-              className="p-3.5 rounded-2xl bg-blue-50/60 hover:bg-blue-100/70 border border-blue-200/80 flex items-center justify-between text-xs font-bold text-blue-900 transition-colors"
-            >
-              <div className="flex items-center gap-2.5">
-                <CheckCircle2 className="w-4 h-4 text-[#168BFF]" />
-                <span>AI Verification Queue ({pendingVerificationCount} proofs)</span>
-              </div>
-              <ArrowRight className="w-3.5 h-3.5 text-[#168BFF]" />
-            </Link>
-
-            <Link
-              to="/admin/fraud"
-              className="p-3.5 rounded-2xl bg-red-50/60 hover:bg-red-100/70 border border-red-200/80 flex items-center justify-between text-xs font-bold text-red-900 transition-colors"
-            >
-              <div className="flex items-center gap-2.5">
-                <ShieldAlert className="w-4 h-4 text-red-600" />
-                <span>Fraud Radar &amp; Sybil Flags</span>
-              </div>
-              <ArrowRight className="w-3.5 h-3.5 text-red-600" />
-            </Link>
-
-            {isSuperAdmin ? (
-              <>
-                <Link
-                  to="/admin/users"
-                  className="p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-between text-xs font-bold text-gray-800 transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Users className="w-4 h-4 text-gray-600" />
-                    <span>Master User Directory</span>
-                  </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-gray-600" />
-                </Link>
-                <Link
-                  to="/admin/email"
-                  className="p-3.5 rounded-2xl bg-cyan-50/60 hover:bg-cyan-100/70 border border-cyan-200/80 flex items-center justify-between text-xs font-bold text-cyan-900 transition-colors"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Cpu className="w-4 h-4 text-cyan-700" />
-                    <span>Email, Feature Flags & Platform Config</span>
-                  </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-cyan-700" />
-                </Link>
-              </>
-            ) : (
-              <Link
-                to="/admin/support"
-                className="p-3.5 rounded-2xl bg-purple-50/60 hover:bg-purple-100/70 border border-purple-200/80 flex items-center justify-between text-xs font-bold text-purple-900 transition-colors"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Clock className="w-4 h-4 text-purple-700" />
-                  <span>Review Support Tickets</span>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-purple-700" />
-              </Link>
-            )}
-          </div>
-
-          <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100 text-[11px] text-gray-500 font-mono text-center">
-            {isSuperAdmin ? 'Double-Entry Ledger Integrity: 100% In Sync' : 'Moderator Scope: Queues, payouts, campaigns, support'}
-          </div>
-        </div>
-
+            <ArrowRight className="w-5 h-5 text-[#D4AF37]" />
+          </Link>
+        ))}
       </div>
 
-      {/* =========================================================================
-          4. LIVE ACTIVITY STREAM
-         ========================================================================= */}
-      <div className="bg-white rounded-3xl border border-[#E7ECF3] shadow-xs overflow-hidden">
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-[#168BFF]" />
-            <h2 className="text-base font-black text-gray-900">Live Platform Event Stream</h2>
+      {/* Real queues preview */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-extrabold text-gray-900">Latest verification items</h3>
+            <Link to="/admin/verification" className="text-[11px] font-bold text-[#168BFF] hover:underline">
+              Open queue
+            </Link>
           </div>
-          <span className="text-xs text-gray-400 font-mono">Real-Time Ingestion</span>
+          {verificationQueue.length === 0 ? (
+            <EmptyState icon={FileCheck} title="Queue is clear" description="No submissions waiting for review right now." />
+          ) : (
+            <div className="space-y-2">
+              {(verificationQueue as { id: number; task?: { title?: string }; user?: { name?: string }; created_at: string }[]).map((s) => (
+                <div key={s.id} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-gray-900 truncate">{s.task?.title || `Submission #${s.id}`}</p>
+                    <p className="text-[10px] text-gray-400">{s.user?.name || ''} · {new Date(s.created_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="divide-y divide-gray-100 text-xs">
-          {liveActivity.map((act, i) => (
-            <div key={i} className="p-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 rounded-full bg-[#168BFF]" />
-                <div>
-                  <span className="font-bold text-gray-900 block">{act.title}</span>
-                  <span className="text-gray-400 text-[11px]">{act.user}</span>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-extrabold text-gray-900">Latest fraud alerts</h3>
+            <Link to="/admin/fraud" className="text-[11px] font-bold text-[#168BFF] hover:underline">
+              Open alerts
+            </Link>
+          </div>
+          {fraudAlerts.length === 0 ? (
+            <EmptyState icon={ShieldCheck} title="No open alerts" description="The fraud service has not raised any alerts." />
+          ) : (
+            <div className="space-y-2">
+              {(fraudAlerts as { id: number; risk_level?: string; reason?: string; created_at?: string }[]).map((a) => (
+                <div key={a.id} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-gray-900 truncate">{a.reason || `Alert #${a.id}`}</p>
+                    <p className="text-[10px] text-gray-400">
+                      {a.risk_level ? `Risk: ${a.risk_level}` : ''} {a.created_at ? `· ${new Date(a.created_at).toLocaleDateString()}` : ''}
+                    </p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 text-[10px] font-mono font-bold">
-                  {act.tag}
-                </span>
-                <span className="text-gray-400 font-mono text-[11px]">{act.time}</span>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       </div>
-
     </div>
   );
 };

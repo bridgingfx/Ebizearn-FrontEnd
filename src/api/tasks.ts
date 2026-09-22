@@ -2,7 +2,7 @@ import { api } from './client';
 import type { Task, TaskSubmission } from '../types';
 
 export const tasksApi = {
-  list: (params?: Record<string, unknown>) => api.get('/tasks', { params }).then((r) => r.data as { success: boolean; data: Task[]; meta?: unknown }),
+  list: (params?: Record<string, unknown>) => api.get('/tasks', { params }).then((r) => r.data as { success: boolean; message?: string; data: Task[]; meta?: unknown }),
   get: (id: number | string) => api.get(`/tasks/${id}`).then((r) => r.data as { success: boolean; data: Task }),
   start: (id: number | string) => api.post(`/tasks/${id}/start`).then((r) => r.data),
   submit: (id: number | string, payload: { proof_url?: string; proof_screenshot?: string | null; text_answer?: string; note?: string }) =>

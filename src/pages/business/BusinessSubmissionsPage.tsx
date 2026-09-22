@@ -1,404 +1,291 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Search,
   CheckCircle2,
   AlertCircle,
-  XCircle,
-  Search,
-  Filter,
-  Eye,
-  Check,
-  X,
-  Sparkles,
+  Loader2,
   ExternalLink,
-  Clock,
-  ShieldCheck,
-  MapPin,
-  Wifi,
+  Image as ImageIcon,
 } from 'lucide-react';
-import { InstagramLogo, TikTokLogo, YouTubeLogo } from '../../components/common/PlatformIcons';
-import { usePlatform } from '../../context/PlatformDataContext';
-import { businessApi } from '../../api/business';
-import { getApiError } from '../../api/client';
-import { mapSubmissionForUi } from '../../utils/apiMappers';
+import { businessApi, getApiError } from '../../api';
+import type { TaskSubmission } from '../../types';
+import { EmptyState } from '../../components/common/EmptyState';
+
+type Filter = 'all' | 'pending' | 'verified' | 'rejected';
 
 export const BusinessSubmissionsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'auto_approved' | 'flagged'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [inspectedSub, setInspectedSub] = useState<any | null>(null);
+  const [submissions, setSubmissions] = useState<TaskSubmission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<Filter>('all');
+  const [selected, setSelected] = useState<TaskSubmission | null>(null);
 
-  const { submissions: platformSubmissions, approveSubmission, rejectSubmission } = usePlatform();
-  const [liveSubmissions, setLiveSubmissions] = useState<any[]>([]);
-  const [loadError, setLoadError] = useState('');
-  const usingLiveData = liveSubmissions.length > 0;
-
-  useEffect(() => {
-    businessApi.submissions()
-      .then((res) => {
-        if (res.success) {
-          setLiveSubmissions(res.data.map(mapSubmissionForUi));
-          setLoadError('');
-        }
-      })
-      .catch((error) => setLoadError(getApiError(error)));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await businessApi.submissions();
+      if (res.success) {
+        setSubmissions(res.data || []);
+      } else {
+        setError(res.message || 'Could not load submissions.');
+      }
+    } catch (e) {
+      setError(getApiError(e, 'Could not load submissions.'));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const submissionSource = usingLiveData ? liveSubmissions : platformSubmissions;
-  const submissions = submissionSource.map((ps) => {
-    const isTikTok = ps.taskTitle.toLowerCase().includes('tiktok') || ps.campaignName.toLowerCase().includes('tiktok');
-    const isYouTube = ps.taskTitle.toLowerCase().includes('youtube') || ps.campaignName.toLowerCase().includes('youtube');
-    const platform = isTikTok ? 'TikTok' : isYouTube ? 'YouTube' : 'Instagram';
-    const icon = isTikTok ? TikTokLogo : isYouTube ? YouTubeLogo : InstagramLogo;
-    
-    const statusLabel =
-      ps.status === 'approved'
-        ? 'Auto-Approved'
-        : ps.status === 'under_review'
-        ? 'Pending Review'
-        : ps.status === 'rejected'
-        ? 'Flagged'
-        : 'Action Required';
+  useEffect(() => {
+    void load();
+  }, [load]);
 
-    return {
-      rawId: ps.id,
-      id: `SUB-${ps.id}`,
-      campaign: ps.campaignName,
-      platform,
-      icon,
-      contributor: ps.contributorName,
-      handle: ps.contributorHandle || `@${ps.contributorName.toLowerCase().replace(/\s+/g, '_')}`,
-      avatar: ps.contributorAvatar,
-      timestamp: ps.submittedAt,
-      matchScore: ps.ai?.confidence ?? 95,
-      status: statusLabel,
-      reward: ps.reward,
-      workLocation: (ps as any).workLocation || (ps as any).matchedLocation || (ps as any).location || 'Manhattan, New York, US 🇺🇸',
-      ipAddress: (ps as any).ipAddress || '198.51.100.42',
-      isp: (ps as any).isp || 'Verizon Fios Global',
-      geofenceStatus: (ps as any).geofenceStatus || 'In-Zone Verified (Target Passed)',
-      screenshotUrl: ps.screenshotUrl,
-      postUrl: ps.postUrl,
-      note: ps.note,
-      ocrData: {
-        hashtags: '#VerifiedBrandSponsor #Launch2026',
-        stickerUrl: ps.postUrl,
-        dimensions: '1080 x 1920 px',
-      },
-    };
-  });
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return submissions.filter((s) => {
+      const status = s.status;
+      const filterOk =
+        filter === 'all' ||
+        (filter === 'pending' && ['submitted', 'under_review', 'action_required'].includes(status)) ||
+        (filter === 'verified' && status === 'approved') ||
+        (filter === 'rejected' && status === 'rejected');
+      const qOk =
+        !q ||
+        (s.user?.name || '').toLowerCase().includes(q) ||
+        (s.task?.title || '').toLowerCase().includes(q);
+      return filterOk && qOk;
+    });
+  }, [submissions, search, filter]);
 
-  const handleApprove = (rawId: number) => {
-    if (usingLiveData) {
-      setLoadError('Business-side approval endpoint is not available yet. Please use Admin Verification Center for final decisions.');
-      setInspectedSub(null);
-      return;
-    }
-    approveSubmission(rawId, 'Approved by brand client review.');
-    setInspectedSub(null);
+  const tabs: { id: Filter; label: string }[] = [
+    { id: 'all', label: 'All' },
+    { id: 'pending', label: 'Pending' },
+    { id: 'verified', label: 'Verified' },
+    { id: 'rejected', label: 'Rejected' },
+  ];
+
+  const statusStyle = (status: string) => {
+    if (status === 'approved') return 'bg-emerald-100 text-emerald-700';
+    if (status === 'rejected') return 'bg-red-100 text-red-700';
+    if (status === 'action_required') return 'bg-purple-100 text-purple-700';
+    return 'bg-amber-100 text-amber-700';
   };
-
-  const handleReject = (rawId: number) => {
-    if (usingLiveData) {
-      setLoadError('Business-side rejection endpoint is not available yet. Please use Admin Verification Center for final decisions.');
-      setInspectedSub(null);
-      return;
-    }
-    rejectSubmission(rawId, 'Rejected by brand client review.');
-    setInspectedSub(null);
-  };
-
-  const handleBatchApproveHighConfidence = () => {
-    if (usingLiveData) {
-      setLoadError('Business-side batch approval endpoint is not available yet. Please use Admin Verification Center for final decisions.');
-      return;
-    }
-    platformSubmissions
-      .filter((s) => s.status === 'under_review' && s.ai.confidence >= 90)
-      .forEach((s) => approveSubmission(s.id, 'Batch Auto-Approved by brand (Confidence >= 90%).'));
-  };
-
-  const filtered = submissions.filter((s) => {
-    const matchesTab =
-      activeTab === 'all'
-        ? true
-        : activeTab === 'pending'
-        ? s.status === 'Pending Review'
-        : activeTab === 'auto_approved'
-        ? s.status === 'Auto-Approved'
-        : s.status === 'Flagged';
-    const matchesSearch =
-      s.contributor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.campaign.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.id.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTab && matchesSearch;
-  });
 
   return (
-    <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
-      
-      {/* =========================================================================
-          1. HEADER & BATCH ACTION
-         ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
-            Submissions &amp; Proof Verification
-          </h1>
-          <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
-            Inspect OCR computer vision proof scans, approve payouts, and manage verification disputes.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleBatchApproveHighConfidence}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#16B364] hover:bg-[#139452] text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-all self-start sm:self-auto"
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>Approve All High Confidence (&gt;90%)</span>
-        </button>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Proof Gallery</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Real proof submitted by contributors for your campaigns. Final verification decisions are made in the
+          Admin Verification Center.
+        </p>
       </div>
 
-      {/* =========================================================================
-          2. FILTERS & SEARCH
-         ========================================================================= */}
-      <div className="bg-white rounded-3xl border border-[#E7ECF3] shadow-xs overflow-hidden space-y-4">
-        {loadError && (
-          <div className="mx-4 mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
-            {loadError}
-          </div>
-        )}
-        <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-            {[
-              { id: 'all', label: 'All Submissions' },
-              { id: 'pending', label: 'Pending Review' },
-              { id: 'auto_approved', label: 'Approved' },
-              { id: 'flagged', label: 'Flagged / Needs Check' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
-                  activeTab === tab.id
-                    ? 'bg-[#07182F] text-white shadow-xs'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search by contributor, campaign, or ID..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-medium text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
-            />
-          </div>
+      {/* Tabs + search */}
+      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex gap-2 flex-wrap">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setFilter(t.id)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                filter === t.id ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
-
-        {/* Submissions Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                <th className="py-3.5 px-5">Submission / Campaign</th>
-                <th className="py-3.5 px-5">Contributor</th>
-                <th className="py-3.5 px-5">AI Match Score</th>
-                <th className="py-3.5 px-5">Status</th>
-                <th className="py-3.5 px-5">Payout</th>
-                <th className="py-3.5 px-5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-xs">
-              {filtered.map((sub) => {
-                const Icon = sub.icon;
-                return (
-                  <tr key={sub.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 px-5">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <span className="font-bold text-gray-900 block line-clamp-1">{sub.campaign}</span>
-                          <span className="text-[10px] text-gray-400 font-mono">{sub.id} &bull; {sub.timestamp}</span>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-5">
-                      <div className="flex items-center gap-2.5">
-                        <img
-                          src={sub.avatar}
-                          alt={sub.contributor}
-                          className="w-8 h-8 rounded-full object-cover ring-1 ring-gray-200 shrink-0"
-                        />
-                        <div>
-                          <span className="font-bold text-gray-900 block">{sub.contributor}</span>
-                          <div className="flex items-center gap-1 text-[10px] text-gray-600 font-medium">
-                            <MapPin className="w-3 h-3 text-[#168BFF] shrink-0" />
-                            <span>{sub.workLocation}</span>
-                          </div>
-                          <div className="flex items-center gap-1 text-[9.5px] font-mono text-gray-400">
-                            <Wifi className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
-                            <span>{sub.ipAddress}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-5">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-14 h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            style={{ width: `${sub.matchScore}%` }}
-                            className={`h-full rounded-full ${
-                              sub.matchScore >= 95
-                                ? 'bg-[#16B364]'
-                                : sub.matchScore >= 85
-                                ? 'bg-[#168BFF]'
-                                : 'bg-red-500'
-                            }`}
-                          />
-                        </div>
-                        <span className="font-mono font-bold text-gray-900">{sub.matchScore}%</span>
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-5">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                          sub.status === 'Auto-Approved'
-                            ? 'bg-emerald-50 text-[#16B364] border-emerald-200'
-                            : sub.status === 'Pending Review'
-                            ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : sub.status === 'Rejected'
-                            ? 'bg-red-50 text-red-700 border-red-200'
-                            : 'bg-purple-50 text-purple-700 border-purple-200'
-                        }`}
-                      >
-                        {sub.status}
-                      </span>
-                    </td>
-
-                    <td className="py-4 px-5 font-black text-gray-900">
-                      {sub.reward}
-                    </td>
-
-                    <td className="py-4 px-5 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setInspectedSub(sub)}
-                        className="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-[#168BFF] hover:text-white text-gray-700 font-bold text-xs transition-colors inline-flex items-center gap-1"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>Inspect Proof</span>
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="relative sm:ml-auto sm:w-72">
+          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by contributor or task…"
+            className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+          />
         </div>
       </div>
 
-      {/* =========================================================================
-          INSPECTION MODAL
-         ========================================================================= */}
-      {inspectedSub && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <div>
-                <h3 className="text-base font-black text-gray-900">Computer Vision OCR Inspection</h3>
-                <p className="text-xs text-gray-500">{inspectedSub.id} &bull; {inspectedSub.contributor}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setInspectedSub(null)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      {loading && (
+        <div className="flex items-center justify-center py-16 text-gray-500">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading submissions…
+        </div>
+      )}
 
-            {inspectedSub.screenshotUrl ? (
-              <div className="rounded-2xl border border-gray-200 overflow-hidden bg-black/5 max-h-60 flex items-center justify-center p-2">
-                <img
-                  src={inspectedSub.screenshotUrl}
-                  alt="Proof Screenshot"
-                  className="max-h-56 w-auto object-contain rounded-xl shadow-xs"
-                />
-              </div>
-            ) : (
-              <div className="rounded-2xl bg-gray-900 p-4 text-center space-y-2 text-white">
-                <div className="h-28 rounded-xl bg-black/50 border border-white/10 flex flex-col items-center justify-center p-4">
-                  <span className="text-emerald-400 font-bold text-sm mb-1">&check; AI OCR Verification Pass</span>
-                  <span className="text-xs text-gray-300 font-mono">Found: {inspectedSub.ocrData.hashtags}</span>
-                  <span className="text-[10px] text-gray-400 font-mono mt-1">Match Confidence: {inspectedSub.matchScore}%</span>
-                </div>
-              </div>
-            )}
-
-            {/* Contributor Place of Work & Verified IP Verification */}
-            <div className="p-3.5 bg-slate-900 text-white rounded-2xl space-y-2 text-xs border border-slate-800">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400 flex items-center gap-1.5 font-medium">
-                  <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Contributor Place of Work:</span>
-                </span>
-                <span className="font-bold text-cyan-300">{inspectedSub.workLocation}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400 flex items-center gap-1.5 font-medium">
-                  <Wifi className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Verified Client IP:</span>
-                </span>
-                <span className="font-mono text-emerald-300 font-bold">{inspectedSub.ipAddress} <span className="text-gray-400 text-[10px] font-sans">({inspectedSub.isp})</span></span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-800">
-                <span className="text-gray-400">Regional Targeting:</span>
-                <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  <span>{inspectedSub.geofenceStatus}</span>
-                </span>
-              </div>
-            </div>
-
-            {inspectedSub.note && (
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-xs text-gray-600">
-                <span className="font-bold text-gray-700 block text-[11px] mb-0.5">Contributor Remark:</span>
-                <p className="text-[11px] italic">"{inspectedSub.note}"</p>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-2">
-              <button
-                type="button"
-                onClick={() => handleReject(inspectedSub.rawId)}
-                className="px-4 py-2 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-xs font-bold transition-colors cursor-pointer"
-              >
-                Reject Proof
-              </button>
-              <button
-                type="button"
-                onClick={() => handleApprove(inspectedSub.rawId)}
-                className="px-5 py-2 rounded-xl bg-[#16B364] hover:bg-[#139452] text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition-colors cursor-pointer"
-              >
-                Approve &amp; Credit {inspectedSub.reward}
-              </button>
-            </div>
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <div className="text-sm">
+            <p className="font-bold text-red-700">Could not load submissions</p>
+            <p className="text-red-600 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+              Retry
+            </button>
           </div>
         </div>
       )}
 
+      {!loading && !error && filtered.length === 0 && (
+        <EmptyState
+          icon={CheckCircle2}
+          title={submissions.length === 0 ? 'No submissions yet' : 'No submissions match your filter'}
+          description={
+            submissions.length === 0
+              ? 'Once contributors submit proof for your campaigns, you will see it here.'
+              : 'Try a different search term or tab.'
+          }
+        />
+      )}
+
+      {!loading && !error && filtered.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {filtered.map((s) => (
+            <div
+              key={s.id}
+              className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-5 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <span
+                  className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${statusStyle(String(s.status))}`}
+                >
+                  {String(s.status).replace(/_/g, ' ')}
+                </span>
+                <span className="text-[10px] text-gray-400 font-medium">
+                  {new Date(s.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              <h3 className="text-sm font-extrabold text-gray-900 mb-1">{s.task?.title || `Task #${s.task_id}`}</h3>
+              <p className="text-[11px] text-gray-500 mb-3">
+                by <span className="font-bold">{s.user?.name || 'Contributor'}</span>
+              </p>
+              {s.proof_data_json?.text_answer && (
+                <p className="text-[11px] text-gray-500 line-clamp-2 mb-3 bg-gray-50 rounded-lg p-2.5">
+                  {s.proof_data_json.text_answer}
+                </p>
+              )}
+              {s.proof_data_json?.note && !s.proof_data_json?.text_answer && (
+                <p className="text-[11px] text-gray-500 line-clamp-2 mb-3 bg-gray-50 rounded-lg p-2.5">
+                  {s.proof_data_json.note}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => setSelected(s)}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
+              >
+                <ImageIcon className="w-3.5 h-3.5" /> View proof
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Proof detail modal */}
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSelected(null)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-base font-extrabold text-gray-900">
+                  {selected.task?.title || `Submission #${selected.id}`}
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  by {selected.user?.name || 'Contributor'} ·{' '}
+                  {new Date(selected.created_at).toLocaleString()}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100"
+              >
+                Close
+              </button>
+            </div>
+
+            <span
+              className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-4 ${statusStyle(String(selected.status))}`}
+            >
+              {String(selected.status).replace(/_/g, ' ')}
+            </span>
+
+            {selected.proof_data_json?.url && (
+              <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Submitted link</p>
+                <a
+                  href={selected.proof_data_json.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline break-all"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 shrink-0" /> {selected.proof_data_json.url}
+                </a>
+              </div>
+            )}
+
+            {(selected.proof_data_json?.text_answer || selected.proof_data_json?.note) && (
+              <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Submitted proof</p>
+                <p className="text-xs text-gray-700 whitespace-pre-wrap">
+                  {selected.proof_data_json.text_answer || selected.proof_data_json.note}
+                </p>
+              </div>
+            )}
+
+            {selected.files && selected.files.length > 0 && (
+              <div className="mb-4">
+                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Attachments</p>
+                <div className="space-y-2">
+                  {selected.files.map((f) => (
+                    <a
+                      key={f.id}
+                      href={f.file_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-xs font-bold text-[#168BFF] hover:underline"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" /> {f.mime_type || 'View file'}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selected.aiResult && (
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-1">AI pre-screen</p>
+                <p className="text-xs text-blue-800">
+                  Suggested:{' '}
+                  <span className="font-bold">
+                    {String(selected.aiResult.suggested_decision).replace(/_/g, ' ')}
+                  </span>{' '}
+                  · confidence {Math.round(Number(selected.aiResult.confidence_score) || 0)}%
+                  {selected.aiResult.ai_label && (
+                    <span className="text-blue-600"> · {selected.aiResult.ai_label}</span>
+                  )}
+                </p>
+                {selected.aiResult.analysis_summary && (
+                  <p className="text-[11px] text-blue-700 mt-1.5">{selected.aiResult.analysis_summary}</p>
+                )}
+              </div>
+            )}
+
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
+              <p className="font-bold mb-1">Approve / reject as a business</p>
+              <p>
+                Business-side review actions are not available in the current backend API. Final decisions are
+                made in the Admin Verification Center.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

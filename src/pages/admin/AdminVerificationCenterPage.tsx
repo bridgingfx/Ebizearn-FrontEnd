@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import { useAuth } from '../../context/AuthContext';
-import { usePlatform } from '../../context/PlatformDataContext';
 import { UserAvatar } from '../../components/common/UserAvatar';
 import type { TaskSubmission } from '../../types';
 
@@ -36,12 +35,12 @@ const mapSubmissionForReview = (submission: TaskSubmission) => {
     contributorName: submission.user?.name || 'Contributor',
     contributorLevel: submission.user?.profile?.contributor_level || 'starter',
     location: [submission.user?.profile?.city, submission.user?.profile?.country_code].filter(Boolean).join(', ') || 'Global',
-    reward: `${task?.reward_cents ? (task.reward_cents / 100).toFixed(2) : '0.00'} ${submission.user?.wallet?.currency || 'AED'}`,
+    reward: `${task?.reward_cents ? (task.reward_cents / 100).toFixed(2) : '0.00'} ${submission.user?.wallet?.currency || 'USD'}`,
     taskTitle: task?.title || 'Submitted task proof',
     campaignName: campaign?.title || campaign?.business?.company_name || 'Campaign',
     submittedAt: submission.created_at ? new Date(submission.created_at).toLocaleString() : 'Just now',
-    postUrl: submission.proof_data_json?.url || '#',
-    screenshotUrl: firstFile?.file_url || '/assets/demo/task-creative.jpg',
+    postUrl: submission.proof_data_json?.url || null,
+    screenshotUrl: firstFile?.file_url || null,
     note: submission.proof_data_json?.note || submission.proof_data_json?.text_answer || 'No contributor note supplied.',
     ai: {
       confidence: Math.round(ai?.confidence_score ?? 0),
@@ -56,41 +55,51 @@ const mapSubmissionForReview = (submission: TaskSubmission) => {
 
 export const AdminVerificationCenterPage: React.FC = () => {
   const { user } = useAuth();
-  const { submissions, approveSubmission, rejectSubmission, requestResubmission } = usePlatform();
   const [realQueue, setRealQueue] = useState<ReturnType<typeof mapSubmissionForReview>[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
-  
+  const [loading, setLoading] = useState(true);
+
   // Active selected submission in verification queue
-  const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(101);
-  const [decisionNotes, setDecisionNotes] = useState('Proof verified against OCR and timestamp database. Compliant.');
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(null);
+  const [decisionNotes, setDecisionNotes] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [decisionExecuted, setDecisionExecuted] = useState<string | null>(null);
+  const [decisionError, setDecisionError] = useState<string | null>(null);
   const [showSopGuide, setShowSopGuide] = useState(false);
+
+  const reloadQueue = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const res = await adminApi.verificationQueue({ status: 'under_review' });
+      if (res.success) {
+        const mapped = res.data.map(mapSubmissionForReview);
+        setRealQueue(mapped);
+        setSelectedSubmissionId((current) => current ?? mapped[0]?.id ?? null);
+      } else {
+        setLoadError(res.message || 'Could not load verification queue.');
+      }
+    } catch (err) {
+      setLoadError(getApiError(err, 'Could not load verification queue.'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
-    adminApi.verificationQueue({ status: 'under_review' })
-      .then((res) => {
-        if (!alive) return;
-        if (res.success) {
-          const mapped = res.data.map(mapSubmissionForReview);
-          setRealQueue(mapped);
-          setSelectedSubmissionId((current) => current ?? mapped[0]?.id ?? null);
-          setLoadError(null);
-        }
-      })
-      .catch((err) => {
-        if (!alive) return;
-        setLoadError(getApiError(err, 'Could not load live verification queue. Showing local fallback data.'));
-      });
+    void (async () => {
+      if (!alive) return;
+      await reloadQueue();
+    })();
     return () => {
       alive = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Queue of submissions pending review from shared platform state
-  const fallbackQueue = submissions.filter((s) => s.status === 'under_review');
-  const queue = realQueue.length > 0 ? realQueue : fallbackQueue;
+  // Queue comes from the real API only — no demo fallback.
+  const queue = realQueue;
   const currentSubmission = queue.find((q) => q.id === selectedSubmissionId) || queue[0];
 
   const presetReasons = [
@@ -104,50 +113,41 @@ export const AdminVerificationCenterPage: React.FC = () => {
   const handleDecision = async (action: 'approved' | 'rejected' | 'action_required') => {
     if (!currentSubmission) return;
     if (!decisionNotes.trim()) {
-      alert('A decision reason is mandatory for compliance and audit logging.');
+      setDecisionError('A decision reason is mandatory for compliance and audit logging.');
       return;
     }
 
     setIsProcessing(true);
+    setDecisionError(null);
     try {
       const res = await adminApi.recordDecision(currentSubmission.id, {
         decision: action,
         notes: decisionNotes,
       });
-      if (res.success && realQueue.length > 0) {
+      if (res.success) {
         setRealQueue((items) => items.filter((item) => item.id !== currentSubmission.id));
+        setDecisionExecuted(action);
+        setDecisionNotes('');
+        // Pick next pending submission
+        const remaining = queue.filter((s) => s.id !== currentSubmission.id);
+        setSelectedSubmissionId(remaining.length > 0 ? remaining[0].id : null);
+      } else {
+        setDecisionError(res.message || 'Could not record the decision.');
       }
     } catch (err) {
-      if (realQueue.length > 0) {
-        setLoadError(getApiError(err, 'Could not record the live verification decision. No local decision was applied.'));
-        setIsProcessing(false);
-        return;
-      }
+      setDecisionError(getApiError(err, 'Could not record the decision. Nothing was applied.'));
+    } finally {
+      setIsProcessing(false);
     }
-
-    if (realQueue.length === 0) {
-      if (action === 'approved') {
-        approveSubmission(currentSubmission.id, decisionNotes);
-      } else if (action === 'rejected') {
-        rejectSubmission(currentSubmission.id, decisionNotes);
-      } else {
-        requestResubmission(currentSubmission.id, decisionNotes);
-      }
-    }
-
-    setDecisionExecuted(action);
-    setIsProcessing(false);
-
-    // Pick next pending submission
-    setTimeout(() => {
-      const remaining = queue.filter((s) => s.id !== currentSubmission.id);
-      if (remaining.length > 0) {
-        setSelectedSubmissionId(remaining[0].id);
-      }
-      setDecisionExecuted(null);
-      setDecisionNotes('Proof verified against OCR and timestamp database. Compliant.');
-    }, 1000);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16 text-gray-500 text-sm">
+        <RefreshCw className="w-5 h-5 animate-spin mr-2" /> Loading verification queue…
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
@@ -157,7 +157,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
         <div>
           <h2 className="text-2xl sm:text-3xl font-black text-[#101828]">AI Verification Center</h2>
           <p className="text-xs sm:text-sm text-[#667085] mt-0.5">
-            Side-by-side computer vision inspection, multi-signal fraud scoring, and manual decision overrides.
+            Proof review with heuristic AI pre-screen scores and manual decision recording. Human review remains mandatory.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -175,10 +175,32 @@ export const AdminVerificationCenterPage: React.FC = () => {
         </div>
       </div>
 
+      {/* 3. LIVE QUEUE COUNT — the only metric shown, because it is real */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Active Queue</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+          </div>
+          <div className="text-2xl font-black text-purple-700">{queue.length}</div>
+          <div className="text-[10px] text-gray-400">Submissions awaiting a human decision</div>
+        </div>
+      </div>
+
       {loadError && (
-        <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-800 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" />
-          <span>{loadError}</span>
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <div className="text-sm">
+            <p className="font-bold text-red-700">Could not load verification queue</p>
+            <p className="text-red-600 mt-1">{loadError}</p>
+            <button
+              type="button"
+              onClick={() => void reloadQueue()}
+              className="mt-2 text-xs font-bold text-red-700 underline"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       )}
 
@@ -245,54 +267,11 @@ export const AdminVerificationCenterPage: React.FC = () => {
         </div>
       )}
 
-      {/* 3. AI OPERATIONS TELEMETRY CARDS (SIMULATED) */}
-      <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 flex items-center gap-2">
-        <AlertTriangle className="w-4 h-4 shrink-0" />
-        <span><strong>Simulated metrics.</strong> Pass rates, latency, and fraud figures below are placeholders from the heuristic pre-check, not live production AI telemetry.</span>
-      </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">AI Pass Rate</span>
-            <span className="w-2 h-2 rounded-full bg-[#16B364] animate-pulse" />
-          </div>
-          <div className="text-2xl font-black text-[#16B364]">98.2%</div>
-          <div className="text-[10px] text-gray-400">1,429 proofs auto-approved today</div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Vision Latency</span>
-            <Clock className="w-3.5 h-3.5 text-[#168BFF]" />
-          </div>
-          <div className="text-2xl font-black text-[#168BFF]">12.4s</div>
-          <div className="text-[10px] text-gray-400">OCR + perceptual hash match</div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Fraud Quarantined</span>
-            <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-          </div>
-          <div className="text-2xl font-black text-red-600">1.2%</div>
-          <div className="text-[10px] text-gray-400">18 recycled hashes blocked</div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Active Queue</span>
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
-          </div>
-          <div className="text-2xl font-black text-purple-700">{queue.length}</div>
-          <div className="text-[10px] text-gray-400">Pending moderator confirmation</div>
-        </div>
-      </div>
-
       {queue.length === 0 ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-[#E4EAF2] shadow-sm space-y-3">
           <CheckCircle2 className="w-12 h-12 text-[#16B364] mx-auto" />
-          <h3 className="text-lg font-bold text-gray-900">Verification Queue is Completely Clear!</h3>
-          <p className="text-xs text-gray-500">All submitted task proofs have been verified and processed in the ledger.</p>
+          <h3 className="text-lg font-bold text-gray-900">Verification queue is clear</h3>
+          <p className="text-xs text-gray-500">Nothing is waiting for review right now.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -365,33 +344,41 @@ export const AdminVerificationCenterPage: React.FC = () => {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-gray-700">Proof Screenshot Evidence</span>
-                <a
-                  href={currentSubmission.postUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs font-bold text-[#168BFF] hover:underline flex items-center gap-1"
-                >
-                  <span>Open Live Post</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                {currentSubmission.postUrl && (
+                  <a
+                    href={currentSubmission.postUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-bold text-[#168BFF] hover:underline flex items-center gap-1"
+                  >
+                    <span>Open Live Post</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
               </div>
 
-              <div className="rounded-2xl border border-gray-200 overflow-hidden bg-black/5 max-h-96 flex items-center justify-center p-2 relative group">
-                <img
-                  src={currentSubmission.screenshotUrl}
-                  alt="Proof Screenshot"
-                  className="max-h-88 w-auto object-contain rounded-xl shadow-xs"
-                />
-                <a
-                  href={currentSubmission.screenshotUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-black/70 text-white text-xs font-bold hover:bg-black transition-colors flex items-center gap-1.5"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Inspect Full Resolution</span>
-                </a>
-              </div>
+              {currentSubmission.screenshotUrl ? (
+                <div className="rounded-2xl border border-gray-200 overflow-hidden bg-black/5 max-h-96 flex items-center justify-center p-2 relative group">
+                  <img
+                    src={currentSubmission.screenshotUrl}
+                    alt="Proof Screenshot"
+                    className="max-h-88 w-auto object-contain rounded-xl shadow-xs"
+                  />
+                  <a
+                    href={currentSubmission.screenshotUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="absolute bottom-4 right-4 px-3 py-1.5 rounded-xl bg-black/70 text-white text-xs font-bold hover:bg-black transition-colors flex items-center gap-1.5"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Inspect Full Resolution</span>
+                  </a>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-dashed border-gray-300 p-8 text-center text-xs text-gray-400">
+                  No screenshot file attached to this submission.
+                </div>
+              )}
             </div>
 
             {/* Contributor Note */}
@@ -483,7 +470,14 @@ export const AdminVerificationCenterPage: React.FC = () => {
             {decisionExecuted && (
               <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Decision executed: {decisionExecuted.toUpperCase()}. Escrow settled.</span>
+                <span>Decision recorded: {decisionExecuted.toUpperCase()}. The server applied the outcome.</span>
+              </div>
+            )}
+
+            {decisionError && (
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{decisionError}</span>
               </div>
             )}
 

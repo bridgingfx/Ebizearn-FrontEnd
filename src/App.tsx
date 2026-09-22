@@ -66,6 +66,12 @@ import { AdminAnalyticsPage } from './pages/admin/AdminAnalyticsPage';
 import { AdminSystemHealthPage } from './pages/admin/AdminSystemHealthPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 import { AdminAuditLogsPage } from './pages/admin/AdminAuditLogsPage';
+import { AdminBusinessesPage } from './pages/admin/AdminBusinessesPage';
+import { AdminTasksPage } from './pages/admin/AdminTasksPage';
+import { AdminWalletsPage } from './pages/admin/AdminWalletsPage';
+import { AdminReferralsPage } from './pages/admin/AdminReferralsPage';
+import { AdminReportsPage } from './pages/admin/AdminReportsPage';
+import { BusinessTeamPage } from './pages/business/BusinessTeamPage';
 import { SuperAdminPage } from './pages/admin/SuperAdminPage';
 import { EmailSettingsPanel } from './pages/admin/email/EmailSettingsPanel';
 
@@ -158,26 +164,38 @@ export const App: React.FC = () => {
             <Route path="tasks" element={<BusinessTaskLibraryPage />} />
             <Route path="contributors" element={<BusinessContributorsPage />} />
             <Route path="submissions" element={<BusinessSubmissionsPage />} />
+            <Route path="proofs" element={<BusinessSubmissionsPage />} />
             <Route path="reports" element={<BusinessReportsPage />} />
             <Route path="billing" element={<BusinessBillingPage />} />
+            <Route path="team" element={<BusinessTeamPage />} />
             <Route path="settings" element={<BusinessSettingsPage />} />
             <Route path="support" element={<BusinessSupportPage />} />
           </Route>
 
-          {/* Admin & Super Admin Command Center Routes */}
+          {/* Admin & Super Admin Command Center Routes.
+              Moderator support is pending: it requires a coordinated change to
+              src/pages/auth/LoginPage.tsx (team-portal accepted roles) and
+              UserRole, which live outside this phase's scope. */}
           <Route path="/admin" element={<RoleGuard allowedRoles={['admin', 'superadmin']}><AdminLayout /></RoleGuard>}>
             <Route index element={<AdminOverviewPage />} />
             <Route path="super" element={<RoleGuard allowedRoles={['superadmin']}><SuperAdminPage /></RoleGuard>} />
             <Route path="email" element={<RoleGuard allowedRoles={['superadmin']}><EmailSettingsPanel /></RoleGuard>} />
             <Route path="users" element={<AdminUsersPage />} />
+            <Route path="businesses" element={<AdminBusinessesPage />} />
             <Route path="verification" element={<AdminVerificationCenterPage />} />
             <Route path="payouts" element={<AdminPayoutsPage />} />
+            <Route path="withdrawals" element={<AdminPayoutsPage />} />
+            <Route path="wallets" element={<AdminWalletsPage />} />
+            <Route path="referrals" element={<AdminReferralsPage />} />
+            <Route path="reports" element={<AdminReportsPage />} />
             <Route path="campaigns" element={<AdminCampaignsOversightPage />} />
+            <Route path="tasks" element={<AdminTasksPage />} />
             <Route path="fraud" element={<AdminFraudPage />} />
             <Route path="support" element={<AdminSupportPage />} />
             <Route path="analytics" element={<AdminAnalyticsPage />} />
             <Route path="health" element={<AdminSystemHealthPage />} />
             <Route path="settings" element={<AdminSettingsPage />} />
+            <Route path="audit" element={<AdminAuditLogsPage />} />
             <Route path="audit-logs" element={<AdminAuditLogsPage />} />
           </Route>
 

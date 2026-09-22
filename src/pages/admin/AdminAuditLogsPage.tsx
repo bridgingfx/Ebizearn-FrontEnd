@@ -1,251 +1,181 @@
-import React, { useEffect, useState } from 'react';
-import {
-  ShieldAlert,
-  Search,
-  Filter,
-  Eye,
-  CheckCircle2,
-  Clock,
-  Terminal,
-  X,
-  FileCode,
-} from 'lucide-react';
-import { adminApi } from '../../api/admin';
-import { getApiError } from '../../api/client';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ScrollText, Search, Loader2, AlertCircle, Eye } from 'lucide-react';
+import { adminApi, getApiError } from '../../api';
 import type { AuditLog } from '../../types';
+import { EmptyState } from '../../components/common/EmptyState';
 
+/**
+ * Audit logs. Rendered only from GET /admin/audit-logs — no demo records, no
+ * fabricated "SHA-256 chain" or compliance claims.
+ */
 export const AdminAuditLogsPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLog, setSelectedLog] = useState<any | null>(null);
-  const [liveLogs, setLiveLogs] = useState<any[]>([]);
-  const [loadError, setLoadError] = useState('');
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState<AuditLog | null>(null);
 
-  const fallbackLogs = [
-    {
-      id: 'AUD-9982',
-      timestamp: '2026-04-16 02:24:18 UTC',
-      actor: 'SuperAdmin (system.operator)',
-      action: 'PAYOUT_BATCH_APPROVED',
-      resource: 'Batch #8821 ($18,450.00)',
-      ip: '192.168.1.104',
-      status: 'Success',
-      diff: {
-        batch_id: 8821,
-        recipients_count: 84,
-        total_usd: 18450.0,
-        rails: ['paypal', 'wise', 'ach'],
-        double_entry_verified: true,
-      },
-    },
-    {
-      id: 'AUD-9975',
-      timestamp: '2026-04-16 01:50:33 UTC',
-      actor: 'ComplianceLead (nadia.m)',
-      action: 'CAMPAIGN_FROZEN',
-      resource: 'CP-SUS-991 (Crypto Moonshot)',
-      ip: '86.98.24.12',
-      status: 'Enforced',
-      diff: {
-        campaign_id: 'CP-SUS-991',
-        reason: 'Missing statutory financial risk disclaimer',
-        escrow_frozen_usd: 500.0,
-      },
-    },
-    {
-      id: 'AUD-9961',
-      timestamp: '2026-04-15 22:14:02 UTC',
-      actor: 'RiskRadarBot (Automated)',
-      action: 'USER_ACCOUNT_BANNED',
-      resource: 'USR-9021 (proxy98@tempmail.io)',
-      ip: '10.0.4.19',
-      status: 'Triggered',
-      diff: {
-        user_id: 'USR-9021',
-        risk_score: 0.98,
-        reason: 'Sybil farm duplicate OCR hash detected across 14 accounts',
-      },
-    },
-    {
-      id: 'AUD-9944',
-      timestamp: '2026-04-15 18:30:11 UTC',
-      actor: 'SuperAdmin (system.operator)',
-      action: 'PLATFORM_SETTINGS_UPDATED',
-      resource: 'Global Configuration',
-      ip: '192.168.1.104',
-      status: 'Updated',
-      diff: {
-        setting: 'ai_threshold',
-        old_value: 94.5,
-        new_value: 95.0,
-      },
-    },
-  ];
-  const logs = liveLogs.length > 0 ? liveLogs : fallbackLogs;
-
-  useEffect(() => {
-    adminApi.auditLogs()
-      .then((res) => {
-        if (res.success) {
-          setLiveLogs(res.data.map((log: AuditLog) => ({
-            id: `AUD-${log.id}`,
-            timestamp: log.created_at,
-            actor: log.actor?.name || 'System',
-            action: log.action,
-            resource: `${log.entity_type} #${log.entity_id}`,
-            ip: log.ip_address || 'n/a',
-            status: 'Recorded',
-            diff: {
-              before: log.before_state_json,
-              after: log.after_state_json,
-            },
-          })));
-          setLoadError('');
-        }
-      })
-      .catch((error) => setLoadError(getApiError(error)));
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await adminApi.auditLogs();
+      if (res.success) {
+        setLogs(res.data || []);
+      } else {
+        setError(res.message || 'Could not load audit logs.');
+      }
+    } catch (e) {
+      setError(getApiError(e, 'Could not load audit logs.'));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const filteredLogs = logs.filter(
-    (l) =>
-      l.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.actor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.resource.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      l.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return logs;
+    return logs.filter(
+      (l) =>
+        (l.action || '').toLowerCase().includes(q) ||
+        (l.entity_type || '').toLowerCase().includes(q) ||
+        (l.actor?.name || '').toLowerCase().includes(q),
+    );
+  }, [logs, search]);
 
   return (
-    <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
-      
-      {/* =========================================================================
-          1. HEADER
-         ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
-            Immutable Administrative Audit Trail
-          </h1>
-          <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
-            Cryptographically sealed ledger of all administrative overrides, balance modifications, and bans.
-          </p>
-        </div>
-
-        <span className="px-3.5 py-1.5 rounded-full bg-gray-100 text-gray-700 text-xs font-mono font-bold self-start sm:self-auto">
-          SHA-256 Chain Signed &bull; WORM Compliant
-        </span>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Audit Logs</h1>
+        <p className="text-sm text-gray-500 mt-1">Immutable record of administrative actions.</p>
       </div>
 
-      {/* =========================================================================
-          2. AUDIT LOGS TABLE & SEARCH
-         ========================================================================= */}
-      <div className="bg-white rounded-3xl border border-[#E7ECF3] shadow-xs overflow-hidden space-y-4">
-        {loadError && (
-          <div className="mx-4 mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold text-amber-800">
-            Live audit logs could not load: {loadError}
-          </div>
-        )}
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search audit logs by action, actor, or ID..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-medium text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
-            />
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                <th className="py-3.5 px-5">Log ID &bull; Timestamp</th>
-                <th className="py-3.5 px-5">Admin Actor</th>
-                <th className="py-3.5 px-5">Action Type</th>
-                <th className="py-3.5 px-5">Target Resource</th>
-                <th className="py-3.5 px-5">IP Address</th>
-                <th className="py-3.5 px-5 text-right">Details</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 font-mono">
-              {filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="py-4 px-5">
-                    <span className="font-bold text-gray-900 block">{log.id}</span>
-                    <span className="text-[10px] text-gray-400 font-normal">{log.timestamp}</span>
-                  </td>
-
-                  <td className="py-4 px-5 font-sans font-bold text-gray-800">
-                    {log.actor}
-                  </td>
-
-                  <td className="py-4 px-5">
-                    <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#168BFF] border border-blue-200 text-[10px] font-bold">
-                      {log.action}
-                    </span>
-                  </td>
-
-                  <td className="py-4 px-5 font-sans font-medium text-gray-700">
-                    {log.resource}
-                  </td>
-
-                  <td className="py-4 px-5 text-gray-500">{log.ip}</td>
-
-                  <td className="py-4 px-5 text-right font-sans">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLog(log)}
-                      className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-[#168BFF] hover:text-white text-gray-700 font-bold text-xs transition-colors inline-flex items-center gap-1"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Inspect Diff</span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="relative sm:w-72">
+        <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by action, entity, actor…"
+          className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+        />
       </div>
 
-      {/* =========================================================================
-          DIFF MODAL
-         ========================================================================= */}
-      {selectedLog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <div>
-                <h3 className="text-base font-black text-gray-900">Audit Record Diff Payload</h3>
-                <p className="text-xs text-gray-500 font-mono">{selectedLog.id} &bull; {selectedLog.action}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedLog(null)}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-900"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      {loading && (
+        <div className="flex items-center justify-center py-16 text-gray-500">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading audit logs…
+        </div>
+      )}
 
-            <div className="rounded-2xl bg-[#07182F] p-4 text-emerald-400 font-mono text-xs overflow-x-auto">
-              <pre>{JSON.stringify(selectedLog.diff, null, 2)}</pre>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={() => setSelectedLog(null)}
-                className="px-5 py-2 rounded-xl bg-[#07182F] text-white text-xs font-bold"
-              >
-                Close
-              </button>
-            </div>
+      {error && !loading && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <div className="text-sm">
+            <p className="font-bold text-red-700">Could not load audit logs</p>
+            <p className="text-red-600 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+              Retry
+            </button>
           </div>
         </div>
       )}
 
+      {!loading && !error && filtered.length === 0 && (
+        <EmptyState
+          icon={ScrollText}
+          title={logs.length === 0 ? 'No audit records yet' : 'No records match your search'}
+          description={
+            logs.length === 0
+              ? 'Administrative actions will be recorded here as they happen.'
+              : 'Try a different search term.'
+          }
+        />
+      )}
+
+      {!loading && !error && filtered.length > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[640px]">
+              <thead>
+                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                  <th className="py-3 px-4 font-bold">Action</th>
+                  <th className="py-3 px-4 font-bold">Entity</th>
+                  <th className="py-3 px-4 font-bold">Actor</th>
+                  <th className="py-3 px-4 font-bold">When</th>
+                  <th className="py-3 px-4 font-bold text-right">Detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((l) => (
+                  <tr key={l.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
+                    <td className="py-3 px-4 font-bold text-gray-900 font-mono text-xs">{l.action}</td>
+                    <td className="py-3 px-4 text-xs text-gray-600">
+                      {l.entity_type} #{l.entity_id}
+                    </td>
+                    <td className="py-3 px-4 text-xs text-gray-600">{l.actor?.name || 'System'}</td>
+                    <td className="py-3 px-4 text-xs text-gray-500">{new Date(l.created_at).toLocaleString()}</td>
+                    <td className="py-3 px-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setSelected(l)}
+                        className="p-2 rounded-lg text-gray-400 hover:text-[#168BFF] hover:bg-blue-50 transition-colors"
+                        title="View before/after state"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {selected && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSelected(null)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-base font-extrabold text-gray-900 font-mono">{selected.action}</h3>
+                <p className="text-xs text-gray-500">
+                  {selected.entity_type} #{selected.entity_id} · {new Date(selected.created_at).toLocaleString()}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100"
+              >
+                Close
+              </button>
+            </div>
+            {selected.before_state_json && (
+              <div className="mb-3">
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Before</p>
+                <pre className="bg-gray-50 rounded-xl p-3 text-[11px] font-mono text-gray-700 overflow-x-auto max-h-48 overflow-y-auto">
+                  {JSON.stringify(selected.before_state_json, null, 2)}
+                </pre>
+              </div>
+            )}
+            {selected.after_state_json && (
+              <div>
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">After</p>
+                <pre className="bg-gray-50 rounded-xl p-3 text-[11px] font-mono text-gray-700 overflow-x-auto max-h-48 overflow-y-auto">
+                  {JSON.stringify(selected.after_state_json, null, 2)}
+                </pre>
+              </div>
+            )}
+            {selected.ip_address && (
+              <p className="text-[11px] text-gray-400 mt-3 font-mono">IP: {selected.ip_address}</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

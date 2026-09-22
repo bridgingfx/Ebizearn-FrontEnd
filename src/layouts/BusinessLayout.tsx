@@ -4,15 +4,13 @@ import {
   LayoutDashboard,
   Megaphone,
   BookOpen,
-  Users,
+  CheckSquare,
   BarChart3,
   CreditCard,
+  Users,
   Settings,
   HelpCircle,
-  Bell,
-  Search,
   LogOut,
-  CheckSquare,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,9 +26,10 @@ export const BusinessLayout: React.FC = () => {
     { name: 'Dashboard', path: '/business', icon: LayoutDashboard, exact: true },
     { name: 'Campaigns', path: '/business/campaigns', icon: Megaphone },
     { name: 'Task Library', path: '/business/tasks', icon: BookOpen },
-    { name: 'Contributors', path: '/business/contributors', icon: Users },
-    { name: 'Reports', path: '/business/reports', icon: BarChart3 },
-    { name: 'Payments', path: '/business/billing', icon: CreditCard },
+    { name: 'Proof Gallery', path: '/business/submissions', icon: CheckSquare },
+    { name: 'Analytics', path: '/business/reports', icon: BarChart3 },
+    { name: 'Billing & Invoices', path: '/business/billing', icon: CreditCard },
+    { name: 'Team Access', path: '/business/team', icon: Users },
     { name: 'Settings', path: '/business/settings', icon: Settings },
     { name: 'Support', path: '/business/support', icon: HelpCircle },
   ];
@@ -41,6 +40,14 @@ export const BusinessLayout: React.FC = () => {
     logout();
     navigate('/login');
   };
+
+  const companyName = user?.business?.company_name || user?.name || 'Business';
+  const initials = companyName
+    .split(' ')
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] flex flex-col md:flex-row text-left font-sans">
@@ -92,8 +99,8 @@ export const BusinessLayout: React.FC = () => {
 
           <div className="pt-2 border-t border-white/5 flex items-center justify-between">
             <div>
-              <span className="font-extrabold text-white text-xs block">BizNetwork</span>
-              <span className="text-[9px] text-gray-400">Real People. Real Results.</span>
+              <span className="font-extrabold text-white text-xs block">eBiz Earn</span>
+              <span className="text-[9px] text-gray-400">Business workspace</span>
             </div>
             <button
               type="button"
@@ -122,53 +129,27 @@ export const BusinessLayout: React.FC = () => {
          ========================================================================= */}
       <div className="flex-1 flex flex-col min-w-0 pb-16 md:pb-8">
         
-        {/* Top bar with Search & Acme Profile */}
+        {/* Top bar — real business identity only. No decorative balance pills or dead buttons. */}
         <header className="bg-white border-b border-[#E7ECF3] sticky top-0 z-20 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
-          
-          {/* Search input with shortcut hint */}
-          <div className="relative w-full max-w-md hidden sm:block">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search campaigns, tasks, or reports..."
-              className="w-full pl-10 pr-8 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#168BFF] focus:bg-white transition-all"
-            />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded bg-gray-200 text-gray-500 text-[10px] font-mono">
-              /
-            </span>
-          </div>
+          <Link
+            to="/business/billing"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-xs font-bold text-[#168BFF] transition-colors"
+          >
+            <CreditCard className="w-3.5 h-3.5 text-[#168BFF]" />
+            <span>Billing &amp; funds</span>
+          </Link>
 
-          {/* Right Action Icons & Acme Brands pill */}
-          <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-            {/* Escrow Balance Pill in AED */}
-            <Link
-              to="/business/billing"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-xs font-bold text-[#168BFF] transition-colors shadow-2xs"
-            >
-              <span className="text-sm">🇦🇪</span>
-              <CreditCard className="w-3.5 h-3.5 text-[#168BFF]" />
-              <span>Escrow: AED 54,500.00</span>
-            </Link>
-
-            <button
-              type="button"
-              className="w-9 h-9 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-100 relative transition-colors"
-              aria-label="Notifications"
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500" />
-            </button>
-
-            <div className="flex items-center gap-2.5 pl-2 border-l border-gray-200">
-              <span className="text-xs font-bold text-gray-900 hidden sm:block">
-                Acme Brands
-              </span>
+          <div className="flex items-center gap-4 ml-auto">
+            <div className="flex items-center gap-2.5 pl-2">
+              <div className="hidden sm:block text-right">
+                <span className="text-xs font-bold text-gray-900 block leading-tight">{companyName}</span>
+                <span className="text-[10px] text-gray-400 block leading-none">Business account</span>
+              </div>
               <div className="w-8 h-8 rounded-full bg-[#168BFF] text-white flex items-center justify-center text-xs font-bold shadow-xs">
-                AB
+                {initials}
               </div>
             </div>
           </div>
-
         </header>
 
         {/* Dynamic Page Outlet */}

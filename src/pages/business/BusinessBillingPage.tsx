@@ -8,9 +8,16 @@ import {
   Wallet,
 } from 'lucide-react';
 import { EmptyState } from '../../components/common/EmptyState';
+import { useAuth } from '../../context/AuthContext';
 
 export const BusinessBillingPage: React.FC = () => {
+  const { user } = useAuth();
   const [showDepositModal, setShowDepositModal] = useState(false);
+  const wallet = user?.wallet;
+  const balance =
+    wallet && typeof wallet.available_balance_cents === 'number'
+      ? `${wallet.currency || 'USD'} ${(wallet.available_balance_cents / 100).toFixed(2)}`
+      : null;
 
   return (
     <div className="space-y-6 text-left font-sans max-w-6xl mx-auto">
@@ -24,7 +31,7 @@ export const BusinessBillingPage: React.FC = () => {
             Billing &amp; Payments
           </h1>
           <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
-            Manage your campaign budget wallet, invoices, corporate payment methods, and auto-reload.
+            Your campaign wallet. Payment methods and auto-reload are not connected yet — funding is handled manually.
           </p>
         </div>
 
@@ -54,10 +61,12 @@ export const BusinessBillingPage: React.FC = () => {
 
           <div>
             <span className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-              —
+              {balance || '—'}
             </span>
             <span className="text-xs text-gray-300 block mt-1">
-              No wallet balance yet. Fund your account to launch campaigns.
+              {balance
+                ? 'Live balance from your account wallet.'
+                : 'No wallet balance yet. Fund your account to launch campaigns.'}
             </span>
           </div>
 
@@ -93,10 +102,14 @@ export const BusinessBillingPage: React.FC = () => {
           </div>
 
           <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-            <button type="button" className="text-[#168BFF] font-bold hover:underline">
+            <button
+              type="button"
+              onClick={() => setShowDepositModal(true)}
+              className="text-[#168BFF] font-bold hover:underline"
+            >
               Add Method
             </button>
-            <span className="text-gray-400 text-[11px]">3D Secure required</span>
+            <span className="text-gray-400 text-[11px]">Self-service top-ups not connected</span>
           </div>
         </div>
 
@@ -107,7 +120,7 @@ export const BusinessBillingPage: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-sm font-black text-gray-900">Auto-Replenish Escrow</h3>
+            <h3 className="text-sm font-black text-gray-900">Auto-Replenish</h3>
             <p className="text-xs text-gray-500 mt-1 leading-relaxed">
               Auto-reload becomes available once you add a payment method and fund your wallet.
             </p>

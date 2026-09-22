@@ -88,7 +88,7 @@ export const Navbar: React.FC = () => {
               </Link>
 
               <Link
-                to="/signup"
+                to="/contributor/register"
                 className="text-sm font-semibold text-white bg-gradient-brand px-5 py-2.5 rounded-full shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
               >
                 <span>Sign Up Free</span>
@@ -130,7 +130,7 @@ export const Navbar: React.FC = () => {
               Login
             </Link>
             <Link
-              to="/signup"
+              to="/contributor/register"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full text-center py-2.5 text-sm font-semibold text-white bg-gradient-brand rounded-xl shadow-md"
             >

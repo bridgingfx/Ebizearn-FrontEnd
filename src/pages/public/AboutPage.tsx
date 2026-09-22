@@ -86,7 +86,7 @@ export const AboutPage: React.FC = () => {
 
           <div className="pt-1 flex flex-wrap justify-center gap-3">
             <Link
-              to="/signup/contributor"
+              to="/contributor/register"
               className="px-7 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>Join as Contributor</span>
@@ -269,7 +269,7 @@ export const AboutPage: React.FC = () => {
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/signup/contributor"
+              to="/contributor/register"
               className="px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>Get Started Free</span>

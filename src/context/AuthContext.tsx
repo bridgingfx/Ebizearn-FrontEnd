@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import type { User, UserRole } from '../types';
-import { authApi, getApiError, TOKEN_KEY } from '../api';
+import { authApi, getApiError, TOKEN_KEY, type LoginPortal } from '../api';
 import type { RegisterPayload } from '../api';
 
 interface AuthContextType {
@@ -8,7 +8,10 @@ interface AuthContextType {
   role: UserRole;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<UserRole | null>;
+  /** Sign in against a dedicated portal. On failure the API's own error
+   *  message is thrown so the login page can display it (e.g. 403 portal
+   *  mismatch). */
+  login: (email: string, password: string, portal?: LoginPortal) => Promise<UserRole | null>;
   register: (payload: RegisterPayload) => Promise<{ ok: boolean; message?: string; role?: UserRole }>;
   logout: () => void;
   updateUser: (user: User) => void;
@@ -44,10 +47,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const login = async (email: string, password: string): Promise<UserRole | null> => {
+  const login = async (email: string, password: string, portal?: LoginPortal): Promise<UserRole | null> => {
     setIsLoading(true);
     try {
-      const res = await authApi.login(email, password);
+      const res = await authApi.login(email, password, portal);
       if (res.success && res.data.user) {
         updateAndPersistUser(res.data.user);
         setToken(res.data.token);
@@ -56,8 +59,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(false);
         return res.data.user.role;
       }
-    } catch {
+    } catch (error) {
       // No demo fallback: login only succeeds against the real API.
+      // Re-throw with the API's own message so the portal page can show it.
+      setIsLoading(false);
+      throw new Error(
+        getApiError(error, 'Invalid email or password. Please check your account details and try again.')
+      );
     }
     setIsLoading(false);
     return null;

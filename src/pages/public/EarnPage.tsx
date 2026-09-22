@@ -244,7 +244,7 @@ export const EarnPage: React.FC = () => {
 
                 <div className="pt-2 flex flex-wrap items-center gap-4">
                   <Link
-                    to="/signup/contributor"
+                    to="/contributor/register"
                     className="px-8 py-3.5 bg-gradient-brand hover:opacity-95 text-white text-xs sm:text-sm font-black rounded-xl shadow-lg hover:scale-105 transition-all flex items-center gap-2"
                   >
                     <span>Start Earning on {currentChannel.name.split(' ')[0]}</span>
@@ -290,7 +290,7 @@ export const EarnPage: React.FC = () => {
                 </div>
 
                 <Link
-                  to="/signup/contributor"
+                  to="/contributor/register"
                   className="w-full py-3 bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-black rounded-xl text-center block transition-colors shadow-sm"
                 >
                   Accept &amp; Start This Task
@@ -374,7 +374,7 @@ export const EarnPage: React.FC = () => {
                 &bull; Min withdrawal is $50.00. Zero hidden fees, zero membership fees.
               </span>
               <Link
-                to="/signup/contributor"
+                to="/contributor/register"
                 className="px-6 py-3 bg-[#07182F] hover:bg-[#168BFF] text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-2"
               >
                 <span>Sign Up Free to Start</span>
@@ -479,7 +479,7 @@ export const EarnPage: React.FC = () => {
               <p className="text-xs text-gray-300">Every cent earned is cryptographically journaled before and after withdrawal.</p>
             </div>
             <Link
-              to="/signup/contributor"
+              to="/contributor/register"
               className="px-5 py-2.5 bg-gradient-brand text-white font-bold text-xs rounded-xl shadow shrink-0"
             >
               Open Earning Wallet
@@ -502,7 +502,7 @@ export const EarnPage: React.FC = () => {
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/signup/contributor"
+              to="/contributor/register"
               className="px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>Create Free Account Now</span>

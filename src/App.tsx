@@ -22,10 +22,12 @@ import { FaqPage } from './pages/public/FaqPage';
 import { TrustSafetyPage } from './pages/public/TrustSafetyPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { LegalPage } from './pages/public/LegalPage';
-import { LoginPage } from './pages/auth/LoginPage';
+import { ContributorLoginPage } from './pages/auth/ContributorLoginPage';
 import { SuperAdminLoginPage } from './pages/auth/SuperAdminLoginPage';
 import { ContributorSignupPage } from './pages/auth/ContributorSignupPage';
 import { BusinessSignupPage } from './pages/auth/BusinessSignupPage';
+import { BusinessLoginPage } from './pages/auth/BusinessLoginPage';
+import { ModeratorLoginPage } from './pages/auth/ModeratorLoginPage';
 import { OnboardingWizardPage } from './pages/auth/OnboardingWizardPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
@@ -123,21 +125,26 @@ export const App: React.FC = () => {
             <Route path="/legal/cookies" element={<LegalPage />} />
             <Route path="/legal/task-policy" element={<LegalPage />} />
             
-            {/* Auth Routes — separate portals. Super Admin console is /ops/console (unlinked). */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/login/contributor" element={<LoginPage portal="contributor" />} />
-            <Route path="/login/business" element={<LoginPage portal="business" />} />
-            <Route path="/login/team" element={<LoginPage portal="team" />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/signup" element={<ContributorSignupPage />} />
-            <Route path="/signup/contributor" element={<ContributorSignupPage />} />
-            <Route path="/signup/business" element={<BusinessSignupPage />} />
             <Route path="/onboarding" element={<OnboardingWizardPage />} />
           </Route>
 
+          {/* Dedicated portal auth routes (full-screen, unbranded nav chrome).
+              Each role gets its own entry page — no shared login hub. */}
+          <Route path="/login" element={<ContributorLoginPage />} />
+          <Route path="/contributor/login" element={<Navigate to="/login" replace />} />
+          <Route path="/contributor/register" element={<ContributorSignupPage />} />
+          <Route path="/business/login" element={<BusinessLoginPage />} />
+          <Route path="/business/register" element={<BusinessSignupPage />} />
+          <Route path="/moderator/login" element={<ModeratorLoginPage />} />
           {/* Hidden Super Admin console sign-in (no public chrome; unlinked everywhere). */}
-          <Route path="/ops/console" element={<SuperAdminLoginPage />} />
+          <Route path="/secure-control-panel/login" element={<SuperAdminLoginPage />} />
+
+          {/* Legacy signup aliases */}
+          <Route path="/signup" element={<Navigate to="/contributor/register" replace />} />
+          <Route path="/signup/contributor" element={<Navigate to="/contributor/register" replace />} />
+          <Route path="/signup/business" element={<Navigate to="/business/register" replace />} />
 
           {/* Contributor Portal Routes */}
           <Route path="/app" element={<RoleGuard allowedRoles={['contributor']}><ContributorLayout /></RoleGuard>}>
@@ -175,9 +182,9 @@ export const App: React.FC = () => {
               admin shell; superadmin-only pages (ops, email) stay restricted. */}
           <Route path="/admin" element={<RoleGuard allowedRoles={['admin', 'superadmin', 'moderator']}><AdminLayout /></RoleGuard>}>
             <Route index element={<AdminOverviewPage />} />
-            {/* Super-admin landing (from /ops/console): real platform overview,
-                no demo data. Dedicated super-admin provisioning UI arrives with
-                the ops provisioning API. */}
+            {/* Super-admin landing (from the restricted console route):
+                real platform overview, no demo data. Dedicated super-admin
+                provisioning UI arrives with the ops provisioning API. */}
             <Route path="super" element={<RoleGuard allowedRoles={['superadmin']}><AdminOverviewPage /></RoleGuard>} />
             <Route path="email" element={<RoleGuard allowedRoles={['superadmin']}><EmailSettingsPanel /></RoleGuard>} />
             <Route path="users" element={<AdminUsersPage />} />

@@ -50,7 +50,7 @@ export const AdminLayout: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login/team');
+    navigate('/moderator/login');
   };
 
   const initials = (user?.name || 'Admin')

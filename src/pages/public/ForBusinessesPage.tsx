@@ -186,7 +186,7 @@ export const ForBusinessesPage: React.FC = () => {
               {/* Action Buttons */}
               <div className="pt-2 flex flex-wrap items-center gap-3.5">
                 <Link
-                  to="/signup/business"
+                  to="/business/register"
                   className="px-7 py-4 bg-gradient-brand hover:opacity-95 text-white font-black text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
                 >
                   <span>Launch Institutional Campaign</span>
@@ -283,7 +283,7 @@ export const ForBusinessesPage: React.FC = () => {
                 </div>
 
                 <Link
-                  to="/signup/business"
+                  to="/business/register"
                   className="w-full py-3.5 bg-gradient-brand text-white font-black text-xs rounded-xl text-center block shadow hover:opacity-95 transition-all"
                 >
                   Create Corporate Account
@@ -463,7 +463,7 @@ export const ForBusinessesPage: React.FC = () => {
                 &bull; Unused funds remain safely in your escrow balance and can be refunded or reused anytime without penalties.
               </span>
               <Link
-                to="/signup/business"
+                to="/business/register"
                 className="px-7 py-3.5 bg-gradient-brand text-white text-xs sm:text-sm font-bold rounded-xl shadow hover:scale-105 transition-all flex items-center gap-2"
               >
                 <span>Deploy Campaign to Marketplace</span>
@@ -588,17 +588,17 @@ export const ForBusinessesPage: React.FC = () => {
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/signup/business"
+              to="/business/register"
               className="px-8 py-4 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
-              <span>Create Corporate Business Account</span>
+              <span>Create Business Account</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              to="/login"
+              to="/business/login"
               className="px-7 py-4 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 transition-all"
             >
-              Sign In to Business Portal
+              Business Login
             </Link>
           </div>
         </div>

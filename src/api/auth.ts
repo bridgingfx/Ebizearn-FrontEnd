@@ -16,9 +16,13 @@ export interface AuthSession {
   token: string;
 }
 
+/** Dedicated portal a login page signs into. Sent to /auth/login so the API
+ *  can reject cross-portal attempts (403) with its own message. */
+export type LoginPortal = 'contributor' | 'business' | 'moderator' | 'superadmin';
+
 export const authApi = {
-  login: (email: string, password: string) =>
-    api.post<ApiResponse<AuthSession>>('/auth/login', { email, password }).then((r) => r.data),
+  login: (email: string, password: string, portal?: LoginPortal) =>
+    api.post<ApiResponse<AuthSession>>('/auth/login', { email, password, ...(portal ? { portal } : {}) }).then((r) => r.data),
 
   register: (payload: RegisterPayload) =>
     api.post<ApiResponse<AuthSession>>('/auth/register', payload).then((r) => r.data),

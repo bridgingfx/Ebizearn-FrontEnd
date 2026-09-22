@@ -60,9 +60,11 @@ import {
   WhatsAppLogo,
   TelegramLogo,
 } from '../../components/common/PlatformIcons';
+import { RequestDemoModal } from '../../components/common/RequestDemoModal';
 
 export const HomePage: React.FC = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [selectedSocialTab, setSelectedSocialTab] = useState<'all' | 'instagram' | 'tiktok' | 'youtube' | 'facebook'>('all');
   const [calculatorHours, setCalculatorHours] = useState<number>(1);
   const toggleFaq = (idx: number) => {
@@ -227,7 +229,7 @@ export const HomePage: React.FC = () => {
               {/* Action Buttons: High-Contrast Neon Green Primary CTA + Minimal Outline Secondary CTA */}
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
                 <Link
-                  to="/signup/contributor"
+                  to="/contributor/register"
                   className="bg-[#22C55E] hover:bg-[#16a34a] text-[#07182F] font-black text-sm sm:text-base px-7 py-4 rounded-xl shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2.5 group"
                 >
                   <span>Get Started &amp; Earn Free</span>
@@ -652,7 +654,7 @@ export const HomePage: React.FC = () => {
               <p className="text-xs text-gray-300">Registration takes 45 seconds. Zero documents or credit cards needed.</p>
             </div>
             <Link
-              to="/signup/contributor"
+              to="/contributor/register"
               className="px-8 py-3.5 bg-gradient-brand text-white text-xs sm:text-sm font-black rounded-2xl shadow-lg hover:scale-105 transition-all shrink-0 flex items-center gap-2"
             >
               <span>Join Free &amp; Start Today</span>
@@ -823,7 +825,7 @@ export const HomePage: React.FC = () => {
                 &bull; Cashout starts from $50.00 threshold. Zero platform deduction for contributors.
               </span>
               <Link
-                to="/signup/contributor"
+                to="/contributor/register"
                 className="px-7 py-3 bg-[#07182F] hover:bg-[#168BFF] text-white font-black text-xs rounded-xl shadow transition-colors flex items-center gap-2"
               >
                 <span>Create Free Account</span>
@@ -856,18 +858,25 @@ export const HomePage: React.FC = () => {
               
               <div className="flex flex-wrap gap-4 pt-2">
                 <Link
-                  to="/for-businesses"
+                  to="/business/register"
                   className="px-7 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
                 >
-                  <span>Launch Business Campaign</span>
+                  <span>Create Campaign</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
-                  to="/signup/business"
+                  to="/business/login"
                   className="px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 transition-all"
                 >
-                  Create Business Account
+                  Business Login
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => setDemoModalOpen(true)}
+                  className="px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 transition-all"
+                >
+                  Request Demo
+                </button>
               </div>
             </div>
 
@@ -968,7 +977,7 @@ export const HomePage: React.FC = () => {
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
-              to="/signup/contributor"
+              to="/contributor/register"
               className="w-full sm:w-auto px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2"
             >
               <span>Create Free Account Now</span>
@@ -985,6 +994,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
+      <RequestDemoModal open={demoModalOpen} onClose={() => setDemoModalOpen(false)} />
     </div>
   );
 };

@@ -541,7 +541,7 @@ export const HowItWorksPage: React.FC = () => {
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to={activeTab === 'contributor' ? '/signup/contributor' : '/signup/business'}
+              to={activeTab === 'contributor' ? '/contributor/register' : '/business/register'}
               className="px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>{activeTab === 'contributor' ? 'Sign Up Free as Contributor' : 'Create Business Account'}</span>

@@ -45,91 +45,49 @@ export const HowItWorksPage: React.FC = () => {
       actionBadge: '100% Free Forever',
       icon: UserPlus,
       screenMock: (
-        <div className="relative flex justify-center py-3 select-none" aria-hidden="true">
-          {/* ambient glow */}
+        <div className="relative flex items-center justify-center w-full h-full select-none" aria-hidden="true">
+          {/* ambient glow — very subtle, no patterns */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-60 h-60 rounded-full bg-[#168BFF]/15 blur-3xl" />
+            <div className="w-52 h-52 rounded-full bg-[#168BFF]/10 dark:bg-[#168BFF]/15 blur-3xl animate-pulse-glow" />
           </div>
 
-          {/* phone mockup */}
-          <div className="relative w-52 sm:w-60 rounded-[2.4rem] bg-[#0A0F1C] p-2 border border-white/10 shadow-[0_28px_70px_rgba(7,24,47,0.40)] animate-float">
-            <div className="rounded-[1.9rem] overflow-hidden bg-gradient-to-b from-[#0E2547] via-[#0A1B36] to-[#07182F]">
-              {/* notch + status */}
-              <div className="relative flex items-center justify-center pt-3 pb-1">
-                <div className="absolute top-1.5 w-20 h-5 bg-[#0A0F1C] rounded-full" />
-                <span className="text-[9px] font-semibold text-gray-400 dark:text-gray-500 tracking-wide">9:41</span>
-              </div>
-
-              <div className="px-4 pt-2 pb-5">
-                <p className="text-white text-[13px] font-extrabold tracking-tight">Create your account</p>
-                <p className="text-[9px] text-gray-400 dark:text-gray-500 mt-0.5">Free forever · No card needed</p>
-
-                {/* phone field */}
-                <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/10 border border-white/15 px-3 py-2.5">
-                  <span className="text-[10px] text-gray-200 font-bold">+971</span>
-                  <span className="w-px h-4 bg-white/20" />
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 tracking-widest">5X XXX XXXX</span>
-                </div>
-                <div className="mt-2 rounded-xl bg-gradient-to-r from-[#168BFF] to-[#7257FF] py-2.5 text-center text-[11px] font-extrabold text-white shadow-lg shadow-blue-500/25">
-                  Continue
-                </div>
-
-                {/* elegant 3-step timeline */}
-                <div className="mt-4 rounded-2xl bg-white/5 border border-white/10 p-3">
-                  {[
-                    { icon: Smartphone, label: 'Phone', state: 'done' },
-                    { icon: ShieldCheck, label: 'Verify', state: 'active' },
-                    { icon: Wallet, label: 'Earn', state: 'todo' },
-                  ].map((step, i) => {
-                    const SIcon = step.icon;
-                    return (
-                      <div key={step.label} className="relative flex items-center gap-2.5 pb-3 last:pb-0">
-                        {i < 2 && (
-                          <span
-                            className={`absolute left-[13px] top-7 bottom-0 w-px ${
-                              step.state === 'done' ? 'bg-[#16B364]/50' : 'bg-white/10'
-                            }`}
-                          />
-                        )}
-                        <span
-                          className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-                            step.state === 'done'
-                              ? 'bg-[#16B364]/20 text-[#16B364] ring-1 ring-[#16B364]/40'
-                              : step.state === 'active'
-                                ? 'bg-[#168BFF]/20 text-[#20C4E8] ring-1 ring-[#168BFF]/50 animate-pulse-glow'
-                                : 'bg-white/5 text-gray-500 dark:text-gray-400 ring-1 ring-white/10'
-                          }`}
-                        >
-                          {step.state === 'done' ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <SIcon className="w-3.5 h-3.5" />}
-                        </span>
-                        <span
-                          className={`text-[10px] font-bold ${
-                            step.state === 'todo' ? 'text-gray-500 dark:text-gray-400' : 'text-gray-200'
-                          }`}
-                        >
-                          {step.label}
-                        </span>
-                        {step.state === 'active' && (
-                          <span className="ml-auto text-[8px] font-extrabold uppercase tracking-widest text-[#20C4E8]">
-                            You are here
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+          {/* 45-second timer ring */}
+          <div className="relative animate-float">
+            <svg width="168" height="168" viewBox="0 0 168 168" className="drop-shadow-xl">
+              <defs>
+                <linearGradient id="hiw-timer-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#20C4E8" />
+                  <stop offset="55%" stopColor="#168BFF" />
+                  <stop offset="100%" stopColor="#7357FF" />
+                </linearGradient>
+              </defs>
+              <circle cx="84" cy="84" r="70" fill="none" strokeWidth="11" className="stroke-gray-200 dark:stroke-white/10" />
+              <circle
+                cx="84" cy="84" r="70" fill="none"
+                stroke="url(#hiw-timer-ring)" strokeWidth="11" strokeLinecap="round"
+                strokeDasharray="439.8" strokeDashoffset="105"
+                transform="rotate(-90 84 84)"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <Clock className="w-5 h-5 text-[#168BFF]" />
+              <span className="text-4xl font-black tracking-tight text-gray-900 dark:text-white leading-none mt-1">45</span>
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-gray-500 dark:text-gray-400 mt-1.5">seconds</span>
+            </div>
+            {/* gold completion seal */}
+            <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8941F] flex items-center justify-center shadow-lg shadow-amber-500/30 ring-4 ring-white dark:ring-[#0B0F19]">
+              <Check className="w-4 h-4 text-white" strokeWidth={3.5} />
             </div>
           </div>
 
-          {/* floating badges */}
-          <div className="absolute right-0 sm:right-2 top-8 flex items-center gap-1.5 rounded-full bg-white dark:bg-[#0C1322] border border-[#E4EAF2] dark:border-white/10 shadow-lg shadow-slate-900/10 px-3 py-1.5 animate-float-delayed">
-            <Clock className="w-3.5 h-3.5 text-[#168BFF]" />
-            <span className="text-[10px] font-extrabold text-slate-800 dark:text-gray-200">45 seconds</span>
-          </div>
-          <div className="absolute left-0 sm:left-2 bottom-10 flex items-center gap-1.5 rounded-full bg-[#07182F] border border-white/15 shadow-lg shadow-slate-900/20 px-3 py-1.5 animate-float-slow">
+          {/* floating glass pills */}
+          <div className="absolute top-1 right-0 sm:right-3 glass rounded-full pl-2.5 pr-3.5 py-1.5 flex items-center gap-1.5 animate-float-delayed">
             <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span className="text-[10px] font-extrabold text-white">100% Free</span>
+            <span className="text-[10px] font-extrabold text-gray-800 dark:text-gray-100 whitespace-nowrap">100% Free Forever</span>
+          </div>
+          <div className="absolute bottom-1 left-0 sm:left-3 glass rounded-full pl-2.5 pr-3.5 py-1.5 flex items-center gap-1.5 animate-float-slow">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#16B364]" />
+            <span className="text-[10px] font-extrabold text-gray-800 dark:text-gray-100 whitespace-nowrap">No card · No fees</span>
           </div>
         </div>
       ),
@@ -541,9 +499,11 @@ export const HowItWorksPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Right Simulated Screen Mock */}
+                    {/* Right Simulated Screen Mock — uniform height across all steps */}
                     <div className="md:col-span-5">
-                      {s.screenMock}
+                      <div className="h-60 sm:h-64 w-full flex items-center justify-center [&>*]:w-full">
+                        {s.screenMock}
+                      </div>
                     </div>
 
                   </div>

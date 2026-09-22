@@ -17,6 +17,7 @@ import {
   Settings,
   ScrollText,
   LogOut,
+  Mail,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
@@ -37,6 +38,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight },
     { name: 'Wallets', path: '/admin/wallets', icon: Wallet },
     { name: 'Referrals', path: '/admin/referrals', icon: Gift },
+    { name: 'Demo Requests', path: '/admin/demo-requests', icon: Mail },
     { name: 'Reports', path: '/admin/reports', icon: BarChart3 },
     { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert },
     { name: 'Support', path: '/admin/support', icon: Headset },

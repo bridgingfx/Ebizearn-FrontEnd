@@ -70,11 +70,11 @@ export const AboutPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-5">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Global Technology &bull; Decentralized Human Workforce</span>
+            <span>Global Technology • Decentralized Human Workforce</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
-            Democratizing Digital Work &amp; <br />
+            Democratizing Digital Work & <br />
             <span className="bg-gradient-to-r from-[#20C4E8] via-[#168BFF] to-[#7357FF] bg-clip-text text-transparent">
               High-Velocity Campaign Distribution.
             </span>
@@ -105,24 +105,24 @@ export const AboutPage: React.FC = () => {
       {/* =========================================================================
           KEY GLOBAL METRICS STRIP
          ========================================================================= */}
-      <section className="bg-white border-b border-[#E4EAF2] py-10">
+      <section className="bg-white dark:bg-[#0C1322] border-b border-[#E4EAF2] dark:border-white/10 py-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div className="text-3xl font-black text-[#101828]">520,000+</div>
-              <p className="text-xs text-gray-500 font-semibold mt-1">Verified Contributors</p>
+              <div className="text-3xl font-black text-[#101828] dark:text-gray-100">520,000+</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Verified Contributors</p>
             </div>
             <div>
               <div className="text-3xl font-black text-[#168BFF]">150+</div>
-              <p className="text-xs text-gray-500 font-semibold mt-1">Countries Represented</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Countries Represented</p>
             </div>
             <div>
               <div className="text-3xl font-black text-[#16B364]">$2.45M+</div>
-              <p className="text-xs text-gray-500 font-semibold mt-1">Disbursed to Workers</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Disbursed to Workers</p>
             </div>
             <div>
               <div className="text-3xl font-black text-[#7357FF]">99.1%</div>
-              <p className="text-xs text-gray-500 font-semibold mt-1">Fraud Detection Accuracy</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Fraud Detection Accuracy</p>
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@ export const AboutPage: React.FC = () => {
       {/* =========================================================================
           THE PROBLEM & OUR SOLUTION
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-[#F7F9FC]">
+      <section className="py-14 sm:py-16 bg-[#F7F9FC] dark:bg-[#0B0F19]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             
@@ -139,10 +139,10 @@ export const AboutPage: React.FC = () => {
               <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
                 The Industry Problem
               </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] leading-tight">
-                Traditional Marketing is Broken by Bot Click Fraud &amp; Unfair Gig Retainers.
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 leading-tight">
+                Traditional Marketing is Broken by Bot Click Fraud & Unfair Gig Retainers.
               </h2>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                 Over $35 billion is lost each year to synthetic bot clicks, fake followers, and automated traffic mills that generate zero actual customer conversions. Meanwhile, hardworking individuals looking to earn online are trapped behind high minimum payouts, predatory fees, or scammy survey portals that never pay.
               </p>
               <div className="space-y-2.5">
@@ -151,9 +151,9 @@ export const AboutPage: React.FC = () => {
                   'Earners face unfair paywalls and delayed cashouts',
                   'No verified proof or accountability in traditional micro-task models',
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2.5 text-xs font-bold text-gray-700">
+                  <div key={idx} className="flex items-center gap-2.5 text-xs font-bold text-gray-700 dark:text-gray-300">
                     <div className="w-4 h-4 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
-                      &times;
+                      ×
                     </div>
                     <span>{item}</span>
                   </div>
@@ -161,14 +161,14 @@ export const AboutPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E4EAF2] shadow-sm space-y-4">
+            <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-4">
               <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
                 The BizNetwork Solution
               </span>
-              <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900">
+              <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-gray-100">
                 A Transparent, Verification-First Human Marketplace.
               </h3>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                 BizNetwork replaces guesswork with verified outcomes. Brands set clear task parameters and escrow funds safely. Contributors complete tasks from their smartphones and upload uncropped proof. Our computer vision engine screens submissions in seconds, releasing funds directly to immutable ledger accounts.
               </p>
               <div className="space-y-2.5">
@@ -177,7 +177,7 @@ export const AboutPage: React.FC = () => {
                   'Double-entry ledger with withdrawals from $50.00',
                   'Zero joining fees, zero subscriptions, zero hidden barriers',
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2.5 text-xs font-bold text-gray-900">
+                  <div key={idx} className="flex items-center gap-2.5 text-xs font-bold text-gray-900 dark:text-gray-100">
                     <CheckCircle2 className="w-4 h-4 text-[#16B364] shrink-0" />
                     <span>{item}</span>
                   </div>
@@ -192,16 +192,16 @@ export const AboutPage: React.FC = () => {
       {/* =========================================================================
           OUR CORE PILLARS
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] text-xs font-bold uppercase tracking-wider">
               Operating Standard
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828]">
-              Built on Trust, Fairness &amp; Technology
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100">
+              Built on Trust, Fairness & Technology
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Our core values guide every algorithm, policy, and payout decision we make.
             </p>
           </div>
@@ -212,13 +212,13 @@ export const AboutPage: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="bg-[#F7F9FC] rounded-3xl p-6 border border-[#E4EAF2] hover:border-[#168BFF]/40 transition-all space-y-3 shadow-xs"
+                  className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 hover:border-[#168BFF]/40 transition-all space-y-3 shadow-xs"
                 >
                   <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#168BFF] flex items-center justify-center">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-bold text-gray-900">{pillar.title}</h3>
-                  <p className="text-xs text-gray-600 leading-relaxed">{pillar.desc}</p>
+                  <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">{pillar.title}</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{pillar.desc}</p>
                 </div>
               );
             })}
@@ -229,26 +229,26 @@ export const AboutPage: React.FC = () => {
       {/* =========================================================================
           PLATFORM EVOLUTION MILESTONES
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-[#F7F9FC] border-t border-[#E4EAF2]">
+      <section className="py-14 sm:py-16 bg-[#F7F9FC] dark:bg-[#0B0F19] border-t border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
               Our Journey
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828]">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100">
               Scaling Sustainable Digital Work
             </h2>
           </div>
 
           <div className="space-y-4">
             {milestones.map((m, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm flex items-start gap-4">
+              <div key={idx} className="bg-white dark:bg-[#0C1322] rounded-2xl p-5 border border-[#E4EAF2] dark:border-white/10 shadow-sm flex items-start gap-4">
                 <span className="text-base font-bold text-[#168BFF] font-mono px-3 py-1 bg-blue-50 rounded-xl shrink-0">
                   {m.year}
                 </span>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-gray-900">{m.title}</h4>
-                  <p className="text-xs text-gray-600 leading-relaxed">{m.desc}</p>
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">{m.title}</h4>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{m.desc}</p>
                 </div>
               </div>
             ))}

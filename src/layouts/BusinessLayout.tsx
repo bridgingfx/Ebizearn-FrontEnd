@@ -17,6 +17,7 @@ import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
 import { ConfirmModal } from '../components/common/ConfirmModal';
+import { ThemeToggle } from '../components/common/ThemeToggle';
 
 export const BusinessLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -51,7 +52,7 @@ export const BusinessLayout: React.FC = () => {
     .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] flex flex-col md:flex-row text-left font-sans">
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] flex flex-col md:flex-row text-left font-sans">
       
       {/* =========================================================================
           DESKTOP SIDEBAR
@@ -94,19 +95,19 @@ export const BusinessLayout: React.FC = () => {
             to="/business/support"
             className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
           >
-            <HelpCircle className="w-4 h-4 text-gray-400" />
-            <span>Help &amp; Support</span>
+            <HelpCircle className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <span>Help & Support</span>
           </Link>
 
           <div className="pt-2 border-t border-white/5 flex items-center justify-between">
             <div>
               <span className="font-extrabold text-white text-xs block">eBiz Earn</span>
-              <span className="text-[9px] text-gray-400">Business workspace</span>
+              <span className="text-[9px] text-gray-400 dark:text-gray-500">Business workspace</span>
             </div>
             <button
               type="button"
               onClick={() => setLogoutOpen(true)}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />
@@ -131,23 +132,24 @@ export const BusinessLayout: React.FC = () => {
       <div className="flex-1 flex flex-col min-w-0 pb-16 md:pb-8">
         
         {/* Top bar — real business identity only. No decorative balance pills or dead buttons. */}
-        <header className="bg-white border-b border-[#E7ECF3] sticky top-0 z-20 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
+        <header className="bg-white dark:bg-[#0C1322] border-b border-[#E7ECF3] dark:border-white/10 sticky top-0 z-20 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs transition-colors">
           <Link
             to="/business/billing"
             className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-xs font-bold text-[#168BFF] transition-colors"
           >
             <CreditCard className="w-3.5 h-3.5 text-[#168BFF]" />
-            <span>Billing &amp; funds</span>
+            <span>Billing & funds</span>
           </Link>
 
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-3 ml-auto">
+            <ThemeToggle />
             <div className="hidden md:block">
               <RegionSelector variant="light" />
             </div>
             <div className="flex items-center gap-2.5 pl-2">
               <div className="hidden sm:block text-right">
-                <span className="text-xs font-bold text-gray-900 block leading-tight">{companyName}</span>
-                <span className="text-[10px] text-gray-400 block leading-none">Business account</span>
+                <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block leading-tight">{companyName}</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 block leading-none">Business account</span>
               </div>
               <div className="w-8 h-8 rounded-full bg-[#168BFF] text-white flex items-center justify-center text-xs font-bold shadow-xs">
                 {initials}

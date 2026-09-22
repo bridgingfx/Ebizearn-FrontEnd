@@ -58,11 +58,11 @@ export const RequestDemoModal: React.FC<RequestDemoModalProps> = ({ open, onClos
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
 
-      <div className="relative w-full max-w-md bg-white rounded-3xl p-7 sm:p-8 shadow-2xl">
+      <div className="relative w-full max-w-md bg-white dark:bg-[#0C1322] rounded-3xl p-7 sm:p-8 shadow-2xl">
         <button
           type="button"
           onClick={handleClose}
-          className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-700 transition-colors"
+          className="absolute top-4 right-4 p-1.5 text-slate-400 dark:text-gray-500 hover:text-slate-700 dark:hover:text-gray-300 transition-colors"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
@@ -71,8 +71,8 @@ export const RequestDemoModal: React.FC<RequestDemoModalProps> = ({ open, onClos
         {status === 'success' ? (
           <div className="text-center py-6">
             <CheckCircle2 className="w-14 h-14 text-[#16B364] mx-auto" />
-            <h3 className="mt-4 text-xl font-black text-slate-900">Request received</h3>
-            <p className="mt-2 text-sm text-slate-500 leading-relaxed">
+            <h3 className="mt-4 text-xl font-black text-slate-900 dark:text-gray-100">Request received</h3>
+            <p className="mt-2 text-sm text-slate-500 dark:text-gray-400 leading-relaxed">
               Thanks, {name.split(' ')[0] || 'there'} — our team will be in touch within 2 business days.
             </p>
             <button
@@ -85,8 +85,8 @@ export const RequestDemoModal: React.FC<RequestDemoModalProps> = ({ open, onClos
           </div>
         ) : (
           <>
-            <h3 className="text-xl font-black text-slate-900">Request a demo</h3>
-            <p className="mt-1 text-xs text-slate-500">
+            <h3 className="text-xl font-black text-slate-900 dark:text-gray-100">Request a demo</h3>
+            <p className="mt-1 text-xs text-slate-500 dark:text-gray-400">
               Tell us about your campaign goals and we’ll walk you through the platform.
             </p>
 
@@ -99,47 +99,47 @@ export const RequestDemoModal: React.FC<RequestDemoModalProps> = ({ open, onClos
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Name</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Name</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your full name"
-                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Work email</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Work email</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Company</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Company</label>
                 <input
                   type="text"
                   required
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                   placeholder="Company or brand name"
-                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Message</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Message</label>
                 <textarea
                   required
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="What would you like to achieve with eBiz Earn?"
                   rows={3}
-                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#168BFF] resize-none"
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF] resize-none"
                 />
               </div>
               <button

@@ -25,10 +25,10 @@ export const BusinessBillingPage: React.FC = () => {
       {/* =========================================================================
           1. HEADER
          ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-white/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
-            Billing &amp; Payments
+          <h1 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">
+            Billing & Payments
           </h1>
           <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
             Your campaign wallet. Payment methods and auto-reload are not connected yet — funding is handled manually.
@@ -71,7 +71,7 @@ export const BusinessBillingPage: React.FC = () => {
           </div>
 
           <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
-            <span className="text-gray-400">Auto-reload not configured</span>
+            <span className="text-gray-400 dark:text-gray-500">Auto-reload not configured</span>
             <button
               type="button"
               onClick={() => setShowDepositModal(true)}
@@ -83,25 +83,25 @@ export const BusinessBillingPage: React.FC = () => {
         </div>
 
         {/* Payment Method on File */}
-        <div className="p-6 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs flex flex-col justify-between space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Primary Payment Method</span>
-            <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200 text-[10px] font-bold">
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Primary Payment Method</span>
+            <span className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/10 text-[10px] font-bold">
               None
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-12 h-10 rounded-xl bg-gray-100 text-gray-400 flex items-center justify-center">
+            <div className="w-12 h-10 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500 flex items-center justify-center">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-sm font-black text-gray-900 block">No payment method on file</span>
-              <span className="text-xs text-gray-500">Add a method to fund campaigns.</span>
+              <span className="text-sm font-black text-gray-900 dark:text-gray-100 block">No payment method on file</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Add a method to fund campaigns.</span>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
+          <div className="pt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between text-xs">
             <button
               type="button"
               onClick={() => setShowDepositModal(true)}
@@ -109,24 +109,24 @@ export const BusinessBillingPage: React.FC = () => {
             >
               Add Method
             </button>
-            <span className="text-gray-400 text-[11px]">Self-service top-ups not connected</span>
+            <span className="text-gray-400 dark:text-gray-500 text-[11px]">Self-service top-ups not connected</span>
           </div>
         </div>
 
         {/* Auto-Reload Setting */}
-        <div className="p-6 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs flex flex-col justify-between space-y-4">
+        <div className="p-6 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Campaign Continuity</span>
+            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Campaign Continuity</span>
           </div>
 
           <div>
-            <h3 className="text-sm font-black text-gray-900">Auto-Replenish</h3>
-            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+            <h3 className="text-sm font-black text-gray-900 dark:text-gray-100">Auto-Replenish</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
               Auto-reload becomes available once you add a payment method and fund your wallet.
             </p>
           </div>
 
-          <div className="pt-3 border-t border-gray-100 text-[11px] text-gray-400 font-bold">
+          <div className="pt-3 border-t border-gray-100 dark:border-white/10 text-[11px] text-gray-400 dark:text-gray-500 font-bold">
             Not enabled
           </div>
         </div>
@@ -136,13 +136,13 @@ export const BusinessBillingPage: React.FC = () => {
       {/* =========================================================================
           3. INVOICES & RECEIPTS HISTORY
          ========================================================================= */}
-      <div className="bg-white rounded-3xl border border-[#E7ECF3] shadow-xs overflow-hidden">
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs overflow-hidden">
+        <div className="p-5 border-b border-gray-100 dark:border-white/10 flex items-center justify-between">
           <div>
-            <h2 className="text-base font-black text-gray-900">Tax Invoices &amp; Receipts</h2>
-            <p className="text-xs text-gray-500">Official VAT / Tax receipts for corporate accounting and tax deductions</p>
+            <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Tax Invoices & Receipts</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Official VAT / Tax receipts for corporate accounting and tax deductions</p>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400">
             <Receipt className="w-4 h-4" />
             0 Total Records
           </span>
@@ -161,18 +161,18 @@ export const BusinessBillingPage: React.FC = () => {
          ========================================================================= */}
       {showDepositModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-white/10 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-white/10">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#168BFF] flex items-center justify-center font-bold">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <h3 className="text-base font-black text-gray-900">Add Campaign Funds</h3>
+                <h3 className="text-base font-black text-gray-900 dark:text-gray-100">Add Campaign Funds</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowDepositModal(false)}
-                className="p-1 rounded-lg text-gray-400 hover:text-gray-900"
+                className="p-1 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100"
               >
                 <X className="w-5 h-5" />
               </button>

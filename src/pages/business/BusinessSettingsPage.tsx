@@ -16,45 +16,45 @@ export const BusinessSettingsPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Business Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Your company profile and integrations.</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Business Settings</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your company profile and integrations.</p>
       </div>
 
       {/* Company profile — real data, read-only until backend supports updates */}
-      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6">
-        <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-5">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-5">
           <Building className="w-4 h-4 text-[#168BFF]" /> Company Profile
         </h3>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">
               Company name
             </label>
-            <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700">
+            <div className="px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-700 dark:text-gray-300">
               {business?.company_name || '—'}
             </div>
           </div>
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">
               Account email
             </label>
-            <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700">
+            <div className="px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-700 dark:text-gray-300">
               {user?.email || '—'}
             </div>
           </div>
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">
               Industry
             </label>
-            <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700">
+            <div className="px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-700 dark:text-gray-300">
               {business?.industry || '—'}
             </div>
           </div>
           <div>
-            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
+            <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block mb-1.5">
               Contact name
             </label>
-            <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700">
+            <div className="px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-700 dark:text-gray-300">
               {user?.name || '—'}
             </div>
           </div>
@@ -71,8 +71,8 @@ export const BusinessSettingsPage: React.FC = () => {
       </div>
 
       {/* Integrations */}
-      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6">
-        <h3 className="text-sm font-extrabold text-gray-900 mb-4">API &amp; Webhooks</h3>
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-4">API & Webhooks</h3>
         <EmptyState
           icon={Building}
           title="Integrations coming soon"

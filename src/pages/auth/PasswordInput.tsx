@@ -32,7 +32,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
 
   return (
     <div className="relative">
-      <Lock className={`w-4 h-4 text-gray-400 absolute ${iconOffset}`} />
+      <Lock className={`w-4 h-4 text-gray-400 dark:text-gray-500 absolute ${iconOffset}`} />
       <input
         id={id}
         type={visible ? 'text' : 'password'}
@@ -45,13 +45,13 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         className={
           dark
             ? `w-full pl-9 pr-10 ${sizeClass} bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-[#7357FF]`
-            : `w-full pl-9 pr-12 ${sizeClass} bg-white border-2 border-slate-200 rounded-2xl placeholder:text-slate-400 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all`
+            : `w-full pl-9 pr-12 ${sizeClass} bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all`
         }
       />
       <button
         type="button"
         onClick={() => setVisible((current) => !current)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-[#168BFF] transition-colors"
+        className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-[#168BFF] transition-colors"
         aria-label={visible ? 'Hide password' : 'Show password'}
         title={visible ? 'Hide password' : 'Show password'}
       >

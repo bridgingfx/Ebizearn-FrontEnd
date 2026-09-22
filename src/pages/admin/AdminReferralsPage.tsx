@@ -115,7 +115,7 @@ export const AdminReferralsPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[11px] uppercase tracking-widest text-gray-400 border-b border-gray-100">
+                  <tr className="text-left text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                     <th className="px-5 py-3 font-bold">Level</th>
                     <th className="px-5 py-3 font-bold text-right">Paid</th>
                     <th className="px-5 py-3 font-bold text-right">Pending</th>
@@ -124,15 +124,15 @@ export const AdminReferralsPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {levelRows.map((r) => (
-                    <tr key={r.level} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-5 py-3.5 font-bold text-gray-900">Level {r.level}</td>
+                    <tr key={r.level} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                      <td className="px-5 py-3.5 font-bold text-gray-900 dark:text-gray-100">Level {r.level}</td>
                       <td className="px-5 py-3.5 text-right tabular-nums">
                         <span className="font-bold text-emerald-700">{fmtMoney(r.rewarded)}</span>
-                        <span className="text-xs text-gray-400 ml-2">({r.rewardedCount})</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({r.rewardedCount})</span>
                       </td>
                       <td className="px-5 py-3.5 text-right tabular-nums">
                         <span className="font-bold text-amber-700">{fmtMoney(r.pending)}</span>
-                        <span className="text-xs text-gray-400 ml-2">({r.pendingCount})</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({r.pendingCount})</span>
                       </td>
                       <td className="px-5 py-3.5 text-right tabular-nums font-bold text-red-600">{fmtMoney(r.reversed)}</td>
                     </tr>
@@ -147,7 +147,7 @@ export const AdminReferralsPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-[11px] uppercase tracking-widest text-gray-400 border-b border-gray-100">
+                  <tr className="text-left text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                     <th className="px-5 py-3 font-bold">Referrer</th>
                     <th className="px-5 py-3 font-bold">Referred</th>
                     <th className="px-5 py-3 font-bold">Level</th>
@@ -157,11 +157,11 @@ export const AdminReferralsPage: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {recent.map((r) => (
-                    <tr key={r.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-5 py-3.5 font-semibold text-gray-900">{r.referrer?.name ?? `#${r.id}`}</td>
-                      <td className="px-5 py-3.5 text-gray-600">{r.referred_user?.name ?? '—'}</td>
-                      <td className="px-5 py-3.5 text-gray-600">Level {r.level}</td>
-                      <td className="px-5 py-3.5 text-right font-bold text-gray-900 tabular-nums">{fmtMoney(r.amount_cents)}</td>
+                    <tr key={r.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                      <td className="px-5 py-3.5 font-semibold text-gray-900 dark:text-gray-100">{r.referrer?.name ?? `#${r.id}`}</td>
+                      <td className="px-5 py-3.5 text-gray-600 dark:text-gray-400">{r.referred_user?.name ?? '—'}</td>
+                      <td className="px-5 py-3.5 text-gray-600 dark:text-gray-400">Level {r.level}</td>
+                      <td className="px-5 py-3.5 text-right font-bold text-gray-900 dark:text-gray-100 tabular-nums">{fmtMoney(r.amount_cents)}</td>
                       <td className="px-5 py-3.5">
                         <StatusBadge status={r.status} />
                       </td>

@@ -79,12 +79,13 @@ export const BusinessSignupPage: React.FC = () => {
       headline={
         <>
           Reach thousands of{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#20C4E8] to-[#16B364]">verified humans</span>{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F0D488] via-[#D4AF37] to-[#B8912A]">verified humans</span>{' '}
           this week.
         </>
       }
       subtext="Create your corporate account in 2 minutes, fund your campaign, and mobilize real contributors — pay only for verified proof."
-      accentClass="text-[#20C4E8]"
+      accentClass="text-[#D4AF37]"
+      artworkTheme="midnight"
       bullets={[
         { icon: Landmark, title: 'Escrow-protected funds', text: 'Budgets stay locked until proof is verified.' },
         { icon: ScanSearch, title: 'Proof verification', text: 'Every submission is checked before payout.' },
@@ -92,8 +93,8 @@ export const BusinessSignupPage: React.FC = () => {
       ]}
     >
       <div className="mb-6">
-        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900">Create business account</h2>
-        <p className="mt-1.5 text-base text-slate-500">Set up your campaign workspace</p>
+        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Create business account</h2>
+        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Set up your campaign workspace</p>
       </div>
 
       {error && (
@@ -185,14 +186,14 @@ export const BusinessSignupPage: React.FC = () => {
           <ArrowRight className="w-5 h-5" />
         </AuthSubmitButton>
 
-        <p className="text-xs text-slate-400 leading-relaxed text-center">
+        <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed text-center">
           By creating an account you agree to our Terms of Service and Privacy Policy.
         </p>
       </form>
 
       <div className="mt-6 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">or</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 
@@ -200,14 +201,14 @@ export const BusinessSignupPage: React.FC = () => {
         <SocialLoginButtons portal="business" mode="register" />
       </div>
 
-      <div className="mt-7 text-center text-base text-slate-500 space-y-1.5">
+      <div className="mt-7 text-center text-base text-slate-500 dark:text-gray-400 space-y-1.5">
         <p>
           Already have a business account?{' '}
           <Link to="/business/login" className="text-[#168BFF] font-bold hover:underline">Business sign in</Link>
         </p>
         <p>
           Want to earn as a contributor?{' '}
-          <Link to="/contributor/register" className="font-semibold text-slate-600 hover:underline">Register as contributor</Link>
+          <Link to="/contributor/register" className="font-semibold text-slate-600 dark:text-gray-400 hover:underline">Register as contributor</Link>
         </p>
       </div>
     </AuthSplitLayout>

@@ -55,7 +55,7 @@ export const VerificationTimeline: React.FC<{
             <div className="flex flex-col items-center gap-1 min-w-0">
               <span
                 className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
-                  i <= reachedIndex ? 'bg-[#16B364] text-white' : 'bg-gray-100 text-gray-400'
+                  i <= reachedIndex ? 'bg-[#16B364] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500'
                 }`}
               >
                 {i <= reachedIndex ? (
@@ -66,7 +66,7 @@ export const VerificationTimeline: React.FC<{
               </span>
               <span
                 className={`text-[9px] font-bold text-center leading-tight ${
-                  i <= reachedIndex ? 'text-gray-800' : 'text-gray-400'
+                  i <= reachedIndex ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'
                 }`}
               >
                 {stage.label}
@@ -79,7 +79,7 @@ export const VerificationTimeline: React.FC<{
         ))}
       </div>
       {aiResult?.ai_label && (
-        <p className="text-[10px] text-gray-400 mt-2 italic">
+        <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 italic">
           AI verdict: {aiResult.ai_label} — never final; a moderator makes the decision.
         </p>
       )}

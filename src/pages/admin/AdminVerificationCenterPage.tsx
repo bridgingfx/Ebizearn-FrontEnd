@@ -139,7 +139,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-gray-500 text-sm">
+      <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400 text-sm">
         <RefreshCw className="w-5 h-5 animate-spin mr-2" /> Loading verification queue…
       </div>
     );
@@ -149,9 +149,9 @@ export const AdminVerificationCenterPage: React.FC = () => {
     <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
       
       {/* 1. HEADER & QUEUE STATUS */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-white/10">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#101828]">AI Verification Center</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">AI Verification Center</h2>
           <p className="text-xs sm:text-sm text-[#667085] mt-0.5">
             Proof review with heuristic AI pre-screen scores and manual decision recording. Human review remains mandatory.
           </p>
@@ -173,13 +173,13 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
       {/* 3. LIVE QUEUE COUNT — the only metric shown, because it is real */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl p-5 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Active Queue</span>
+            <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Active Queue</span>
             <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
           </div>
           <div className="text-2xl font-black text-purple-700">{queue.length}</div>
-          <div className="text-[10px] text-gray-400">Submissions awaiting a human decision</div>
+          <div className="text-[10px] text-gray-400 dark:text-gray-500">Submissions awaiting a human decision</div>
         </div>
       </div>
 
@@ -202,13 +202,13 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
       {/* 2. SOP & AI CRITERIA EXPLANATION ACCORDION */}
       {showSopGuide && (
-        <div className="bg-white rounded-3xl p-6 border border-blue-200 shadow-sm space-y-4 animate-in fade-in duration-200">
+        <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-blue-200 shadow-sm space-y-4 animate-in fade-in duration-200">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-gray-100">
               <ShieldCheck className="w-5 h-5 text-[#168BFF]" />
               <span>Standard Operating Procedure (SOP): How Verification Works</span>
             </div>
-            <span className="text-xs text-gray-400 font-mono">Algorithm Version: Heuristic Pre-Check (Simulated)</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">Algorithm Version: Heuristic Pre-Check (Simulated)</span>
           </div>
 
           <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 leading-relaxed">
@@ -221,7 +221,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
             <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-100 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">
-                  Confidence &ge; 90%
+                  Confidence ≥ 90%
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-[#16B364] font-bold text-[10px]">
                   Auto-Approve
@@ -249,7 +249,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
             <div className="p-4 rounded-2xl bg-red-50/70 border border-red-100 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-red-800 uppercase tracking-wider text-[11px]">
-                  Confidence &lt; 70% / Fraud
+                  Confidence {'<'} 70% / Fraud
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold text-[10px]">
                   Auto-Quarantine
@@ -264,17 +264,17 @@ export const AdminVerificationCenterPage: React.FC = () => {
       )}
 
       {queue.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-[#E4EAF2] shadow-sm space-y-3">
+        <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-12 text-center border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-3">
           <CheckCircle2 className="w-12 h-12 text-[#16B364] mx-auto" />
-          <h3 className="text-lg font-bold text-gray-900">Verification queue is clear</h3>
-          <p className="text-xs text-gray-500">Nothing is waiting for review right now.</p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Verification queue is clear</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Nothing is waiting for review right now.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {/* Quick Queue Item Switcher */}
           {queue.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 bg-white p-2.5 rounded-2xl border border-gray-200 shadow-xs">
-              <span className="text-xs font-bold text-gray-500 shrink-0 ml-1">Pending Queue:</span>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 bg-white dark:bg-[#0C1322] p-2.5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs">
+              <span className="text-xs font-bold text-gray-500 dark:text-gray-400 shrink-0 ml-1">Pending Queue:</span>
               <div className="flex items-center gap-2">
                 {queue.map((sub) => {
                   const isSelected = sub.id === currentSubmission?.id;
@@ -286,12 +286,12 @@ export const AdminVerificationCenterPage: React.FC = () => {
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                         isSelected
                           ? 'bg-[#168BFF] text-white shadow-sm ring-2 ring-[#168BFF]/30'
-                          : 'bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100'
+                          : 'bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/10'
                       }`}
                     >
                       <UserAvatar src={sub.contributorAvatar} name={sub.contributorName} size="xs" />
                       <span className="truncate max-w-[120px]">{sub.contributorName}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'}`}>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700 dark:text-gray-300'}`}>
                         {sub.reward}
                       </span>
                     </button>
@@ -304,17 +304,17 @@ export const AdminVerificationCenterPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* LEFT COLUMN: Contributor Submission & Screenshot Proof (7 Cols) */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-sm space-y-5">
+          <div className="lg:col-span-7 bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-5">
             
             {/* Contributor Metadata */}
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-white/10">
               <div className="flex items-center gap-3">
                 <UserAvatar src={currentSubmission.contributorAvatar} name={currentSubmission.contributorName} className="ring-2 ring-[#168BFF]/20" />
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900">{currentSubmission.contributorName}</h4>
-                  <div className="flex items-center gap-2 text-[11px] text-gray-500 mt-0.5">
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">{currentSubmission.contributorName}</h4>
+                  <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                     <span className="text-[#16B364] font-semibold">{currentSubmission.contributorLevel}</span>
-                    <span>&bull;</span>
+                    <span>•</span>
                     <span>{currentSubmission.location}</span>
                   </div>
                 </div>
@@ -322,15 +322,15 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
               <div className="text-right">
                 <span className="text-base font-black text-[#16B364]">{currentSubmission.reward}</span>
-                <span className="text-[10px] text-gray-400 block font-mono">Submission #{currentSubmission.id}</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 block font-mono">Submission #{currentSubmission.id}</span>
               </div>
             </div>
 
             {/* Task Info */}
-            <div className="space-y-1 bg-gray-50 p-3.5 rounded-2xl border border-gray-100">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Associated Task</span>
-              <p className="text-xs font-bold text-gray-900">{currentSubmission.taskTitle}</p>
-              <div className="flex items-center justify-between text-[11px] text-gray-500 pt-1">
+            <div className="space-y-1 bg-gray-50 dark:bg-white/5 p-3.5 rounded-2xl border border-gray-100 dark:border-white/10">
+              <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Associated Task</span>
+              <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{currentSubmission.taskTitle}</p>
+              <div className="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 pt-1">
                 <span>Campaign: <strong>{currentSubmission.campaignName}</strong></span>
                 <span>Submitted: <strong>{currentSubmission.submittedAt}</strong></span>
               </div>
@@ -339,7 +339,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
             {/* Proof Screenshot Display */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-700">Proof Screenshot Evidence</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Proof Screenshot Evidence</span>
                 {currentSubmission.postUrl && (
                   <a
                     href={currentSubmission.postUrl}
@@ -354,7 +354,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
               </div>
 
               {currentSubmission.screenshotUrl ? (
-                <div className="rounded-2xl border border-gray-200 overflow-hidden bg-black/5 max-h-96 flex items-center justify-center p-2 relative group">
+                <div className="rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden bg-black/5 max-h-96 flex items-center justify-center p-2 relative group">
                   <img
                     src={currentSubmission.screenshotUrl}
                     alt="Proof Screenshot"
@@ -371,27 +371,27 @@ export const AdminVerificationCenterPage: React.FC = () => {
                   </a>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-gray-300 p-8 text-center text-xs text-gray-400">
+                <div className="rounded-2xl border border-dashed border-gray-300 dark:border-white/20 p-8 text-center text-xs text-gray-400 dark:text-gray-500">
                   No screenshot file attached to this submission.
                 </div>
               )}
             </div>
 
             {/* Contributor Note */}
-            <div className="p-3 rounded-xl bg-[#F8FAFC] border border-gray-100 text-xs text-gray-600">
-              <span className="font-bold text-gray-700 block mb-0.5">Contributor Remark:</span>
+            <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#0B0F19] border border-gray-100 dark:border-white/10 text-xs text-gray-600 dark:text-gray-400">
+              <span className="font-bold text-gray-700 dark:text-gray-300 block mb-0.5">Contributor Remark:</span>
               <p className="text-[11px] italic leading-relaxed">"{currentSubmission.note}"</p>
             </div>
 
           </div>
 
           {/* RIGHT COLUMN: AI Evaluation & Action Adjudication (5 Cols) */}
-          <div className="lg:col-span-5 bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-sm space-y-6">
+          <div className="lg:col-span-5 bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-6">
             
             {/* AI Analysis Summary */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4 text-[#168BFF]" />
                   AI Vision Evaluation
                 </span>
@@ -405,47 +405,47 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 </div>
               </div>
 
-              <p className="text-xs text-gray-600 leading-relaxed bg-blue-50/50 p-3 rounded-2xl border border-blue-100">
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed bg-blue-50/50 p-3 rounded-2xl border border-blue-100">
                 {currentSubmission.ai.summary}
               </p>
             </div>
 
             {/* Signal Metrics Matrix */}
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
-                <span className="text-[11px] text-gray-500">Image Quality</span>
-                <span className="font-black text-gray-900">{currentSubmission.ai.quality}%</span>
+              <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">Image Quality</span>
+                <span className="font-black text-gray-900 dark:text-gray-100">{currentSubmission.ai.quality}%</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
-                <span className="text-[11px] text-gray-500">Timestamp Match</span>
+              <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">Timestamp Match</span>
                 <span className="font-black text-emerald-600">{currentSubmission.ai.timestampMatch}%</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
-                <span className="text-[11px] text-gray-500">Duplicate Hash Risk</span>
+              <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">Duplicate Hash Risk</span>
                 <span className="font-black text-emerald-600">{currentSubmission.ai.duplicateRisk}% (Low)</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
-                <span className="text-[11px] text-gray-500">Policy Compliance</span>
+              <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">Policy Compliance</span>
                 <span className="font-black text-blue-600">{currentSubmission.ai.policyMatch}%</span>
               </div>
             </div>
 
             {/* Presets & Decision Notes */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-gray-700">
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
                 Decision Compliance Log / Reason <span className="text-red-500">*</span>
               </label>
 
               {/* Quick Reason Presets */}
               <div className="space-y-1">
-                <span className="text-[10px] text-gray-400 font-semibold block uppercase">Quick Insert Reason:</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold block uppercase">Quick Insert Reason:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {presetReasons.slice(0, 3).map((r, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => setDecisionNotes(r)}
-                      className="text-[10px] px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors truncate max-w-full cursor-pointer"
+                      className="text-[10px] px-2.5 py-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-gray-700 dark:text-gray-300 rounded-lg transition-colors truncate max-w-full cursor-pointer"
                     >
                       {r.split(':')[0]}
                     </button>
@@ -457,7 +457,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 rows={3}
                 value={decisionNotes}
                 onChange={(e) => setDecisionNotes(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                className="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                 placeholder="Required audit log note explaining approval or rejection reason..."
               />
             </div>
@@ -486,7 +486,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 className="w-full py-3.5 bg-[#16B364] hover:bg-emerald-600 text-white rounded-xl text-xs font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <Check className="w-4 h-4" />
-                <span>Approve Proof &amp; Credit Contributor ({currentSubmission.reward})</span>
+                <span>Approve Proof & Credit Contributor ({currentSubmission.reward})</span>
               </button>
 
               <div className="grid grid-cols-2 gap-2">
@@ -504,7 +504,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                   onClick={() => handleDecision('rejected')}
                   className="py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                 >
-                  Reject &amp; Release Slot
+                  Reject & Release Slot
                 </button>
               </div>
             </div>

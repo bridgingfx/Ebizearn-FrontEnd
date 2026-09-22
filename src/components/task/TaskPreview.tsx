@@ -58,14 +58,14 @@ export function classifyTaskPreview(task: Pick<UiTask, 'platform' | 'title' | 'c
 /* ------------------------------------------------------------------ */
 
 const Shell: React.FC<{ children: React.ReactNode; label: string }> = ({ children, label }) => (
-  <div className="relative rounded-3xl border border-[#E7ECF3] bg-white shadow-sm overflow-hidden">
+  <div className="relative rounded-3xl border border-[#E7ECF3] dark:border-white/10 bg-white dark:bg-[#0C1322] shadow-sm overflow-hidden">
     <div className="absolute top-3 left-3 z-10">
       <span className="text-[10px] font-black uppercase tracking-wider bg-[#07182F]/85 text-white px-2.5 py-1 rounded-full backdrop-blur">
         Illustrative preview
       </span>
     </div>
     <div className="pt-12">{children}</div>
-    <p className="px-4 py-2.5 text-[10px] text-gray-400 border-t border-gray-100">
+    <p className="px-4 py-2.5 text-[10px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-white/10">
       {label} — mock layout for guidance only. Complete the real action on the actual platform.
     </p>
   </div>
@@ -95,13 +95,13 @@ const InstagramFollowMockup: React.FC<{ task: UiTask }> = ({ task }) => (
           </div>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-gray-900 flex items-center gap-1 truncate">
+          <p className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-1 truncate">
             {handle(task.brandName)}
             <BadgeCheck className="w-4 h-4 text-[#168BFF] shrink-0" />
           </p>
-          <p className="text-[11px] text-gray-500 truncate">{task.brandName}</p>
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{task.brandName}</p>
         </div>
-        <MoreVertical className="w-4 h-4 text-gray-400 shrink-0" />
+        <MoreVertical className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
       </div>
 
       <div className="flex gap-6 my-4 text-center justify-center">
@@ -111,13 +111,13 @@ const InstagramFollowMockup: React.FC<{ task: UiTask }> = ({ task }) => (
           ['Following', '312'],
         ].map(([label, value]) => (
           <div key={label} className="min-w-[64px]">
-            <p className="text-sm font-black text-gray-900">{value}</p>
-            <p className="text-[10px] text-gray-500">{label}</p>
+            <p className="text-sm font-black text-gray-900 dark:text-gray-100">{value}</p>
+            <p className="text-[10px] text-gray-500 dark:text-gray-400">{label}</p>
           </div>
         ))}
       </div>
 
-      <p className="text-[11px] text-gray-700 leading-snug mb-3">
+      <p className="text-[11px] text-gray-700 dark:text-gray-300 leading-snug mb-3">
         {task.postCopy.slice(0, 120)}
         {task.postCopy.length > 120 ? '…' : ''}
       </p>
@@ -126,10 +126,10 @@ const InstagramFollowMockup: React.FC<{ task: UiTask }> = ({ task }) => (
         <span className="flex-1 text-center py-2.5 rounded-xl bg-[#168BFF] text-white text-xs font-black shadow-sm shadow-blue-500/25">
           Follow
         </span>
-        <span className="flex-1 text-center py-2.5 rounded-xl bg-gray-100 text-gray-700 text-xs font-bold">
+        <span className="flex-1 text-center py-2.5 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 text-xs font-bold">
           Message
         </span>
-        <span className="px-3 py-2.5 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center">
+        <span className="px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 flex items-center justify-center">
           <Bell className="w-4 h-4" />
         </span>
       </div>
@@ -158,13 +158,13 @@ const InstagramPostMockup: React.FC<{ task: UiTask }> = ({ task }) => (
       <div className="flex items-center gap-2.5 px-4 py-2.5">
         <Avatar name={task.brandName} />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-black text-gray-900 truncate flex items-center gap-1">
+          <p className="text-xs font-black text-gray-900 dark:text-gray-100 truncate flex items-center gap-1">
             {handle(task.brandName)}
             <BadgeCheck className="w-3.5 h-3.5 text-[#168BFF]" />
           </p>
-          <p className="text-[10px] text-gray-400">Sponsored</p>
+          <p className="text-[10px] text-gray-400 dark:text-gray-500">Sponsored</p>
         </div>
-        <MoreVertical className="w-4 h-4 text-gray-400" />
+        <MoreVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
       </div>
 
       <div className="aspect-square bg-gradient-to-br from-[#0D2342] via-[#168BFF]/30 to-[#7357FF]/30 flex flex-col items-center justify-center gap-2 relative overflow-hidden">
@@ -173,13 +173,13 @@ const InstagramPostMockup: React.FC<{ task: UiTask }> = ({ task }) => (
       </div>
 
       <div className="flex items-center gap-4 px-4 py-2.5">
-        <Heart className="w-5 h-5 text-gray-800" />
-        <MessageCircle className="w-5 h-5 text-gray-800" />
-        <Send className="w-5 h-5 text-gray-800" />
-        <Bookmark className="w-5 h-5 text-gray-800 ml-auto" />
+        <Heart className="w-5 h-5 text-gray-800 dark:text-gray-200" />
+        <MessageCircle className="w-5 h-5 text-gray-800 dark:text-gray-200" />
+        <Send className="w-5 h-5 text-gray-800 dark:text-gray-200" />
+        <Bookmark className="w-5 h-5 text-gray-800 dark:text-gray-200 ml-auto" />
       </div>
-      <p className="px-4 text-[11px] font-bold text-gray-900">24,512 likes</p>
-      <p className="px-4 pb-4 pt-1 text-[11px] text-gray-700 leading-snug">
+      <p className="px-4 text-[11px] font-bold text-gray-900 dark:text-gray-100">24,512 likes</p>
+      <p className="px-4 pb-4 pt-1 text-[11px] text-gray-700 dark:text-gray-300 leading-snug">
         <span className="font-black">{handle(task.brandName)}</span>{' '}
         {task.postCopy.slice(0, 140)}
         {task.postCopy.length > 140 ? '…' : ''}{' '}
@@ -197,7 +197,7 @@ const InstagramStoryMockup: React.FC<{ task: UiTask }> = ({ task }) => (
   <Shell label={task.platform}>
     <div className="relative aspect-[9/16] max-h-[540px] bg-gradient-to-br from-[#3b1d6e] via-[#7a2e8f] to-[#168BFF] overflow-hidden">
       <div className="absolute top-3 inset-x-3 flex gap-1">
-        <div className="h-0.5 flex-1 rounded-full bg-white" />
+        <div className="h-0.5 flex-1 rounded-full bg-white dark:bg-[#0C1322]" />
         <div className="h-0.5 flex-1 rounded-full bg-white/30" />
         <div className="h-0.5 flex-1 rounded-full bg-white/30" />
       </div>
@@ -210,7 +210,7 @@ const InstagramStoryMockup: React.FC<{ task: UiTask }> = ({ task }) => (
         <p className="text-white text-lg font-black leading-snug drop-shadow-lg line-clamp-4">{task.postCopy.slice(0, 160)}</p>
       </div>
       <div className="absolute bottom-6 inset-x-0 flex justify-center">
-        <span className="px-6 py-2 rounded-full bg-white text-gray-900 text-[11px] font-black shadow-lg">
+        <span className="px-6 py-2 rounded-full bg-white dark:bg-[#0C1322] text-gray-900 dark:text-gray-100 text-[11px] font-black shadow-lg">
           Swipe up / Tap link
         </span>
       </div>
@@ -286,14 +286,14 @@ const YouTubeMockup: React.FC<{ task: UiTask }> = ({ task }) => (
         <div className="flex items-start gap-3">
           <Avatar name={task.brandName} size="w-9 h-9" />
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-black text-gray-900 leading-snug line-clamp-2">{task.title}</p>
-            <p className="text-[11px] text-gray-500 mt-1 flex items-center gap-1">
-              {task.brandName} <BadgeCheck className="w-3.5 h-3.5 text-gray-400" />
+            <p className="text-xs font-black text-gray-900 dark:text-gray-100 leading-snug line-clamp-2">{task.title}</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+              {task.brandName} <BadgeCheck className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
             </p>
-            <p className="text-[10px] text-gray-400">128K views · 2 days ago</p>
+            <p className="text-[10px] text-gray-400 dark:text-gray-500">128K views · 2 days ago</p>
           </div>
         </div>
-        <div className="flex items-center gap-5 mt-3 pt-3 border-t border-gray-100 text-[11px] text-gray-500 font-bold">
+        <div className="flex items-center gap-5 mt-3 pt-3 border-t border-gray-100 dark:border-white/10 text-[11px] text-gray-500 dark:text-gray-400 font-bold">
           <span className="flex items-center gap-1.5">
             <ThumbsUp className="w-4 h-4" /> 8.2K
           </span>
@@ -319,27 +319,27 @@ const FacebookMockup: React.FC<{ task: UiTask }> = ({ task }) => (
       <div className="flex items-center gap-2.5 mb-3">
         <Avatar name={task.brandName} />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-black text-gray-900 truncate">{task.brandName}</p>
-          <p className="text-[10px] text-gray-400">Sponsored · Public</p>
+          <p className="text-xs font-black text-gray-900 dark:text-gray-100 truncate">{task.brandName}</p>
+          <p className="text-[10px] text-gray-400 dark:text-gray-500">Sponsored · Public</p>
         </div>
-        <MoreVertical className="w-4 h-4 text-gray-400" />
+        <MoreVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
       </div>
-      <p className="text-[11px] text-gray-700 leading-snug mb-3">
+      <p className="text-[11px] text-gray-700 dark:text-gray-300 leading-snug mb-3">
         {task.postCopy.slice(0, 160)}
         {task.postCopy.length > 160 ? '…' : ''}
       </p>
-      <div className="rounded-2xl overflow-hidden border border-gray-100">
+      <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-white/10">
         <div className="aspect-[16/9] bg-gradient-to-br from-[#07182F] to-[#168BFF]/40 flex items-center justify-center">
           <span className="text-white/80 text-2xl font-black">{initials(task.brandName)}</span>
         </div>
-        <div className="p-3 bg-gray-50">
-          <p className="text-[10px] uppercase text-gray-400 font-bold truncate">
+        <div className="p-3 bg-gray-50 dark:bg-white/5">
+          <p className="text-[10px] uppercase text-gray-400 dark:text-gray-500 font-bold truncate">
             {(task.targetUrl || '').replace(/^https?:\/\//, '') || 'campaign page'}
           </p>
-          <p className="text-xs font-bold text-gray-900 line-clamp-1">{task.title}</p>
+          <p className="text-xs font-bold text-gray-900 dark:text-gray-100 line-clamp-1">{task.title}</p>
         </div>
       </div>
-      <div className="flex justify-around mt-3 pt-2 border-t border-gray-100 text-[11px] font-bold text-gray-500">
+      <div className="flex justify-around mt-3 pt-2 border-t border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-500 dark:text-gray-400">
         <span className="flex items-center gap-1.5">
           <ThumbsUp className="w-4 h-4" /> Like
         </span>
@@ -361,24 +361,24 @@ const FacebookMockup: React.FC<{ task: UiTask }> = ({ task }) => (
 const ReviewMockup: React.FC<{ task: UiTask }> = ({ task }) => (
   <Shell label={task.platform}>
     <div className="p-4">
-      <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+      <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-white/10">
         <Avatar name={task.brandName} size="w-12 h-12" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-black text-gray-900 truncate">{task.brandName}</p>
-          <p className="text-[10px] text-gray-400 truncate">{task.targetUrl?.replace(/^https?:\/\//, '')}</p>
+          <p className="text-xs font-black text-gray-900 dark:text-gray-100 truncate">{task.brandName}</p>
+          <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">{task.targetUrl?.replace(/^https?:\/\//, '')}</p>
         </div>
       </div>
-      <p className="text-xs font-black text-gray-900 mt-4 mb-2">Rate your recent experience</p>
+      <p className="text-xs font-black text-gray-900 dark:text-gray-100 mt-4 mb-2">Rate your recent experience</p>
       <div className="flex gap-1.5 mb-3">
         {[0, 1, 2, 3, 4].map((i) => (
           <Star key={i} className={`w-7 h-7 ${i < 5 ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`} />
         ))}
       </div>
-      <div className="rounded-2xl border border-gray-200 p-3 bg-gray-50">
-        <p className="text-[11px] text-gray-500 italic leading-snug line-clamp-3">"{task.postCopy.slice(0, 140)}"</p>
+      <div className="rounded-2xl border border-gray-200 dark:border-white/10 p-3 bg-gray-50 dark:bg-white/5">
+        <p className="text-[11px] text-gray-500 dark:text-gray-400 italic leading-snug line-clamp-3">"{task.postCopy.slice(0, 140)}"</p>
       </div>
       <div className="mt-3 text-center py-2.5 rounded-xl bg-[#07182F] text-white text-xs font-black">Post review</div>
-      <p className="text-[10px] text-gray-400 text-center mt-2">Reviews must be honest and based on a genuine interaction.</p>
+      <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center mt-2">Reviews must be honest and based on a genuine interaction.</p>
     </div>
   </Shell>
 );
@@ -406,13 +406,13 @@ const WhatsAppMockup: React.FC<{ task: UiTask }> = ({ task }) => (
         )}
       </div>
       <div className="mt-2 flex items-center gap-2 bg-[#202C33] rounded-full px-3 py-2">
-        <MessageSquareText className="w-4 h-4 text-gray-400" />
-        <span className="text-[11px] text-gray-400 flex-1">Message</span>
+        <MessageSquareText className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+        <span className="text-[11px] text-gray-400 dark:text-gray-500 flex-1">Message</span>
         <span className="w-8 h-8 rounded-full bg-[#00A884] flex items-center justify-center">
           <Send className="w-3.5 h-3.5 text-white" />
         </span>
       </div>
-      <div className="mt-2 flex items-center gap-1.5 text-[10px] text-gray-400 px-1">
+      <div className="mt-2 flex items-center gap-1.5 text-[10px] text-gray-400 dark:text-gray-500 px-1">
         <MapPin className="w-3 h-3" />
         <span>Share into the campaign group, then screenshot your sent message as proof.</span>
       </div>
@@ -428,11 +428,11 @@ const GenericMockup: React.FC<{ task: UiTask }> = ({ task }) => (
   <Shell label={task.platform}>
     <div className="p-6 text-center">
       <Avatar name={task.brandName} size="w-16 h-16" />
-      <p className="text-sm font-black text-gray-900 mt-3">{task.brandName}</p>
-      <p className="text-[11px] text-gray-500 mt-1">
+      <p className="text-sm font-black text-gray-900 dark:text-gray-100 mt-3">{task.brandName}</p>
+      <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
         {task.categoryName} task on {task.platform}
       </p>
-      <p className="text-[11px] text-gray-700 leading-snug mt-4 text-left bg-gray-50 rounded-2xl p-4 line-clamp-6">
+      <p className="text-[11px] text-gray-700 dark:text-gray-300 leading-snug mt-4 text-left bg-gray-50 dark:bg-white/5 rounded-2xl p-4 line-clamp-6">
         {task.postCopy.slice(0, 220)}
         {task.postCopy.length > 220 ? '…' : ''}
       </p>
@@ -492,25 +492,25 @@ export const TaskPreview: React.FC<TaskPreviewProps> = ({ task, variant }) => {
 export const TaskPreviewSummary: React.FC<{ task: UiTask }> = ({ task }) => {
   const requirements = proofRequirementLabels(task.campaign?.proof_requirements_json);
   return (
-    <div className="rounded-3xl border border-[#E7ECF3] bg-white p-5 space-y-3">
+    <div className="rounded-3xl border border-[#E7ECF3] dark:border-white/10 bg-white dark:bg-[#0C1322] p-5 space-y-3">
       <div className="flex items-center gap-3">
         <Avatar name={task.brandName} size="w-11 h-11" />
         <div className="min-w-0">
-          <p className="text-[11px] font-bold text-gray-500">{task.brandName}</p>
-          <p className="text-sm font-black text-gray-900 leading-snug">{task.title}</p>
+          <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400">{task.brandName}</p>
+          <p className="text-sm font-black text-gray-900 dark:text-gray-100 leading-snug">{task.title}</p>
         </div>
         <span className="ml-auto text-sm font-black text-[#16B364] shrink-0">
           ${((task.reward_cents || 0) / 100).toFixed(2)}
         </span>
       </div>
       <div className="flex flex-wrap gap-1.5 text-[10px] font-bold">
-        <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-700 border border-gray-200">{task.platform}</span>
-        <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-700 border border-gray-200 capitalize">{task.categoryName}</span>
-        <span className="px-2 py-1 rounded-lg bg-gray-100 text-gray-700 border border-gray-200">~{task.estimated_minutes} min</span>
+        <span className="px-2 py-1 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10">{task.platform}</span>
+        <span className="px-2 py-1 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 capitalize">{task.categoryName}</span>
+        <span className="px-2 py-1 rounded-lg bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10">~{task.estimated_minutes} min</span>
       </div>
       {requirements.length > 0 && (
         <div>
-          <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 mb-1.5">Proof required</p>
+          <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Proof required</p>
           <ul className="flex flex-wrap gap-1.5">
             {requirements.map((r) => (
               <li key={r} className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded-lg capitalize">

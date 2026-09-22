@@ -176,9 +176,9 @@ export const ContributorWalletPage: React.FC = () => {
     task_reward: { icon: ArrowDownLeft, tint: 'bg-emerald-100 text-emerald-700', sign: '+' },
     referral_reward: { icon: ArrowDownLeft, tint: 'bg-violet-100 text-violet-700', sign: '+' },
     bonus: { icon: ArrowDownLeft, tint: 'bg-blue-100 text-blue-700', sign: '+' },
-    withdrawal: { icon: ArrowUpRight, tint: 'bg-slate-200 text-slate-700', sign: '−' },
+    withdrawal: { icon: ArrowUpRight, tint: 'bg-slate-200 text-slate-700 dark:text-gray-300', sign: '−' },
     withdrawal_reversal: { icon: ArrowDownLeft, tint: 'bg-amber-100 text-amber-700', sign: '+' },
-    admin_adjustment: { icon: ArrowDownLeft, tint: 'bg-slate-200 text-slate-700', sign: '' },
+    admin_adjustment: { icon: ArrowDownLeft, tint: 'bg-slate-200 text-slate-700 dark:text-gray-300', sign: '' },
   };
 
   const canWithdraw = availableCents >= minWithdrawalCents && !wallet?.is_locked;
@@ -225,7 +225,7 @@ export const ContributorWalletPage: React.FC = () => {
                 </button>
               </div>
 
-              <p className="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Total balance</p>
+              <p className="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-gray-500">Total balance</p>
               <p className="mt-1 text-[2.75rem] sm:text-5xl font-black tracking-tight leading-none tabular-nums">
                 {displayMoney(totalCents)}
               </p>
@@ -235,12 +235,12 @@ export const ContributorWalletPage: React.FC = () => {
                 <div className="rounded-2xl bg-white/[0.07] border border-white/10 p-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#16B364]">Available</p>
                   <p className="mt-1 text-xl font-black tabular-nums">{displayMoney(availableCents)}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Ready to withdraw</p>
+                  <p className="text-[11px] text-slate-400 dark:text-gray-500 mt-0.5">Ready to withdraw</p>
                 </div>
                 <div className="rounded-2xl bg-white/[0.07] border border-white/10 p-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.12em] text-amber-300">Pending</p>
                   <p className="mt-1 text-xl font-black tabular-nums">{displayMoney(pendingCents)}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Releasing soon</p>
+                  <p className="text-[11px] text-slate-400 dark:text-gray-500 mt-0.5">Releasing soon</p>
                 </div>
               </div>
 
@@ -261,7 +261,7 @@ export const ContributorWalletPage: React.FC = () => {
                 <ArrowUpRight className="w-5 h-5" />
                 Withdraw funds
               </button>
-              <p className="mt-2.5 text-[11px] text-slate-400">
+              <p className="mt-2.5 text-[11px] text-slate-400 dark:text-gray-500">
                 Minimum withdrawal {money(minWithdrawalCents, currency)} · manual review by the platform team
               </p>
             </div>
@@ -320,8 +320,8 @@ export const ContributorWalletPage: React.FC = () => {
           {/* ── Transactions ──────────────────────────────────────── */}
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <h2 className="text-lg sm:text-xl font-black tracking-tight text-slate-900">Activity</h2>
-              <div className="inline-flex rounded-2xl bg-slate-100 p-1 w-fit" role="tablist" aria-label="Transaction filter">
+              <h2 className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-gray-100">Activity</h2>
+              <div className="inline-flex rounded-2xl bg-slate-100 dark:bg-white/10 p-1 w-fit" role="tablist" aria-label="Transaction filter">
                 {(
                   [
                     { value: 'all', label: 'All' },
@@ -336,7 +336,7 @@ export const ContributorWalletPage: React.FC = () => {
                     aria-selected={tab === t.value}
                     onClick={() => setTab(t.value)}
                     className={`min-h-[44px] px-5 rounded-xl text-sm font-bold transition-all ${
-                      tab === t.value ? 'bg-white text-slate-900 shadow-md' : 'text-slate-500 hover:text-slate-700'
+                      tab === t.value ? 'bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 shadow-md' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'
                     }`}
                   >
                     {t.label}
@@ -356,7 +356,7 @@ export const ContributorWalletPage: React.FC = () => {
                 icon={WalletIcon}
               />
             ) : (
-              <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow divide-y divide-slate-100 overflow-hidden">
+              <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow divide-y divide-slate-100 overflow-hidden">
                 {filteredTxns.map((t) => {
                   const meta = txnMeta[t.type] || txnMeta.admin_adjustment;
                   const Icon = meta.icon;
@@ -367,18 +367,18 @@ export const ContributorWalletPage: React.FC = () => {
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-900 truncate">{t.description}</p>
-                        <p className="text-xs text-slate-400 mt-0.5 capitalize">
+                        <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">{t.description}</p>
+                        <p className="text-xs text-slate-400 dark:text-gray-500 mt-0.5 capitalize">
                           {new Date(t.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                           {' · '}
                           {t.type.replace(/_/g, ' ')}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className={`text-base font-black ${positive ? 'text-emerald-600' : 'text-slate-700'}`}>
+                        <p className={`text-base font-black ${positive ? 'text-emerald-600' : 'text-slate-700 dark:text-gray-300'}`}>
                           {meta.sign}{balanceHidden ? '••••' : money(Math.abs(t.amount_cents), t.currency || currency)}
                         </p>
-                        <p className="text-[10px] text-slate-400 font-medium">
+                        <p className="text-[10px] text-slate-400 dark:text-gray-500 font-medium">
                           Bal {balanceHidden ? '••••' : money(t.balance_after_cents, t.currency || currency)}
                         </p>
                       </div>
@@ -403,17 +403,17 @@ export const ContributorWalletPage: React.FC = () => {
       {/* ── Withdrawal modal (same endpoint, same validation) ────── */}
       {withdrawOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4" onClick={() => setWithdrawOpen(false)}>
-          <div className="bg-white rounded-[1.75rem] w-full max-w-md p-6 sm:p-7 space-y-5" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-[#0C1322] rounded-[1.75rem] w-full max-w-md p-6 sm:p-7 space-y-5" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-black text-slate-900">Request withdrawal</h3>
-                <p className="text-sm text-slate-500 mt-1">
+                <h3 className="text-xl font-black text-slate-900 dark:text-gray-100">Request withdrawal</h3>
+                <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
                   Available: <span className="font-extrabold text-emerald-600">{money(availableCents, currency)}</span>
                   {' · '}Minimum: {money(minWithdrawalCents, currency)}
                 </p>
               </div>
-              <button type="button" onClick={() => setWithdrawOpen(false)} className="p-2.5 rounded-xl hover:bg-slate-100 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Close">
-                <X className="w-5 h-5 text-slate-500" />
+              <button type="button" onClick={() => setWithdrawOpen(false)} className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Close">
+                <X className="w-5 h-5 text-slate-500 dark:text-gray-400" />
               </button>
             </div>
 
@@ -425,7 +425,7 @@ export const ContributorWalletPage: React.FC = () => {
 
             <form onSubmit={handleWithdraw} className="space-y-5">
               <div>
-                <label htmlFor="withdraw-amount" className="block text-sm font-bold text-slate-800 mb-2">
+                <label htmlFor="withdraw-amount" className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">
                   Amount ({currency})
                 </label>
                 <input
@@ -439,11 +439,11 @@ export const ContributorWalletPage: React.FC = () => {
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder={(minWithdrawalCents / 100).toFixed(2)}
                   inputMode="decimal"
-                  className="w-full min-h-[52px] px-4 text-base bg-white border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
+                  className="w-full min-h-[52px] px-4 text-base bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
                 />
               </div>
               <div>
-                <span className="block text-sm font-bold text-slate-800 mb-2">Payout method</span>
+                <span className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">Payout method</span>
                 <div className="grid grid-cols-3 gap-2.5">
                   {PAYOUT_METHODS.map((m) => {
                     const MIcon = m.icon;
@@ -455,19 +455,19 @@ export const ContributorWalletPage: React.FC = () => {
                         onClick={() => setMethod(m.value)}
                         aria-pressed={active}
                         className={`p-3 rounded-2xl border-2 text-left transition-all min-h-[76px] ${
-                          active ? 'border-[#168BFF] bg-blue-50/60' : 'border-slate-200 hover:border-slate-300'
+                          active ? 'border-[#168BFF] bg-blue-50/60' : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                         }`}
                       >
-                        <MIcon className={`w-5 h-5 ${active ? 'text-[#168BFF]' : 'text-slate-400'}`} />
-                        <p className="text-xs font-extrabold text-slate-900 mt-1.5">{m.label}</p>
-                        <p className="text-[10px] text-slate-400 leading-tight">{m.hint}</p>
+                        <MIcon className={`w-5 h-5 ${active ? 'text-[#168BFF]' : 'text-slate-400 dark:text-gray-500'}`} />
+                        <p className="text-xs font-extrabold text-slate-900 dark:text-gray-100 mt-1.5">{m.label}</p>
+                        <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-tight">{m.hint}</p>
                       </button>
                     );
                   })}
                 </div>
               </div>
               <div>
-                <label htmlFor="withdraw-details" className="block text-sm font-bold text-slate-800 mb-2">
+                <label htmlFor="withdraw-details" className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">
                   Payout details
                 </label>
                 <input
@@ -477,7 +477,7 @@ export const ContributorWalletPage: React.FC = () => {
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
                   placeholder={method === 'bank_transfer' ? 'Full name + IBAN / account number' : 'Account email'}
-                  className="w-full min-h-[52px] px-4 text-base bg-white border-2 border-slate-200 rounded-2xl placeholder:text-slate-400 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
+                  className="w-full min-h-[52px] px-4 text-base bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
                 />
               </div>
               <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-blue-50 border border-blue-100">

@@ -92,14 +92,14 @@ export const AdminUsersPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Users &amp; KYC</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Users & KYC</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Every user on the platform, served live. KYC approval actions need backend support that is not
           available yet — this page only suspends or reactivates accounts.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-4 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex gap-2 flex-wrap">
           {roles.map((r) => (
             <button
@@ -107,7 +107,7 @@ export const AdminUsersPage: React.FC = () => {
               type="button"
               onClick={() => setRole(r)}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold capitalize transition-colors ${
-                role === r ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                role === r ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
               }`}
             >
               {r} {r === 'all' ? '' : `(${counts[r] || 0})`}
@@ -115,12 +115,12 @@ export const AdminUsersPage: React.FC = () => {
           ))}
         </div>
         <div className="relative sm:ml-auto sm:w-72">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name or email…"
-            className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            className="w-full pl-9 pr-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
           />
         </div>
       </div>
@@ -132,7 +132,7 @@ export const AdminUsersPage: React.FC = () => {
       )}
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading users…
         </div>
       )}
@@ -163,11 +163,11 @@ export const AdminUsersPage: React.FC = () => {
       )}
 
       {!loading && !error && users.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                   <th className="py-3 px-4 font-bold">User</th>
                   <th className="py-3 px-4 font-bold">Role</th>
                   <th className="py-3 px-4 font-bold">KYC</th>
@@ -180,15 +180,15 @@ export const AdminUsersPage: React.FC = () => {
                 {users.map((u) => (
                   <tr key={u.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
                     <td className="py-3 px-4">
-                      <p className="font-bold text-gray-900">{u.name}</p>
-                      <p className="text-[11px] text-gray-400">{u.email}</p>
+                      <p className="font-bold text-gray-900 dark:text-gray-100">{u.name}</p>
+                      <p className="text-[11px] text-gray-400 dark:text-gray-500">{u.email}</p>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">
                         {u.role}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-600">
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">
                       {u.profile?.kyc_status ? u.profile.kyc_status.replace(/_/g, ' ') : '—'}
                     </td>
                     <td className="py-3 px-4">
@@ -198,7 +198,7 @@ export const AdminUsersPage: React.FC = () => {
                         {u.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-500">
+                    <td className="py-3 px-4 text-xs text-gray-500 dark:text-gray-400">
                       {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
                     </td>
                     <td className="py-3 px-4">
@@ -207,7 +207,7 @@ export const AdminUsersPage: React.FC = () => {
                           type="button"
                           onClick={() => setSelected(u)}
                           title="View details"
-                          className="p-2 rounded-lg text-gray-400 hover:text-[#168BFF] hover:bg-blue-50 transition-colors"
+                          className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -217,7 +217,7 @@ export const AdminUsersPage: React.FC = () => {
                             disabled={actionId === u.id}
                             onClick={() => void handleStatus(u, 'active')}
                             title="Reactivate account"
-                            className="p-2 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-50"
+                            className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-50"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                           </button>
@@ -227,7 +227,7 @@ export const AdminUsersPage: React.FC = () => {
                             disabled={actionId === u.id}
                             onClick={() => void handleStatus(u, 'suspended')}
                             title="Suspend account"
-                            className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                            className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
                           >
                             <Ban className="w-4 h-4" />
                           </button>
@@ -246,16 +246,16 @@ export const AdminUsersPage: React.FC = () => {
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSelected(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
+          <div className="relative bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-base font-extrabold text-gray-900">{selected.name}</h3>
-                <p className="text-xs text-gray-500">{selected.email}</p>
+                <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100">{selected.name}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{selected.email}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 Close
               </button>
@@ -275,8 +275,8 @@ export const AdminUsersPage: React.FC = () => {
                 ['Joined', selected.created_at ? new Date(selected.created_at).toLocaleString() : '—'],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-4 border-b border-gray-50 pb-2">
-                  <dt className="text-gray-500">{k}</dt>
-                  <dd className="font-bold text-gray-900 capitalize">{v}</dd>
+                  <dt className="text-gray-500 dark:text-gray-400">{k}</dt>
+                  <dd className="font-bold text-gray-900 dark:text-gray-100 capitalize">{v}</dd>
                 </div>
               ))}
             </dl>

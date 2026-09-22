@@ -3,7 +3,7 @@ import { Loader2, RotateCcw, Save } from 'lucide-react';
 import { emailApi, getApiError } from '../../../api';
 import type { EmailTemplate } from '../../../api';
 
-const inputClass = 'w-full px-3 py-2 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-[#168BFF]';
+const inputClass = 'w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 text-xs focus:outline-none focus:border-[#168BFF]';
 
 export const TemplateEditor: React.FC = () => {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
@@ -72,7 +72,7 @@ export const TemplateEditor: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="flex items-center gap-2 text-xs text-gray-500"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>;
+    return <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>;
   }
 
   return (
@@ -84,7 +84,7 @@ export const TemplateEditor: React.FC = () => {
             type="button"
             onClick={() => { setSelectedKey(t.event_key); setNotice(null); }}
             className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between gap-2 cursor-pointer ${
-              t.event_key === selectedKey ? 'bg-[#07182F] text-white' : 'bg-slate-50 text-gray-700 hover:bg-slate-100'
+              t.event_key === selectedKey ? 'bg-[#07182F] text-white' : 'bg-slate-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-white/10'
             }`}
           >
             <span className="truncate">{t.name}</span>
@@ -96,8 +96,8 @@ export const TemplateEditor: React.FC = () => {
       {draft && (
         <div className="space-y-3 min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[11px] font-mono text-gray-500">event: {draft.event_key}</p>
-            <label className="flex items-center gap-2 text-xs font-bold text-gray-700 cursor-pointer">
+            <p className="text-[11px] font-mono text-gray-500 dark:text-gray-400">event: {draft.event_key}</p>
+            <label className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300 cursor-pointer">
               <input type="checkbox" checked={draft.is_enabled} onChange={(e) => setDraft({ ...draft, is_enabled: e.target.checked })} />
               Enabled
             </label>
@@ -109,13 +109,13 @@ export const TemplateEditor: React.FC = () => {
             ))}
           </div>
 
-          <label className="block text-[11px] font-bold text-gray-600">Subject
+          <label className="block text-[11px] font-bold text-gray-600 dark:text-gray-400">Subject
             <input value={draft.subject} onChange={(e) => setDraft({ ...draft, subject: e.target.value })} className={`${inputClass} mt-1 font-normal`} />
           </label>
-          <label className="block text-[11px] font-bold text-gray-600">HTML body
+          <label className="block text-[11px] font-bold text-gray-600 dark:text-gray-400">HTML body
             <textarea value={draft.html_body} onChange={(e) => setDraft({ ...draft, html_body: e.target.value })} rows={10} className={`${inputClass} mt-1 font-mono font-normal`} />
           </label>
-          <label className="block text-[11px] font-bold text-gray-600">Plain text body
+          <label className="block text-[11px] font-bold text-gray-600 dark:text-gray-400">Plain text body
             <textarea value={draft.text_body} onChange={(e) => setDraft({ ...draft, text_body: e.target.value })} rows={6} className={`${inputClass} mt-1 font-mono font-normal`} />
           </label>
 
@@ -129,7 +129,7 @@ export const TemplateEditor: React.FC = () => {
               <Save className="w-4 h-4" />{busy ? 'Saving…' : 'Save template'}
             </button>
             <button type="button" onClick={reset} disabled={busy}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-gray-300 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
               <RotateCcw className="w-4 h-4" />Restore default
             </button>
           </div>

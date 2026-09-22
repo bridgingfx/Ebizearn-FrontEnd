@@ -39,30 +39,97 @@ export const HowItWorksPage: React.FC = () => {
     {
       num: '01',
       title: 'Create Your Free Account in 45 Seconds',
-      subtitle: 'Zero Fees &bull; Instant Access',
+      subtitle: 'Zero Fees • Instant Access',
       desc: 'Sign up with just your phone number or email. BizNetwork will never charge you an upfront registration fee, membership cost, or deposit. You instantly unlock our open social marketplace.',
       actionTitle: 'Instant Registration',
       actionBadge: '100% Free Forever',
       icon: UserPlus,
       screenMock: (
-        <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
-          <div className="flex items-center justify-between pb-2 border-b border-white/10">
-            <span className="font-bold text-[#20C4E8]">Quick Onboarding</span>
-            <span className="text-[#16B364] font-bold">&check; Verified</span>
+        <div className="relative flex justify-center py-3 select-none" aria-hidden="true">
+          {/* ambient glow */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-60 h-60 rounded-full bg-[#168BFF]/15 blur-3xl" />
           </div>
-          <div className="space-y-1.5">
-            <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-              <span>Phone Verified</span>
-              <span className="text-[#16B364]">&check;</span>
+
+          {/* phone mockup */}
+          <div className="relative w-52 sm:w-60 rounded-[2.4rem] bg-[#0A0F1C] p-2 border border-white/10 shadow-[0_28px_70px_rgba(7,24,47,0.40)] animate-float">
+            <div className="rounded-[1.9rem] overflow-hidden bg-gradient-to-b from-[#0E2547] via-[#0A1B36] to-[#07182F]">
+              {/* notch + status */}
+              <div className="relative flex items-center justify-center pt-3 pb-1">
+                <div className="absolute top-1.5 w-20 h-5 bg-[#0A0F1C] rounded-full" />
+                <span className="text-[9px] font-semibold text-gray-400 dark:text-gray-500 tracking-wide">9:41</span>
+              </div>
+
+              <div className="px-4 pt-2 pb-5">
+                <p className="text-white text-[13px] font-extrabold tracking-tight">Create your account</p>
+                <p className="text-[9px] text-gray-400 dark:text-gray-500 mt-0.5">Free forever · No card needed</p>
+
+                {/* phone field */}
+                <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/10 border border-white/15 px-3 py-2.5">
+                  <span className="text-[10px] text-gray-200 font-bold">+971</span>
+                  <span className="w-px h-4 bg-white/20" />
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 tracking-widest">5X XXX XXXX</span>
+                </div>
+                <div className="mt-2 rounded-xl bg-gradient-to-r from-[#168BFF] to-[#7257FF] py-2.5 text-center text-[11px] font-extrabold text-white shadow-lg shadow-blue-500/25">
+                  Continue
+                </div>
+
+                {/* elegant 3-step timeline */}
+                <div className="mt-4 rounded-2xl bg-white/5 border border-white/10 p-3">
+                  {[
+                    { icon: Smartphone, label: 'Phone', state: 'done' },
+                    { icon: ShieldCheck, label: 'Verify', state: 'active' },
+                    { icon: Wallet, label: 'Earn', state: 'todo' },
+                  ].map((step, i) => {
+                    const SIcon = step.icon;
+                    return (
+                      <div key={step.label} className="relative flex items-center gap-2.5 pb-3 last:pb-0">
+                        {i < 2 && (
+                          <span
+                            className={`absolute left-[13px] top-7 bottom-0 w-px ${
+                              step.state === 'done' ? 'bg-[#16B364]/50' : 'bg-white/10'
+                            }`}
+                          />
+                        )}
+                        <span
+                          className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                            step.state === 'done'
+                              ? 'bg-[#16B364]/20 text-[#16B364] ring-1 ring-[#16B364]/40'
+                              : step.state === 'active'
+                                ? 'bg-[#168BFF]/20 text-[#20C4E8] ring-1 ring-[#168BFF]/50 animate-pulse-glow'
+                                : 'bg-white/5 text-gray-500 dark:text-gray-400 ring-1 ring-white/10'
+                          }`}
+                        >
+                          {step.state === 'done' ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : <SIcon className="w-3.5 h-3.5" />}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold ${
+                            step.state === 'todo' ? 'text-gray-500 dark:text-gray-400' : 'text-gray-200'
+                          }`}
+                        >
+                          {step.label}
+                        </span>
+                        {step.state === 'active' && (
+                          <span className="ml-auto text-[8px] font-extrabold uppercase tracking-widest text-[#20C4E8]">
+                            You are here
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-              <span>Country Assigned</span>
-              <span className="text-[#20C4E8]">Global / 150+</span>
-            </div>
-            <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
-              <span>Membership Tier</span>
-              <span className="font-bold text-amber-400">Starter (Level 1)</span>
-            </div>
+          </div>
+
+          {/* floating badges */}
+          <div className="absolute right-0 sm:right-2 top-8 flex items-center gap-1.5 rounded-full bg-white dark:bg-[#0C1322] border border-[#E4EAF2] dark:border-white/10 shadow-lg shadow-slate-900/10 px-3 py-1.5 animate-float-delayed">
+            <Clock className="w-3.5 h-3.5 text-[#168BFF]" />
+            <span className="text-[10px] font-extrabold text-slate-800 dark:text-gray-200">45 seconds</span>
+          </div>
+          <div className="absolute left-0 sm:left-2 bottom-10 flex items-center gap-1.5 rounded-full bg-[#07182F] border border-white/15 shadow-lg shadow-slate-900/20 px-3 py-1.5 animate-float-slow">
+            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span className="text-[10px] font-extrabold text-white">100% Free</span>
           </div>
         </div>
       ),
@@ -79,7 +146,7 @@ export const HowItWorksPage: React.FC = () => {
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
             <span className="font-bold text-[#20C4E8]">Marketplace Filter</span>
-            <span className="text-gray-400 font-mono">1,842 Live</span>
+            <span className="text-gray-400 dark:text-gray-500 font-mono">1,842 Live</span>
           </div>
           <div className="space-y-2">
             <div className="p-2.5 rounded-xl bg-white/10 border border-pink-500/30 flex items-center justify-between">
@@ -143,7 +210,7 @@ export const HowItWorksPage: React.FC = () => {
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
             <span className="font-bold text-[#16B364]">AI Screening Telemetry</span>
-            <span className="text-gray-400 font-mono">12.4s Latency</span>
+            <span className="text-gray-400 dark:text-gray-500 font-mono">12.4s Latency</span>
           </div>
           <div className="space-y-1 text-[11px]">
             <div className="flex justify-between py-1 border-b border-white/5">
@@ -151,7 +218,7 @@ export const HowItWorksPage: React.FC = () => {
               <span className="text-[#16B364] font-bold">100% Valid</span>
             </div>
             <div className="flex justify-between py-1 border-b border-white/5">
-              <span className="text-gray-300">Hashtag &amp; Account Handle</span>
+              <span className="text-gray-300">Hashtag & Account Handle</span>
               <span className="text-[#16B364] font-bold">Confirmed</span>
             </div>
             <div className="flex justify-between py-1">
@@ -178,7 +245,7 @@ export const HowItWorksPage: React.FC = () => {
           </div>
           <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[#16B364] text-[11px] font-bold flex items-center justify-between">
             <span>Withdrawal Eligible</span>
-            <span>$50.00 Min Met &check;</span>
+            <span>$50.00 Min Met ✓</span>
           </div>
           <div className="grid grid-cols-3 gap-1 text-[10px] text-center text-gray-300">
             <span className="p-1 rounded bg-white/5">PayPal</span>
@@ -208,11 +275,11 @@ export const HowItWorksPage: React.FC = () => {
           <div className="space-y-1.5">
             <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
               <span>Geo Target</span>
-              <span className="text-[#20C4E8]">UAE &bull; USA &bull; UK</span>
+              <span className="text-[#20C4E8]">UAE • USA • UK</span>
             </div>
             <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
               <span>Channel</span>
-              <span className="text-pink-400 font-bold">Instagram &amp; TikTok</span>
+              <span className="text-pink-400 font-bold">Instagram & TikTok</span>
             </div>
             <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
               <span>Desired Actions</span>
@@ -225,7 +292,7 @@ export const HowItWorksPage: React.FC = () => {
     {
       num: '02',
       title: 'Lock Campaign Budget into Smart Escrow',
-      subtitle: 'Zero Waste &bull; 100% Guaranteed Delivery',
+      subtitle: 'Zero Waste • 100% Guaranteed Delivery',
       desc: 'Deposit your campaign funds securely via Stripe, Wire, or Corporate Card. Your budget is locked in escrow and only released per verified and approved task completion.',
       actionTitle: 'Escrow Protection',
       actionBadge: '100% Refundable',
@@ -256,7 +323,7 @@ export const HowItWorksPage: React.FC = () => {
     {
       num: '03',
       title: 'Mobilize Over 500,000+ Real Micro-Contributors',
-      subtitle: 'Authentic Organic Reach &bull; No Bots',
+      subtitle: 'Authentic Organic Reach • No Bots',
       desc: 'Your campaign instantly goes live across verified mobile earners worldwide. Real people post your media, generate organic impressions, and interact naturally with their own followers.',
       actionTitle: 'Decentralized Workforce',
       actionBadge: '528k+ Active Earners',
@@ -275,7 +342,7 @@ export const HowItWorksPage: React.FC = () => {
             <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
               <div className="bg-[#168BFF] h-full w-[59%]" />
             </div>
-            <span className="text-[10px] text-gray-400 block text-right">59% Completed</span>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 block text-right">59% Completed</span>
           </div>
         </div>
       ),
@@ -292,7 +359,7 @@ export const HowItWorksPage: React.FC = () => {
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
             <span className="font-bold text-[#16B364]">Vision OCR Telemetry</span>
-            <span className="text-xs text-gray-400">12.4s Avg</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">12.4s Avg</span>
           </div>
           <div className="space-y-1 text-[11px]">
             <div className="flex justify-between py-1 border-b border-white/5">
@@ -314,7 +381,7 @@ export const HowItWorksPage: React.FC = () => {
     {
       num: '05',
       title: 'Inspect Real-Time Analytics & Verified ROI',
-      subtitle: 'Exportable Reports &bull; Certified Reach',
+      subtitle: 'Exportable Reports • Certified Reach',
       desc: 'Access your Business Portal dashboard to monitor total impressions, verified links, geo-distribution, and user engagement. Download compliance reports for corporate audits.',
       actionTitle: 'Enterprise Reporting',
       actionBadge: 'Live Telemetry',
@@ -327,11 +394,11 @@ export const HowItWorksPage: React.FC = () => {
           </div>
           <div className="grid grid-cols-2 gap-2 text-center text-[10px]">
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-gray-400 block">Total Reach</span>
+              <span className="text-gray-400 dark:text-gray-500 block">Total Reach</span>
               <span className="text-base font-bold text-white">142,500</span>
             </div>
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-gray-400 block">Avg CPM</span>
+              <span className="text-gray-400 dark:text-gray-500 block">Avg CPM</span>
               <span className="text-base font-bold text-[#16B364]">$2.80</span>
             </div>
           </div>
@@ -362,7 +429,7 @@ export const HowItWorksPage: React.FC = () => {
   ];
 
   return (
-    <div className="text-left font-sans min-h-screen bg-[#F7F9FC]">
+    <div className="text-left font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
       
       {/* =========================================================================
           1. BESPOKE HERO: DUAL JOURNEY INTRO
@@ -375,7 +442,7 @@ export const HowItWorksPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Clear &bull; Transparent &bull; Automated Micro-Tasking</span>
+            <span>Clear • Transparent • Automated Micro-Tasking</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white">
@@ -402,7 +469,7 @@ export const HowItWorksPage: React.FC = () => {
                   : 'text-gray-300 hover:text-white'
               }`}
             >
-              For Earners &amp; Contributors
+              For Earners & Contributors
             </button>
             <button
               type="button"
@@ -413,7 +480,7 @@ export const HowItWorksPage: React.FC = () => {
                   : 'text-gray-300 hover:text-white'
               }`}
             >
-              For Brands &amp; Businesses
+              For Brands & Businesses
             </button>
           </div>
         </div>
@@ -422,14 +489,14 @@ export const HowItWorksPage: React.FC = () => {
       {/* =========================================================================
           2. DETAILED STEP-BY-STEP FLOW
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white bg-dot-pattern">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] bg-dot-pattern">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
               {activeTab === 'contributor' ? 'Contributor Journey' : 'Advertiser Workflow'}
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               {activeTab === 'contributor' ? 'From Free Sign-Up to Real Cashout' : 'From Campaign Creation to Verified ROI'}
             </h2>
           </div>
@@ -440,7 +507,7 @@ export const HowItWorksPage: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="bg-[#F7F9FC] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] shadow-sm hover:border-[#168BFF]/40 transition-all space-y-6"
+                  className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] dark:border-white/10 shadow-sm hover:border-[#168BFF]/40 transition-all space-y-6"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                     
@@ -451,16 +518,16 @@ export const HowItWorksPage: React.FC = () => {
                           {s.num}
                         </span>
                         <div>
-                          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">
+                          <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
                             {s.subtitle}
                           </span>
-                          <h3 className="text-xl sm:text-2xl font-black text-gray-900 mt-0.5">
+                          <h3 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100 mt-0.5">
                             {s.title}
                           </h3>
                         </div>
                       </div>
 
-                      <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                         {s.desc}
                       </p>
 
@@ -468,7 +535,7 @@ export const HowItWorksPage: React.FC = () => {
                         <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200">
                           {s.actionBadge}
                         </span>
-                        <span className="text-xs font-bold text-gray-700">
+                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
                           {s.actionTitle}
                         </span>
                       </div>
@@ -491,16 +558,16 @@ export const HowItWorksPage: React.FC = () => {
       {/* =========================================================================
           3. TRANSPARENCY & FAQ SECTION
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-[#F8FAFC] border-t border-[#E4EAF2]">
+      <section className="py-14 sm:py-16 bg-[#F8FAFC] dark:bg-[#0B0F19] border-t border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center space-y-2">
             <span className="px-3 py-1 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
               Transparency First
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828]">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100">
               Frequently Asked Questions
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 max-w-xl mx-auto">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
               Everything you need to know about BizNetwork's policies, payments, and security.
             </p>
           </div>
@@ -509,13 +576,13 @@ export const HowItWorksPage: React.FC = () => {
             {faqs.map((faq, i) => (
               <div
                 key={i}
-                className="bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-xs space-y-2"
+                className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-xs space-y-2"
               >
-                <h3 className="text-sm font-bold text-gray-900 flex items-start gap-2">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-start gap-2">
                   <HelpCircle className="w-4 h-4 text-[#168BFF] shrink-0 mt-0.5" />
                   <span>{faq.q}</span>
                 </h3>
-                <p className="text-xs text-gray-600 leading-relaxed pl-6">
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed pl-6">
                   {faq.a}
                 </p>
               </div>

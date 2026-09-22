@@ -97,7 +97,7 @@ export const AvatarUploadControl: React.FC<AvatarUploadControlProps> = ({
       </div>
 
       <div className="flex flex-col items-center gap-1 text-center">
-        <p className={`max-w-44 text-[11px] leading-snug ${avatarError ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
+        <p className={`max-w-44 text-[11px] leading-snug ${avatarError ? 'text-red-600 font-semibold' : 'text-gray-500 dark:text-gray-400'}`}>
           {avatarUploading ? 'Uploading photo...' : avatarError || 'Profile photo: JPG, PNG or WebP up to 2MB'}
         </p>
         {showRemove && user?.profile?.avatar_url && (

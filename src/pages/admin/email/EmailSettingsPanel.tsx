@@ -20,13 +20,13 @@ const EmailLogs: React.FC = () => {
   }, []);
 
   if (error) return <p className="text-xs text-red-600">{error}</p>;
-  if (!logs) return <p className="text-xs text-gray-500">Loading…</p>;
-  if (logs.length === 0) return <p className="text-xs text-gray-500">No emails sent yet.</p>;
+  if (!logs) return <p className="text-xs text-gray-500 dark:text-gray-400">Loading…</p>;
+  if (logs.length === 0) return <p className="text-xs text-gray-500 dark:text-gray-400">No emails sent yet.</p>;
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0C1322]">
       <table className="w-full text-xs text-left">
-        <thead className="bg-slate-50 text-[10px] uppercase text-slate-500">
+        <thead className="bg-slate-50 dark:bg-white/5 text-[10px] uppercase text-slate-500 dark:text-gray-400">
           <tr>
             <th className="px-4 py-2.5">When</th>
             <th className="px-4 py-2.5">Event</th>
@@ -38,7 +38,7 @@ const EmailLogs: React.FC = () => {
         <tbody className="divide-y divide-slate-100">
           {logs.map((l) => (
             <tr key={l.id}>
-              <td className="px-4 py-2.5 whitespace-nowrap text-slate-500">{new Date(l.created_at).toLocaleString()}</td>
+              <td className="px-4 py-2.5 whitespace-nowrap text-slate-500 dark:text-gray-400">{new Date(l.created_at).toLocaleString()}</td>
               <td className="px-4 py-2.5 font-mono">{l.event_key}</td>
               <td className="px-4 py-2.5">{l.to_email}</td>
               <td className="px-4 py-2.5">{l.provider_name ?? '—'}</td>
@@ -69,8 +69,8 @@ export const EmailSettingsPanel: React.FC = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-bold text-gray-900">Transactional Email</h3>
-        <p className="text-xs text-gray-500">Configure the sending provider and the emails users receive.</p>
+        <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Transactional Email</h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Configure the sending provider and the emails users receive.</p>
       </div>
 
       <div className="flex gap-1.5">
@@ -79,7 +79,7 @@ export const EmailSettingsPanel: React.FC = () => {
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer ${tab === t.id ? 'bg-[#07182F] text-white' : 'bg-slate-100 text-gray-600 hover:bg-slate-200'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer ${tab === t.id ? 'bg-[#07182F] text-white' : 'bg-slate-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-slate-200'}`}
           >
             {t.label}
           </button>

@@ -118,7 +118,7 @@ export const AdminSettingsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-gray-500">
+      <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
         <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading settings…
       </div>
     );
@@ -142,8 +142,8 @@ export const AdminSettingsPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Platform Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Every value below is read from and written to the live API.</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Platform Settings</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Every value below is read from and written to the live API.</p>
       </div>
 
       {notice && (
@@ -158,11 +158,11 @@ export const AdminSettingsPage: React.FC = () => {
       )}
 
       {/* Withdrawal threshold */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
-        <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-1">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-1">
           <ShieldAlert className="w-4 h-4 text-[#168BFF]" /> Withdrawal Threshold
         </h3>
-        <p className="text-xs text-gray-500 mb-4">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
           Minimum balance a contributor must hold before they can request a withdrawal. Default ${DEFAULT_THRESHOLD}.
           Currently provisional — stored as a system setting and reconciled with the ops withdrawal-rules API.
         </p>
@@ -176,7 +176,7 @@ export const AdminSettingsPage: React.FC = () => {
               className={`px-5 py-2.5 rounded-xl text-sm font-extrabold transition-colors disabled:opacity-50 ${
                 threshold === opt
                   ? 'bg-[#07182F] text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
               }`}
             >
               ${opt}
@@ -186,8 +186,8 @@ export const AdminSettingsPage: React.FC = () => {
       </div>
 
       {/* System settings */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
-        <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-4">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4">
           <Settings className="w-4 h-4 text-[#168BFF]" /> System Settings
         </h3>
         {settings.length === 0 ? (
@@ -197,13 +197,13 @@ export const AdminSettingsPage: React.FC = () => {
             {settings.map((s) => (
               <div key={s.key} className="flex flex-col sm:flex-row sm:items-center gap-2.5">
                 <div className="sm:w-64 shrink-0">
-                  <p className="text-xs font-bold text-gray-900 font-mono">{s.key}</p>
-                  {s.description && <p className="text-[11px] text-gray-400">{s.description}</p>}
+                  <p className="text-xs font-bold text-gray-900 dark:text-gray-100 font-mono">{s.key}</p>
+                  {s.description && <p className="text-[11px] text-gray-400 dark:text-gray-500">{s.description}</p>}
                 </div>
                 <input
                   value={drafts[s.key] ?? ''}
                   onChange={(e) => setDrafts((d) => ({ ...d, [s.key]: e.target.value }))}
-                  className="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+                  className="flex-1 px-3.5 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
                 />
                 <button
                   type="button"
@@ -221,8 +221,8 @@ export const AdminSettingsPage: React.FC = () => {
       </div>
 
       {/* Feature flags */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
-        <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-4">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
+        <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4">
           <Sliders className="w-4 h-4 text-[#168BFF]" /> Feature Flags
         </h3>
         {flags.length === 0 ? (
@@ -232,11 +232,11 @@ export const AdminSettingsPage: React.FC = () => {
             {flags.map((f) => (
               <div
                 key={f.key}
-                className="flex items-center justify-between gap-4 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl"
+                className="flex items-center justify-between gap-4 px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl"
               >
                 <div className="min-w-0">
-                  <p className="text-xs font-extrabold text-gray-900 font-mono">{f.key}</p>
-                  <p className="text-[11px] text-gray-500">{f.description || f.name || '—'}</p>
+                  <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 font-mono">{f.key}</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400">{f.description || f.name || '—'}</p>
                 </div>
                 <button
                   type="button"
@@ -248,7 +248,7 @@ export const AdminSettingsPage: React.FC = () => {
                   title={f.is_enabled ? 'Disable' : 'Enable'}
                 >
                   <span
-                    className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                    className={`absolute top-1 w-5 h-5 rounded-full bg-white dark:bg-[#0C1322] shadow transition-all ${
                       f.is_enabled ? 'left-6' : 'left-1'
                     }`}
                   />

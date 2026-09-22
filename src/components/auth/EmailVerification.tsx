@@ -148,7 +148,7 @@ export const VerifyEmailPage: React.FC = () => {
   /** While the ?token= link is being verified, show a dedicated state. */
   if (tokenFromEmail && tokenFlow === 'verifying') {
     return (
-      <div className="min-h-screen bg-[#F7F9FC] flex flex-col">
+      <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] flex flex-col">
         <div className="bg-[#07182F] px-6 py-4">
           <Link to="/" className="inline-flex">
             <EBizLogo variant="dark" size="sm" subtitleText="ebizearn.com" />
@@ -156,11 +156,11 @@ export const VerifyEmailPage: React.FC = () => {
         </div>
         <div className="flex-1 flex items-center justify-center px-5 py-12">
           <div className="w-full max-w-[520px] text-center">
-            <div className="bg-white rounded-[2rem] border border-[#E7ECF3] card-shadow p-8 sm:p-12">
+            <div className="bg-white dark:bg-[#0C1322] rounded-[2rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-8 sm:p-12">
               <div className="mx-auto w-24 h-24 mb-6 rounded-[1.75rem] bg-gradient-to-br from-[#168BFF] to-[#7257FF] flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <MailCheck className="w-11 h-11 text-white" />
               </div>
-              <h1 className="text-3xl font-black tracking-tight text-[#101828]">Verifying your email…</h1>
+              <h1 className="text-3xl font-black tracking-tight text-[#101828] dark:text-gray-100">Verifying your email…</h1>
               <p className="mt-3 text-base text-[#667085] leading-relaxed">
                 Please wait a moment while we activate your account.
               </p>
@@ -173,7 +173,7 @@ export const VerifyEmailPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] flex flex-col">
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] flex flex-col">
       {/* Brand bar */}
       <div className="bg-[#07182F] px-6 py-4">
         <Link to="/" className="inline-flex">
@@ -183,7 +183,7 @@ export const VerifyEmailPage: React.FC = () => {
 
       <div className="flex-1 flex items-center justify-center px-5 py-12">
         <div className="w-full max-w-[520px] text-center">
-          <div className="bg-white rounded-[2rem] border border-[#E7ECF3] card-shadow p-8 sm:p-12">
+          <div className="bg-white dark:bg-[#0C1322] rounded-[2rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-8 sm:p-12">
             {/* Animated mail emblem */}
             <div className="relative mx-auto w-24 h-24 mb-6">
               <div className="absolute inset-0 rounded-[1.75rem] bg-gradient-to-br from-[#168BFF] to-[#7257FF] opacity-15 blur-xl" />
@@ -195,10 +195,10 @@ export const VerifyEmailPage: React.FC = () => {
               </div>
             </div>
 
-            <h1 className="text-3xl font-black tracking-tight text-[#101828]">Check your email</h1>
+            <h1 className="text-3xl font-black tracking-tight text-[#101828] dark:text-gray-100">Check your email</h1>
             <p className="mt-3 text-base text-[#667085] leading-relaxed">
               We sent a verification link to{' '}
-              <span className="font-bold text-[#101828] break-all">{user?.email || 'your email address'}</span>.
+              <span className="font-bold text-[#101828] dark:text-gray-100 break-all">{user?.email || 'your email address'}</span>.
               Click the link to activate your account — it keeps your earnings and payouts secure.
             </p>
 
@@ -244,7 +244,7 @@ export const VerifyEmailPage: React.FC = () => {
                 type="button"
                 onClick={handleResend}
                 disabled={cooldown > 0 || resending}
-                className="w-full min-h-[52px] px-6 rounded-2xl bg-white border-2 border-slate-200 hover:border-[#168BFF] hover:text-[#168BFF] text-slate-700 font-bold text-base transition-all flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full min-h-[52px] px-6 rounded-2xl bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 hover:border-[#168BFF] hover:text-[#168BFF] text-slate-700 dark:text-gray-300 font-bold text-base transition-all flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {resending ? (
                   <>
@@ -262,7 +262,7 @@ export const VerifyEmailPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
+            <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-gray-400">
               <ShieldCheck className="w-4 h-4 text-[#16B364]" />
               <span>Verification protects your wallet from unauthorized access.</span>
             </div>
@@ -270,14 +270,14 @@ export const VerifyEmailPage: React.FC = () => {
             <button
               type="button"
               onClick={handleUseDifferentEmail}
-              className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-[#168BFF] transition-colors"
+              className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-slate-500 dark:text-gray-400 hover:text-[#168BFF] transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Use a different email
             </button>
           </div>
 
-          <p className="mt-6 text-xs text-slate-400">
+          <p className="mt-6 text-xs text-slate-400 dark:text-gray-500">
             Didn't get the email? Check your spam folder, or wait a minute and resend.
           </p>
         </div>
@@ -333,21 +333,21 @@ export const useRequireVerifiedEmail = () => {
       aria-label="Email verification required"
     >
       <div
-        className="bg-white rounded-[1.75rem] w-full max-w-md p-7 text-center"
+        className="bg-white dark:bg-[#0C1322] rounded-[1.75rem] w-full max-w-md p-7 text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={() => setPromptOpen(false)}
-          className="float-right p-1.5 rounded-lg hover:bg-slate-100 -mt-2 -mr-2"
+          className="float-right p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 -mt-2 -mr-2"
           aria-label="Close"
         >
-          <X className="w-5 h-5 text-slate-400" />
+          <X className="w-5 h-5 text-slate-400 dark:text-gray-500" />
         </button>
         <div className="mx-auto w-16 h-16 rounded-3xl bg-gradient-to-br from-[#168BFF] to-[#7257FF] flex items-center justify-center shadow-lg shadow-blue-500/25 mb-4">
           <MailCheck className="w-8 h-8 text-white" />
         </div>
-        <h3 className="text-xl font-black text-[#101828]">Verify your email first</h3>
+        <h3 className="text-xl font-black text-[#101828] dark:text-gray-100">Verify your email first</h3>
         <p className="mt-2 text-sm text-[#667085] leading-relaxed">
           To keep your money safe, this action needs a verified email address. It takes less than a
           minute — check your inbox for our verification link.
@@ -366,7 +366,7 @@ export const useRequireVerifiedEmail = () => {
         <button
           type="button"
           onClick={() => setPromptOpen(false)}
-          className="mt-2 w-full min-h-[48px] rounded-2xl text-slate-500 font-bold text-sm hover:text-slate-700 transition-colors"
+          className="mt-2 w-full min-h-[48px] rounded-2xl text-slate-500 dark:text-gray-400 font-bold text-sm hover:text-slate-700 dark:hover:text-gray-300 transition-colors"
         >
           Not now
         </button>

@@ -79,7 +79,7 @@ export const BusinessDashboardPage: React.FC = () => {
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-slate-500">
+        <div className="flex items-center justify-center py-16 text-slate-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading dashboard…
         </div>
       )}
@@ -140,7 +140,7 @@ export const BusinessDashboardPage: React.FC = () => {
           </div>
 
           {/* ── Active campaigns — real list ──────────────────────── */}
-          <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6 sm:p-7">
+          <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6 sm:p-7">
             <SectionHeader
               title="Active campaigns"
               subtitle="Live campaigns spending right now."
@@ -167,20 +167,20 @@ export const BusinessDashboardPage: React.FC = () => {
                     <Link
                       key={c.id}
                       to={`/business/campaigns/${c.id}`}
-                      className="group block rounded-2xl border border-slate-100 bg-[#F8FAFD] hover:bg-white hover:border-[#168BFF]/40 hover:shadow-md p-4 sm:p-5 transition-all"
+                      className="group block rounded-2xl border border-slate-100 bg-[#F8FAFD] hover:bg-white dark:hover:bg-[#0C1322] hover:border-[#168BFF]/40 hover:shadow-md p-4 sm:p-5 transition-all"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-extrabold text-slate-900 truncate group-hover:text-[#168BFF] transition-colors">
+                          <p className="text-sm font-extrabold text-slate-900 dark:text-gray-100 truncate group-hover:text-[#168BFF] transition-colors">
                             {c.title}
                           </p>
-                          <p className="text-xs text-slate-500 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
                             {money(c.reward_per_task_cents, 'USD')} per task · {done.toLocaleString()} / {target.toLocaleString()} completions
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-sm font-black text-slate-900">{money(spent, 'USD')}</p>
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">spent</p>
+                          <p className="text-sm font-black text-slate-900 dark:text-gray-100">{money(spent, 'USD')}</p>
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500">spent</p>
                         </div>
                       </div>
                       <div className="mt-3 h-2 rounded-full bg-slate-200/70 overflow-hidden">
@@ -197,7 +197,7 @@ export const BusinessDashboardPage: React.FC = () => {
           </div>
 
           {/* ── Recent submissions — real list ────────────────────── */}
-          <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6 sm:p-7">
+          <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6 sm:p-7">
             <SectionHeader
               title="Latest submissions"
               subtitle="Proof submitted by contributors, newest first."
@@ -223,10 +223,10 @@ export const BusinessDashboardPage: React.FC = () => {
                         <BarChart3 className="w-5 h-5" />
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-bold text-slate-900 truncate">
+                        <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                           {s.task?.title || `Submission #${s.id}`}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-slate-400 dark:text-gray-500">
                           {s.user?.name ? `by ${s.user.name} · ` : ''}
                           {new Date(s.created_at).toLocaleDateString()}
                         </p>

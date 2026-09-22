@@ -108,9 +108,9 @@ export const ContributorReferralsPage: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] p-6 animate-pulse">
-          <div className="h-4 bg-slate-100 rounded w-1/3 mb-4" />
-          <div className="h-[52px] bg-slate-100 rounded-2xl" />
+        <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 p-6 animate-pulse">
+          <div className="h-4 bg-slate-100 dark:bg-white/10 rounded w-1/3 mb-4" />
+          <div className="h-[52px] bg-slate-100 dark:bg-white/10 rounded-2xl" />
         </div>
       ) : error ? (
         <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-8 text-center">
@@ -127,15 +127,15 @@ export const ContributorReferralsPage: React.FC = () => {
       ) : data ? (
         <>
           {/* ── Referral link card ────────────────────────────────── */}
-          <div className="bg-white rounded-[1.75rem] p-6 sm:p-8 border border-[#E7ECF3] card-shadow">
+          <div className="bg-white dark:bg-[#0C1322] rounded-[1.75rem] p-6 sm:p-8 border border-[#E7ECF3] dark:border-white/10 card-shadow">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7257FF] to-[#9D7BFF] shadow-lg shadow-violet-500/25 flex items-center justify-center shrink-0">
                 <Share2 className="w-7 h-7 text-white" />
               </div>
               <div className="min-w-0">
-                <h2 className="text-lg font-black text-slate-900 tracking-tight">Your referral link</h2>
-                <p className="text-sm text-slate-500 mt-0.5">
-                  Code <span className="font-black text-slate-900 font-mono tracking-wide">{data.referral_code}</span>
+                <h2 className="text-lg font-black text-slate-900 dark:text-gray-100 tracking-tight">Your referral link</h2>
+                <p className="text-sm text-slate-500 dark:text-gray-400 mt-0.5">
+                  Code <span className="font-black text-slate-900 dark:text-gray-100 font-mono tracking-wide">{data.referral_code}</span>
                   {' · '}free to join, no purchase required
                 </p>
               </div>
@@ -148,7 +148,7 @@ export const ContributorReferralsPage: React.FC = () => {
                 value={data.referral_link}
                 onFocus={(e) => e.target.select()}
                 aria-label="Your referral link"
-                className="flex-1 min-h-[54px] px-5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-sm sm:text-base font-mono text-slate-700 select-all focus:outline-none focus:border-[#7257FF]"
+                className="flex-1 min-h-[54px] px-5 bg-slate-50 dark:bg-white/5 border-2 border-slate-200 dark:border-white/10 rounded-2xl text-sm sm:text-base font-mono text-slate-700 dark:text-gray-300 select-all focus:outline-none focus:border-[#7257FF]"
               />
               <button
                 type="button"
@@ -174,14 +174,14 @@ export const ContributorReferralsPage: React.FC = () => {
           </div>
 
           {/* ── 3-level tree visualization ────────────────────────── */}
-          <div className="bg-white rounded-[1.75rem] border border-[#E7ECF3] card-shadow p-6 sm:p-8">
+          <div className="bg-white dark:bg-[#0C1322] rounded-[1.75rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-11 h-11 rounded-2xl bg-[#168BFF]/10 text-[#168BFF] flex items-center justify-center">
                 <Network className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-lg font-black text-slate-900 tracking-tight">Three earning levels</h2>
-                <p className="text-sm text-slate-500">Your network pays three tiers deep. Only qualified activity earns.</p>
+                <h2 className="text-lg font-black text-slate-900 dark:text-gray-100 tracking-tight">Three earning levels</h2>
+                <p className="text-sm text-slate-500 dark:text-gray-400">Your network pays three tiers deep. Only qualified activity earns.</p>
               </div>
             </div>
 
@@ -192,21 +192,21 @@ export const ContributorReferralsPage: React.FC = () => {
                 {LEVEL_INFO.map((lvl) => {
                   const stat = levelStats?.find((s) => s.level === lvl.level);
                   return (
-                    <div key={lvl.level} className="relative rounded-3xl border-2 border-slate-100 bg-[#F8FAFD] p-5 text-center hover:border-slate-200 transition-colors">
+                    <div key={lvl.level} className="relative rounded-3xl border-2 border-slate-100 bg-[#F8FAFD] p-5 text-center hover:border-slate-200 dark:hover:border-white/10 transition-colors">
                       <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br ${lvl.gradient} shadow-lg ${lvl.shadow} flex items-center justify-center`}>
                         <span className="text-2xl font-black text-white">L{lvl.level}</span>
                       </div>
-                      <p className="mt-3 text-base font-extrabold text-slate-900">{lvl.title}</p>
-                      <p className="mt-1 text-xs text-slate-500 leading-relaxed">{lvl.desc}</p>
+                      <p className="mt-3 text-base font-extrabold text-slate-900 dark:text-gray-100">{lvl.title}</p>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{lvl.desc}</p>
                       {stat ? (
                         <div className="mt-3 pt-3 border-t border-slate-200/70">
-                          <p className="text-xl font-black text-slate-900">
-                            {stat.count} <span className="text-xs font-bold text-slate-400">referral{stat.count === 1 ? '' : 's'}</span>
+                          <p className="text-xl font-black text-slate-900 dark:text-gray-100">
+                            {stat.count} <span className="text-xs font-bold text-slate-400 dark:text-gray-500">referral{stat.count === 1 ? '' : 's'}</span>
                           </p>
                           <p className="text-sm font-extrabold text-emerald-600 mt-0.5">{money(stat.earned)} earned</p>
                         </div>
                       ) : (
-                        <p className="mt-3 pt-3 border-t border-slate-200/70 text-xs font-bold text-slate-400">
+                        <p className="mt-3 pt-3 border-t border-slate-200/70 text-xs font-bold text-slate-400 dark:text-gray-500">
                           {levelStats ? 'No referrals at this level yet' : 'Live counts appear once the backend ships level data'}
                         </p>
                       )}
@@ -228,13 +228,13 @@ export const ContributorReferralsPage: React.FC = () => {
               ].map((s) => {
                 const Icon = s.icon;
                 return (
-                  <div key={s.step} className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6">
+                  <div key={s.step} className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6">
                     <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.gradient} shadow-lg ${s.shadow} flex items-center justify-center mb-4`}>
                       <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.12em] text-slate-400">Step {s.step}</p>
-                    <p className="mt-1 text-base font-extrabold text-slate-900">{s.title}</p>
-                    <p className="mt-1.5 text-sm text-slate-500 leading-relaxed">{s.desc}</p>
+                    <p className="text-[11px] font-black uppercase tracking-[0.12em] text-slate-400 dark:text-gray-500">Step {s.step}</p>
+                    <p className="mt-1 text-base font-extrabold text-slate-900 dark:text-gray-100">{s.title}</p>
+                    <p className="mt-1.5 text-sm text-slate-500 dark:text-gray-400 leading-relaxed">{s.desc}</p>
                   </div>
                 );
               })}
@@ -251,22 +251,22 @@ export const ContributorReferralsPage: React.FC = () => {
                 icon={Users}
               />
             ) : (
-              <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow divide-y divide-slate-100 overflow-hidden">
+              <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow divide-y divide-slate-100 overflow-hidden">
                 {data.referrals.map((r) => {
-                  const st = statusLabels[r.status] || { label: r.status.replace(/_/g, ' '), className: 'bg-slate-100 text-slate-600 border-slate-200' };
+                  const st = statusLabels[r.status] || { label: r.status.replace(/_/g, ' '), className: 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-gray-400 border-slate-200 dark:border-white/10' };
                   return (
                     <div key={r.id} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50/60 transition-colors">
                       <div className="w-12 h-12 rounded-2xl bg-[#07182F] text-white flex items-center justify-center text-sm font-black shrink-0">
                         {(r.referred_user?.name || '?').slice(0, 1).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-slate-900 truncate">
+                        <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">
                           {r.referred_user?.name || 'New member'}
                           {typeof r.level === 'number' && (
                             <span className="ml-2 text-[10px] font-black text-white bg-[#7257FF] px-2 py-0.5 rounded-full">L{r.level}</span>
                           )}
                         </p>
-                        <p className="text-xs text-slate-400 mt-0.5">
+                        <p className="text-xs text-slate-400 dark:text-gray-500 mt-0.5">
                           Joined {new Date(r.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                       </div>

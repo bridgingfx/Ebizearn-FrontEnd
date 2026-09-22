@@ -114,7 +114,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-widest text-gray-400 border-b border-gray-100">
+                <tr className="text-left text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                   <th className="px-5 py-3 font-bold">Campaign</th>
                   <th className="px-5 py-3 font-bold">Business</th>
                   <th className="px-5 py-3 font-bold">Status</th>
@@ -131,34 +131,34 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                       ? Math.round((c.completed_contributors_count / c.target_contributors_count) * 100)
                       : 0;
                   return (
-                    <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={c.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                       <td className="px-5 py-3.5">
-                        <p className="font-bold text-gray-900">{c.title}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <p className="font-bold text-gray-900 dark:text-gray-100">{c.title}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                           {c.tasks_count ?? 0} task{(c.tasks_count ?? 0) === 1 ? '' : 's'} · {c.target_contributors_count} slots
                         </p>
                       </td>
                       <td className="px-5 py-3.5">
-                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600">
-                          <Building2 className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-400">
+                          <Building2 className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                           {c.business?.company_name ?? `#${c.business_id}`}
                         </span>
                       </td>
                       <td className="px-5 py-3.5">
                         <StatusBadge status={c.status} />
                       </td>
-                      <td className="px-5 py-3.5 text-right font-bold text-gray-900 tabular-nums">
+                      <td className="px-5 py-3.5 text-right font-bold text-gray-900 dark:text-gray-100 tabular-nums">
                         {fmtMoney(c.reward_per_task_cents)}
                       </td>
-                      <td className="px-5 py-3.5 text-right tabular-nums text-gray-600">
+                      <td className="px-5 py-3.5 text-right tabular-nums text-gray-600 dark:text-gray-400">
                         {fmtMoney(c.total_budget_cents)}
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center justify-end gap-2">
-                          <div className="w-20 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                          <div className="w-20 h-1.5 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden">
                             <div className="h-full rounded-full bg-[#168BFF] transition-all" style={{ width: `${Math.min(100, progress)}%` }} />
                           </div>
-                          <span className="text-xs font-bold text-gray-500 tabular-nums w-9 text-right">{progress}%</span>
+                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 tabular-nums w-9 text-right">{progress}%</span>
                         </div>
                       </td>
                       <td className="px-5 py-3.5 text-right">

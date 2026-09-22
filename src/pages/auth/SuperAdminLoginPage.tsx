@@ -65,12 +65,12 @@ export const SuperAdminLoginPage: React.FC = () => {
             <div className="mx-auto mb-5 w-11 h-11 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
               <Fingerprint className="w-5 h-5 text-emerald-400" />
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-gray-500">
               <Lock className="w-3 h-3" />
               <span>Restricted console</span>
             </div>
             <h1 className="mt-4 text-lg font-bold text-slate-100 tracking-tight">Control Panel</h1>
-            <p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+            <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-1.5 leading-relaxed">
               Authorized Super Admin access only.<br />All sign-in attempts are logged.
             </p>
           </div>
@@ -83,7 +83,7 @@ export const SuperAdminLoginPage: React.FC = () => {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1.5">Email</label>
+              <label className="block text-[11px] font-semibold text-slate-400 dark:text-gray-500 mb-1.5">Email</label>
               <input
                 type="email"
                 required
@@ -96,7 +96,7 @@ export const SuperAdminLoginPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1.5">Password</label>
+              <label className="block text-[11px] font-semibold text-slate-400 dark:text-gray-500 mb-1.5">Password</label>
               <PasswordInput value={password} onChange={setPassword} placeholder="Password" autoComplete="current-password" dark />
             </div>
 
@@ -111,7 +111,7 @@ export const SuperAdminLoginPage: React.FC = () => {
           </form>
         </div>
 
-        <p className="mt-6 text-center text-[10px] text-slate-600">
+        <p className="mt-6 text-center text-[10px] text-slate-600 dark:text-gray-400">
           Internal systems only. Unauthorized access is prohibited.
         </p>
       </div>

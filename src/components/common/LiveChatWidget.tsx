@@ -270,7 +270,7 @@ If you wish to speak to a human officer or file an official dispute, you can [�
     return boldParts.map((part, i) => {
       if (part.startsWith('**') && part.endsWith('**')) {
         return (
-          <strong key={i} className="font-bold text-slate-900">
+          <strong key={i} className="font-bold text-slate-900 dark:text-gray-100">
             {part.slice(2, -2)}
           </strong>
         );
@@ -428,7 +428,7 @@ Here are key actions you can take right now:
                   🇦🇪 UAE
                 </span>
               </div>
-              <div className="text-[11px] text-emerald-100/90 font-medium">Instant AI Answers &amp; Live Desk</div>
+              <div className="text-[11px] text-emerald-100/90 font-medium">Instant AI Answers & Live Desk</div>
             </div>
 
             {unreadCount > 0 && (
@@ -443,7 +443,7 @@ Here are key actions you can take right now:
             LIVE CHAT WINDOW DRAWER (Right Side)
            ========================================================================= */}
         {isOpen && (
-          <div className="w-[360px] sm:w-[430px] max-h-[640px] h-[86vh] bg-white rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div className="w-[360px] sm:w-[430px] max-h-[640px] h-[86vh] bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
             {/* Header */}
             <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950 text-white px-4 py-3.5 flex items-center justify-between border-b border-emerald-500/30 shadow-md">
               <div className="flex items-center gap-3">
@@ -466,13 +466,13 @@ Here are key actions you can take right now:
                     {isHumanActive ? (
                       <>
                         <span className="text-emerald-300 font-bold">Tariq Al-Hashemi</span>
-                        <span className="text-slate-500">•</span>
+                        <span className="text-slate-500 dark:text-gray-400">•</span>
                         <span className="text-[11px] text-slate-300">Dubai HQ Desk 🇦🇪</span>
                       </>
                     ) : (
                       <>
                         <span>Autonomous Business AI</span>
-                        <span className="text-slate-500">•</span>
+                        <span className="text-slate-500 dark:text-gray-400">•</span>
                         <span className="text-[11px] text-emerald-400 font-medium">Dubai Internet City 🇦🇪</span>
                       </>
                     )}
@@ -498,7 +498,7 @@ Here are key actions you can take right now:
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+                  className="text-slate-400 dark:text-gray-500 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors"
                   title="Minimize chat"
                 >
                   <X className="w-5 h-5" />
@@ -510,7 +510,7 @@ Here are key actions you can take right now:
             <div className="bg-emerald-50/90 border-b border-emerald-100/80 px-3.5 py-1.5 text-[11px] text-emerald-900 flex items-center justify-between">
               <div className="flex items-center gap-1.5 truncate">
                 <Building2 className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
-                <span className="truncate font-semibold">CBUAE WPS &amp; Escrow Guaranteed</span>
+                <span className="truncate font-semibold">CBUAE WPS & Escrow Guaranteed</span>
               </div>
               <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase shrink-0">
                 T+72h Anti-Fraud
@@ -519,16 +519,16 @@ Here are key actions you can take right now:
 
             {/* Inline Support Ticket Form Drawer */}
             {showTicketModal && (
-              <div className="bg-slate-50 border-b border-slate-200 p-3.5 animate-in fade-in duration-200">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+              <div className="bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 p-3.5 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-white/10">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-gray-200">
                     <Ticket className="w-4 h-4 text-emerald-600" />
                     <span>Generate Official Support Ticket</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowTicketModal(false)}
-                    className="text-slate-400 hover:text-slate-600 text-xs font-bold"
+                    className="text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-400 text-xs font-bold"
                   >
                     Cancel
                   </button>
@@ -536,53 +536,53 @@ Here are key actions you can take right now:
 
                 <form onSubmit={handleSubmitTicket} className="mt-2.5 space-y-2 text-xs">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 mb-0.5">
                       Category
                     </label>
                     <select
                       value={ticketCategory}
                       onChange={(e) => setTicketCategory(e.target.value)}
-                      className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                      className="w-full bg-white dark:bg-[#0C1322] border border-slate-300 dark:border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-gray-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                     >
                       <option value="Task Verification Dispute">🌐 Geo-Targeted Task Dispute (Global / Local)</option>
-                      <option value="Payout Inquiry">💳 Multi-Currency Payout &amp; Bank Transfer</option>
-                      <option value="KYC Verification">🆔 Identity &amp; Profile KYC Verification</option>
-                      <option value="Business Campaign Escrow">🏢 Business Campaign &amp; Escrow</option>
-                      <option value="Account & General">⚙️ Account &amp; Technical Support</option>
+                      <option value="Payout Inquiry">💳 Multi-Currency Payout & Bank Transfer</option>
+                      <option value="KYC Verification">🆔 Identity & Profile KYC Verification</option>
+                      <option value="Business Campaign Escrow">🏢 Business Campaign & Escrow</option>
+                      <option value="Account & General">⚙️ Account & Technical Support</option>
                     </select>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 mb-0.5">
                         Priority
                       </label>
                       <select
                         value={ticketPriority}
                         onChange={(e) => setTicketPriority(e.target.value as any)}
-                        className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                        className="w-full bg-white dark:bg-[#0C1322] border border-slate-300 dark:border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-gray-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                       >
-                        <option value="Normal">Normal (SLA &lt; 6h)</option>
-                        <option value="High">High (SLA &lt; 2h)</option>
-                        <option value="Urgent">Urgent (SLA &lt; 45m)</option>
+                        <option value="Normal">Normal (SLA {'<'} 6h)</option>
+                        <option value="High">High (SLA {'<'} 2h)</option>
+                        <option value="Urgent">Urgent (SLA {'<'} 45m)</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 mb-0.5">
                         Your Identity
                       </label>
                       <input
                         type="text"
                         disabled
                         value={user?.name || 'Verified Member'}
-                        className="w-full bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-600 font-mono truncate"
+                        className="w-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-slate-600 dark:text-gray-400 font-mono truncate"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 mb-0.5">
                       Subject
                     </label>
                     <input
@@ -591,13 +591,13 @@ Here are key actions you can take right now:
                       placeholder="e.g. OCR proof re-check for community group post..."
                       value={ticketSubject}
                       onChange={(e) => setTicketSubject(e.target.value)}
-                      className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                      className="w-full bg-white dark:bg-[#0C1322] border border-slate-300 dark:border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-gray-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-0.5">
-                      Description &amp; Evidence Details
+                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-gray-300 mb-0.5">
+                      Description & Evidence Details
                     </label>
                     <textarea
                       required
@@ -605,12 +605,12 @@ Here are key actions you can take right now:
                       placeholder="Describe your issue with group names, transaction IDs, or links..."
                       value={ticketDescription}
                       onChange={(e) => setTicketDescription(e.target.value)}
-                      className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:ring-1 focus:ring-emerald-500 focus:outline-none resize-none"
+                      className="w-full bg-white dark:bg-[#0C1322] border border-slate-300 dark:border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-gray-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none resize-none"
                     />
                   </div>
 
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                    <span className="text-[10px] text-slate-500 dark:text-gray-400 flex items-center gap-1">
                       <Clock className="w-3 h-3 text-emerald-600" /> Assigned to Dubai HQ Desk
                     </span>
 
@@ -645,8 +645,8 @@ Here are key actions you can take right now:
                       msg.sender === 'user'
                         ? 'bg-emerald-600 text-white rounded-br-none'
                         : msg.sender === 'system'
-                        ? 'bg-amber-50/90 text-slate-900 border border-amber-200 rounded-bl-none'
-                        : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
+                        ? 'bg-amber-50/90 text-slate-900 dark:text-gray-100 border border-amber-200 rounded-bl-none'
+                        : 'bg-white dark:bg-[#0C1322] text-slate-800 dark:text-gray-200 border border-slate-200 dark:border-white/10 rounded-bl-none'
                     }`}
                   >
                     {/* Render message body with styled links & bolding */}
@@ -656,7 +656,7 @@ Here are key actions you can take right now:
 
                     {/* Ticket confirmation card */}
                     {msg.ticketCard && (
-                      <div className="mt-3 bg-white p-3 rounded-xl border border-emerald-200 shadow-sm space-y-1.5">
+                      <div className="mt-3 bg-white dark:bg-[#0C1322] p-3 rounded-xl border border-emerald-200 shadow-sm space-y-1.5">
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">
                             #{msg.ticketCard.id}
@@ -665,9 +665,9 @@ Here are key actions you can take right now:
                             {msg.ticketCard.status}
                           </span>
                         </div>
-                        <p className="text-xs font-bold text-slate-900">{msg.ticketCard.subject}</p>
-                        <p className="text-[11px] text-slate-600 line-clamp-2">{msg.ticketCard.description}</p>
-                        <div className="text-[10px] text-slate-500 pt-1 border-t border-slate-100 flex items-center justify-between">
+                        <p className="text-xs font-bold text-slate-900 dark:text-gray-100">{msg.ticketCard.subject}</p>
+                        <p className="text-[11px] text-slate-600 dark:text-gray-400 line-clamp-2">{msg.ticketCard.description}</p>
+                        <div className="text-[10px] text-slate-500 dark:text-gray-400 pt-1 border-t border-slate-100 flex items-center justify-between">
                           <span>{msg.ticketCard.assignedAgent}</span>
                           <span className="text-emerald-600 font-semibold">{msg.ticketCard.createdAt}</span>
                         </div>
@@ -696,7 +696,7 @@ Here are key actions you can take right now:
                     {/* Quick Inquiry Suggestion Chips */}
                     {msg.chips && msg.chips.length > 0 && (
                       <div className="mt-3 pt-2.5 border-t border-slate-100 space-y-1.5">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400 flex items-center gap-1">
                           <Sparkles className="w-3 h-3 text-emerald-600" /> Suggested Inquiries
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -705,7 +705,7 @@ Here are key actions you can take right now:
                               key={idx}
                               type="button"
                               onClick={() => handleSendMessage(chip)}
-                              className="text-left text-[11px] bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 font-medium px-2 py-1 rounded-md border border-slate-200/80 hover:border-emerald-300 transition-colors"
+                              className="text-left text-[11px] bg-slate-100 dark:bg-white/10 hover:bg-emerald-50 text-slate-700 dark:text-gray-300 hover:text-emerald-800 font-medium px-2 py-1 rounded-md border border-slate-200/80 hover:border-emerald-300 transition-colors"
                             >
                               {chip}
                             </button>
@@ -715,17 +715,17 @@ Here are key actions you can take right now:
                     )}
                   </div>
 
-                  <span className="text-[10px] text-slate-400 mt-1 px-1">{msg.timestamp}</span>
+                  <span className="text-[10px] text-slate-400 dark:text-gray-500 mt-1 px-1">{msg.timestamp}</span>
                 </div>
               ))}
 
               {/* Typing indicator */}
               {isTyping && (
-                <div className="flex items-center gap-2 text-slate-500 text-xs pl-2">
+                <div className="flex items-center gap-2 text-slate-500 dark:text-gray-400 text-xs pl-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></div>
-                  <span className="text-[11px] text-slate-600">
+                  <span className="text-[11px] text-slate-600 dark:text-gray-400">
                     {isHumanActive ? 'Tariq Al-Hashemi is responding...' : 'eBiz AI is retrieving verified policy...'}
                   </span>
                 </div>
@@ -735,12 +735,12 @@ Here are key actions you can take right now:
             </div>
 
             {/* Quick Action Navigation Bar */}
-            <div className="bg-slate-100/90 border-t border-slate-200 px-3 py-1.5 flex items-center justify-between text-[11px]">
+            <div className="bg-slate-100/90 border-t border-slate-200 dark:border-white/10 px-3 py-1.5 flex items-center justify-between text-[11px]">
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
                 <button
                   type="button"
                   onClick={() => handleSendMessage('Can I talk to a human agent?')}
-                  className="shrink-0 flex items-center gap-1 text-[10.5px] font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 px-2 py-0.5 rounded-full transition-colors"
+                  className="shrink-0 flex items-center gap-1 text-[10.5px] font-semibold text-slate-700 dark:text-gray-300 bg-white dark:bg-[#0C1322] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-300 dark:border-white/20 px-2 py-0.5 rounded-full transition-colors"
                 >
                   <Headphones className="w-3 h-3 text-emerald-600" />
                   <span>Talk to Human</span>
@@ -760,18 +760,18 @@ Here are key actions you can take right now:
                   onClick={() => {
                     if (window.innerWidth < 640) setIsOpen(false);
                   }}
-                  className="shrink-0 flex items-center gap-1 text-[10.5px] font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 px-2 py-0.5 rounded-full transition-colors"
+                  className="shrink-0 flex items-center gap-1 text-[10.5px] font-semibold text-slate-700 dark:text-gray-300 bg-white dark:bg-[#0C1322] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-300 dark:border-white/20 px-2 py-0.5 rounded-full transition-colors"
                 >
                   <Coins className="w-3 h-3 text-amber-500" />
                   <span>Tasks (AED)</span>
                 </Link>
               </div>
 
-              <span className="text-[10px] text-slate-400 font-mono shrink-0 pl-2">24/7 AI Desk</span>
+              <span className="text-[10px] text-slate-400 dark:text-gray-500 font-mono shrink-0 pl-2">24/7 AI Desk</span>
             </div>
 
             {/* Input Form Bar */}
-            <div className="p-3 bg-white border-t border-slate-200">
+            <div className="p-3 bg-white dark:bg-[#0C1322] border-t border-slate-200 dark:border-white/10">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -785,13 +785,13 @@ Here are key actions you can take right now:
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Ask about global tasks, geo-targeting, payouts, KYC verification..."
-                    className="w-full text-xs sm:text-sm pl-3 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white text-slate-800 transition-colors placeholder:text-slate-400"
+                    className="w-full text-xs sm:text-sm pl-3 pr-8 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white dark:focus:bg-[#0C1322] text-slate-800 dark:text-gray-200 transition-colors placeholder:text-slate-400 dark:placeholder:text-gray-500"
                   />
                   <button
                     type="button"
                     onClick={() => handleSendMessage('Please check my task verification status')}
                     title="Attach Proof / File"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-400"
                   >
                     <Paperclip className="w-4 h-4" />
                   </button>
@@ -807,11 +807,11 @@ Here are key actions you can take right now:
                 </button>
               </form>
 
-              <div className="mt-2 flex items-center justify-between text-[10px] text-slate-400 px-1">
+              <div className="mt-2 flex items-center justify-between text-[10px] text-slate-400 dark:text-gray-500 px-1">
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-emerald-600" /> AI response: &lt; 1s • Human SLA: &lt; 2h
+                  <Clock className="w-3 h-3 text-emerald-600" /> AI response: {'<'} 1s • Human SLA: {'<'} 2h
                 </span>
-                <span className="font-mono text-[10px] text-slate-400">eBiz Desk v5.3 • Dubai 🇦🇪</span>
+                <span className="font-mono text-[10px] text-slate-400 dark:text-gray-500">eBiz Desk v5.3 • Dubai 🇦🇪</span>
               </div>
             </div>
           </div>

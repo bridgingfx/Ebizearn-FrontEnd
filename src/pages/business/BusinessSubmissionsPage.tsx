@@ -77,15 +77,15 @@ export const BusinessSubmissionsPage: React.FC = () => {
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Proof Gallery</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Proof Gallery</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Real proof submitted by contributors for your campaigns. Final verification decisions are made in the
           Admin Verification Center.
         </p>
       </div>
 
       {/* Tabs + search */}
-      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-4 flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex gap-2 flex-wrap">
           {tabs.map((t) => (
             <button
@@ -93,7 +93,7 @@ export const BusinessSubmissionsPage: React.FC = () => {
               type="button"
               onClick={() => setFilter(t.id)}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
-                filter === t.id ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                filter === t.id ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
               }`}
             >
               {t.label}
@@ -101,18 +101,18 @@ export const BusinessSubmissionsPage: React.FC = () => {
           ))}
         </div>
         <div className="relative sm:ml-auto sm:w-72">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by contributor or task…"
-            className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            className="w-full pl-9 pr-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
           />
         </div>
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading submissions…
         </div>
       )}
@@ -147,7 +147,7 @@ export const BusinessSubmissionsPage: React.FC = () => {
           {filtered.map((s) => (
             <div
               key={s.id}
-              className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-5 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between gap-3 mb-3">
                 <span
@@ -155,21 +155,21 @@ export const BusinessSubmissionsPage: React.FC = () => {
                 >
                   {String(s.status).replace(/_/g, ' ')}
                 </span>
-                <span className="text-[10px] text-gray-400 font-medium">
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-medium">
                   {new Date(s.created_at).toLocaleDateString()}
                 </span>
               </div>
-              <h3 className="text-sm font-extrabold text-gray-900 mb-1">{s.task?.title || `Task #${s.task_id}`}</h3>
-              <p className="text-[11px] text-gray-500 mb-3">
+              <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-1">{s.task?.title || `Task #${s.task_id}`}</h3>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-3">
                 by <span className="font-bold">{s.user?.name || 'Contributor'}</span>
               </p>
               {s.proof_data_json?.text_answer && (
-                <p className="text-[11px] text-gray-500 line-clamp-2 mb-3 bg-gray-50 rounded-lg p-2.5">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-3 bg-gray-50 dark:bg-white/5 rounded-lg p-2.5">
                   {s.proof_data_json.text_answer}
                 </p>
               )}
               {s.proof_data_json?.note && !s.proof_data_json?.text_answer && (
-                <p className="text-[11px] text-gray-500 line-clamp-2 mb-3 bg-gray-50 rounded-lg p-2.5">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-3 bg-gray-50 dark:bg-white/5 rounded-lg p-2.5">
                   {s.proof_data_json.note}
                 </p>
               )}
@@ -189,13 +189,13 @@ export const BusinessSubmissionsPage: React.FC = () => {
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSelected(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+          <div className="relative bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-base font-extrabold text-gray-900">
+                <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100">
                   {selected.task?.title || `Submission #${selected.id}`}
                 </h3>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   by {selected.user?.name || 'Contributor'} ·{' '}
                   {new Date(selected.created_at).toLocaleString()}
                 </p>
@@ -203,7 +203,7 @@ export const BusinessSubmissionsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 Close
               </button>
@@ -216,8 +216,8 @@ export const BusinessSubmissionsPage: React.FC = () => {
             </span>
 
             {selected.proof_data_json?.url && (
-              <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Submitted link</p>
+              <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 mb-4">
+                <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Submitted link</p>
                 <a
                   href={selected.proof_data_json.url}
                   target="_blank"
@@ -230,9 +230,9 @@ export const BusinessSubmissionsPage: React.FC = () => {
             )}
 
             {(selected.proof_data_json?.text_answer || selected.proof_data_json?.note) && (
-              <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Submitted proof</p>
-                <p className="text-xs text-gray-700 whitespace-pre-wrap">
+              <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-4 mb-4">
+                <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Submitted proof</p>
+                <p className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                   {selected.proof_data_json.text_answer || selected.proof_data_json.note}
                 </p>
               </div>
@@ -240,7 +240,7 @@ export const BusinessSubmissionsPage: React.FC = () => {
 
             {selected.files && selected.files.length > 0 && (
               <div className="mb-4">
-                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Attachments</p>
+                <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Attachments</p>
                 <div className="space-y-2">
                   {selected.files.map((f) => (
                     <a

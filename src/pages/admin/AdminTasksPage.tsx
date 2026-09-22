@@ -55,32 +55,32 @@ export const AdminTasksPage: React.FC = () => {
       case 'paused':
         return 'bg-amber-100 text-amber-700';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
     }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Tasks</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Tasks</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Live task catalog across all campaigns — {tasks.length} task{tasks.length === 1 ? '' : 's'}.
           Moderation actions (pause/remove) need a backend admin endpoint that is not available yet.
         </p>
       </div>
 
       <div className="relative sm:w-72">
-        <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search tasks or campaigns…"
-          className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+          className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
         />
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading tasks…
         </div>
       )}
@@ -111,11 +111,11 @@ export const AdminTasksPage: React.FC = () => {
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[720px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                   <th className="py-3 px-4 font-bold">Task</th>
                   <th className="py-3 px-4 font-bold">Campaign</th>
                   <th className="py-3 px-4 font-bold">Reward</th>
@@ -126,7 +126,7 @@ export const AdminTasksPage: React.FC = () => {
               <tbody>
                 {filtered.map((t) => (
                   <tr key={t.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
-                    <td className="py-3 px-4 font-bold text-gray-900">
+                    <td className="py-3 px-4 font-bold text-gray-900 dark:text-gray-100">
                       <button
                         type="button"
                         onClick={() => setPreviewTask(t)}
@@ -134,14 +134,14 @@ export const AdminTasksPage: React.FC = () => {
                         title="Preview what contributors see"
                       >
                         <span>{t.title}</span>
-                        <Eye className="w-3.5 h-3.5 text-gray-400" />
+                        <Eye className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                       </button>
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-600">{t.campaign?.title || `Campaign #${t.campaign_id}`}</td>
-                    <td className="py-3 px-4 text-xs font-bold text-gray-900">
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">{t.campaign?.title || `Campaign #${t.campaign_id}`}</td>
+                    <td className="py-3 px-4 text-xs font-bold text-gray-900 dark:text-gray-100">
                       ${((t.reward_cents || 0) / 100).toFixed(2)}
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-600">
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">
                       {t.slots_taken ?? 0} / {t.slots_total ?? 0}
                     </td>
                     <td className="py-3 px-4">
@@ -169,18 +169,18 @@ export const AdminTasksPage: React.FC = () => {
           aria-label="Task preview"
         >
           <div
-            className="bg-[#F7F9FC] rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-5 sm:p-6"
+            className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-5 sm:p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-base font-black text-gray-900">Contributor preview</h2>
-                <p className="text-[11px] text-gray-500">What contributors see for this task, from live task data.</p>
+                <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Contributor preview</h2>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">What contributors see for this task, from live task data.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setPreviewTask(null)}
-                className="p-2 rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-gray-900"
+                className="p-2 rounded-xl bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                 aria-label="Close preview"
               >
                 <X className="w-4 h-4" />

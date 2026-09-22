@@ -23,6 +23,7 @@ import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
 import { ConfirmModal } from '../components/common/ConfirmModal';
+import { ThemeToggle } from '../components/common/ThemeToggle';
 
 export const AdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -88,7 +89,7 @@ export const AdminLayout: React.FC = () => {
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                   isActive
                     ? 'bg-[#D4AF37] text-[#0E1C2F] font-bold'
-                    : 'text-gray-400 hover:bg-white/5 hover:text-white font-medium'
+                    : 'text-gray-400 dark:text-gray-500 hover:bg-white/5 hover:text-white font-medium'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -102,7 +103,7 @@ export const AdminLayout: React.FC = () => {
           <button
             type="button"
             onClick={() => setLogoutOpen(true)}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all text-xs font-bold"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-all text-xs font-bold"
           >
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
@@ -122,13 +123,14 @@ export const AdminLayout: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-20 px-6 py-4 flex items-center justify-between">
+        <header className="bg-white dark:bg-[#0C1322] border-b border-gray-200 dark:border-white/10 sticky top-0 z-20 px-6 py-4 flex items-center justify-between transition-colors">
           <div>
-            <span className="text-xs font-bold text-gray-900 block leading-tight">{user?.name || 'Admin'}</span>
-            <span className="text-[10px] text-gray-400 block leading-none capitalize">{user?.role} workspace</span>
+            <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block leading-tight">{user?.name || 'Admin'}</span>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 block leading-none capitalize">{user?.role} workspace</span>
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <div className="hidden sm:block">
               <RegionSelector variant="light" />
             </div>

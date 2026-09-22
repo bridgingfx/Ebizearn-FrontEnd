@@ -9,9 +9,9 @@ export const AdminAnalyticsPage: React.FC = () => {
       {/* =========================================================================
           1. HEADER
          ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-white/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">
             Platform Macro Analytics
           </h1>
           <p className="text-xs sm:text-sm text-[#475467] mt-0.5">

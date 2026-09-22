@@ -172,7 +172,7 @@ export const PublicTasksPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-left font-sans">
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] text-left font-sans">
       
       {/* =========================================================================
           1. BESPOKE MARKETPLACE HERO BANNER
@@ -189,7 +189,7 @@ export const PublicTasksPage: React.FC = () => {
               </div>
               
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
-                Verified Social &amp; Review Marketplace
+                Verified Social & Review Marketplace
               </h1>
 
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
@@ -200,15 +200,15 @@ export const PublicTasksPage: React.FC = () => {
             {/* Quick Live Stats Pill */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 grid grid-cols-2 sm:grid-cols-3 gap-4 shrink-0 text-center font-mono">
               <div>
-                <span className="text-[10px] text-gray-400 uppercase block font-sans">Avg Reward</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block font-sans">Avg Reward</span>
                 <span className="text-lg font-black text-[#16B364]">{avgRewardAed === '—' ? '—' : `AED ${avgRewardAed}`}</span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-400 uppercase block font-sans">Brands Hiring</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block font-sans">Brands Hiring</span>
                 <span className="text-lg font-black text-[#20C4E8]">{loading ? '…' : brandCount}</span>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <span className="text-[10px] text-gray-400 uppercase block font-sans">Min Cashout</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block font-sans">Min Cashout</span>
                 <span className="text-lg font-black text-amber-400">$50.00</span>
               </div>
             </div>
@@ -217,7 +217,7 @@ export const PublicTasksPage: React.FC = () => {
           {/* Search & Channel Filters */}
           <div className="pt-2 space-y-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search tasks by platform, keyword, or campaign title..."
@@ -229,7 +229,7 @@ export const PublicTasksPage: React.FC = () => {
 
             {/* Platform Filter Buttons */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mr-1 hidden sm:inline">Platform:</span>
+              <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mr-1 hidden sm:inline">Platform:</span>
               {platforms.map((p) => {
                 const Icon = p.icon;
                 const isActive = selectedPlatform === p.id;
@@ -306,7 +306,7 @@ export const PublicTasksPage: React.FC = () => {
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   selectedCategory === c.id
                     ? 'bg-[#07182F] text-white shadow-sm'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-400'
+                    : 'bg-white dark:bg-[#0C1322] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-white/10 hover:border-gray-400'
                 }`}
               >
                 {c.name}
@@ -314,7 +314,7 @@ export const PublicTasksPage: React.FC = () => {
             ))}
           </div>
 
-          <span className="text-xs font-bold text-gray-500">
+          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
             Showing {filteredTasks.length} open verified opportunities
           </span>
         </div>
@@ -323,20 +323,20 @@ export const PublicTasksPage: React.FC = () => {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[0, 1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-white rounded-3xl p-6 border border-[#E4EAF2] space-y-4 animate-pulse">
-                <div className="h-4 bg-gray-100 rounded w-1/3" />
-                <div className="h-5 bg-gray-100 rounded w-3/4" />
-                <div className="h-3 bg-gray-50 rounded w-full" />
-                <div className="h-3 bg-gray-50 rounded w-5/6" />
-                <div className="h-8 bg-gray-100 rounded-xl w-1/2" />
+              <div key={i} className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 space-y-4 animate-pulse">
+                <div className="h-4 bg-gray-100 dark:bg-white/10 rounded w-1/3" />
+                <div className="h-5 bg-gray-100 dark:bg-white/10 rounded w-3/4" />
+                <div className="h-3 bg-gray-50 dark:bg-white/5 rounded w-full" />
+                <div className="h-3 bg-gray-50 dark:bg-white/5 rounded w-5/6" />
+                <div className="h-8 bg-gray-100 dark:bg-white/10 rounded-xl w-1/2" />
               </div>
             ))}
           </div>
         ) : loadError && filteredTasks.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-[#E4EAF2] shadow-sm space-y-3">
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-12 text-center border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-3">
             <AlertCircle className="w-12 h-12 text-amber-400 mx-auto" />
-            <h3 className="text-base font-bold text-gray-900">Couldn't load the live marketplace</h3>
-            <p className="text-xs text-gray-500">{loadError}</p>
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">Couldn't load the live marketplace</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{loadError}</p>
             <button
               type="button"
               onClick={loadTasks}
@@ -346,10 +346,10 @@ export const PublicTasksPage: React.FC = () => {
             </button>
           </div>
         ) : filteredTasks.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-[#E4EAF2] shadow-sm space-y-3">
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-12 text-center border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-3">
             <CheckCircle2 className="w-12 h-12 text-gray-300 mx-auto" />
-            <h3 className="text-base font-bold text-gray-900">No tasks found matching your filters</h3>
-            <p className="text-xs text-gray-500">Try selecting "Worldwide (All)" or adjusting your search keywords.</p>
+            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">No tasks found matching your filters</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Try selecting "Worldwide (All)" or adjusting your search keywords.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -362,12 +362,12 @@ export const PublicTasksPage: React.FC = () => {
               return (
                 <div
                   key={task.id}
-                  className="bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-sm hover:shadow-xl hover:border-[#168BFF]/40 transition-all flex flex-col justify-between space-y-4 group"
+                  className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-sm hover:shadow-xl hover:border-[#168BFF]/40 transition-all flex flex-col justify-between space-y-4 group"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <div className="p-2 rounded-xl bg-gray-50 border border-gray-100 group-hover:scale-105 transition-transform">
+                        <div className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 group-hover:scale-105 transition-transform">
                           <Icon className="w-5 h-5" />
                         </div>
                         <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border uppercase ${task.badgeColor}`}>
@@ -386,7 +386,7 @@ export const PublicTasksPage: React.FC = () => {
 
                       <div className="text-right">
                         <span className="text-base sm:text-lg font-black text-[#16B364]">AED {rewardAed}</span>
-                        <span className="block text-[9px] text-gray-400 font-bold">د.إ Net</span>
+                        <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold">د.إ Net</span>
                       </div>
                     </div>
 
@@ -394,7 +394,7 @@ export const PublicTasksPage: React.FC = () => {
                     {(task.cityArea || task.targetChannelType || task.retentionHours) && (
                       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                         {task.cityArea && (
-                          <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">
+                          <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-300 px-2 py-0.5 rounded-md font-medium">
                             District: {task.cityArea}
                           </span>
                         )}
@@ -409,21 +409,21 @@ export const PublicTasksPage: React.FC = () => {
                       </div>
                     )}
 
-                    <h3 className="text-base font-black text-gray-900 group-hover:text-[#168BFF] transition-colors leading-snug">
+                    <h3 className="text-base font-black text-gray-900 dark:text-gray-100 group-hover:text-[#168BFF] transition-colors leading-snug">
                       {task.title}
                     </h3>
 
-                    <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
                       {task.description}
                     </p>
 
                     {/* Progress of slots */}
                     <div className="space-y-1 pt-1">
                       <div className="flex justify-between text-[10px] font-bold">
-                        <span className="text-gray-400">{slotsLeft} slots remaining</span>
-                        <span className="text-gray-600">{progressPct}% taken</span>
+                        <span className="text-gray-400 dark:text-gray-500">{slotsLeft} slots remaining</span>
+                        <span className="text-gray-600 dark:text-gray-400">{progressPct}% taken</span>
                       </div>
-                      <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-gray-100 dark:bg-white/10 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-[#168BFF] to-[#20C4E8] rounded-full"
                           style={{ width: `${progressPct}%` }}
@@ -432,11 +432,11 @@ export const PublicTasksPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-1.5 text-gray-500 font-semibold">
-                      <Clock className="w-3.5 h-3.5 text-gray-400" />
+                  <div className="pt-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 font-semibold">
+                      <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                       <span>{task.estimated_minutes} mins</span>
-                      <span>&bull;</span>
+                      <span>•</span>
                       <span className="capitalize">{task.difficulty}</span>
                     </div>
 

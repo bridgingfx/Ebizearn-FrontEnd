@@ -31,8 +31,8 @@ export const OnboardingWizardPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-28 pb-16 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 bg-[#F7F9FC]">
-      <div className="max-w-xl w-full bg-white rounded-3xl p-8 border border-[#E4EAF2] shadow-floating">
+    <div className="min-h-screen pt-28 pb-16 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 bg-[#F7F9FC] dark:bg-[#0B0F19]">
+      <div className="max-w-xl w-full bg-white dark:bg-[#0C1322] rounded-3xl p-8 border border-[#E4EAF2] dark:border-white/10 shadow-floating">
         
         {/* Stepper Header */}
         <div className="mb-8">
@@ -46,12 +46,12 @@ export const OnboardingWizardPage: React.FC = () => {
                         ? 'bg-[#168BFF] text-white shadow-md'
                         : step > s.num
                         ? 'bg-[#16B364] text-white'
-                        : 'bg-gray-100 text-gray-400'
+                        : 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500'
                     }`}
                   >
                     {step > s.num ? <Check className="w-4 h-4" /> : s.num}
                   </div>
-                  <span className="text-[10px] font-medium text-gray-500 mt-1 hidden sm:block">
+                  <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
                     {s.title}
                   </span>
                 </div>
@@ -66,14 +66,14 @@ export const OnboardingWizardPage: React.FC = () => {
             ))}
           </div>
           <div className="text-center">
-            <h2 className="text-xl font-bold text-[#101828]">
+            <h2 className="text-xl font-bold text-[#101828] dark:text-gray-100">
               {step === 1 && 'Select Your Country'}
               {step === 2 && 'Preferred Working Language'}
               {step === 3 && 'Choose Your Task Interests'}
               {step === 4 && 'Complete Your Profile'}
               {step === 5 && 'Free Identity Status'}
             </h2>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Personalize your feed to get matched with eligible, high-reward tasks.
             </p>
           </div>
@@ -82,7 +82,7 @@ export const OnboardingWizardPage: React.FC = () => {
         {/* Step 1: Country */}
         {step === 1 && (
           <div className="space-y-4">
-            <p className="text-xs text-gray-600 font-medium">
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
               We match tasks that are geo-targeted to your location. Choose your primary country of residence:
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -103,11 +103,11 @@ export const OnboardingWizardPage: React.FC = () => {
                   className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-all ${
                     country === c.code
                       ? 'border-[#168BFF] bg-blue-50/50 shadow-sm'
-                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                      : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 bg-white dark:bg-[#0C1322]'
                   }`}
                 >
                   <span className="text-xl">{c.flag}</span>
-                  <span className="text-xs font-bold text-gray-800">{c.name}</span>
+                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{c.name}</span>
                 </button>
               ))}
             </div>
@@ -117,7 +117,7 @@ export const OnboardingWizardPage: React.FC = () => {
         {/* Step 2: Language */}
         {step === 2 && (
           <div className="space-y-3">
-            <p className="text-xs text-gray-600 font-medium">
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
               Tasks and instructions will be shown in your selected languages:
             </p>
             {[
@@ -134,12 +134,12 @@ export const OnboardingWizardPage: React.FC = () => {
                 className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
                   language === l.code
                     ? 'border-[#168BFF] bg-blue-50/50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
                 }`}
               >
                 <div>
-                  <p className="text-xs font-bold text-gray-800">{l.name}</p>
-                  <p className="text-[10px] text-gray-400">{l.native}</p>
+                  <p className="text-xs font-bold text-gray-800 dark:text-gray-200">{l.name}</p>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500">{l.native}</p>
                 </div>
                 {language === l.code && <Check className="w-4 h-4 text-[#168BFF]" />}
               </button>
@@ -150,7 +150,7 @@ export const OnboardingWizardPage: React.FC = () => {
         {/* Step 3: Interests */}
         {step === 3 && (
           <div className="space-y-3">
-            <p className="text-xs text-gray-600 font-medium">Select categories you enjoy doing (select all that apply):</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Select categories you enjoy doing (select all that apply):</p>
             <div className="grid grid-cols-2 gap-2.5">
               {[
                 { id: 'social', label: 'Social Media Campaigns', desc: 'Posts & shares' },
@@ -169,13 +169,13 @@ export const OnboardingWizardPage: React.FC = () => {
                     className={`p-3 rounded-xl border text-left transition-all ${
                       isSelected
                         ? 'border-[#7257FF] bg-purple-50/40 shadow-sm'
-                        : 'border-gray-200 hover:border-gray-300'
+                        : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
                     }`}
                   >
-                    <p className={`text-xs font-bold ${isSelected ? 'text-[#7257FF]' : 'text-gray-800'}`}>
+                    <p className={`text-xs font-bold ${isSelected ? 'text-[#7257FF]' : 'text-gray-800 dark:text-gray-200'}`}>
                       {item.label}
                     </p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">{item.desc}</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{item.desc}</p>
                   </button>
                 );
               })}
@@ -187,13 +187,13 @@ export const OnboardingWizardPage: React.FC = () => {
         {step === 4 && (
           <div className="space-y-4 text-left">
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Tell us a bit about your skills</label>
+              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Tell us a bit about your skills</label>
               <textarea
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Share your background or the types of tasks you excel at..."
-                className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
               />
             </div>
             <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-2 text-[11px] text-blue-800">
@@ -209,16 +209,16 @@ export const OnboardingWizardPage: React.FC = () => {
             <div className="w-14 h-14 mx-auto rounded-full bg-emerald-100 flex items-center justify-center text-[#16B364]">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900">You're Ready to Earn!</h3>
-            <p className="text-xs text-gray-600 max-w-md mx-auto">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">You're Ready to Earn!</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 max-w-md mx-auto">
               Your profile is active as a <strong>Starter Contributor</strong>. You have instant access to open tasks without waiting for manual document review. Higher tier tasks unlock automatically as you complete tasks with high accuracy!
             </p>
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 text-left text-xs space-y-1.5 max-w-sm mx-auto">
+            <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10 text-left text-xs space-y-1.5 max-w-sm mx-auto">
               <div className="flex items-center gap-2 text-[#16B364] font-semibold">
                 <Shield className="w-4 h-4" />
                 <span>Zero Upfront Deposit Needed</span>
               </div>
-              <p className="text-[11px] text-gray-500 pl-6">
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 pl-6">
                 Your first approved task will credit directly to your ledger wallet.
               </p>
             </div>
@@ -226,12 +226,12 @@ export const OnboardingWizardPage: React.FC = () => {
         )}
 
         {/* Navigation Buttons */}
-        <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+        <div className="mt-8 pt-6 border-t border-gray-100 dark:border-white/10 flex items-center justify-between">
           {step > 1 ? (
             <button
               type="button"
               onClick={() => setStep(step - 1)}
-              className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-900 flex items-center gap-1.5"
+              className="px-4 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 flex items-center gap-1.5"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>

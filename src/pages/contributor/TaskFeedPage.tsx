@@ -82,7 +82,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
   };
 
   const selectClass =
-    'min-h-[48px] text-sm font-bold text-slate-700 bg-white border-2 border-slate-200 rounded-2xl px-4 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/10 transition-all cursor-pointer';
+    'min-h-[48px] text-sm font-bold text-slate-700 dark:text-gray-300 bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl px-4 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/10 transition-all cursor-pointer';
 
   return (
     <div className="space-y-5 text-left">
@@ -92,7 +92,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
           {isFeed ? <Zap className="w-6 h-6" /> : <Compass className="w-6 h-6" />}
         </div>
         <div className="flex-1">
-          <h1 className="text-2xl sm:text-[1.75rem] font-black tracking-tight text-[#101828]">
+          <h1 className="text-2xl sm:text-[1.75rem] font-black tracking-tight text-[#101828] dark:text-gray-100">
             {isFeed ? 'Task Feed' : 'Available Tasks'}
           </h1>
           <p className="text-sm text-[#667085] mt-1">
@@ -104,10 +104,10 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
       </div>
 
       {/* Filter bar */}
-      <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-4 sm:p-5 space-y-4">
+      <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-4 sm:p-5 space-y-4">
         {/* Search */}
         <div className="relative">
-          <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-5 h-5 text-slate-400 dark:text-gray-500 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="search"
             value={search}
@@ -115,13 +115,13 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
             onKeyDown={(e) => e.key === 'Enter' && fetchTasks()}
             placeholder="Search tasks or companies…"
             aria-label="Search tasks"
-            className="w-full min-h-[52px] pl-12 pr-12 py-3 text-base bg-slate-50 border-2 border-slate-200 rounded-2xl placeholder:text-slate-400 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/10 focus:bg-white transition-all"
+            className="w-full min-h-[52px] pl-12 pr-12 py-3 text-base bg-slate-50 dark:bg-white/5 border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/10 focus:bg-white dark:focus:bg-[#0C1322] transition-all"
           />
           {search && (
             <button
               type="button"
               onClick={clearFilters}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600 px-2 py-1"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 dark:text-gray-500 hover:text-slate-600 dark:hover:text-gray-400 px-2 py-1"
             >
               Clear
             </button>
@@ -141,7 +141,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
                 className={`shrink-0 inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full border-2 text-sm font-bold transition-all ${
                   active
                     ? 'bg-[#07182F] border-[#07182F] text-white shadow-md'
-                    : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                    : 'bg-white dark:bg-[#0C1322] border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-400 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/5'
                 }`}
               >
                 {p !== 'All platforms' && <PlatformMark platform={p} className="w-4 h-4" />}
@@ -153,7 +153,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
 
         {/* Category + sort */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <label className="flex items-center gap-2 text-sm font-bold text-slate-500 sm:w-auto">
+          <label className="flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-gray-400 sm:w-auto">
             <SlidersHorizontal className="w-4 h-4 shrink-0" />
             <span className="sm:sr-only">Filters</span>
           </label>
@@ -182,7 +182,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
 
       {/* Result count */}
       {!loading && !error && (
-        <p className="text-sm font-semibold text-slate-500 px-1">
+        <p className="text-sm font-semibold text-slate-500 dark:text-gray-400 px-1">
           {visible.length} {visible.length === 1 ? 'task' : 'tasks'} available
         </p>
       )}
@@ -191,17 +191,17 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
       {loading ? (
         <div className={isFeed ? 'space-y-3' : 'grid sm:grid-cols-2 lg:grid-cols-3 gap-5'}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-[1.5rem] border border-[#E7ECF3] p-6 animate-pulse">
+            <div key={i} className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 p-6 animate-pulse">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-[52px] h-[52px] bg-slate-100 rounded-2xl" />
+                <div className="w-[52px] h-[52px] bg-slate-100 dark:bg-white/10 rounded-2xl" />
                 <div className="flex-1">
-                  <div className="h-3.5 bg-slate-100 rounded w-2/3 mb-2" />
-                  <div className="h-3 bg-slate-100 rounded w-1/2" />
+                  <div className="h-3.5 bg-slate-100 dark:bg-white/10 rounded w-2/3 mb-2" />
+                  <div className="h-3 bg-slate-100 dark:bg-white/10 rounded w-1/2" />
                 </div>
               </div>
-              <div className="h-4 bg-slate-100 rounded w-full mb-2" />
-              <div className="h-4 bg-slate-100 rounded w-5/6 mb-4" />
-              <div className="h-[52px] bg-slate-100 rounded-2xl" />
+              <div className="h-4 bg-slate-100 dark:bg-white/10 rounded w-full mb-2" />
+              <div className="h-4 bg-slate-100 dark:bg-white/10 rounded w-5/6 mb-4" />
+              <div className="h-[52px] bg-slate-100 dark:bg-white/10 rounded-2xl" />
             </div>
           ))}
         </div>

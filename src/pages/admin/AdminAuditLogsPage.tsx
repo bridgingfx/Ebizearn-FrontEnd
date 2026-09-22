@@ -50,22 +50,22 @@ export const AdminAuditLogsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Audit Logs</h1>
-        <p className="text-sm text-gray-500 mt-1">Immutable record of administrative actions.</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Audit Logs</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Immutable record of administrative actions.</p>
       </div>
 
       <div className="relative sm:w-72">
-        <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by action, entity, actor…"
-          className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+          className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
         />
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading audit logs…
         </div>
       )}
@@ -96,11 +96,11 @@ export const AdminAuditLogsPage: React.FC = () => {
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                   <th className="py-3 px-4 font-bold">Action</th>
                   <th className="py-3 px-4 font-bold">Entity</th>
                   <th className="py-3 px-4 font-bold">Actor</th>
@@ -111,17 +111,17 @@ export const AdminAuditLogsPage: React.FC = () => {
               <tbody>
                 {filtered.map((l) => (
                   <tr key={l.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
-                    <td className="py-3 px-4 font-bold text-gray-900 font-mono text-xs">{l.action}</td>
-                    <td className="py-3 px-4 text-xs text-gray-600">
+                    <td className="py-3 px-4 font-bold text-gray-900 dark:text-gray-100 font-mono text-xs">{l.action}</td>
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">
                       {l.entity_type} #{l.entity_id}
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-600">{l.actor?.name || 'System'}</td>
-                    <td className="py-3 px-4 text-xs text-gray-500">{new Date(l.created_at).toLocaleString()}</td>
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">{l.actor?.name || 'System'}</td>
+                    <td className="py-3 px-4 text-xs text-gray-500 dark:text-gray-400">{new Date(l.created_at).toLocaleString()}</td>
                     <td className="py-3 px-4 text-right">
                       <button
                         type="button"
                         onClick={() => setSelected(l)}
-                        className="p-2 rounded-lg text-gray-400 hover:text-[#168BFF] hover:bg-blue-50 transition-colors"
+                        className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 transition-colors"
                         title="View before/after state"
                       >
                         <Eye className="w-4 h-4" />
@@ -138,40 +138,40 @@ export const AdminAuditLogsPage: React.FC = () => {
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSelected(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
+          <div className="relative bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-base font-extrabold text-gray-900 font-mono">{selected.action}</h3>
-                <p className="text-xs text-gray-500">
+                <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100 font-mono">{selected.action}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {selected.entity_type} #{selected.entity_id} · {new Date(selected.created_at).toLocaleString()}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 hover:bg-gray-100"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 Close
               </button>
             </div>
             {selected.before_state_json && (
               <div className="mb-3">
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Before</p>
-                <pre className="bg-gray-50 rounded-xl p-3 text-[11px] font-mono text-gray-700 overflow-x-auto max-h-48 overflow-y-auto">
+                <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Before</p>
+                <pre className="bg-gray-50 dark:bg-white/5 rounded-xl p-3 text-[11px] font-mono text-gray-700 dark:text-gray-300 overflow-x-auto max-h-48 overflow-y-auto">
                   {JSON.stringify(selected.before_state_json, null, 2)}
                 </pre>
               </div>
             )}
             {selected.after_state_json && (
               <div>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">After</p>
-                <pre className="bg-gray-50 rounded-xl p-3 text-[11px] font-mono text-gray-700 overflow-x-auto max-h-48 overflow-y-auto">
+                <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">After</p>
+                <pre className="bg-gray-50 dark:bg-white/5 rounded-xl p-3 text-[11px] font-mono text-gray-700 dark:text-gray-300 overflow-x-auto max-h-48 overflow-y-auto">
                   {JSON.stringify(selected.after_state_json, null, 2)}
                 </pre>
               </div>
             )}
             {selected.ip_address && (
-              <p className="text-[11px] text-gray-400 mt-3 font-mono">IP: {selected.ip_address}</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-3 font-mono">IP: {selected.ip_address}</p>
             )}
           </div>
         </div>

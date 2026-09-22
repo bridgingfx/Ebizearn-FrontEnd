@@ -143,8 +143,8 @@ export const AdminReportsPage: React.FC = () => {
                 <FileSpreadsheet className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-extrabold text-gray-900">{def.title}</h3>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{def.description}</p>
+                <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">{def.title}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{def.description}</p>
                 <button
                   type="button"
                   disabled={busyKey !== null}
@@ -168,7 +168,7 @@ export const AdminReportsPage: React.FC = () => {
 
       <Card>
         <CardHeader title="About these reports" subtitle="How the numbers are produced" />
-        <p className="px-5 py-4 text-xs text-gray-500 leading-relaxed">
+        <p className="px-5 py-4 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
           Exports query the live API at the moment you click — there are no stored snapshots and no
           sample data. Money figures come from the immutable wallet ledger; the audit log is
           append-only. If a report has no rows, the platform simply has no such records yet.

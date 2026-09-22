@@ -6,12 +6,12 @@ export const TrustSafetyPage: React.FC = () => {
     <div className="pt-24 pb-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-10">
       <div className="text-center max-w-2xl mx-auto space-y-2.5">
         <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
-          Security &amp; Integrity
+          Security & Integrity
         </span>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
-          Trust &amp; Safety at BizNetwork
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
+          Trust & Safety at BizNetwork
         </h1>
-        <p className="text-xs sm:text-sm text-gray-500">
+        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
           How we protect contributors from scams, ensure brands receive genuine human activity, and enforce zero tolerance for fraud.
         </p>
       </div>
@@ -51,12 +51,12 @@ export const TrustSafetyPage: React.FC = () => {
         ].map((item, idx) => {
           const Icon = item.icon;
           return (
-            <div key={idx} className="bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-sm space-y-2.5">
+            <div key={idx} className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-2.5">
               <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#16B364] flex items-center justify-center">
                 <Icon className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-gray-900">{item.title}</h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+              <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">{item.title}</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{item.desc}</p>
             </div>
           );
         })}

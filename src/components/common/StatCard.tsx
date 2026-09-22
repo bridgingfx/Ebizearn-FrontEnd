@@ -22,14 +22,14 @@ export const StatCard: React.FC<StatCardProps> = ({ label, value, sub, icon: Ico
       <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${gradient} ${shadow} flex items-center justify-center mb-4`}>
         <Icon className="w-6 h-6 text-white" />
       </div>
-      <p className="text-[11px] font-black uppercase tracking-[0.08em] text-slate-400">{label}</p>
-      <p className="text-[1.65rem] font-black text-slate-900 tracking-tight mt-1 leading-none">{value}</p>
-      {sub && <p className="text-xs font-medium text-slate-500 mt-2">{sub}</p>}
+      <p className="text-[11px] font-black uppercase tracking-[0.08em] text-slate-400 dark:text-gray-500">{label}</p>
+      <p className="text-[1.65rem] font-black text-slate-900 dark:text-white tracking-tight mt-1 leading-none">{value}</p>
+      {sub && <p className="text-xs font-medium text-slate-500 dark:text-gray-400 mt-2">{sub}</p>}
     </>
   );
 
   const cls =
-    'bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-5 sm:p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.07]';
+    'bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-5 sm:p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.07]';
 
   if (to) {
     return (
@@ -51,8 +51,8 @@ interface SectionHeaderProps {
 export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, actionLabel, actionTo }) => (
   <div className="flex items-end justify-between gap-3 mb-4">
     <div>
-      <h2 className="text-lg sm:text-xl font-black tracking-tight text-slate-900">{title}</h2>
-      {subtitle && <p className="text-sm text-slate-500 mt-0.5">{subtitle}</p>}
+      <h2 className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white">{title}</h2>
+      {subtitle && <p className="text-sm text-slate-500 dark:text-gray-400 mt-0.5">{subtitle}</p>}
     </div>
     {actionLabel && actionTo && (
       <Link

@@ -246,15 +246,15 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           type="button"
           onClick={handleGoogle}
           disabled={busy !== null}
-          className="min-h-[52px] px-4 rounded-2xl bg-white border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100 transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+          className="min-h-[52px] px-4 rounded-2xl bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 dark:active:bg-white/10 transition-all flex items-center justify-center gap-3 disabled:opacity-60"
           aria-label={`${verb} with Google`}
         >
           {busy === 'google' ? (
-            <Loader2 className="w-5 h-5 animate-spin text-slate-500" />
+            <Loader2 className="w-5 h-5 animate-spin text-slate-500 dark:text-gray-400" />
           ) : (
             <GoogleLogo className="w-5 h-5 shrink-0" />
           )}
-          <span className="text-base font-semibold text-slate-700">{verb} with Google</span>
+          <span className="text-base font-semibold text-slate-700 dark:text-gray-300">{verb} with Google</span>
         </button>
 
         {/* Apple — official black button */}

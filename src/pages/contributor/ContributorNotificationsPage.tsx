@@ -62,7 +62,7 @@ const kindIcon = (kind: NotificationItem['kind']) => {
     case 'referral':
       return <Users className="w-5 h-5 text-violet-500" />;
     default:
-      return <Bell className="w-5 h-5 text-gray-400" />;
+      return <Bell className="w-5 h-5 text-gray-400 dark:text-gray-500" />;
   }
 };
 
@@ -243,11 +243,11 @@ export const ContributorNotificationsPage: React.FC = () => {
     return (
       <div className="space-y-3 max-w-3xl">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-2xl border border-[#E7ECF3] p-5 animate-pulse flex gap-4">
-            <div className="w-10 h-10 rounded-xl bg-gray-100" />
+          <div key={i} className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 p-5 animate-pulse flex gap-4">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-white/10" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 bg-gray-100 rounded w-1/3" />
-              <div className="h-3 bg-gray-50 rounded w-2/3" />
+              <div className="h-3 bg-gray-100 dark:bg-white/10 rounded w-1/3" />
+              <div className="h-3 bg-gray-50 dark:bg-white/5 rounded w-2/3" />
             </div>
           </div>
         ))}
@@ -263,7 +263,7 @@ export const ContributorNotificationsPage: React.FC = () => {
             <Bell className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-[#101828]">Notifications</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100">Notifications</h1>
             <p className="text-xs text-[#667085] mt-0.5">
               {unread.length > 0 ? `${unread.length} unread update${unread.length === 1 ? '' : 's'}` : 'You are all caught up.'}
             </p>
@@ -301,22 +301,22 @@ export const ContributorNotificationsPage: React.FC = () => {
             const isRead = readIds.has(n.id);
             const inner = (
               <div
-                className={`flex items-start gap-3.5 bg-white rounded-2xl border p-4 transition-all ${
-                  isRead ? 'border-[#E7ECF3]' : 'border-[#168BFF]/30 shadow-sm bg-blue-50/30'
+                className={`flex items-start gap-3.5 bg-white dark:bg-[#0C1322] rounded-2xl border p-4 transition-all ${
+                  isRead ? 'border-[#E7ECF3] dark:border-white/10' : 'border-[#168BFF]/30 shadow-sm bg-blue-50/30'
                 }`}
                 onClick={() => markOneRead(n.id)}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isRead ? 'bg-gray-50' : 'bg-white'}`}>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isRead ? 'bg-gray-50 dark:bg-white/5' : 'bg-white dark:bg-[#0C1322]'}`}>
                   {kindIcon(n.kind)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-xs font-black text-gray-900">{n.title}</p>
-                    <span className="text-[10px] text-gray-400 font-bold flex items-center gap-1 shrink-0">
+                    <p className="text-xs font-black text-gray-900 dark:text-gray-100">{n.title}</p>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold flex items-center gap-1 shrink-0">
                       <Clock className="w-3 h-3" /> {relativeTime(n.createdAt)}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">{n.description}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{n.description}</p>
                   {n.amount && <p className="text-xs font-black text-[#16B364] mt-1.5">+ {n.amount}</p>}
                 </div>
                 {!isRead && <span className="w-2 h-2 rounded-full bg-[#168BFF] shrink-0 mt-1.5" />}

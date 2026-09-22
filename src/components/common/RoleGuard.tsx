@@ -13,7 +13,7 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
   const location = useLocation();
 
   if (isLoading) {
-    return <div className="min-h-screen grid place-items-center text-sm text-slate-500">Loading…</div>;
+    return <div className="min-h-screen grid place-items-center text-sm text-slate-500 dark:text-gray-400">Loading…</div>;
   }
 
   if (!user || !token) {

@@ -170,8 +170,8 @@ export const TaskDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-3xl border border-[#E7ECF3] h-96 animate-pulse" />
-        <div className="bg-white rounded-3xl border border-[#E7ECF3] h-96 animate-pulse" />
+        <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 h-96 animate-pulse" />
+        <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 h-96 animate-pulse" />
       </div>
     );
   }
@@ -196,10 +196,10 @@ export const TaskDetailPage: React.FC = () => {
     <div className="max-w-6xl mx-auto space-y-5 text-left">
       {gate}
       <div className="flex items-center justify-between">
-        <Link to="/app/tasks" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">
+        <Link to="/app/tasks" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to tasks
         </Link>
-        <span className="text-[11px] font-mono text-gray-400">#{task.uuid?.slice(0, 8) || task.id}</span>
+        <span className="text-[11px] font-mono text-gray-400 dark:text-gray-500">#{task.uuid?.slice(0, 8) || task.id}</span>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6 items-start">
@@ -207,48 +207,48 @@ export const TaskDetailPage: React.FC = () => {
         <div className="space-y-5">
           <PlatformPreview task={task} />
 
-          <div className="bg-white rounded-3xl border border-[#E7ECF3] p-5 sm:p-6 space-y-4">
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 p-5 sm:p-6 space-y-4">
             <div className="flex items-start gap-3">
               <div className="w-12 h-12 rounded-2xl bg-[#07182F] text-white flex items-center justify-center text-sm font-black shrink-0">
                 {initials(task.brandName)}
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] font-bold text-gray-500">{task.brandName}</p>
-                <h1 className="text-lg sm:text-xl font-black text-gray-900 leading-snug">{task.title}</h1>
+                <p className="text-[11px] font-bold text-gray-500 dark:text-gray-400">{task.brandName}</p>
+                <h1 className="text-lg sm:text-xl font-black text-gray-900 dark:text-gray-100 leading-snug">{task.title}</h1>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <p className="text-[10px] font-bold uppercase text-gray-400">Reward</p>
+              <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
+                <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Reward</p>
                 <p className="text-sm font-black text-[#16B364] mt-0.5">{money(task.reward_cents)}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <p className="text-[10px] font-bold uppercase text-gray-400">Est. time</p>
-                <p className="text-sm font-black text-gray-900 mt-0.5 inline-flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-gray-400" /> {task.estimated_minutes} min
+              <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
+                <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Est. time</p>
+                <p className="text-sm font-black text-gray-900 dark:text-gray-100 mt-0.5 inline-flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {task.estimated_minutes} min
                 </p>
               </div>
-              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <p className="text-[10px] font-bold uppercase text-gray-400">Platform</p>
-                <p className="text-sm font-black text-gray-900 mt-0.5">{task.platform}</p>
+              <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
+                <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Platform</p>
+                <p className="text-sm font-black text-gray-900 dark:text-gray-100 mt-0.5">{task.platform}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <p className="text-[10px] font-bold uppercase text-gray-400">Type</p>
-                <p className="text-sm font-black text-gray-900 mt-0.5 capitalize">{task.categoryName}</p>
+              <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
+                <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Type</p>
+                <p className="text-sm font-black text-gray-900 dark:text-gray-100 mt-0.5 capitalize">{task.categoryName}</p>
               </div>
             </div>
 
             {task.description && task.description !== task.title && (
-              <p className="text-xs text-gray-600 leading-relaxed">{task.description}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{task.description}</p>
             )}
 
             {requirements.length > 0 && (
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-gray-400 mb-2">Requirements</p>
+                <p className="text-[11px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Requirements</p>
                 <ul className="space-y-1.5">
                   {requirements.map((req) => (
-                    <li key={req} className="text-xs text-gray-700 flex items-start gap-2">
+                    <li key={req} className="text-xs text-gray-700 dark:text-gray-300 flex items-start gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#16B364] shrink-0 mt-px" />
                       <span className="capitalize">{req}</span>
                     </li>
@@ -269,7 +269,7 @@ export const TaskDetailPage: React.FC = () => {
 
         {/* RIGHT — action panel */}
         <div className="lg:sticky lg:top-6 space-y-5">
-          <div className="bg-white rounded-3xl border border-[#E7ECF3] p-5 sm:p-6 shadow-xs">
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 p-5 sm:p-6 shadow-xs">
             {submission ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -277,8 +277,8 @@ export const TaskDetailPage: React.FC = () => {
                     <FileCheck className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-black text-gray-900">Proof submitted</h2>
-                    <p className="text-[11px] text-gray-500">Track your verification below — it's updated from the platform.</p>
+                    <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Proof submitted</h2>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">Track your verification below — it's updated from the platform.</p>
                   </div>
                 </div>
                 <div className="pt-1">
@@ -303,8 +303,8 @@ export const TaskDetailPage: React.FC = () => {
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-base font-black text-gray-900">Ready to complete this task?</h2>
-                  <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                  <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Ready to complete this task?</h2>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
                     Reserve a slot first. Then complete the real action on {task.platform} (see the preview for guidance),
                     and submit your proof here.
                   </p>
@@ -321,15 +321,15 @@ export const TaskDetailPage: React.FC = () => {
                   {starting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                   <span>{starting ? 'Reserving…' : 'Start task — reserve my slot'}</span>
                 </button>
-                <p className="text-[10px] text-gray-400">
+                <p className="text-[10px] text-gray-400 dark:text-gray-500">
                   Reserving holds one of the task's slots under your account while you work.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <h2 className="text-base font-black text-gray-900">Submit your proof</h2>
-                  <p className="text-[11px] text-gray-500 mt-0.5">
+                  <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Submit your proof</h2>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                     Upload a screenshot of the completed action and/or paste the proof link.
                   </p>
                 </div>
@@ -340,9 +340,9 @@ export const TaskDetailPage: React.FC = () => {
 
                 {/* Screenshot upload */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1.5">Screenshot proof</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Screenshot proof</label>
                   {screenshot ? (
-                    <div className="relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-900">
+                    <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-900">
                       <img src={screenshot} alt="Proof screenshot" className="w-full max-h-56 object-contain" />
                       <button
                         type="button"
@@ -360,10 +360,10 @@ export const TaskDetailPage: React.FC = () => {
                       </p>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 hover:border-[#168BFF] rounded-2xl p-6 cursor-pointer transition-colors bg-gray-50/50">
-                      <Upload className="w-6 h-6 text-gray-400" />
-                      <span className="text-xs font-bold text-gray-700">Tap to upload screenshot</span>
-                      <span className="text-[10px] text-gray-400">PNG or JPG, up to 8 MB — sent with your submission</span>
+                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 dark:border-white/10 hover:border-[#168BFF] rounded-2xl p-6 cursor-pointer transition-colors bg-gray-50/50">
+                      <Upload className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Tap to upload screenshot</span>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500">PNG or JPG, up to 8 MB — sent with your submission</span>
                       <input
                         type="file"
                         accept="image/png,image/jpeg,image/webp"
@@ -376,29 +376,29 @@ export const TaskDetailPage: React.FC = () => {
 
                 {/* Proof URL */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1.5">Proof link (optional)</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Proof link (optional)</label>
                   <div className="relative">
-                    <LinkIcon className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                    <LinkIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
                     <input
                       type="url"
                       value={proofUrl}
                       onChange={(e) => setProofUrl(e.target.value)}
                       placeholder="https://… link to your completed action"
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                     />
                   </div>
                 </div>
 
                 {/* Note */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1.5">Note for the reviewer (optional)</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Note for the reviewer (optional)</label>
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     rows={2}
                     maxLength={1000}
                     placeholder="Anything the reviewer should know…"
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF] resize-none"
+                    className="w-full px-3 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF] resize-none"
                   />
                 </div>
 
@@ -411,7 +411,7 @@ export const TaskDetailPage: React.FC = () => {
                   <span>{submitting ? 'Submitting…' : 'Submit proof for verification'}</span>
                 </button>
 
-                <p className="text-[10px] text-gray-400 leading-relaxed">
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-relaxed">
                   Every submission is checked for duplicates, wrong URLs, and missing requirements before a moderator
                   approves it. Rewards move Submitted → Checking → Moderator review → Approved → Pending → Available.
                 </p>

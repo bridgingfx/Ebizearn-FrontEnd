@@ -32,11 +32,11 @@ export const ForgotPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-28 pb-16 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 bg-[#F7F9FC]">
-      <div className="max-w-md w-full bg-white rounded-3xl p-8 border border-[#E4EAF2] shadow-floating">
+    <div className="min-h-screen pt-28 pb-16 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 bg-[#F7F9FC] dark:bg-[#0B0F19]">
+      <div className="max-w-md w-full bg-white dark:bg-[#0C1322] rounded-3xl p-8 border border-[#E4EAF2] dark:border-white/10 shadow-floating">
         <div className="text-center mb-6">
           <AuthFavicon />
-          <h2 className="text-2xl font-black text-[#101828]">Reset Password</h2>
+          <h2 className="text-2xl font-black text-[#101828] dark:text-gray-100">Reset Password</h2>
           <p className="text-xs text-[#667085] mt-1">Enter your account email to generate a reset link.</p>
         </div>
 
@@ -50,8 +50,8 @@ export const ForgotPasswordPage: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]" />
+            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]" />
           </div>
           <button type="submit" disabled={submitting} className="w-full py-3 bg-[#07182F] hover:bg-[#0D2342] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60">
             <span>{submitting ? 'Creating Link...' : 'Send Reset Link'}</span>
@@ -59,7 +59,7 @@ export const ForgotPasswordPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
+        <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
           Remember your password? <Link to="/login" className="text-[#168BFF] font-bold hover:underline">Back to login</Link>
         </div>
       </div>

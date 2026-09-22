@@ -12,17 +12,17 @@ export const BusinessSupportPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Support</h1>
-        <p className="text-sm text-gray-500 mt-1">Get help with your business account.</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Support</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Get help with your business account.</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-8 text-center space-y-4">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-8 text-center space-y-4">
         <div className="w-14 h-14 rounded-2xl bg-[#168BFF]/10 text-[#168BFF] flex items-center justify-center mx-auto">
           <Mail className="w-7 h-7" />
         </div>
         <div>
-          <h3 className="text-lg font-extrabold text-gray-900">Talk to our team</h3>
-          <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">
+          <h3 className="text-lg font-extrabold text-gray-900 dark:text-gray-100">Talk to our team</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-md mx-auto">
             Campaign issues, billing questions, or help with targeting — email us and a member of the team
             will get back to you.
           </p>
@@ -57,18 +57,18 @@ export const BusinessSupportPage: React.FC = () => {
             available: false,
           },
         ].map((c) => (
-          <div key={c.title} className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-5">
-            <div className="p-2 rounded-xl bg-gray-100 text-gray-500 w-fit mb-3">
+          <div key={c.title} className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5">
+            <div className="p-2 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 w-fit mb-3">
               <c.icon className="w-5 h-5" />
             </div>
-            <h4 className="text-sm font-extrabold text-gray-900 mb-1">{c.title}</h4>
-            <p className="text-[11px] text-gray-500 leading-relaxed mb-3">{c.text}</p>
+            <h4 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-1">{c.title}</h4>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed mb-3">{c.text}</p>
             {c.available && c.href ? (
               <a href={c.href} className="text-xs font-bold text-[#168BFF] hover:underline inline-flex items-center gap-1">
                 <HelpCircle className="w-3.5 h-3.5" /> Open
               </a>
             ) : (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Coming soon</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Coming soon</span>
             )}
           </div>
         ))}

@@ -10,7 +10,7 @@ export const ContributorEarningsPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-[#101828]">Earnings &amp; Performance</h2>
+          <h2 className="text-2xl font-black text-[#101828] dark:text-gray-100">Earnings & Performance</h2>
           <p className="text-xs text-[#667085] mt-0.5">
             Detailed breakdown of your completed task rewards, level progression, and payout forecasts.
           </p>
@@ -20,7 +20,7 @@ export const ContributorEarningsPage: React.FC = () => {
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-bold rounded-xl transition-all shadow-sm self-start sm:self-auto"
         >
           <Wallet className="w-4 h-4" />
-          <span>Manage Wallet &amp; Payouts</span>
+          <span>Manage Wallet & Payouts</span>
         </Link>
       </div>
 

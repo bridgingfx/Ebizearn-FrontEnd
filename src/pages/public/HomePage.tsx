@@ -188,7 +188,7 @@ export const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] text-[#101828] font-sans text-left">
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] text-[#101828] dark:text-gray-100 font-sans text-left">
       
       {/* =========================================================================
           1. SIMPLIFIED, HIGH-CONVERTING HERO BANNER
@@ -232,7 +232,7 @@ export const HomePage: React.FC = () => {
                   to="/contributor/register"
                   className="bg-[#22C55E] hover:bg-[#16a34a] text-[#07182F] font-black text-sm sm:text-base px-7 py-4 rounded-xl shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2.5 group"
                 >
-                  <span>Get Started &amp; Earn Free</span>
+                  <span>Get Started & Earn Free</span>
                   <ArrowRight className="w-5 h-5 text-[#07182F] group-hover:translate-x-0.5 transition-transform" />
                 </Link>
 
@@ -269,45 +269,45 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 1: Top-Left (+$50.00 Verified Cash) */}
-              <div className="absolute -top-4 -left-2 sm:-left-10 z-30 bg-white text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float max-w-[215px]">
+              <div className="absolute -top-4 -left-2 sm:-left-10 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float max-w-[215px]">
                 <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Instant Payout</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Instant Payout</div>
                   <div className="text-xs sm:text-sm font-black text-emerald-600">+$50.00 Verified Cash</div>
                 </div>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 2: Top-Right (Upload Review Photo) */}
-              <div className="absolute top-12 -right-4 sm:-right-8 z-30 bg-white text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float-delayed max-w-[225px]">
+              <div className="absolute top-12 -right-4 sm:-right-8 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float-delayed max-w-[225px]">
                 <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
                   <Camera className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">New Task</div>
-                  <div className="text-xs sm:text-sm font-black text-gray-900">Upload Review Photo</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">New Task</div>
+                  <div className="text-xs sm:text-sm font-black text-gray-900 dark:text-gray-100">Upload Review Photo</div>
                 </div>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 3: Bottom-Left (Review: TikTok Video) */}
-              <div className="absolute bottom-14 -left-4 sm:-left-10 z-30 bg-white text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float max-w-[225px]">
+              <div className="absolute bottom-14 -left-4 sm:-left-10 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float max-w-[225px]">
                 <div className="w-9 h-9 rounded-full bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-md">
                   <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Sponsored Campaign</div>
-                  <div className="text-xs sm:text-sm font-black text-gray-900">Review: TikTok Video</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Sponsored Campaign</div>
+                  <div className="text-xs sm:text-sm font-black text-gray-900 dark:text-gray-100">Review: TikTok Video</div>
                 </div>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 4: Bottom-Right ($38.90 Total) */}
-              <div className="absolute -bottom-3 -right-2 sm:-right-6 z-30 bg-white text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float-delayed max-w-[210px]">
+              <div className="absolute -bottom-3 -right-2 sm:-right-6 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float-delayed max-w-[210px]">
                 <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-md font-black text-sm">
                   <DollarSign className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Today's Balance</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Today's Balance</div>
                   <div className="text-xs sm:text-sm font-black text-emerald-600">$38.90 Total</div>
                 </div>
               </div>
@@ -335,7 +335,7 @@ export const HomePage: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       <Wifi className="w-3 h-3 text-white/80" />
                       <div className="w-4 h-2 rounded-sm border border-white/80 p-0.5 flex items-center">
-                        <div className="w-full h-full bg-white rounded-2xs" />
+                        <div className="w-full h-full bg-white dark:bg-[#0C1322] rounded-2xs" />
                       </div>
                     </div>
                   </div>
@@ -407,7 +407,7 @@ export const HomePage: React.FC = () => {
                         <CheckCircle2 className="w-3 h-3" />
                         <span>Approved (9.4s)</span>
                       </span>
-                      <span className="font-mono text-gray-400">#CP-982</span>
+                      <span className="font-mono text-gray-400 dark:text-gray-500">#CP-982</span>
                     </div>
                   </div>
 
@@ -419,7 +419,7 @@ export const HomePage: React.FC = () => {
                       </div>
                       <div className="text-left">
                         <div className="text-[10px] font-bold text-white">Instagram Story Repost</div>
-                        <div className="text-[9px] text-gray-300">2 min &bull; 420 slots left</div>
+                        <div className="text-[9px] text-gray-300">2 min • 420 slots left</div>
                       </div>
                     </div>
                     <span className="text-[11px] font-bold text-emerald-300">+$1.20</span>
@@ -454,62 +454,62 @@ export const HomePage: React.FC = () => {
           DEDICATED HORIZONTAL TRUST BAR (AS SEEN ON & VERIFIED METRICS)
           - Directly below hero section as requested
          ========================================================================= */}
-      <section className="bg-white border-b border-gray-200/90 py-5 sm:py-6 shadow-sm relative z-20">
+      <section className="bg-white dark:bg-[#0C1322] border-b border-gray-200/90 py-5 sm:py-6 shadow-sm relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
             
             {/* Left: As Seen On + Partner Brand Badges */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-7">
-              <span className="text-xs font-black text-gray-400 uppercase tracking-widest shrink-0">
+              <span className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest shrink-0">
                 As Seen On
               </span>
-              <div className="flex items-center gap-5 sm:gap-8 text-gray-400">
+              <div className="flex items-center gap-5 sm:gap-8 text-gray-400 dark:text-gray-500">
                 
                 {/* Bloomberg */}
                 <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-extrabold text-sm sm:text-base tracking-tight text-gray-800">Bloomberg</span>
+                  <span className="font-extrabold text-sm sm:text-base tracking-tight text-gray-800 dark:text-gray-200">Bloomberg</span>
                 </div>
 
                 {/* CNBC */}
                 <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-black text-xs sm:text-sm tracking-wider text-gray-800 border-2 border-gray-800 px-1.5 py-0.2 rounded">CNBC</span>
+                  <span className="font-black text-xs sm:text-sm tracking-wider text-gray-800 dark:text-gray-200 border-2 border-gray-800 px-1.5 py-0.2 rounded">CNBC</span>
                 </div>
 
                 {/* Forbes */}
                 <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-serif italic font-bold text-sm sm:text-base tracking-tight text-gray-800">Forbes</span>
+                  <span className="font-serif italic font-bold text-sm sm:text-base tracking-tight text-gray-800 dark:text-gray-200">Forbes</span>
                 </div>
 
                 {/* TechCrunch */}
                 <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
                   <span className="font-black text-xs sm:text-sm tracking-tight text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">TC</span>
-                  <span className="font-bold text-xs sm:text-sm text-gray-800 hidden sm:inline">TechCrunch</span>
+                  <span className="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-200 hidden sm:inline">TechCrunch</span>
                 </div>
 
                 {/* WSJ */}
                 <div className="flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity">
-                  <span className="font-serif font-black text-xs sm:text-sm tracking-widest text-gray-800">WSJ</span>
+                  <span className="font-serif font-black text-xs sm:text-sm tracking-widest text-gray-800 dark:text-gray-200">WSJ</span>
                 </div>
 
               </div>
             </div>
 
             {/* Right: Key Platform Stats (Total Paid Out & Active Users) */}
-            <div className="flex items-center justify-center gap-8 sm:gap-12 shrink-0 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-100">
-              <div className="text-center lg:text-left lg:border-l lg:border-gray-200 lg:pl-8">
-                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+            <div className="flex items-center justify-center gap-8 sm:gap-12 shrink-0 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-t-0 border-gray-100 dark:border-white/10">
+              <div className="text-center lg:text-left lg:border-l lg:border-gray-200 dark:lg:border-white/10 lg:pl-8">
+                <div className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Total Paid Out
                 </div>
-                <div className="text-xl sm:text-2xl font-black text-[#101828] tracking-tight">
+                <div className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100 tracking-tight">
                   $10,000,000+
                 </div>
               </div>
 
-              <div className="text-center lg:text-left lg:border-l lg:border-gray-200 lg:pl-8">
-                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              <div className="text-center lg:text-left lg:border-l lg:border-gray-200 dark:lg:border-white/10 lg:pl-8">
+                <div className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Active Users
                 </div>
-                <div className="text-xl sm:text-2xl font-black text-[#101828] tracking-tight">
+                <div className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100 tracking-tight">
                   5,000,000+
                 </div>
               </div>
@@ -535,7 +535,7 @@ export const HomePage: React.FC = () => {
                 <span>{item.flag}</span>
                 <span className="font-bold text-gray-200">{item.name}</span>
                 <span className="text-[#20C4E8] font-semibold">{item.action}</span>
-                <span className="text-gray-500 font-mono text-[10px]">&bull; {item.time}</span>
+                <span className="text-gray-500 dark:text-gray-400 font-mono text-[10px]">• {item.time}</span>
               </div>
             ))}
           </div>
@@ -545,17 +545,17 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           3. HOW SOCIAL MEDIA EARNING WORKS (ELIMINATING EMPTY WHITE SPACE)
          ========================================================================= */}
-      <section id="how-it-works" className="py-14 sm:py-16 bg-white bg-dot-pattern scroll-mt-20">
+      <section id="how-it-works" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] bg-dot-pattern scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-2.5">
             <span className="px-3.5 py-1 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider border border-blue-100">
               Zero Followers Required
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               6 Ways You Earn Real Cash On Social Media
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-xl mx-auto">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl mx-auto">
               Brands pay ordinary consumers for authentic exposure and genuine community engagement. Choose the platforms you already use every day.
             </p>
 
@@ -575,7 +575,7 @@ export const HomePage: React.FC = () => {
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                     selectedSocialTab === tab.id
                       ? 'bg-[#07182F] text-white shadow-md'
-                      : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-400'
+                      : 'bg-white dark:bg-[#0C1322] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-white/10 hover:border-gray-400'
                   }`}
                 >
                   {tab.label}
@@ -591,12 +591,12 @@ export const HomePage: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="bg-[#F7F9FC] rounded-3xl p-6 sm:p-7 border border-[#E4EAF2] hover:border-[#168BFF]/50 transition-all hover:shadow-xl space-y-4 group relative overflow-hidden"
+                  className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 sm:p-7 border border-[#E4EAF2] dark:border-white/10 hover:border-[#168BFF]/50 transition-all hover:shadow-xl space-y-4 group relative overflow-hidden"
                 >
                   <div className={`h-1.5 w-full bg-gradient-to-r ${card.accentColor} absolute top-0 left-0`} />
 
                   <div className="flex items-center justify-between pt-1">
-                    <div className="p-3 rounded-2xl bg-white border border-gray-200 shadow-xs group-hover:scale-110 transition-transform">
+                    <div className="p-3 rounded-2xl bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 shadow-xs group-hover:scale-110 transition-transform">
                       <Icon className="w-6 h-6" />
                     </div>
                     <span className={`text-[10px] font-black px-2.5 py-1 rounded-full border uppercase tracking-wide ${card.badgeColor}`}>
@@ -605,24 +605,24 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   <div>
-                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">{card.platform} Campaign</span>
-                    <h3 className="text-lg font-black text-gray-900 mt-0.5 group-hover:text-[#168BFF] transition-colors">
+                    <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">{card.platform} Campaign</span>
+                    <h3 className="text-lg font-black text-gray-900 dark:text-gray-100 mt-0.5 group-hover:text-[#168BFF] transition-colors">
                       {card.title}
                     </h3>
-                    <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 leading-relaxed">
                       {card.desc}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
+                  <div className="pt-3 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-gray-400 font-bold uppercase block">Reward Range</span>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Reward Range</span>
                       <span className="text-lg font-black text-[#16B364]">{card.reward}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-gray-400 font-bold uppercase block">Average Time</span>
-                      <span className="text-xs font-bold text-gray-700 flex items-center gap-1 justify-end">
-                        <Clock className="w-3.5 h-3.5 text-gray-400" />
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Average Time</span>
+                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1 justify-end">
+                        <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                         {card.time}
                       </span>
                     </div>
@@ -657,7 +657,7 @@ export const HomePage: React.FC = () => {
               to="/contributor/register"
               className="px-8 py-3.5 bg-gradient-brand text-white text-xs sm:text-sm font-black rounded-2xl shadow-lg hover:scale-105 transition-all shrink-0 flex items-center gap-2"
             >
-              <span>Join Free &amp; Start Today</span>
+              <span>Join Free & Start Today</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -668,17 +668,17 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           4. FREE SCROLLING VS BIZNETWORK (HIGH CONTRAST COMPARISON)
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-[#F7F9FC] border-y border-[#E4EAF2]">
+      <section className="py-14 sm:py-16 bg-[#F7F9FC] dark:bg-[#0B0F19] border-y border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] text-xs font-bold uppercase tracking-wider">
               The Reality Check
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               Stop Scrolling For Free. Get Paid Instead.
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               The average smartphone user spends 2 hours and 27 minutes daily on social media generating zero income. Here is the difference:
             </p>
           </div>
@@ -686,13 +686,13 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             
             {/* Left: The Old Way (Free Scrolling) */}
-            <div className="bg-white rounded-3xl p-8 border border-red-200/80 shadow-sm space-y-6 flex flex-col justify-between">
+            <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-8 border border-red-200/80 shadow-sm space-y-6 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-extrabold uppercase">
                   <span>❌ What Most People Do</span>
                 </div>
-                <h3 className="text-2xl font-black text-gray-900">Endless Free Scrolling</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">
+                <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100">Endless Free Scrolling</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                   You spend hours scrolling past algorithm ads, liking random posts, and viewing brand stories without receiving a single penny in return.
                 </p>
 
@@ -703,16 +703,16 @@ export const HomePage: React.FC = () => {
                     'Zero savings, zero earnings, zero side income',
                     'No transparent payout or rewards for your time',
                   ].map((pt, i) => (
-                    <div key={i} className="flex items-start gap-2.5 text-xs text-gray-600 font-semibold">
-                      <span className="text-red-500 font-bold shrink-0 mt-0.5">&times;</span>
+                    <div key={i} className="flex items-start gap-2.5 text-xs text-gray-600 dark:text-gray-400 font-semibold">
+                      <span className="text-red-500 font-bold shrink-0 mt-0.5">×</span>
                       <span>{pt}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-100 text-center text-xs font-bold text-red-600 bg-red-50/50 p-3 rounded-xl">
-                Result: $0.00 Earned &bull; Wasted Hours
+              <div className="pt-4 border-t border-gray-100 dark:border-white/10 text-center text-xs font-bold text-red-600 bg-red-50/50 p-3 rounded-xl">
+                Result: $0.00 Earned • Wasted Hours
               </div>
             </div>
 
@@ -757,29 +757,29 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           5. INTERACTIVE INCOME CALCULATOR
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
               Real Expectations
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
-              Calculate Your Daily &amp; Monthly Potential
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
+              Calculate Your Daily & Monthly Potential
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Realistic earnings based on active task completion and current marketplace reward averages.
             </p>
           </div>
 
-          <div className="bg-[#F7F9FC] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] shadow-sm space-y-8">
+          <div className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-8">
             
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-black text-gray-800">
+                <label className="text-xs font-black text-gray-800 dark:text-gray-200">
                   How many hours per day can you spend on tasks?
                 </label>
-                <span className="text-sm font-black text-[#168BFF] px-3 py-1 bg-white border border-gray-200 rounded-xl shadow-xs">
+                <span className="text-sm font-black text-[#168BFF] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
                   {calculatorHours} {calculatorHours === 1 ? 'Hour' : 'Hours'} / Day
                 </span>
               </div>
@@ -794,7 +794,7 @@ export const HomePage: React.FC = () => {
                 className="w-full accent-[#168BFF] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
               />
               
-              <div className="flex justify-between text-[11px] text-gray-400 font-bold">
+              <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
                 <span>Casual (30 mins)</span>
                 <span>Active (2 hours)</span>
                 <span>Power Earner (4 hours)</span>
@@ -804,25 +804,25 @@ export const HomePage: React.FC = () => {
             {/* Results Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 rounded-2xl bg-[#07182F] text-white">
               <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider block">Estimated Weekly Payout</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">Estimated Weekly Payout</span>
                 <div className="text-3xl sm:text-4xl font-black text-[#20C4E8] mt-1">
                   ${(parseFloat(calculatedMonthly) / 4).toFixed(0)} USD
                 </div>
-                <span className="text-[11px] text-gray-400 mt-1 block">Paid directly to PayPal / Wise</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">Paid directly to PayPal / Wise</span>
               </div>
 
               <div className="sm:border-l sm:border-white/10 sm:pl-6">
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider block">Estimated 30-Day Potential</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">Estimated 30-Day Potential</span>
                 <div className="text-3xl sm:text-4xl font-black text-[#16B364] mt-1">
                   ${calculatedMonthly} USD
                 </div>
-                <span className="text-[11px] text-gray-400 mt-1 block">Based on $6.50/hr average yield</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">Based on $6.50/hr average yield</span>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-              <span className="text-xs text-gray-500">
-                &bull; Cashout starts from $50.00 threshold. Zero platform deduction for contributors.
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                • Cashout starts from $50.00 threshold. Zero platform deduction for contributors.
               </span>
               <Link
                 to="/contributor/register"
@@ -847,7 +847,7 @@ export const HomePage: React.FC = () => {
             
             <div className="lg:col-span-8 space-y-4">
               <span className="px-3.5 py-1.5 rounded-full bg-white/10 text-[#20C4E8] text-xs font-bold uppercase tracking-wider border border-white/15">
-                For Brands &amp; Digital Marketers
+                For Brands & Digital Marketers
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight text-white">
                 Need 10,000+ Real Humans Behind Your Campaign?
@@ -881,7 +881,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             <div className="lg:col-span-4 bg-white/5 rounded-3xl p-6 border border-white/10 backdrop-blur-md space-y-3">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Enterprise Campaign Stats</span>
+              <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Enterprise Campaign Stats</span>
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1.5 border-b border-white/10">
                   <span className="text-gray-300">Audience Authenticity</span>
@@ -909,17 +909,17 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           7. TRUST & FREQUENTLY ASKED QUESTIONS
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
               Transparency First
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               Frequently Asked Questions
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
               Clear answers about earning, proof verification, and getting paid.
             </p>
           </div>
@@ -930,22 +930,22 @@ export const HomePage: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="bg-[#F7F9FC] rounded-2xl border border-[#E4EAF2] overflow-hidden transition-all"
+                  className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-2xl border border-[#E4EAF2] dark:border-white/10 overflow-hidden transition-all"
                 >
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-gray-900 hover:text-[#168BFF] transition-colors"
+                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-gray-900 dark:text-gray-100 hover:text-[#168BFF] transition-colors"
                   >
                     <span className="flex items-center gap-2.5">
                       <HelpCircle className="w-4 h-4 text-[#168BFF] shrink-0" />
                       <span>{faq.q}</span>
                     </span>
-                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180 text-[#168BFF]' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${isOpen ? 'rotate-180 text-[#168BFF]' : ''}`} />
                   </button>
 
                   {isOpen && (
-                    <div className="px-5 pb-6 sm:px-6 sm:pb-6 text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-3">
+                    <div className="px-5 pb-6 sm:px-6 sm:pb-6 text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-white/10 pt-3">
                       {faq.a}
                     </div>
                   )}

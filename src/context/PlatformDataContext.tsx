@@ -1640,7 +1640,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
                   : status === 'In Progress'
                   ? 'bg-blue-50 text-[#168BFF] border-blue-200'
                   : status === 'Closed'
-                  ? 'bg-gray-100 text-gray-700 border-gray-200'
+                  ? 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-white/10'
                   : 'bg-amber-50 text-amber-700 border-amber-200',
             }
           : t

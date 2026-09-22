@@ -86,8 +86,8 @@ export const ModeratorLoginPage: React.FC = () => {
       ]}
     >
       <div className="mb-7">
-        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900">Moderator sign in</h2>
-        <p className="mt-1.5 text-base text-slate-500">Internal operations access — all sign-in attempts are logged</p>
+        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Moderator sign in</h2>
+        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Internal operations access — all sign-in attempts are logged</p>
       </div>
 
       {error && (
@@ -143,7 +143,7 @@ export const ModeratorLoginPage: React.FC = () => {
 
       <div className="mt-6 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">or</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 

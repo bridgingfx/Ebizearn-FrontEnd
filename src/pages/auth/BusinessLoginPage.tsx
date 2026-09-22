@@ -86,8 +86,8 @@ export const BusinessLoginPage: React.FC = () => {
       ]}
     >
       <div className="mb-7">
-        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900">Business sign in</h2>
-        <p className="mt-1.5 text-base text-slate-500">Access your campaign command center</p>
+        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Business sign in</h2>
+        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Access your campaign command center</p>
       </div>
 
       {error && (
@@ -139,7 +139,7 @@ export const BusinessLoginPage: React.FC = () => {
 
       <div className="mt-6 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">or</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 
@@ -147,7 +147,7 @@ export const BusinessLoginPage: React.FC = () => {
         <SocialLoginButtons portal="business" mode="login" />
       </div>
 
-      <p className="mt-7 text-center text-base text-slate-500">
+      <p className="mt-7 text-center text-base text-slate-500 dark:text-gray-400">
         New to eBiz Earn for business?{' '}
         <Link to="/business/register" className="text-[#168BFF] font-bold hover:underline">
           Create a business account

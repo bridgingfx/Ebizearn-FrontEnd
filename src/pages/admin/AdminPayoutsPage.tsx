@@ -111,7 +111,7 @@ export const AdminPayoutsPage: React.FC = () => {
       case 'failed':
         return 'bg-red-50 text-red-600';
       case 'cancelled':
-        return 'bg-gray-100 text-gray-500';
+        return 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400';
       default:
         return 'bg-amber-100 text-amber-700';
     }
@@ -120,9 +120,9 @@ export const AdminPayoutsPage: React.FC = () => {
   return (
     <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-white/10">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#101828]">Withdrawals</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">Withdrawals</h2>
           <p className="text-xs sm:text-sm text-[#667085] mt-0.5">
             Review and action contributor withdrawal requests. Amounts are debited by the server ledger —
             this page only approves or rejects.
@@ -150,7 +150,7 @@ export const AdminPayoutsPage: React.FC = () => {
               type="button"
               onClick={() => setFilterStatus(s)}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold capitalize transition-colors ${
-                filterStatus === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                filterStatus === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
               }`}
             >
               {s}
@@ -158,12 +158,12 @@ export const AdminPayoutsPage: React.FC = () => {
           ))}
         </div>
         <div className="relative sm:ml-auto sm:w-72">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by user or method…"
-            className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
           />
         </div>
       </div>
@@ -188,7 +188,7 @@ export const AdminPayoutsPage: React.FC = () => {
       )}
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading payout queue…
         </div>
       )}
@@ -212,7 +212,7 @@ export const AdminPayoutsPage: React.FC = () => {
             return (
               <div
                 key={p.id}
-                className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col lg:flex-row lg:items-center gap-4"
+                className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-5 flex flex-col lg:flex-row lg:items-center gap-4"
               >
                 <div className="p-2.5 rounded-xl bg-violet-50 text-violet-600 w-fit">
                   <Wallet className="w-5 h-5" />
@@ -224,22 +224,22 @@ export const AdminPayoutsPage: React.FC = () => {
                     >
                       {p.status.replace(/_/g, ' ')}
                     </span>
-                    <span className="text-[11px] text-gray-400">{new Date(p.created_at).toLocaleString()}</span>
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500">{new Date(p.created_at).toLocaleString()}</span>
                     {p.user?.profile?.kyc_status === 'verified' && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
                         <ShieldCheck className="w-3 h-3" /> KYC verified
                       </span>
                     )}
                   </div>
-                  <p className="text-sm font-extrabold text-gray-900">
+                  <p className="text-sm font-extrabold text-gray-900 dark:text-gray-100">
                     {p.user?.name || 'Contributor'} · {p.currency || 'USD'} {fmt(p.amount_cents)}
                   </p>
-                  <p className="text-[11px] text-gray-500 mt-1">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
                     {p.payout_method || 'method not specified'}
                     {p.payout_details_json && Object.keys(p.payout_details_json).length > 0 && (
                       <> · {Object.entries(p.payout_details_json).map(([k, v]) => `${k}: ${v}`).join(' / ')}</>
                     )}
-                    <span className="text-gray-400"> · fee {fmt(p.fee_cents)}</span>
+                    <span className="text-gray-400 dark:text-gray-500"> · fee {fmt(p.fee_cents)}</span>
                   </p>
                 </div>
 
@@ -274,23 +274,23 @@ export const AdminPayoutsPage: React.FC = () => {
       {rejectingId != null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setRejectingId(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
-            <h3 className="text-base font-extrabold text-gray-900">Reject withdrawal</h3>
+          <div className="relative bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100">Reject withdrawal</h3>
             <div>
-              <label className="text-xs font-bold text-gray-700 block mb-1.5">Reason (shown to the contributor)</label>
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Reason (shown to the contributor)</label>
               <textarea
                 rows={3}
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="e.g. Payout details do not match the verified identity."
-                className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 resize-none"
+                className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500 resize-none"
               />
             </div>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setRejectingId(null)}
-                className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
               >
                 Cancel
               </button>
@@ -307,7 +307,7 @@ export const AdminPayoutsPage: React.FC = () => {
         </div>
       )}
 
-      <div className="flex items-start gap-2 text-[11px] text-gray-400">
+      <div className="flex items-start gap-2 text-[11px] text-gray-400 dark:text-gray-500">
         <Clock className="w-3.5 h-3.5 mt-0.5 shrink-0" />
         <span>
           Approving sends the request to the payout service; rejecting returns the amount to the contributor's

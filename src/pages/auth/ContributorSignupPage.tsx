@@ -106,14 +106,14 @@ export const ContributorSignupPage: React.FC = () => {
       <div className="mb-6 p-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex items-start gap-3">
         <CheckCircle2 className="w-6 h-6 text-[#16B364] shrink-0 mt-0.5" />
         <div>
-          <p className="text-base font-extrabold text-emerald-900">100% free to join &amp; earn</p>
+          <p className="text-base font-extrabold text-emerald-900">100% free to join & earn</p>
           <p className="text-sm text-emerald-700 leading-snug">No registration fees, no upgrade plans, no deposit. Ever.</p>
         </div>
       </div>
 
       <div className="mb-6">
-        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900">Create your free account</h2>
-        <p className="mt-1.5 text-base text-slate-500">Start earning from verified digital tasks today</p>
+        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Create your free account</h2>
+        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Start earning from verified digital tasks today</p>
       </div>
 
       {error && (
@@ -181,7 +181,7 @@ export const ContributorSignupPage: React.FC = () => {
 
           <AuthField id="referral" label="Referral code" hint="Optional">
             <div className="relative">
-              <Gift className="w-4 h-4 text-slate-400 absolute left-4 top-[18px]" />
+              <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-4 top-[18px]" />
               <input
                 id="referral"
                 type="text"
@@ -200,14 +200,14 @@ export const ContributorSignupPage: React.FC = () => {
           <ArrowRight className="w-5 h-5" />
         </AuthSubmitButton>
 
-        <p className="text-xs text-slate-400 leading-relaxed text-center">
+        <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed text-center">
           By creating an account you agree to our Terms of Service and Privacy Policy.
         </p>
       </form>
 
       <div className="mt-6 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">or</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 
@@ -215,7 +215,7 @@ export const ContributorSignupPage: React.FC = () => {
         <SocialLoginButtons portal="contributor" mode="register" />
       </div>
 
-      <p className="mt-7 text-center text-base text-slate-500">
+      <p className="mt-7 text-center text-base text-slate-500 dark:text-gray-400">
         Already have an account?{' '}
         <Link to="/login" className="text-[#168BFF] font-bold hover:underline">
           Sign in

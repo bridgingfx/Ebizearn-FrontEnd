@@ -27,6 +27,12 @@ interface AuthSplitLayoutProps {
   bullets: AuthBullet[];
   /** Accent color used for bullets / highlights on the image side. */
   accentClass?: string;
+  /**
+   * Artwork treatment: 'default' is the standard photographic panel;
+   * 'midnight' is a deeper, moodier dark treatment with a gold glow —
+   * used to visually distinguish the business signup portal.
+   */
+  artworkTheme?: 'default' | 'midnight';
   children: React.ReactNode;
 }
 
@@ -43,20 +49,33 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
   subtext,
   bullets,
   accentClass = 'text-[#20C4E8]',
+  artworkTheme = 'default',
   children,
 }) => {
+  const midnight = artworkTheme === 'midnight';
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:grid lg:grid-cols-[1.05fr_1fr]">
+    <div className="min-h-screen bg-white flex flex-col lg:grid lg:grid-cols-[1.05fr_1fr] dark:bg-[#0B0F19]">
       {/* ── Artwork side ─────────────────────────────────────────── */}
       <div className="relative overflow-hidden min-h-[300px] sm:min-h-[340px] lg:min-h-screen">
         <img
           src={image}
           alt={imageAlt}
-          className="absolute inset-0 w-full h-full object-cover"
+          className={`absolute inset-0 w-full h-full object-cover ${midnight ? 'brightness-[0.62] contrast-[1.08] saturate-[0.85]' : ''}`}
           draggable={false}
         />
         {/* Readability gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#07182F]/95 via-[#07182F]/45 to-[#07182F]/10 lg:bg-gradient-to-t lg:from-[#07182F]/95 lg:via-[#07182F]/40 lg:to-transparent" />
+        {midnight ? (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#040F1E] via-[#040F1E]/85 to-[#040F1E]/35" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/12 via-transparent to-[#7257FF]/15" />
+            <div
+              aria-hidden="true"
+              className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-[#D4AF37]/15 blur-3xl pointer-events-none"
+            />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-t from-[#07182F]/95 via-[#07182F]/45 to-[#07182F]/10 lg:bg-gradient-to-t lg:from-[#07182F]/95 lg:via-[#07182F]/40 lg:to-transparent" />
+        )}
 
         <div className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-10 lg:p-12 min-h-[inherit]">
           <Link to="/" aria-label="eBizEarn home" className="inline-flex w-fit">
@@ -74,7 +93,14 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
               {bullets.map((b) => {
                 const Icon = b.icon;
                 return (
-                  <li key={b.title} className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-4">
+                  <li
+                    key={b.title}
+                    className={`rounded-2xl backdrop-blur-md border p-4 ${
+                      midnight
+                        ? 'bg-black/45 border-[#D4AF37]/25 shadow-[0_8px_28px_rgba(0,0,0,0.45)]'
+                        : 'bg-white/10 border-white/15'
+                    }`}
+                  >
                     <Icon className={`w-5 h-5 ${accentClass}`} />
                     <p className="mt-2 text-sm font-extrabold text-white">{b.title}</p>
                     <p className="mt-1 text-xs text-slate-300 leading-relaxed">{b.text}</p>
@@ -87,7 +113,7 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
       </div>
 
       {/* ── Form side ────────────────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center bg-white px-5 sm:px-10 py-10 lg:py-14">
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-[#0B0F19] px-5 sm:px-10 py-10 lg:py-14 transition-colors">
         <div className="w-full max-w-[430px]">{children}</div>
       </div>
     </div>
@@ -168,13 +194,13 @@ interface AuthFieldProps {
 export const AuthField: React.FC<AuthFieldProps> = ({ id, label, error, children, hint, action }) => (
   <div>
     <div className="flex items-center justify-between mb-2">
-      <label htmlFor={id} className="block text-sm font-bold text-slate-800">
+      <label htmlFor={id} className="block text-sm font-bold text-slate-800 dark:text-gray-200">
         {label}
       </label>
       {action}
     </div>
     {children}
-    {hint && !error && <p className="mt-1.5 text-xs text-slate-500">{hint}</p>}
+    {hint && !error && <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">{hint}</p>}
     {error && (
       <p className="mt-1.5 text-xs font-semibold text-red-600 flex items-center gap-1" role="alert">
         <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {error}
@@ -184,7 +210,7 @@ export const AuthField: React.FC<AuthFieldProps> = ({ id, label, error, children
 );
 
 export const authInputClass =
-  'w-full min-h-[52px] px-4 text-base text-slate-900 bg-white border-2 border-slate-200 rounded-2xl placeholder:text-slate-400 placeholder:text-base focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all';
+  'w-full min-h-[52px] px-4 text-base text-slate-900 dark:text-gray-100 bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 placeholder:text-base focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all';
 
 export const AuthError: React.FC<{ message: string }> = ({ message }) => (
   <div

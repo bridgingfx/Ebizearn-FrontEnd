@@ -53,7 +53,7 @@ export const AdminOverviewPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-slate-500">
+      <div className="flex items-center justify-center py-16 text-slate-500 dark:text-gray-400">
         <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading overview…
       </div>
     );
@@ -146,11 +146,11 @@ export const AdminOverviewPage: React.FC = () => {
                   <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${a.gradient} shadow-lg ${a.shadow} flex items-center justify-center`}>
                     <Icon className="w-6 h-6 text-white" />
                   </div>
-                  <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="w-5 h-5 text-slate-500 dark:text-gray-400 group-hover:text-white group-hover:translate-x-1 transition-all" />
                 </div>
                 <p className="mt-4 text-3xl font-black tracking-tight">{a.count}</p>
                 <p className="text-sm font-bold text-white mt-1">{a.label}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{a.desc}</p>
+                <p className="text-xs text-slate-400 dark:text-gray-500 mt-0.5">{a.desc}</p>
               </Link>
             );
           })}
@@ -159,7 +159,7 @@ export const AdminOverviewPage: React.FC = () => {
 
       {/* Real queues preview */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6">
+        <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6">
           <SectionHeader title="Latest verification items" actionLabel="Open queue" actionTo="/admin/verification" />
           {verificationQueue.length === 0 ? (
             <EmptyState icon={FileCheck} title="Queue is clear" description="No submissions waiting for review right now." />
@@ -168,8 +168,8 @@ export const AdminOverviewPage: React.FC = () => {
               {(verificationQueue as { id: number; task?: { title?: string }; user?: { name?: string }; created_at: string }[]).map((s) => (
                 <div key={s.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] border border-slate-100 rounded-2xl">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">{s.task?.title || `Submission #${s.id}`}</p>
-                    <p className="text-xs text-slate-400">{s.user?.name || ''} · {new Date(s.created_at).toLocaleDateString()}</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">{s.task?.title || `Submission #${s.id}`}</p>
+                    <p className="text-xs text-slate-400 dark:text-gray-500">{s.user?.name || ''} · {new Date(s.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
               ))}
@@ -177,7 +177,7 @@ export const AdminOverviewPage: React.FC = () => {
           )}
         </div>
 
-        <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6">
+        <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6">
           <SectionHeader title="Latest fraud alerts" actionLabel="Open alerts" actionTo="/admin/fraud" />
           {fraudAlerts.length === 0 ? (
             <EmptyState icon={ShieldCheck} title="No open alerts" description="The fraud service has not raised any alerts." />
@@ -186,8 +186,8 @@ export const AdminOverviewPage: React.FC = () => {
               {(fraudAlerts as { id: number; risk_level?: string; reason?: string; created_at?: string }[]).map((a) => (
                 <div key={a.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] border border-slate-100 rounded-2xl">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">{a.reason || `Alert #${a.id}`}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">{a.reason || `Alert #${a.id}`}</p>
+                    <p className="text-xs text-slate-400 dark:text-gray-500">
                       {a.risk_level ? `Risk: ${a.risk_level}` : ''} {a.created_at ? `· ${new Date(a.created_at).toLocaleDateString()}` : ''}
                     </p>
                   </div>

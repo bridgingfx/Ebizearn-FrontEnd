@@ -58,8 +58,8 @@ export const AdminBusinessesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Businesses</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Businesses</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Business accounts on the platform — {users.length} total. Campaign management stays with each
           business's own portal; this view is for account oversight only.
         </p>
@@ -72,7 +72,7 @@ export const AdminBusinessesPage: React.FC = () => {
       )}
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading business accounts…
         </div>
       )}
@@ -101,7 +101,7 @@ export const AdminBusinessesPage: React.FC = () => {
       {!loading && !error && users.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {users.map((u) => (
-            <div key={u.id} className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5">
+            <div key={u.id} className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-5">
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
                   <Building2 className="w-5 h-5" />
@@ -114,9 +114,9 @@ export const AdminBusinessesPage: React.FC = () => {
                   {u.status}
                 </span>
               </div>
-              <h3 className="text-sm font-extrabold text-gray-900">{u.business?.company_name || u.name}</h3>
-              <p className="text-[11px] text-gray-500 mb-1">{u.email}</p>
-              <p className="text-[11px] text-gray-400 mb-4">
+              <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">{u.business?.company_name || u.name}</h3>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1">{u.email}</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-4">
                 {u.business?.industry ? `${u.business.industry} · ` : ''}
                 joined {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
               </p>

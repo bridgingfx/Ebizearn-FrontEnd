@@ -82,12 +82,12 @@ export const AdminDemoRequestsPage: React.FC = () => {
             <Card key={r.id} className="p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="space-y-1.5 min-w-0">
-                  <div className="flex items-center gap-2 text-sm font-bold text-[#101828]">
-                    <User className="w-4 h-4 text-gray-400" />
+                  <div className="flex items-center gap-2 text-sm font-bold text-[#101828] dark:text-gray-100">
+                    <User className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                     <span>{r.name}</span>
                     <StatusBadge status={r.status} />
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
                     <span className="inline-flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5" />
                       <a href={`mailto:${r.email}`} className="text-[#168BFF] font-semibold hover:underline">
@@ -105,7 +105,7 @@ export const AdminDemoRequestsPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <p className="mt-3 text-xs text-gray-600 leading-relaxed whitespace-pre-wrap border-t border-gray-100 pt-3">
+              <p className="mt-3 text-xs text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-wrap border-t border-gray-100 dark:border-white/10 pt-3">
                 {r.message}
               </p>
             </Card>

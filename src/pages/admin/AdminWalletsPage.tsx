@@ -72,8 +72,8 @@ export const AdminWalletsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Wallets</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Wallets</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Balances served live from user accounts. A dedicated wallets API is pending — until then this is the
           honest source of truth.
         </p>
@@ -81,28 +81,28 @@ export const AdminWalletsPage: React.FC = () => {
 
       {/* Aggregate — derived from real balances only */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total available</p>
-          <p className="text-xl font-extrabold text-gray-900">{fmt(totals.available)}</p>
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-xs">
+          <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total available</p>
+          <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{fmt(totals.available)}</p>
         </div>
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Total pending</p>
-          <p className="text-xl font-extrabold text-gray-900">{fmt(totals.pending)}</p>
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-xs">
+          <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total pending</p>
+          <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{fmt(totals.pending)}</p>
         </div>
       </div>
 
       <div className="relative sm:w-72">
-        <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or email…"
-          className="w-full pl-9 pr-3 py-2.5 bg-white border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+          className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
         />
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading wallets…
         </div>
       )}
@@ -133,11 +133,11 @@ export const AdminWalletsPage: React.FC = () => {
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[680px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                   <th className="py-3 px-4 font-bold">Account</th>
                   <th className="py-3 px-4 font-bold">Available</th>
                   <th className="py-3 px-4 font-bold">Pending</th>
@@ -149,16 +149,16 @@ export const AdminWalletsPage: React.FC = () => {
                 {filtered.map((w) => (
                   <tr key={w.user.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
                     <td className="py-3 px-4">
-                      <p className="font-bold text-gray-900">{w.user.name}</p>
-                      <p className="text-[11px] text-gray-400">{w.user.email}</p>
+                      <p className="font-bold text-gray-900 dark:text-gray-100">{w.user.name}</p>
+                      <p className="text-[11px] text-gray-400 dark:text-gray-500">{w.user.email}</p>
                     </td>
-                    <td className="py-3 px-4 font-extrabold text-gray-900">
+                    <td className="py-3 px-4 font-extrabold text-gray-900 dark:text-gray-100">
                       {w.currency} {fmt(w.available)}
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-600">
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">
                       {w.currency} {fmt(w.pending)}
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-600">
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">
                       {w.currency} {fmt(w.lifetime)}
                     </td>
                     <td className="py-3 px-4 text-right">

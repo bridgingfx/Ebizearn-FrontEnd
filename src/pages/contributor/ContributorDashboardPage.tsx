@@ -81,7 +81,7 @@ export const ContributorDashboardPage: React.FC = () => {
           </div>
           <Link
             to="/app/tasks"
-            className="shrink-0 inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-white text-[#07182F] font-extrabold text-base shadow-lg hover:bg-slate-100 transition-all"
+            className="shrink-0 inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-white dark:bg-[#0C1322] text-[#07182F] font-extrabold text-base shadow-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
           >
             <Compass className="w-5 h-5 text-[#168BFF]" />
             Find tasks
@@ -93,10 +93,10 @@ export const ContributorDashboardPage: React.FC = () => {
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-[1.5rem] border border-[#E7ECF3] p-6 animate-pulse">
-              <div className="w-12 h-12 bg-slate-100 rounded-2xl mb-4" />
-              <div className="h-3 bg-slate-100 rounded w-1/2 mb-2" />
-              <div className="h-7 bg-slate-100 rounded w-2/3" />
+            <div key={i} className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 p-6 animate-pulse">
+              <div className="w-12 h-12 bg-slate-100 dark:bg-white/10 rounded-2xl mb-4" />
+              <div className="h-3 bg-slate-100 dark:bg-white/10 rounded w-1/2 mb-2" />
+              <div className="h-7 bg-slate-100 dark:bg-white/10 rounded w-2/3" />
             </div>
           ))}
         </div>
@@ -157,7 +157,7 @@ export const ContributorDashboardPage: React.FC = () => {
         {loading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-[1.5rem] border border-[#E7ECF3] p-6 animate-pulse h-64" />
+              <div key={i} className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 p-6 animate-pulse h-64" />
             ))}
           </div>
         ) : recommended.length === 0 ? (

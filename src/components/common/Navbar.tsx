@@ -4,6 +4,7 @@ import { Menu, X, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { EBizLogo } from './EBizLogo';
 import { RegionSelector } from './RegionSelector';
+import { ThemeToggle } from './ThemeToggle';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,7 +63,8 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* Right: Actions */}
-        <div className="hidden lg:flex items-center gap-5">
+        <div className="hidden lg:flex items-center gap-4">
+          <ThemeToggle tone="onDark" />
           {/* Region & currency selector */}
           <RegionSelector variant="dark" />
 
@@ -93,15 +95,18 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden text-gray-300 hover:text-white p-2"
-          aria-label="Toggle Menu"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        {/* Mobile actions */}
+        <div className="lg:hidden flex items-center gap-1">
+          <ThemeToggle tone="onDark" />
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="text-gray-300 hover:text-white p-2"
+            aria-label="Toggle Menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer */}

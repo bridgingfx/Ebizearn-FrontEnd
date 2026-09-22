@@ -101,7 +101,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-gray-500">
+      <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
         <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading campaign…
       </div>
     );
@@ -138,17 +138,17 @@ export const BusinessCampaignDetailPage: React.FC = () => {
       </Link>
 
       {/* Header */}
-      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-2">
             <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">
               {status}
             </span>
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">{campaign.title}</h1>
-          <p className="text-sm text-gray-500 mt-1 max-w-2xl">{campaign.description}</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">{campaign.title}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-2xl">{campaign.description}</p>
           {campaign.instructions_markdown && (
-            <details className="mt-3 text-xs text-gray-600">
+            <details className="mt-3 text-xs text-gray-600 dark:text-gray-400">
               <summary className="font-bold cursor-pointer text-[#168BFF]">Contributor instructions</summary>
               <p className="mt-2 whitespace-pre-wrap leading-relaxed">{campaign.instructions_markdown}</p>
             </details>
@@ -187,25 +187,25 @@ export const BusinessCampaignDetailPage: React.FC = () => {
           { label: 'Total budget', value: money(campaign.total_budget_cents, 'USD') },
           { label: 'Spent', value: money(spent, 'USD') },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-4">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{s.label}</p>
-            <p className="text-xl font-extrabold text-gray-900 mt-1">{s.value}</p>
+          <div key={s.label} className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-4">
+            <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">{s.label}</p>
+            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100 mt-1">{s.value}</p>
           </div>
         ))}
       </div>
 
       {/* Submissions */}
-      <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6">
+      <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
+          <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <CheckSquare className="w-4 h-4 text-emerald-600" /> Submissions ({submissions.length})
-            <span className="text-[11px] font-medium text-gray-400">· {verifiedCount} verified</span>
+            <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500">· {verifiedCount} verified</span>
           </h3>
           {submissions.length > 0 && (
             <button
               type="button"
               onClick={handleExportCsv}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-700 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-xs font-bold text-gray-700 dark:text-gray-300 transition-colors"
             >
               <Download className="w-3.5 h-3.5" /> Export CSV
             </button>
@@ -222,7 +222,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                   <th className="py-2 pr-4 font-bold">Contributor</th>
                   <th className="py-2 pr-4 font-bold">Task</th>
                   <th className="py-2 pr-4 font-bold">Status</th>
@@ -232,14 +232,14 @@ export const BusinessCampaignDetailPage: React.FC = () => {
               <tbody>
                 {submissions.map((s) => (
                   <tr key={s.id} className="border-b border-gray-50 last:border-0">
-                    <td className="py-3 pr-4 font-bold text-gray-900">{s.user?.name || '—'}</td>
-                    <td className="py-3 pr-4 text-gray-600">{s.task?.title || `Task #${s.task_id}`}</td>
+                    <td className="py-3 pr-4 font-bold text-gray-900 dark:text-gray-100">{s.user?.name || '—'}</td>
+                    <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">{s.task?.title || `Task #${s.task_id}`}</td>
                     <td className="py-3 pr-4">
                       <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">
                         {String(s.status).replace(/_/g, ' ')}
                       </span>
                     </td>
-                    <td className="py-3 pr-4 text-gray-500 text-xs">{new Date(s.created_at).toLocaleString()}</td>
+                    <td className="py-3 pr-4 text-gray-500 dark:text-gray-400 text-xs">{new Date(s.created_at).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -249,18 +249,18 @@ export const BusinessCampaignDetailPage: React.FC = () => {
       </div>
 
       {campaign.tasks && campaign.tasks.length > 0 && (
-        <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6">
-          <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2 mb-4">
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6">
+          <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4">
             <Megaphone className="w-4 h-4 text-[#168BFF]" /> Tasks in this campaign
           </h3>
           <div className="space-y-2">
             {campaign.tasks.map((t: Task) => (
               <div
                 key={t.id}
-                className="flex items-center justify-between px-4 py-3 bg-[#F7F9FC] border border-[#E7ECF3] rounded-xl"
+                className="flex items-center justify-between px-4 py-3 bg-[#F7F9FC] dark:bg-[#0B0F19] border border-[#E7ECF3] dark:border-white/10 rounded-xl"
               >
-                <p className="text-xs font-bold text-gray-900">{t.title}</p>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+                <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{t.title}</p>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">
                   {String(t.status)}
                 </span>
               </div>

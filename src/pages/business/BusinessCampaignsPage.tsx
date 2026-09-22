@@ -107,13 +107,13 @@ export const BusinessCampaignsPage: React.FC = () => {
       case 'active':
         return 'bg-emerald-100 text-emerald-700';
       case 'draft':
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
       case 'paused':
         return 'bg-amber-100 text-amber-700';
       case 'completed':
         return 'bg-blue-100 text-blue-700';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
     }
   };
 
@@ -131,8 +131,8 @@ export const BusinessCampaignsPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Campaigns</h1>
-          <p className="text-sm text-gray-500 mt-1">Every campaign you have created, live from the server.</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Campaigns</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Every campaign you have created, live from the server.</p>
         </div>
         <Link
           to="/business/campaigns/create"
@@ -144,7 +144,7 @@ export const BusinessCampaignsPage: React.FC = () => {
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading campaigns…
         </div>
       )}
@@ -167,14 +167,14 @@ export const BusinessCampaignsPage: React.FC = () => {
           {/* KPI strip — derived from real campaigns only */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {kpiCards.map((c) => (
-              <div key={c.label} className="bg-white rounded-2xl p-4 border border-[#E7ECF3] shadow-xs">
+              <div key={c.label} className="bg-white dark:bg-[#0C1322] rounded-2xl p-4 border border-[#E7ECF3] dark:border-white/10 shadow-xs">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-xl ${c.bg}`}>
                     <c.icon className={`w-4 h-4 ${c.tone}`} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{c.label}</p>
-                    <p className="text-lg font-extrabold text-gray-900 truncate">{c.value}</p>
+                    <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">{c.label}</p>
+                    <p className="text-lg font-extrabold text-gray-900 dark:text-gray-100 truncate">{c.value}</p>
                   </div>
                 </div>
               </div>
@@ -182,7 +182,7 @@ export const BusinessCampaignsPage: React.FC = () => {
           </div>
 
           {/* Tabs + search */}
-          <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-4">
+          <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex gap-2 flex-wrap">
                 {tabs.map((t) => (
@@ -191,7 +191,7 @@ export const BusinessCampaignsPage: React.FC = () => {
                     type="button"
                     onClick={() => setTab(t.id)}
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
-                      tab === t.id ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      tab === t.id ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
                     }`}
                   >
                     {t.label} <span className="opacity-70">({t.count})</span>
@@ -199,12 +199,12 @@ export const BusinessCampaignsPage: React.FC = () => {
                 ))}
               </div>
               <div className="relative sm:ml-auto sm:w-72">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search campaigns…"
-                  className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+                  className="w-full pl-9 pr-3 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
                 />
               </div>
             </div>
@@ -238,7 +238,7 @@ export const BusinessCampaignsPage: React.FC = () => {
                 return (
                   <div
                     key={c.id}
-                    className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-5 hover:shadow-md transition-shadow"
+                    className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <span
@@ -252,30 +252,30 @@ export const BusinessCampaignsPage: React.FC = () => {
                           disabled={togglingId === c.id}
                           onClick={() => void handleToggle(c)}
                           title={status === 'active' ? 'Pause campaign' : 'Resume campaign'}
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-[#168BFF] hover:bg-blue-50 transition-colors disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 transition-colors disabled:opacity-50"
                         >
                           {status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                         </button>
                       )}
                     </div>
 
-                    <h3 className="text-sm font-extrabold text-gray-900 mb-1">{c.title}</h3>
-                    <p className="text-[11px] text-gray-500 line-clamp-2 mb-4">{c.description}</p>
+                    <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-1">{c.title}</h3>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{c.description}</p>
 
                     <div className="grid grid-cols-3 gap-2 text-center mb-4">
-                      <div className="bg-gray-50 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900">{money(c.reward_per_task_cents, 'USD')}</p>
-                        <p className="text-[9px] text-gray-400 font-bold uppercase">per task</p>
+                      <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100">{money(c.reward_per_task_cents, 'USD')}</p>
+                        <p className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">per task</p>
                       </div>
-                      <div className="bg-gray-50 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900">
+                      <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100">
                           {(c.completed_contributors_count ?? 0)}/{(c.target_contributors_count ?? 0)}
                         </p>
-                        <p className="text-[9px] text-gray-400 font-bold uppercase">done</p>
+                        <p className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">done</p>
                       </div>
-                      <div className="bg-gray-50 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900">{money(spentOf(c), 'USD')}</p>
-                        <p className="text-[9px] text-gray-400 font-bold uppercase">spent</p>
+                      <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100">{money(spentOf(c), 'USD')}</p>
+                        <p className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">spent</p>
                       </div>
                     </div>
 

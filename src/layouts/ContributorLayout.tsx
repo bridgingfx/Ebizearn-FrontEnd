@@ -17,6 +17,7 @@ import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { ConfirmModal } from '../components/common/ConfirmModal';
+import { ThemeToggle } from '../components/common/ThemeToggle';
 import { useUnreadNotifications } from '../pages/contributor/ContributorNotificationsPage';
 
 /**
@@ -51,7 +52,7 @@ export const ContributorLayout: React.FC = () => {
     tab.exact ? location.pathname === tab.path : location.pathname.startsWith(tab.path);
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] flex flex-col md:flex-row text-left font-sans">
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] flex flex-col md:flex-row text-left font-sans transition-colors">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-[#07182F] text-white sticky top-0 h-screen p-5 justify-between shadow-xl z-30 shrink-0">
         <div>
@@ -63,7 +64,7 @@ export const ContributorLayout: React.FC = () => {
             <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} className="ring-2 ring-[#168BFF]" />
             <div className="min-w-0">
               <p className="text-xs font-black truncate">{user?.name || 'Contributor'}</p>
-              <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">{user?.email}</p>
             </div>
           </div>
 
@@ -121,14 +122,17 @@ export const ContributorLayout: React.FC = () => {
           </nav>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setLogoutOpen(true)}
-          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-300 hover:bg-red-500/10 hover:text-red-300 transition-all w-full"
-        >
-          <LogOut className="w-4 h-4" />
-          Sign Out
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setLogoutOpen(true)}
+            className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-300 hover:bg-red-500/10 hover:text-red-300 transition-all"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
+          <ThemeToggle tone="onDark" />
+        </div>
       </aside>
 
       {/* Mobile top bar */}
@@ -137,6 +141,7 @@ export const ContributorLayout: React.FC = () => {
           <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
         </Link>
         <div className="flex items-center gap-2">
+          <ThemeToggle tone="onDark" />
           <div className="hidden sm:block">
             <RegionSelector variant="dark" />
           </div>
@@ -166,7 +171,7 @@ export const ContributorLayout: React.FC = () => {
       </main>
 
       {/* Mobile bottom tab bar */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-[#0C1322] border-t border-gray-200 dark:border-white/10 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
         <div className="grid grid-cols-7 px-1 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -176,7 +181,7 @@ export const ContributorLayout: React.FC = () => {
                 key={tab.path}
                 to={tab.path}
                 className={`flex flex-col items-center gap-0.5 py-1.5 rounded-xl transition-colors ${
-                  active ? 'text-[#168BFF]' : 'text-gray-400 hover:text-gray-600'
+                  active ? 'text-[#168BFF]' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
                 }`}
               >
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 2} />

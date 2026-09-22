@@ -75,10 +75,10 @@ export const ContributorSupportPage: React.FC = () => {
       {/* =========================================================================
           1. HEADER & ACTION
          ========================================================================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-white/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#101828]">
-            Contributor Helpdesk &amp; Support
+          <h1 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">
+            Contributor Helpdesk & Support
           </h1>
           <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
             Resolve task verification disputes, payout inquiries, and account questions.
@@ -99,35 +99,35 @@ export const ContributorSupportPage: React.FC = () => {
           2. SUMMARY STAT CARDS
          ========================================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs flex items-center gap-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#168BFF] flex items-center justify-center shrink-0">
             <MessageSquare className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs text-gray-500 font-medium block">Total Tickets</span>
-            <span className="text-2xl font-black text-gray-900 mt-0.5 block">{tickets.length}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block">Total Tickets</span>
+            <span className="text-2xl font-black text-gray-900 dark:text-gray-100 mt-0.5 block">{tickets.length}</span>
           </div>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs flex items-center gap-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
             <Clock className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs text-gray-500 font-medium block">In Progress / Open</span>
-            <span className="text-2xl font-black text-gray-900 mt-0.5 block">
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block">In Progress / Open</span>
+            <span className="text-2xl font-black text-gray-900 dark:text-gray-100 mt-0.5 block">
               {tickets.filter((t) => t.status !== 'Resolved').length}
             </span>
           </div>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E7ECF3] shadow-xs flex items-center gap-4">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#16B364] flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs text-gray-500 font-medium block">Average Resolution Time</span>
-            <span className="text-2xl font-black text-gray-900 mt-0.5 block">1.8 Hours</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block">Average Resolution Time</span>
+            <span className="text-2xl font-black text-gray-900 dark:text-gray-100 mt-0.5 block">1.8 Hours</span>
           </div>
         </div>
       </div>
@@ -135,16 +135,16 @@ export const ContributorSupportPage: React.FC = () => {
       {/* =========================================================================
           3. TICKETS TABLE & SEARCH
          ========================================================================= */}
-      <div className="bg-white rounded-3xl border border-[#E7ECF3] shadow-xs overflow-hidden">
-        <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs overflow-hidden">
+        <div className="p-5 border-b border-gray-100 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search your tickets by subject or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-medium text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]"
             />
           </div>
 
@@ -157,7 +157,7 @@ export const ContributorSupportPage: React.FC = () => {
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors ${
                   selectedCategory === filter
                     ? 'bg-[#07182F] text-white shadow-xs'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
                 }`}
               >
                 {filter}
@@ -169,7 +169,7 @@ export const ContributorSupportPage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+              <tr className="bg-gray-50/75 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 <th className="py-3.5 px-5">Ticket ID</th>
                 <th className="py-3.5 px-5">Subject</th>
                 <th className="py-3.5 px-5">Category</th>
@@ -178,22 +178,22 @@ export const ContributorSupportPage: React.FC = () => {
                 <th className="py-3.5 px-5 text-right">Updated</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-xs">
+            <tbody className="divide-y divide-gray-100 dark:divide-white/10 text-xs">
               {tickets.map((t) => (
                 <tr key={t.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="py-4 px-5 font-mono font-bold text-gray-900">{t.id}</td>
+                  <td className="py-4 px-5 font-mono font-bold text-gray-900 dark:text-gray-100">{t.id}</td>
                   <td className="py-4 px-5">
-                    <span className="font-bold text-gray-900 block">{t.subject}</span>
-                    <span className="text-[10px] text-gray-400">{t.repliesCount ?? 1} responses</span>
+                    <span className="font-bold text-gray-900 dark:text-gray-100 block">{t.subject}</span>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500">{t.repliesCount ?? 1} responses</span>
                   </td>
-                  <td className="py-4 px-5 text-gray-600 font-medium">{t.category}</td>
+                  <td className="py-4 px-5 text-gray-600 dark:text-gray-400 font-medium">{t.category}</td>
                   <td className="py-4 px-5">
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${t.statusColor}`}>
                       {t.status}
                     </span>
                   </td>
-                  <td className="py-4 px-5 font-semibold text-gray-700">{t.priority}</td>
-                  <td className="py-4 px-5 text-right text-gray-500 font-mono">{t.updatedAt || t.time || 'Just now'}</td>
+                  <td className="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300">{t.priority}</td>
+                  <td className="py-4 px-5 text-right text-gray-500 dark:text-gray-400 font-mono">{t.updatedAt || t.time || 'Just now'}</td>
                 </tr>
               ))}
             </tbody>
@@ -204,10 +204,10 @@ export const ContributorSupportPage: React.FC = () => {
       {/* =========================================================================
           4. FREQUENTLY ASKED QUESTIONS
          ========================================================================= */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] shadow-xs space-y-4">
+      <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] dark:border-white/10 shadow-xs space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <LifeBuoy className="w-5 h-5 text-[#168BFF]" />
-          <h2 className="text-base font-black text-gray-900">Instant Answers &amp; Knowledge Base</h2>
+          <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Instant Answers & Knowledge Base</h2>
         </div>
 
         <div className="space-y-2.5">
@@ -216,22 +216,22 @@ export const ContributorSupportPage: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-gray-200 overflow-hidden transition-colors"
+                className="rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden transition-colors"
               >
                 <button
                   type="button"
                   onClick={() => setActiveFaq(isOpen ? null : idx)}
-                  className="w-full p-4 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-gray-900 hover:bg-gray-50"
+                  className="w-full p-4 flex items-center justify-between text-left font-bold text-xs sm:text-sm text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-white/5"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
-                    className={`w-4 h-4 text-gray-400 transition-transform ${
+                    className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${
                       isOpen ? 'rotate-180 text-[#168BFF]' : ''
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="p-4 pt-0 text-xs text-gray-600 leading-relaxed bg-gray-50/50 border-t border-gray-100">
+                  <div className="p-4 pt-0 text-xs text-gray-600 dark:text-gray-400 leading-relaxed bg-gray-50/50 border-t border-gray-100 dark:border-white/10">
                     {faq.a}
                   </div>
                 )}
@@ -246,11 +246,11 @@ export const ContributorSupportPage: React.FC = () => {
          ========================================================================= */}
       {showNewTicketModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-100 relative space-y-5 animate-scale-up">
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-white/10 relative space-y-5 animate-scale-up">
             <button
               type="button"
               onClick={() => setShowNewTicketModal(false)}
-              className="absolute top-5 right-5 p-2 rounded-xl text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+              className="absolute top-5 right-5 p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -260,8 +260,8 @@ export const ContributorSupportPage: React.FC = () => {
                 <FileText className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-black text-gray-900">Open Support Ticket</h2>
-                <p className="text-xs text-gray-500">Dedicated assistance for verified contributors</p>
+                <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Open Support Ticket</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Dedicated assistance for verified contributors</p>
               </div>
             </div>
 
@@ -270,19 +270,19 @@ export const ContributorSupportPage: React.FC = () => {
                 <div className="w-12 h-12 rounded-full bg-emerald-100 text-[#16B364] flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-7 h-7" />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900">Ticket Submitted!</h3>
-                <p className="text-xs text-gray-500">Our support desk is reviewing your submission.</p>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Ticket Submitted!</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Our support desk is reviewing your submission.</p>
               </div>
             ) : (
               <form onSubmit={handleCreateTicket} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">Category</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Category</label>
                   <select
                     value={ticketCategory}
                     onChange={(e) => setTicketCategory(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs font-medium text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
+                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]"
                   >
-                    <option value="payout">Payout Inquiry &amp; Withdrawal Status</option>
+                    <option value="payout">Payout Inquiry & Withdrawal Status</option>
                     <option value="dispute">OCR Task Proof Verification Dispute</option>
                     <option value="social">Connected Social Account Issue</option>
                     <option value="bug">Platform Bug or Technical Error</option>
@@ -290,25 +290,25 @@ export const ContributorSupportPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">Subject</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Subject</label>
                   <input
                     type="text"
                     placeholder="E.g. Task #4928 proof verification rejected unfairly"
                     value={ticketSubject}
                     onChange={(e) => setTicketSubject(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs font-medium text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
+                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-700">Detailed Description</label>
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Detailed Description</label>
                   <textarea
                     rows={4}
                     placeholder="Explain what happened, include task IDs or transaction references..."
                     value={ticketDescription}
                     onChange={(e) => setTicketDescription(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs font-medium text-gray-900 focus:bg-white focus:outline-none focus:border-[#168BFF]"
+                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]"
                     required
                   />
                 </div>
@@ -317,7 +317,7 @@ export const ContributorSupportPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowNewTicketModal(false)}
-                    className="px-4 py-2 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50"
+                    className="px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"
                   >
                     Cancel
                   </button>

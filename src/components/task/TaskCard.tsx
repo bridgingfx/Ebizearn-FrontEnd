@@ -37,17 +37,17 @@ const platformLogos: Record<string, LogoComponent> = {
 /** Soft tinted tile behind each platform mark. */
 const platformTile: Record<string, string> = {
   Instagram: 'bg-pink-50',
-  TikTok: 'bg-slate-100',
+  TikTok: 'bg-slate-100 dark:bg-white/10',
   YouTube: 'bg-red-50',
   Facebook: 'bg-blue-50',
   Meta: 'bg-blue-50',
   LinkedIn: 'bg-sky-50',
-  'Google Reviews': 'bg-white border border-slate-200',
-  Google: 'bg-white border border-slate-200',
+  'Google Reviews': 'bg-white dark:bg-[#0C1322] border border-slate-200 dark:border-white/10',
+  Google: 'bg-white dark:bg-[#0C1322] border border-slate-200 dark:border-white/10',
   Trustpilot: 'bg-emerald-50',
   WhatsApp: 'bg-green-50',
-  X: 'bg-slate-100',
-  Twitter: 'bg-slate-100',
+  X: 'bg-slate-100 dark:bg-white/10',
+  Twitter: 'bg-slate-100 dark:bg-white/10',
 };
 
 export function humanizeRetention(hours: number): string {
@@ -111,28 +111,28 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
   const retention = humanizeRetention(task.retentionHours);
   const requirements = proofRequirementLabels(task.campaign?.proof_requirements_json);
   const slotsLeft = Math.max(0, task.slots_total - task.slots_taken);
-  const tile = platformTile[task.platform] || 'bg-slate-100';
+  const tile = platformTile[task.platform] || 'bg-slate-100 dark:bg-white/10';
 
   if (compact) {
     return (
       <Link
         to={detailUrl}
-        className="group flex items-center gap-3.5 bg-white rounded-2xl border border-[#E7ECF3] p-4 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.07] hover:border-[#168BFF]/50"
+        className="group flex items-center gap-3.5 bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 p-4 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.07] hover:border-[#168BFF]/50"
       >
         <div className={`w-12 h-12 rounded-2xl ${tile} flex items-center justify-center shrink-0`}>
           <PlatformMark platform={task.platform} className="w-6 h-6" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-extrabold text-slate-900 truncate group-hover:text-[#168BFF] transition-colors">
+          <p className="text-sm font-extrabold text-slate-900 dark:text-gray-100 truncate group-hover:text-[#168BFF] transition-colors">
             {task.title}
           </p>
-          <p className="text-xs text-slate-500 truncate mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-gray-400 truncate mt-0.5">
             {task.brandName} · {task.platform} · {task.categoryName}
           </p>
         </div>
         <div className="text-right shrink-0">
           <p className="text-base font-black text-[#16B364]">{reward}</p>
-          <p className="text-[11px] text-slate-400 font-medium">{task.estimated_minutes} min</p>
+          <p className="text-[11px] text-slate-400 dark:text-gray-500 font-medium">{task.estimated_minutes} min</p>
         </div>
         <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#168BFF] group-hover:translate-x-0.5 transition-all shrink-0" />
       </Link>
@@ -143,7 +143,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
     <Link
       to={detailUrl}
       aria-label={`${task.title} — ${reward} reward. View and complete this task.`}
-      className="group bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow overflow-hidden flex flex-col cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/[0.08] hover:border-[#168BFF]/50 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#168BFF]/30"
+      className="group bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow overflow-hidden flex flex-col cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/[0.08] hover:border-[#168BFF]/50 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#168BFF]/30"
     >
       <div className="p-5 sm:p-6 pb-4 flex-1">
         {/* Brand + platform header */}
@@ -152,8 +152,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
             <PlatformMark platform={task.platform} className="w-7 h-7" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-bold text-slate-500 truncate">{task.brandName}</p>
-            <p className="text-xs font-semibold text-slate-400 truncate mt-0.5">
+            <p className="text-xs font-bold text-slate-500 dark:text-gray-400 truncate">{task.brandName}</p>
+            <p className="text-xs font-semibold text-slate-400 dark:text-gray-500 truncate mt-0.5">
               {task.platform} · {task.categoryName}
             </p>
           </div>
@@ -165,35 +165,35 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
         </div>
 
         {/* Title */}
-        <h3 className="text-[1.05rem] font-extrabold text-slate-900 leading-snug group-hover:text-[#168BFF] transition-colors">
+        <h3 className="text-[1.05rem] font-extrabold text-slate-900 dark:text-gray-100 leading-snug group-hover:text-[#168BFF] transition-colors">
           {task.title}
         </h3>
 
         {/* Meta row */}
-        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-slate-500 font-medium">
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-slate-500 dark:text-gray-400 font-medium">
           <span className="inline-flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-slate-400" /> ~{task.estimated_minutes} min
+            <Clock className="w-4 h-4 text-slate-400 dark:text-gray-500" /> ~{task.estimated_minutes} min
           </span>
           {deadline && (
             <span className="inline-flex items-center gap-1.5">
-              <CalendarDays className="w-4 h-4 text-slate-400" /> Due {deadline}
+              <CalendarDays className="w-4 h-4 text-slate-400 dark:text-gray-500" /> Due {deadline}
             </span>
           )}
           <span className="inline-flex items-center gap-1.5 capitalize">
-            <Users className="w-4 h-4 text-slate-400" /> {task.difficulty}
+            <Users className="w-4 h-4 text-slate-400 dark:text-gray-500" /> {task.difficulty}
           </span>
         </div>
 
         {/* Instructions excerpt */}
         {task.postCopy && (
-          <p className="mt-3 text-sm text-slate-500 leading-relaxed line-clamp-2">{task.postCopy}</p>
+          <p className="mt-3 text-sm text-slate-500 dark:text-gray-400 leading-relaxed line-clamp-2">{task.postCopy}</p>
         )}
 
         {/* Proof requirements */}
         {requirements.length > 0 && (
           <ul className="mt-3 space-y-1.5">
             {requirements.slice(0, 2).map((req) => (
-              <li key={req} className="text-[13px] text-slate-600 flex items-start gap-2">
+              <li key={req} className="text-[13px] text-slate-600 dark:text-gray-400 flex items-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#168BFF] mt-[7px] shrink-0" />
                 <span className="capitalize">{req}</span>
               </li>
@@ -213,7 +213,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
       {/* Reward + big CTA footer */}
       <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-1">
         <div className="flex items-baseline justify-between mb-3">
-          <p className="text-[11px] font-black uppercase tracking-widest text-slate-400">Reward</p>
+          <p className="text-[11px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">Reward</p>
           <p className="text-2xl font-black text-[#16B364] tracking-tight">{reward}</p>
         </div>
         <span className="flex items-center justify-center gap-2 w-full min-h-[54px] rounded-2xl bg-gradient-to-r from-[#16B364] to-[#0EA968] text-white font-extrabold text-base shadow-lg shadow-emerald-500/25 group-hover:brightness-105 group-hover:shadow-xl transition-all">

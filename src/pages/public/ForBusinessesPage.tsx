@@ -103,29 +103,29 @@ export const ForBusinessesPage: React.FC = () => {
   const caseStudies = [
     {
       brand: 'Royal Crescent Hospitality',
-      industry: 'Luxury Hotels & Resorts &bull; Dubai, UAE',
+      industry: 'Luxury Hotels & Resorts • Dubai, UAE',
       goal: 'Trustpilot & Google Business Review Sprint',
-      stats: '4.9★ Average Rating &bull; 850 Verified Reviews in 48h',
+      stats: '4.9★ Average Rating • 850 Verified Reviews in 48h',
       quote: 'eBiz Network mobilized hundreds of genuine UAE travelers to review their authentic stays on Google and Trustpilot. Our organic local search bookings doubled in 3 weeks without paying exorbitant ad commissions.',
     },
     {
       brand: 'NovaFin GCC Banking',
-      industry: 'FinTech & Digital Neobank &bull; Abu Dhabi',
+      industry: 'FinTech & Digital Neobank • Abu Dhabi',
       goal: 'Pre-Release App Store Testing & KYC Flow UX',
-      stats: '1,200 Verified Installs &bull; 99.4% Approval Rate',
+      stats: '1,200 Verified Installs • 99.4% Approval Rate',
       quote: 'Before our national rollout, eBiz Network verified users tested our biometric onboarding flow and caught 18 critical device-specific edge cases within 24 hours.',
     },
     {
       brand: 'Al Noor Organic Skincare',
-      industry: 'E-Commerce & Luxury Wellness &bull; UAE & KSA',
+      industry: 'E-Commerce & Luxury Wellness • UAE & KSA',
       goal: 'Instagram Story Repost & TikTok Duet Surge',
-      stats: '2,500 Stories Shared &bull; 4.8x ROAS Achieved',
+      stats: '2,500 Stories Shared • 4.8x ROAS Achieved',
       quote: 'The reach was unprecedented. Rather than paying an agency 20,000 AED for 2 influencers, we mobilized 2,500 everyday beauty lovers across the UAE who generated millions of authentic impressions.',
     },
   ];
 
   return (
-    <div className="text-left font-sans min-h-screen bg-[#F7F9FC]">
+    <div className="text-left font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
       
       {/* =========================================================================
           1. BESPOKE CORPORATE PRESTIGE HERO BANNER
@@ -143,15 +143,15 @@ export const ForBusinessesPage: React.FC = () => {
               
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
                 <Building2 className="w-3.5 h-3.5" />
-                <span>Enterprise Brand Protection &amp; Social Distribution</span>
+                <span>Enterprise Brand Protection & Social Distribution</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#16B364]" />
-                <span className="text-white font-mono">UAE 🇦🇪 &bull; GCC &bull; Global</span>
+                <span className="text-white font-mono">UAE 🇦🇪 • GCC • Global</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
                 Institutional Reputation, <br />
                 <span className="bg-gradient-to-r from-[#20C4E8] via-[#168BFF] to-[#7357FF] bg-clip-text text-transparent">
-                  Verified Reviews &amp; Social Scale.
+                  Verified Reviews & Social Scale.
                 </span>
               </h1>
 
@@ -161,7 +161,7 @@ export const ForBusinessesPage: React.FC = () => {
 
               {/* Supported Platforms Strip */}
               <div className="pt-1 flex flex-wrap items-center gap-3">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Supported Networks:</span>
+                <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Supported Networks:</span>
                 <div className="flex items-center gap-2">
                   <div className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 flex items-center gap-1.5 text-xs font-bold" title="Trustpilot">
                     <TrustpilotLogo className="w-4 h-4" />
@@ -240,7 +240,7 @@ export const ForBusinessesPage: React.FC = () => {
 
                 {/* Simulated Campaign Card */}
                 <div className="bg-[#040F1E] rounded-2xl p-4 border border-white/10 space-y-3 font-mono text-xs">
-                  <div className="flex justify-between items-center text-gray-400 text-[10px]">
+                  <div className="flex justify-between items-center text-gray-400 dark:text-gray-500 text-[10px]">
                     <span>SPONSOR: ROYAL_CRESCENT_UAE</span>
                     <span className="text-[#20C4E8]">ESCROW: 🇦🇪 AED 12,750.00</span>
                   </div>
@@ -263,15 +263,15 @@ export const ForBusinessesPage: React.FC = () => {
 
                   <div className="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-center">
                     <div className="p-2 rounded-xl bg-white/5">
-                      <div className="text-[9px] text-gray-400 uppercase">Moderation</div>
+                      <div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Moderation</div>
                       <div className="text-xs font-bold text-emerald-400 mt-0.5">100% eBiz Admin</div>
                     </div>
                     <div className="p-2 rounded-xl bg-white/5">
-                      <div className="text-[9px] text-gray-400 uppercase">Client Work</div>
+                      <div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Client Work</div>
                       <div className="text-xs font-bold text-[#20C4E8] mt-0.5">0 Hours</div>
                     </div>
                     <div className="p-2 rounded-xl bg-white/5">
-                      <div className="text-[9px] text-gray-400 uppercase">Avg Rating</div>
+                      <div className="text-[9px] text-gray-400 dark:text-gray-500 uppercase">Avg Rating</div>
                       <div className="text-xs font-bold text-amber-400 mt-0.5">★ 4.95 / 5.0</div>
                     </div>
                   </div>
@@ -298,7 +298,7 @@ export const ForBusinessesPage: React.FC = () => {
       {/* =========================================================================
           2. ZERO VERIFICATION BURDEN CALLOUT BANNER
          ========================================================================= */}
-      <section className="py-8 bg-white border-b border-[#E4EAF2]">
+      <section className="py-8 bg-white dark:bg-[#0C1322] border-b border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="p-6 rounded-3xl bg-gradient-to-r from-[#07182F] to-[#0D2A52] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
             <div className="flex items-start gap-4">
@@ -309,7 +309,7 @@ export const ForBusinessesPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <h3 className="text-base font-bold text-white">Zero Verification Overhead for Business Owners</h3>
                   <span className="px-2.5 py-0.5 rounded-full bg-[#16B364]/20 text-[#16B364] border border-[#16B364]/30 text-[10px] font-black uppercase">
-                    100% Automated &amp; Admin Audited
+                    100% Automated & Admin Audited
                   </span>
                 </div>
                 <p className="text-xs text-gray-300 leading-relaxed max-w-3xl">
@@ -320,7 +320,7 @@ export const ForBusinessesPage: React.FC = () => {
 
             <div className="shrink-0 flex items-center gap-2">
               <div className="text-center px-4 py-2 bg-white/10 rounded-xl border border-white/15">
-                <span className="text-[10px] text-gray-400 block uppercase">Client Review Burden</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 block uppercase">Client Review Burden</span>
                 <span className="text-lg font-black text-[#16B364]">0%</span>
               </div>
             </div>
@@ -331,26 +331,26 @@ export const ForBusinessesPage: React.FC = () => {
       {/* =========================================================================
           3. INTERACTIVE CAMPAIGN BUDGET ESTIMATOR (AED)
          ========================================================================= */}
-      <section id="simulator" className="py-14 sm:py-16 bg-white bg-dot-pattern">
+      <section id="simulator" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] bg-dot-pattern">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
               UAE AED Budget Simulator
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
-              Interactive Campaign Cost &amp; Turnaround Calculator
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
+              Interactive Campaign Cost & Turnaround Calculator
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Customize your campaign parameters and inspect transparent budget breakdowns denominated in United Arab Emirates Dirham (AED).
             </p>
           </div>
 
-          <div className="bg-[#F7F9FC] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] shadow-sm space-y-8">
+          <div className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-8">
             
             {/* Objective Pills */}
             <div className="space-y-3">
-              <label className="text-xs font-bold text-gray-800 block">
+              <label className="text-xs font-bold text-gray-800 dark:text-gray-200 block">
                 1. Select Campaign Objective
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
@@ -362,16 +362,16 @@ export const ForBusinessesPage: React.FC = () => {
                     className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                       objective === key
                         ? 'border-[#168BFF] bg-blue-50/60 shadow-sm ring-2 ring-[#168BFF]/20'
-                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                        : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 bg-white dark:bg-[#0C1322]'
                     }`}
                   >
-                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-gray-100 text-gray-600 block mb-1">
+                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 block mb-1">
                       {objectiveConfig[key].badge}
                     </span>
-                    <div className={`text-xs font-bold ${objective === key ? 'text-[#168BFF]' : 'text-gray-900'} truncate`}>
+                    <div className={`text-xs font-bold ${objective === key ? 'text-[#168BFF]' : 'text-gray-900 dark:text-gray-100'} truncate`}>
                       {objectiveConfig[key].label}
                     </div>
-                    <div className="text-[10px] text-gray-500 mt-0.5">
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
                       Rec: AED {objectiveConfig[key].defaultReward.toFixed(2)}
                     </div>
                   </button>
@@ -382,10 +382,10 @@ export const ForBusinessesPage: React.FC = () => {
             {/* Contributor volume slider */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-gray-800">
+                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
                   2. Number of Verified Contributors
                 </label>
-                <span className="text-sm font-bold text-[#168BFF] px-3 py-1 bg-white border border-gray-200 rounded-xl shadow-xs">
+                <span className="text-sm font-bold text-[#168BFF] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
                   {contributorCount.toLocaleString()} Contributors
                 </span>
               </div>
@@ -398,7 +398,7 @@ export const ForBusinessesPage: React.FC = () => {
                 onChange={(e) => setContributorCount(parseInt(e.target.value, 10))}
                 className="w-full accent-[#168BFF] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
               />
-              <div className="flex justify-between text-[11px] text-gray-400 font-bold">
+              <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
                 <span>Pilot (50)</span>
                 <span>Growth (500)</span>
                 <span>Enterprise Scale (3,000)</span>
@@ -408,10 +408,10 @@ export const ForBusinessesPage: React.FC = () => {
             {/* Reward per Task slider */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-gray-800">
+                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
                   3. Reward Paid Per Verified Task (AED 🇦🇪)
                 </label>
-                <span className="text-sm font-bold text-[#16B364] px-3 py-1 bg-white border border-gray-200 rounded-xl shadow-xs">
+                <span className="text-sm font-bold text-[#16B364] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
                   AED {rewardPerTask.toFixed(2)} د.إ
                 </span>
               </div>
@@ -424,7 +424,7 @@ export const ForBusinessesPage: React.FC = () => {
                 onChange={(e) => setRewardPerTask(parseFloat(e.target.value))}
                 className="w-full accent-[#16B364] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
               />
-              <div className="flex justify-between text-[11px] text-gray-400 font-bold">
+              <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
                 <span>Min (AED {objectiveConfig[objective].minReward.toFixed(2)})</span>
                 <span>Standard</span>
                 <span>Executive Incentive (AED 30.00)</span>
@@ -438,7 +438,7 @@ export const ForBusinessesPage: React.FC = () => {
                 <span className="font-bold text-white">AED {contributorBudget.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs">
-                <span className="text-gray-300">UAE Central Bank Escrow &amp; AI Vision Moderation Fee (15%)</span>
+                <span className="text-gray-300">UAE Central Bank Escrow & AI Vision Moderation Fee (15%)</span>
                 <span className="font-bold text-white">AED {platformFee.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between pt-1">
@@ -459,8 +459,8 @@ export const ForBusinessesPage: React.FC = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-xs text-gray-500">
-                &bull; Unused funds remain safely in your escrow balance and can be refunded or reused anytime without penalties.
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                • Unused funds remain safely in your escrow balance and can be refunded or reused anytime without penalties.
               </span>
               <Link
                 to="/business/register"
@@ -479,28 +479,28 @@ export const ForBusinessesPage: React.FC = () => {
       {/* =========================================================================
           4. REAL BUSINESS CASE STUDIES
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-[#F7F9FC] border-y border-[#E4EAF2]">
+      <section className="py-14 sm:py-16 bg-[#F7F9FC] dark:bg-[#0B0F19] border-y border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
-              GCC &amp; Global Outcomes
+              GCC & Global Outcomes
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
-              Enterprise Reputation &bull; Verified Case Studies
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
+              Enterprise Reputation • Verified Case Studies
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               How hospitality chains, retail conglomerates, and fintechs use eBiz Network to solidify online authority.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {caseStudies.map((cs, idx) => (
-              <div key={idx} className="bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all">
+              <div key={idx} className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-4 flex flex-col justify-between hover:shadow-md transition-all">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-base font-bold text-gray-900">{cs.brand}</h4>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+                    <h4 className="text-base font-bold text-gray-900 dark:text-gray-100">{cs.brand}</h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">
                       {cs.industry}
                     </span>
                   </div>
@@ -508,12 +508,12 @@ export const ForBusinessesPage: React.FC = () => {
                     <Star className="w-3.5 h-3.5 fill-[#168BFF]" />
                     <span>{cs.goal}</span>
                   </div>
-                  <p className="text-xs text-gray-600 italic leading-relaxed">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 italic leading-relaxed">
                     "{cs.quote}"
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100">
+                <div className="pt-3 border-t border-gray-100 dark:border-white/10">
                   <span className="text-xs font-bold text-[#16B364] flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>{cs.stats}</span>
@@ -529,42 +529,42 @@ export const ForBusinessesPage: React.FC = () => {
       {/* =========================================================================
           5. COMPARISON MATRIX: EBIZ NETWORK VS AGENCIES & BOTS
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] text-xs font-bold uppercase tracking-wider">
               Market Superiority
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               Why Corporate Leaders Choose eBiz Network
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               A transparent comparison between verified micro-action networks, PR retainers, and synthetic spam.
             </p>
           </div>
 
-          <div className="overflow-x-auto rounded-3xl border border-[#E4EAF2] shadow-sm">
+          <div className="overflow-x-auto rounded-3xl border border-[#E4EAF2] dark:border-white/10 shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-[#07182F] text-white">
                   <th className="p-4 sm:p-5 font-bold">Key Criteria</th>
                   <th className="p-4 sm:p-5 font-bold bg-[#168BFF] text-white">eBiz Network Platform</th>
-                  <th className="p-4 sm:p-5 font-bold text-gray-300">Influencer &amp; PR Agencies</th>
-                  <th className="p-4 sm:p-5 font-bold text-gray-300">Click &amp; Bot Farms</th>
+                  <th className="p-4 sm:p-5 font-bold text-gray-300">Influencer & PR Agencies</th>
+                  <th className="p-4 sm:p-5 font-bold text-gray-300">Click & Bot Farms</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-white/10">
                 {comparisonRows.map((row, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-[#F7F9FC]'}>
-                    <td className="p-4 sm:p-5 font-bold text-gray-900">{row.feature}</td>
+                  <tr key={idx} className={idx % 2 === 0 ? 'bg-white dark:bg-[#0C1322]' : 'bg-[#F7F9FC] dark:bg-[#0B0F19]'}>
+                    <td className="p-4 sm:p-5 font-bold text-gray-900 dark:text-gray-100">{row.feature}</td>
                     <td className="p-4 sm:p-5 font-bold text-[#168BFF] bg-blue-50/40">
                       <div className="flex items-center gap-1.5">
                         <CheckCircle2 className="w-4 h-4 text-[#16B364] shrink-0" />
                         <span>{row.eBiz}</span>
                       </div>
                     </td>
-                    <td className="p-4 sm:p-5 text-gray-600">{row.agencies}</td>
+                    <td className="p-4 sm:p-5 text-gray-600 dark:text-gray-400">{row.agencies}</td>
                     <td className="p-4 sm:p-5 text-red-600 font-semibold">{row.botFarms}</td>
                   </tr>
                 ))}
@@ -581,7 +581,7 @@ export const ForBusinessesPage: React.FC = () => {
       <section className="py-14 sm:py-16 bg-[#07182F] text-white relative overflow-hidden text-center">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 relative z-10">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
-            Ready to Protect &amp; Elevate Your Brand?
+            Ready to Protect & Elevate Your Brand?
           </h2>
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
             Create your corporate account in 2 minutes. Fund via UAE Central Bank WPS, local bank wire, or credit card, and mobilize thousands of verified contributors.

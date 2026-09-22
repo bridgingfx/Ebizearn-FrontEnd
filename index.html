@@ -8,9 +8,22 @@
     <meta name="theme-color" content="#07182F" />
     <title>eBizEarn — Verified Tasks. Global Opportunities.</title>
     
-    <!-- Fonts are self-hosted via @fontsource-variable/manrope (bundled, no CDN dependency) -->
+    <!-- Typography: Apple system font stack (SF Pro on Apple devices, Segoe UI on Windows, Roboto on Android) — no webfont download needed -->
+
+    <!-- Set the theme class pre-paint to avoid a light/dark flash. Mirrors ThemeContext. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('ebizearn-theme');
+          if (t !== 'dark' && t !== 'light') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          if (t === 'dark') document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
   </head>
-  <body class="bg-[#F7F9FC] text-[#101828] font-sans antialiased selection:bg-[#168BFF]/20 selection:text-[#168BFF]">
+  <body class="bg-[#F7F9FC] text-[#101828] dark:bg-[#0B0F19] dark:text-[#E8ECF3] font-sans antialiased selection:bg-[#168BFF]/20 selection:text-[#168BFF]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

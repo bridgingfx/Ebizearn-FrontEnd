@@ -108,8 +108,8 @@ export const BusinessTaskLibraryPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Task Library</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Task Library</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Proven task recipes to jump-start your campaign. Every template opens the real wizard — nothing is
             pre-published, and reward ranges are guides, not guarantees.
           </p>
@@ -128,20 +128,20 @@ export const BusinessTaskLibraryPage: React.FC = () => {
         {templates.map((t) => (
           <div
             key={t.name}
-            className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-5 flex flex-col hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 flex flex-col hover:shadow-md transition-shadow"
           >
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2.5 rounded-xl bg-[#168BFF]/10 text-[#168BFF]">
                 <t.icon className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-extrabold text-gray-900">{t.name}</h3>
+              <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">{t.name}</h3>
             </div>
-            <p className="text-xs text-gray-500 leading-relaxed mb-4 flex-1">{t.description}</p>
-            <div className="flex items-center gap-4 text-[11px] text-gray-500 mb-4">
+            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4 flex-1">{t.description}</p>
+            <div className="flex items-center gap-4 text-[11px] text-gray-500 dark:text-gray-400 mb-4">
               <span className="inline-flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" /> {t.duration}
               </span>
-              <span className="font-bold text-gray-700">{t.suggestedReward}</span>
+              <span className="font-bold text-gray-700 dark:text-gray-300">{t.suggestedReward}</span>
             </div>
             <button
               type="button"

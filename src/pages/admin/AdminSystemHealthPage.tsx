@@ -56,20 +56,20 @@ export const AdminSystemHealthPage: React.FC = () => {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">System Health</h1>
-          <p className="text-sm text-gray-500 mt-1">Live service status from the backend health endpoint.</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">System Health</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Live service status from the backend health endpoint.</p>
         </div>
         <button
           type="button"
           onClick={() => void load()}
-          className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-700 transition-colors"
+          className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-xs font-bold text-gray-700 dark:text-gray-300 transition-colors"
         >
           Refresh
         </button>
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Checking system health…
         </div>
       )}
@@ -89,33 +89,33 @@ export const AdminSystemHealthPage: React.FC = () => {
 
       {!loading && !error && health && (
         <>
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
+          <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
             <div className="flex items-center gap-3 mb-5">
               <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-600">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">API status</p>
-                <p className="text-lg font-extrabold text-gray-900 capitalize">{health.status || 'unknown'}</p>
+                <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">API status</p>
+                <p className="text-lg font-extrabold text-gray-900 dark:text-gray-100 capitalize">{health.status || 'unknown'}</p>
               </div>
             </div>
             <div className="space-y-2.5">
               {rows.map((r) => (
                 <div
                   key={r.label}
-                  className="flex items-center justify-between px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl"
+                  className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl"
                 >
-                  <span className="flex items-center gap-2 text-xs font-bold text-gray-700">
-                    <r.icon className="w-4 h-4 text-gray-400" /> {r.label}
+                  <span className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300">
+                    <r.icon className="w-4 h-4 text-gray-400 dark:text-gray-500" /> {r.label}
                   </span>
-                  <span className="text-xs font-extrabold text-gray-900 capitalize">{r.value || '—'}</span>
+                  <span className="text-xs font-extrabold text-gray-900 dark:text-gray-100 capitalize">{r.value || '—'}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
-            <h3 className="text-sm font-extrabold text-gray-900 mb-3">Server info</h3>
+          <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
+            <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-3">Server info</h3>
             <dl className="text-xs space-y-2">
               {[
                 ['Server time', health.server_time ? new Date(health.server_time).toLocaleString() : '—'],
@@ -123,14 +123,14 @@ export const AdminSystemHealthPage: React.FC = () => {
                 ['Laravel version', health.laravel_version || '—'],
               ].map(([k, v]) => (
                 <div key={k} className="flex justify-between gap-4">
-                  <dt className="text-gray-500">{k}</dt>
-                  <dd className="font-bold text-gray-900 font-mono">{v}</dd>
+                  <dt className="text-gray-500 dark:text-gray-400">{k}</dt>
+                  <dd className="font-bold text-gray-900 dark:text-gray-100 font-mono">{v}</dd>
                 </div>
               ))}
             </dl>
           </div>
 
-          <p className="text-[11px] text-gray-400">
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">
             Infrastructure metrics (CPU, memory, uptime graphs) need a monitoring backend that is not
             available yet — this page only reports what the API health endpoint returns.
           </p>

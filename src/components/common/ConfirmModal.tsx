@@ -44,16 +44,16 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-modal-title"
-        className="w-full max-w-sm rounded-2xl bg-white p-6 text-left shadow-2xl"
+        className="w-full max-w-sm rounded-2xl bg-white dark:bg-[#0C1322] p-6 text-left shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 id="confirm-modal-title" className="text-base font-black text-[#101828]">{title}</h3>
-        {message && <p className="mt-2 text-sm text-gray-500">{message}</p>}
+        <h3 id="confirm-modal-title" className="text-base font-black text-[#101828] dark:text-gray-100">{title}</h3>
+        {message && <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{message}</p>}
         <div className="mt-6 flex justify-end gap-2">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-xl px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-100 cursor-pointer"
+            className="rounded-xl px-4 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer"
           >
             {cancelLabel}
           </button>

@@ -49,15 +49,15 @@ export const AdminFraudPage: React.FC = () => {
       case 'medium':
         return 'bg-amber-100 text-amber-700';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
     }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Fraud &amp; Risk</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Fraud & Risk</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Alerts raised by the platform fraud service. {alerts.length} open alert{alerts.length === 1 ? '' : 's'}.
         </p>
       </div>
@@ -69,7 +69,7 @@ export const AdminFraudPage: React.FC = () => {
             type="button"
             onClick={() => setSeverity(s)}
             className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-colors ${
-              severity === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              severity === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
             }`}
           >
             {s}
@@ -78,7 +78,7 @@ export const AdminFraudPage: React.FC = () => {
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading fraud alerts…
         </div>
       )}
@@ -113,7 +113,7 @@ export const AdminFraudPage: React.FC = () => {
           {filtered.map((a) => (
             <div
               key={a.id}
-              className="bg-white rounded-2xl border border-gray-200 shadow-xs p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+              className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-5 flex flex-col sm:flex-row sm:items-center gap-4"
             >
               <div className="p-2.5 rounded-xl bg-red-50 text-red-600 w-fit">
                 <AlertTriangle className="w-5 h-5" />
@@ -125,15 +125,15 @@ export const AdminFraudPage: React.FC = () => {
                   >
                     {a.severity} severity
                   </span>
-                  <span className="text-[11px] text-gray-400">
+                  <span className="text-[11px] text-gray-400 dark:text-gray-500">
                     {a.status ? `· ${a.status.replace(/_/g, ' ')} ` : ''}· {new Date(a.created_at).toLocaleString()}
                   </span>
                 </div>
-                <p className="text-sm font-bold text-gray-900">
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
                   {a.event_type ? a.event_type.replace(/_/g, ' ') : `Alert #${a.id}`}
                 </p>
                 {a.details_json && (
-                  <p className="text-[11px] text-gray-500 mt-1 line-clamp-2 font-mono">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 line-clamp-2 font-mono">
                     {JSON.stringify(a.details_json)}
                   </p>
                 )}
@@ -141,7 +141,7 @@ export const AdminFraudPage: React.FC = () => {
               {a.user_id != null && (
                 <Link
                   to={`/admin/users?search=${a.user_id}`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-700 transition-colors shrink-0"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-xs font-bold text-gray-700 dark:text-gray-300 transition-colors shrink-0"
                 >
                   View user <ArrowRight className="w-3.5 h-3.5" />
                 </Link>

@@ -117,7 +117,7 @@ export const EarnPage: React.FC = () => {
       req: 'Verify phone number & email',
       perk: 'Access to social shares & surveys',
       cap: '$15 / day cap',
-      badge: 'bg-gray-100 text-gray-700',
+      badge: 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300',
     },
     {
       level: 'Verified Contributor',
@@ -146,7 +146,7 @@ export const EarnPage: React.FC = () => {
   ];
 
   return (
-    <div className="text-left font-sans min-h-screen bg-[#F7F9FC]">
+    <div className="text-left font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
       
       {/* =========================================================================
           1. BESPOKE HERO: SOCIAL EARNING COMMAND HUB & INTERACTIVE MATRIX
@@ -162,7 +162,7 @@ export const EarnPage: React.FC = () => {
           <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Zero Followers Required &bull; 100% Free Forever</span>
+              <span>Zero Followers Required • 100% Free Forever</span>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
@@ -226,18 +226,18 @@ export const EarnPage: React.FC = () => {
                 {/* Key Metrics Strip */}
                 <div className="grid grid-cols-3 gap-3 pt-2">
                   <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Reward Range</span>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Reward Range</span>
                     <span className="text-lg sm:text-xl font-black text-[#16B364]">{currentChannel.reward}</span>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Average Time</span>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Average Time</span>
                     <span className="text-sm sm:text-base font-black text-white flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-gray-400" />
+                      <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                       {currentChannel.avgTime}
                     </span>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
-                    <span className="text-[10px] text-gray-400 font-bold uppercase block">Availability</span>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Availability</span>
                     <span className="text-xs sm:text-sm font-black text-[#20C4E8]">{currentChannel.liveTasks}</span>
                   </div>
                 </div>
@@ -260,30 +260,30 @@ export const EarnPage: React.FC = () => {
               </div>
 
               {/* Right: Live Simulated Task Card */}
-              <div className="lg:col-span-5 bg-white rounded-3xl p-6 text-gray-900 shadow-2xl border border-gray-100 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="lg:col-span-5 bg-white dark:bg-[#0C1322] rounded-3xl p-6 text-gray-900 dark:text-gray-100 shadow-2xl border border-gray-100 dark:border-white/10 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-white/10">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#16B364] animate-ping" />
-                    <span className="text-xs font-black text-gray-900 uppercase">Live Task Example</span>
+                    <span className="text-xs font-black text-gray-900 dark:text-gray-100 uppercase">Live Task Example</span>
                   </div>
                   <span className="text-base font-black text-[#16B364]">{currentChannel.payout}</span>
                 </div>
 
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Task Title:</span>
-                  <h4 className="text-sm font-black text-gray-900">{currentChannel.actionExample}</h4>
+                  <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Task Title:</span>
+                  <h4 className="text-sm font-black text-gray-900 dark:text-gray-100">{currentChannel.actionExample}</h4>
                 </div>
 
-                <div className="p-3 rounded-xl bg-[#F7F9FC] border border-gray-200 text-xs space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px] text-gray-600">
+                <div className="p-3 rounded-xl bg-[#F7F9FC] dark:bg-[#0B0F19] border border-gray-200 dark:border-white/10 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400">
                     <span>Task Requirements:</span>
-                    <span className="font-bold text-gray-900">Screenshot Proof</span>
+                    <span className="font-bold text-gray-900 dark:text-gray-100">Screenshot Proof</span>
                   </div>
-                  <div className="flex items-center justify-between text-[11px] text-gray-600">
+                  <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400">
                     <span>AI Review Time:</span>
                     <span className="font-bold text-[#168BFF]">12 Seconds</span>
                   </div>
-                  <div className="flex items-center justify-between text-[11px] text-gray-600">
+                  <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400">
                     <span>Payout Eligibility:</span>
                     <span className="font-bold text-[#16B364]">Instant Wallet Credit</span>
                   </div>
@@ -293,7 +293,7 @@ export const EarnPage: React.FC = () => {
                   to="/contributor/register"
                   className="w-full py-3 bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-black rounded-xl text-center block transition-colors shadow-sm"
                 >
-                  Accept &amp; Start This Task
+                  Accept & Start This Task
                 </Link>
               </div>
 
@@ -306,29 +306,29 @@ export const EarnPage: React.FC = () => {
       {/* =========================================================================
           2. INTERACTIVE EARNING CALCULATOR (DENSE, NO EMPTY SPACE)
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white bg-dot-pattern">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] bg-dot-pattern">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
               Earning Calculator
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               Estimate Your Monthly Social Earnings
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Drag the slider to see how many tasks you can complete per day.
             </p>
           </div>
 
-          <div className="bg-[#F7F9FC] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] shadow-sm space-y-8">
+          <div className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-8">
             
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-gray-800">
+                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
                   Daily Social Tasks Completed
                 </label>
-                <span className="text-sm font-bold text-[#168BFF] px-3 py-1 bg-white border border-gray-200 rounded-xl shadow-xs">
+                <span className="text-sm font-bold text-[#168BFF] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
                   {tasksPerDay} Tasks / Day
                 </span>
               </div>
@@ -343,7 +343,7 @@ export const EarnPage: React.FC = () => {
                 className="w-full accent-[#168BFF] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
               />
               
-              <div className="flex justify-between text-[11px] text-gray-400 font-bold">
+              <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
                 <span>Casual (3 tasks)</span>
                 <span>Active (15 tasks)</span>
                 <span>Power Earner (30 tasks)</span>
@@ -353,25 +353,25 @@ export const EarnPage: React.FC = () => {
             {/* Projection cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 rounded-2xl bg-[#07182F] text-white">
               <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider block">Estimated Weekly Cashout</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">Estimated Weekly Cashout</span>
                 <div className="text-2xl sm:text-3xl font-extrabold text-[#20C4E8] mt-1">
                   ${(parseFloat(calculatedMonthly) / 4).toFixed(0)} USD
                 </div>
-                <span className="text-[11px] text-gray-400 mt-1 block">Sent directly to your payment method</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">Sent directly to your payment method</span>
               </div>
 
               <div className="sm:border-l sm:border-white/10 sm:pl-6">
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider block">Estimated 30-Day Potential</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">Estimated 30-Day Potential</span>
                 <div className="text-2xl sm:text-3xl font-extrabold text-[#16B364] mt-1">
                   ${calculatedMonthly} USD
                 </div>
-                <span className="text-[11px] text-gray-400 mt-1 block">Assumes $0.90 average reward yield</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">Assumes $0.90 average reward yield</span>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-              <span className="text-xs text-gray-500">
-                &bull; Min withdrawal is $50.00. Zero hidden fees, zero membership fees.
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                • Min withdrawal is $50.00. Zero hidden fees, zero membership fees.
               </span>
               <Link
                 to="/contributor/register"
@@ -390,24 +390,24 @@ export const EarnPage: React.FC = () => {
       {/* =========================================================================
           3. PROGRESSION TIERS & STREAK BONUSES (DENSE INFORMATION DESIGN)
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-[#F7F9FC] border-y border-[#E4EAF2]">
+      <section className="py-14 sm:py-16 bg-[#F7F9FC] dark:bg-[#0B0F19] border-y border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] text-xs font-bold uppercase tracking-wider">
               Merit-Based Rewards
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
-              Level Up for Higher Rewards &amp; Bonuses
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
+              Level Up for Higher Rewards & Bonuses
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Every verified task improves your contributor score, unlocking higher payouts, instant withdrawals, and daily streak rewards.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {progressionLevels.map((lvl, idx) => (
-              <div key={idx} className="bg-white rounded-3xl p-6 border border-[#E4EAF2] shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-all">
+              <div key={idx} className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-[#E4EAF2] dark:border-white/10 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-all">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${lvl.badge}`}>
@@ -415,19 +415,19 @@ export const EarnPage: React.FC = () => {
                     </span>
                     <Award className="w-5 h-5 text-amber-500" />
                   </div>
-                  <h4 className="text-base font-bold text-gray-900">{lvl.level}</h4>
-                  <div className="text-xs text-gray-500">
-                    <span className="font-bold text-gray-700 block">Requirement:</span>
+                  <h4 className="text-base font-bold text-gray-900 dark:text-gray-100">{lvl.level}</h4>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="font-bold text-gray-700 dark:text-gray-300 block">Requirement:</span>
                     {lvl.req}
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-gray-100 space-y-2">
-                  <div className="text-xs text-gray-800 font-bold flex items-center gap-1.5">
+                <div className="pt-3 border-t border-gray-100 dark:border-white/10 space-y-2">
+                  <div className="text-xs text-gray-800 dark:text-gray-200 font-bold flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#16B364] shrink-0" />
                     <span>{lvl.perk}</span>
                   </div>
-                  <div className="text-[11px] text-gray-400 font-bold">
+                  <div className="text-[11px] text-gray-400 dark:text-gray-500 font-bold">
                     Daily Cap: {lvl.cap}
                   </div>
                 </div>
@@ -441,17 +441,17 @@ export const EarnPage: React.FC = () => {
       {/* =========================================================================
           4. MULTI-RAIL CASHOUT METHODS ($50.00 MINIMUM)
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           
           <div className="max-w-2xl mx-auto space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
               Fintech Reliability
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               Get Paid Your Way From $50.00
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               As soon as your ledger balance hits $50.00, cash out to your preferred channel. No payout traps, no membership fees.
             </p>
           </div>
@@ -465,10 +465,10 @@ export const EarnPage: React.FC = () => {
               { name: 'USDT / USDC', min: '$50.00 min', time: '10 Mins' },
               { name: 'Mobile Money', min: '$50.00 min', time: 'Instant' },
             ].map((method, idx) => (
-              <div key={idx} className="p-4 rounded-2xl bg-[#F7F9FC] border border-[#E4EAF2] text-center space-y-1 hover:border-[#168BFF]/40 transition-colors">
-                <div className="text-xs font-bold text-gray-900">{method.name}</div>
+              <div key={idx} className="p-4 rounded-2xl bg-[#F7F9FC] dark:bg-[#0B0F19] border border-[#E4EAF2] dark:border-white/10 text-center space-y-1 hover:border-[#168BFF]/40 transition-colors">
+                <div className="text-xs font-bold text-gray-900 dark:text-gray-100">{method.name}</div>
                 <div className="text-[10px] font-bold text-[#16B364]">{method.min}</div>
-                <div className="text-[9px] text-gray-400">{method.time}</div>
+                <div className="text-[9px] text-gray-400 dark:text-gray-500">{method.time}</div>
               </div>
             ))}
           </div>

@@ -42,7 +42,7 @@ export const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="text-left font-sans min-h-screen bg-[#F7F9FC]">
+    <div className="text-left font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
       
       {/* Hero */}
       <section className="relative bg-[#07182F] text-white pt-24 pb-14 sm:pt-28 sm:pb-16 overflow-hidden border-b border-white/10 bg-grid-mesh-dark">
@@ -71,20 +71,20 @@ export const ContactPage: React.FC = () => {
           <div className="lg:col-span-5 space-y-6">
             <div>
               <span className="text-xs font-bold text-[#168BFF] uppercase tracking-wider block">Dedicated Desks</span>
-              <h2 className="text-2xl font-black text-gray-900 mt-1">Get in Touch Directly</h2>
-              <p className="text-xs text-gray-500 mt-1">Select the most relevant channel for rapid resolution.</p>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100 mt-1">Get in Touch Directly</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Select the most relevant channel for rapid resolution.</p>
             </div>
 
             <div className="space-y-4 text-xs">
               
-              <div className="p-5 rounded-2xl bg-white border border-[#E4EAF2] shadow-xs space-y-2">
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#0C1322] border border-[#E4EAF2] dark:border-white/10 shadow-xs space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#168BFF] flex items-center justify-center">
                     <Mail className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">Contributor Support</h3>
-                    <p className="text-[11px] text-gray-400">Tasks, proof reviews &amp; payouts</p>
+                    <h3 className="font-bold text-gray-900 dark:text-gray-100">Contributor Support</h3>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500">Tasks, proof reviews & payouts</p>
                   </div>
                 </div>
                 <a href="mailto:support@ebizearn.com" className="text-xs font-bold text-[#168BFF] hover:underline block pt-1">
@@ -92,14 +92,14 @@ export const ContactPage: React.FC = () => {
                 </a>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-[#E4EAF2] shadow-xs space-y-2">
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#0C1322] border border-[#E4EAF2] dark:border-white/10 shadow-xs space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-purple-50 text-[#7357FF] flex items-center justify-center">
                     <Building className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">Enterprise &amp; Brand Inquiries</h3>
-                    <p className="text-[11px] text-gray-400">Custom campaigns, SLAs &amp; escrow</p>
+                    <h3 className="font-bold text-gray-900 dark:text-gray-100">Enterprise & Brand Inquiries</h3>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500">Custom campaigns, SLAs & escrow</p>
                   </div>
                 </div>
                 <a href="mailto:brands@ebizearn.com" className="text-xs font-bold text-[#7357FF] hover:underline block pt-1">
@@ -107,14 +107,14 @@ export const ContactPage: React.FC = () => {
                 </a>
               </div>
 
-              <div className="p-5 rounded-2xl bg-white border border-[#E4EAF2] shadow-xs space-y-2">
+              <div className="p-5 rounded-2xl bg-white dark:bg-[#0C1322] border border-[#E4EAF2] dark:border-white/10 shadow-xs space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#16B364] flex items-center justify-center">
                     <ShieldCheck className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900">Trust, Safety &amp; Legal</h3>
-                    <p className="text-[11px] text-gray-400">Policy violations &amp; verification audits</p>
+                    <h3 className="font-bold text-gray-900 dark:text-gray-100">Trust, Safety & Legal</h3>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-500">Policy violations & verification audits</p>
                   </div>
                 </div>
                 <a href="mailto:compliance@ebizearn.com" className="text-xs font-bold text-[#16B364] hover:underline block pt-1">
@@ -124,26 +124,26 @@ export const ContactPage: React.FC = () => {
 
             </div>
 
-            <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200/80 space-y-2 text-xs">
-              <span className="font-bold text-gray-800 flex items-center gap-2">
+            <div className="p-5 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200/80 space-y-2 text-xs">
+              <span className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-[#168BFF]" />
                 <span>Response Time Commitment</span>
               </span>
-              <p className="text-[11px] text-gray-500 leading-relaxed">
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
                 Tickets are typically acknowledged within <strong>15 minutes</strong> for urgent payout questions, and under <strong>2 hours</strong> for general inquiries.
               </p>
             </div>
           </div>
 
           {/* Right 7 Cols: Contact Message Form */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-[#E4EAF2] shadow-sm">
+          <div className="lg:col-span-7 bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E4EAF2] dark:border-white/10 shadow-sm">
             {submitted ? (
               <div className="py-12 text-center space-y-4">
                 <div className="w-16 h-16 rounded-full bg-emerald-100 text-[#16B364] flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
-                <h3 className="text-xl font-black text-gray-900">Message Received!</h3>
-                <p className="text-xs text-gray-500 max-w-sm mx-auto">
+                <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">Message Received!</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
                   Thank you, <strong>{name}</strong>. Your ticket has been assigned reference <strong className="text-emerald-700 font-mono">#{ticketId || 'TKT-UAE-8921'}</strong>. A team member from the Dubai Operations Desk will reply to <strong>{email}</strong> shortly.
                 </p>
                 <div className="pt-3">
@@ -158,60 +158,60 @@ export const ContactPage: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="pb-3 border-b border-gray-100">
-                  <h3 className="text-lg font-black text-gray-900">Send Us an Inquiry</h3>
-                  <p className="text-xs text-gray-500">Fill out this quick form and our routing bot will deliver it to the right department.</p>
+                <div className="pb-3 border-b border-gray-100 dark:border-white/10">
+                  <h3 className="text-lg font-black text-gray-900 dark:text-gray-100">Send Us an Inquiry</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Fill out this quick form and our routing bot will deliver it to the right department.</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Sarah Jenkins"
-                      className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                      className="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                      className="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Department / Inquiry Type</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Department / Inquiry Type</label>
                   <select
                     value={topic}
                     onChange={(e) => setTopic(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                    className="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                   >
                     <option value="contributor">Contributor: Task, Proof or Payout Issue</option>
                     <option value="business">Business: Campaign Launch or Escrow Deposit</option>
-                    <option value="compliance">Trust &amp; Safety: Fraud Report or Dispute</option>
+                    <option value="compliance">Trust & Safety: Fraud Report or Dispute</option>
                     <option value="press">Partnership or Media Inquiry</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">Message Details</label>
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Message Details</label>
                   <textarea
                     rows={4}
                     required
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Provide relevant details, task IDs, or campaign requirements..."
-                    className="w-full px-3.5 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                    className="w-full px-3.5 py-2 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                   />
                 </div>
 

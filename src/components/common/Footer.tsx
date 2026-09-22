@@ -5,7 +5,7 @@ import { EBizLogo } from './EBizLogo';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#07182F] text-gray-400 text-sm border-t border-white/10 pt-16 pb-12">
+    <footer className="bg-[#07182F] text-gray-400 dark:text-gray-500 text-sm border-t border-white/10 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-14 border-b border-white/10">
           
@@ -14,8 +14,8 @@ export const Footer: React.FC = () => {
             <Link to="/" className="inline-block">
               <EBizLogo variant="dark" size="md" subtitleText="ebizearn.com" />
             </Link>
-            <p className="text-xs text-gray-400 leading-relaxed pt-2">
-              The premier digital task &amp; reputation marketplace connecting real contributors with verified enterprise campaigns in the UAE and worldwide.
+            <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed pt-2">
+              The premier digital task & reputation marketplace connecting real contributors with verified enterprise campaigns in the UAE and worldwide.
             </p>
           </div>
 
@@ -98,8 +98,8 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar matching reference */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
-          <p>&copy; 2026 eBiz Network (ebizearn.com). All rights reserved.</p>
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 dark:text-gray-400 gap-4">
+          <p>© 2026 eBiz Network (ebizearn.com). All rights reserved.</p>
           <div className="flex items-center gap-2">
             <span>A Global Platform for a Brighter Tomorrow</span>
             <Globe className="w-3.5 h-3.5 text-[#25C5E8]" />
@@ -107,9 +107,9 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Internal Access — operations only. No public super-admin entry points. */}
-        <div className="pt-6 mt-6 border-t border-white/5 flex items-center justify-center gap-2 text-[11px] text-gray-600">
+        <div className="pt-6 mt-6 border-t border-white/5 flex items-center justify-center gap-2 text-[11px] text-gray-600 dark:text-gray-400">
           <span className="uppercase tracking-wider font-semibold">Internal Access</span>
-          <span className="text-gray-700">&bull;</span>
+          <span className="text-gray-700 dark:text-gray-300">•</span>
           <Link to="/moderator/login" className="hover:text-gray-300 transition-colors">
             Moderator Login
           </Link>

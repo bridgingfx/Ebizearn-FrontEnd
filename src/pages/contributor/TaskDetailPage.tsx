@@ -21,6 +21,7 @@ import { PlatformPreview } from '../../components/task/PlatformPreview';
 import { VerificationTimeline } from '../../components/task/VerificationTimeline';
 import { humanizeRetention, initials, proofRequirementLabels } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
+import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification';
 
 /**
  * Phase 5 — split-screen task execution.
@@ -30,6 +31,7 @@ import { EmptyState } from '../../components/common/EmptyState';
  */
 export const TaskDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { requireVerified, gate } = useRequireVerifiedEmail();
   const [task, setTask] = useState<UiTask | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -114,6 +116,8 @@ export const TaskDetailPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Proof submission is a money-moving action — verified email required.
+    if (!requireVerified()) return;
     if (!task) return;
     setSubmitError(null);
 
@@ -190,6 +194,7 @@ export const TaskDetailPage: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-5 text-left">
+      {gate}
       <div className="flex items-center justify-between">
         <Link to="/app/tasks" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to tasks

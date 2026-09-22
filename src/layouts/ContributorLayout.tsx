@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
+import { RegionSelector } from '../components/common/RegionSelector';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { useUnreadNotifications } from '../pages/contributor/ContributorNotificationsPage';
@@ -58,12 +59,16 @@ export const ContributorLayout: React.FC = () => {
             <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
           </Link>
 
-          <div className="bg-white/5 rounded-2xl p-3 border border-white/10 mb-6 flex items-center gap-3">
+          <div className="bg-white/5 rounded-2xl p-3 border border-white/10 mb-4 flex items-center gap-3">
             <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} className="ring-2 ring-[#168BFF]" />
             <div className="min-w-0">
               <p className="text-xs font-black truncate">{user?.name || 'Contributor'}</p>
               <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
             </div>
+          </div>
+
+          <div className="mb-6 flex justify-start">
+            <RegionSelector variant="dark" />
           </div>
 
           <nav className="space-y-1">
@@ -132,6 +137,9 @@ export const ContributorLayout: React.FC = () => {
           <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
         </Link>
         <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <RegionSelector variant="dark" />
+          </div>
           <Link to="/app/notifications" aria-label="Notifications" className="relative p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
             <Bell className="w-4 h-4" />
             {badge && (

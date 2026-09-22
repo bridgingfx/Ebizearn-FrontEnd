@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Globe, Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { EBizLogo } from './EBizLogo';
+import { RegionSelector } from './RegionSelector';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,13 +63,8 @@ export const Navbar: React.FC = () => {
 
         {/* Right: Actions */}
         <div className="hidden lg:flex items-center gap-5">
-          {/* UAE Region & AED Currency Indicator */}
-          <div className="flex items-center gap-2 text-xs font-semibold text-white px-3.5 py-1.5 rounded-full border border-[#20C4E8]/35 bg-[#0D2342] shadow-inner shadow-white/5">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-sm">🇦🇪</span>
-            <span className="text-[#20C4E8] font-black tracking-wide">AED</span>
-            <span className="h-3 w-px bg-white/20" />
-            <span className="text-[11px] text-gray-200">UAE region</span>
-          </div>
+          {/* Region & currency selector */}
+          <RegionSelector variant="dark" />
 
           {user ? (
             <Link
@@ -122,6 +118,9 @@ export const Navbar: React.FC = () => {
             </Link>
           ))}
           <div className="pt-4 flex flex-col gap-3">
+            <div className="flex justify-center">
+              <RegionSelector variant="dark" />
+            </div>
             <Link
               to="/login"
               onClick={() => setMobileMenuOpen(false)}

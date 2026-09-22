@@ -10,11 +10,13 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
+  Plus,
 } from 'lucide-react';
 import { businessApi, getApiError } from '../../api';
 import type { BusinessDashboardData, Campaign, TaskSubmission } from '../../types';
 import { money } from '../../utils/apiMappers';
 import { EmptyState } from '../../components/common/EmptyState';
+import { StatCard, SectionHeader } from '../../components/common/StatCard';
 
 export const BusinessDashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -46,75 +48,52 @@ export const BusinessDashboardPage: React.FC = () => {
   const metrics = data?.metrics ?? null;
   const activeCampaigns = data?.active_campaigns_list ?? [];
   const recentSubmissions = data?.recent_submissions ?? [];
-
-  const cards = [
-    {
-      icon: Zap,
-      label: 'Active Campaigns',
-      value: metrics ? String(metrics.active_campaigns) : '—',
-      sub: metrics ? `${metrics.total_campaigns} total campaigns` : 'Live campaigns right now',
-      tone: 'text-[#168BFF]',
-      bg: 'bg-blue-100',
-    },
-    {
-      icon: CheckSquare,
-      label: 'Verified Completions',
-      value: metrics ? metrics.verified_tasks.toLocaleString() : '—',
-      sub: 'Verified tasks across your campaigns',
-      tone: 'text-emerald-600',
-      bg: 'bg-emerald-100',
-    },
-    {
-      icon: Wallet,
-      label: 'Budget Spent',
-      value: metrics ? money(metrics.spent_budget_cents, 'USD') : '—',
-      sub: metrics ? `${money(metrics.remaining_budget_cents, 'USD')} still available` : 'Paid to contributors',
-      tone: 'text-violet-600',
-      bg: 'bg-violet-100',
-    },
-    {
-      icon: Target,
-      label: 'Avg. Cost / Task',
-      value: metrics ? money(metrics.average_cost_cents, 'USD') : '—',
-      sub: 'Across all your campaigns',
-      tone: 'text-amber-600',
-      bg: 'bg-amber-100',
-    },
-  ];
+  const companyName = data?.business?.company_name;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Business Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Live campaign performance from your account.</p>
+    <div className="space-y-8 max-w-7xl mx-auto text-left">
+      {/* ── Hero header ───────────────────────────────────────────── */}
+      <div className="relative overflow-hidden rounded-[1.75rem] bg-navy-gradient p-6 sm:p-8 text-white">
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#168BFF]/30 blur-3xl" />
+        <div className="absolute -bottom-28 left-1/3 w-72 h-72 rounded-full bg-[#16B364]/20 blur-3xl" />
+        <div className="relative flex flex-col sm:flex-row sm:items-center gap-5 justify-between">
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#20C4E8]">
+              Business command center
+            </p>
+            <h1 className="mt-2 text-2xl sm:text-[2rem] font-black tracking-tight leading-tight">
+              {companyName || 'Business Dashboard'}
+            </h1>
+            <p className="mt-1.5 text-sm sm:text-base text-slate-300">
+              Live campaign performance from your account.
+            </p>
+          </div>
+          <Link
+            to="/business/campaigns/create"
+            className="shrink-0 inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-gradient-to-r from-[#16B364] to-[#0EA968] text-white font-extrabold text-base shadow-lg shadow-emerald-500/30 hover:brightness-105 transition-all"
+          >
+            <Plus className="w-5 h-5" />
+            Launch campaign
+          </Link>
         </div>
-        <Link
-          to="/business/campaigns/create"
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
-        >
-          <Megaphone className="w-4 h-4" />
-          <span>Launch Campaign</span>
-        </Link>
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16 text-gray-500">
+        <div className="flex items-center justify-center py-16 text-slate-500">
           <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading dashboard…
         </div>
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+        <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-6 flex items-start gap-3">
+          <AlertCircle className="w-6 h-6 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700">Could not load dashboard</p>
             <p className="text-red-600 mt-1">{error}</p>
             <button
               type="button"
               onClick={() => void load()}
-              className="mt-2 text-xs font-bold text-red-700 underline"
+              className="mt-2 text-sm font-bold text-red-700 underline min-h-[44px]"
             >
               Retry
             </button>
@@ -124,38 +103,50 @@ export const BusinessDashboardPage: React.FC = () => {
 
       {!loading && !error && (
         <>
-          {/* Metric Cards — real data only */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {cards.map((c) => (
-              <div
-                key={c.label}
-                className="bg-white rounded-2xl p-5 border border-[#E7ECF3] shadow-xs hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`p-2 rounded-xl ${c.bg}`}>
-                    <c.icon className={`w-4 h-4 ${c.tone}`} />
-                  </div>
-                </div>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{c.label}</p>
-                <h3 className="text-2xl font-extrabold text-gray-900">{c.value}</h3>
-                <p className="text-[11px] font-medium text-gray-500 mt-1.5">{c.sub}</p>
-              </div>
-            ))}
+          {/* ── Metric cards — real data only ─────────────────────── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard
+              label="Active campaigns"
+              value={metrics ? String(metrics.active_campaigns) : '—'}
+              sub={metrics ? `${metrics.total_campaigns} total campaigns` : 'Live campaigns right now'}
+              icon={Zap}
+              gradient="from-[#168BFF] to-[#20C4E8]"
+              shadow="shadow-lg shadow-blue-500/25"
+            />
+            <StatCard
+              label="Verified completions"
+              value={metrics ? metrics.verified_tasks.toLocaleString() : '—'}
+              sub="Verified tasks across your campaigns"
+              icon={CheckSquare}
+              gradient="from-emerald-500 to-teal-600"
+              shadow="shadow-lg shadow-emerald-500/25"
+            />
+            <StatCard
+              label="Budget spent"
+              value={metrics ? money(metrics.spent_budget_cents, 'USD') : '—'}
+              sub={metrics ? `${money(metrics.remaining_budget_cents, 'USD')} still available` : 'Paid to contributors'}
+              icon={Wallet}
+              gradient="from-[#7257FF] to-[#9D7BFF]"
+              shadow="shadow-lg shadow-violet-500/25"
+            />
+            <StatCard
+              label="Avg. cost / task"
+              value={metrics ? money(metrics.average_cost_cents, 'USD') : '—'}
+              sub="Across all your campaigns"
+              icon={Target}
+              gradient="from-amber-500 to-orange-600"
+              shadow="shadow-lg shadow-amber-500/25"
+            />
           </div>
 
-          {/* Active campaigns — real list */}
-          <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-[#168BFF]" /> Active Campaigns
-              </h3>
-              <Link
-                to="/business/campaigns"
-                className="text-[11px] font-bold text-[#168BFF] hover:underline inline-flex items-center gap-1"
-              >
-                View all <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
+          {/* ── Active campaigns — real list ──────────────────────── */}
+          <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6 sm:p-7">
+            <SectionHeader
+              title="Active campaigns"
+              subtitle="Live campaigns spending right now."
+              actionLabel="View all"
+              actionTo="/business/campaigns"
+            />
 
             {activeCampaigns.length === 0 ? (
               <EmptyState
@@ -166,48 +157,53 @@ export const BusinessDashboardPage: React.FC = () => {
                 onAction={() => navigate('/business/campaigns/create')}
               />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
-                      <th className="py-2 pr-4 font-bold">Campaign</th>
-                      <th className="py-2 pr-4 font-bold">Reward / task</th>
-                      <th className="py-2 pr-4 font-bold">Completions</th>
-                      <th className="py-2 pr-4 font-bold">Spent</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activeCampaigns.map((c: Campaign) => (
-                      <tr key={c.id} className="border-b border-gray-50 last:border-0">
-                        <td className="py-3 pr-4 font-bold text-gray-900">{c.title}</td>
-                        <td className="py-3 pr-4 text-gray-600">{money(c.reward_per_task_cents, 'USD')}</td>
-                        <td className="py-3 pr-4 text-gray-600">
-                          {(c.completed_contributors_count ?? 0)} / {(c.target_contributors_count ?? 0)}
-                        </td>
-                        <td className="py-3 pr-4 text-gray-600">
-                          {money(Math.max(0, (c.total_budget_cents ?? 0) - (c.remaining_budget_cents ?? 0)), 'USD')}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-3">
+                {activeCampaigns.map((c: Campaign) => {
+                  const target = c.target_contributors_count || 0;
+                  const done = c.completed_contributors_count || 0;
+                  const pct = target > 0 ? Math.min(100, Math.round((done / target) * 100)) : 0;
+                  const spent = Math.max(0, (c.total_budget_cents ?? 0) - (c.remaining_budget_cents ?? 0));
+                  return (
+                    <Link
+                      key={c.id}
+                      to={`/business/campaigns/${c.id}`}
+                      className="group block rounded-2xl border border-slate-100 bg-[#F8FAFD] hover:bg-white hover:border-[#168BFF]/40 hover:shadow-md p-4 sm:p-5 transition-all"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-extrabold text-slate-900 truncate group-hover:text-[#168BFF] transition-colors">
+                            {c.title}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">
+                            {money(c.reward_per_task_cents, 'USD')} per task · {done.toLocaleString()} / {target.toLocaleString()} completions
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="text-sm font-black text-slate-900">{money(spent, 'USD')}</p>
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">spent</p>
+                        </div>
+                      </div>
+                      <div className="mt-3 h-2 rounded-full bg-slate-200/70 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-[#168BFF] to-[#20C4E8] transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* Recent submissions — real list */}
-          <div className="bg-white rounded-2xl border border-[#E7ECF3] shadow-xs p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
-                <CheckSquare className="w-4 h-4 text-emerald-600" /> Latest Submissions
-              </h3>
-              <Link
-                to="/business/submissions"
-                className="text-[11px] font-bold text-[#168BFF] hover:underline inline-flex items-center gap-1"
-              >
-                Open Proof Gallery <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
+          {/* ── Recent submissions — real list ────────────────────── */}
+          <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6 sm:p-7">
+            <SectionHeader
+              title="Latest submissions"
+              subtitle="Proof submitted by contributors, newest first."
+              actionLabel="Open proof gallery"
+              actionTo="/business/submissions"
+            />
 
             {recentSubmissions.length === 0 ? (
               <EmptyState
@@ -220,18 +216,23 @@ export const BusinessDashboardPage: React.FC = () => {
                 {recentSubmissions.slice(0, 5).map((s: TaskSubmission) => (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between px-4 py-3 bg-[#F7F9FC] border border-[#E7ECF3] rounded-xl"
+                    className="flex items-center justify-between gap-3 px-4 py-3.5 bg-[#F8FAFD] border border-slate-100 rounded-2xl"
                   >
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-gray-900 truncate">
-                        {s.task?.title || `Submission #${s.id}`}
-                      </p>
-                      <p className="text-[10px] text-gray-400">
-                        {s.user?.name ? `by ${s.user.name} · ` : ''}
-                        {new Date(s.created_at).toLocaleDateString()}
-                      </p>
+                    <div className="min-w-0 flex items-center gap-3">
+                      <span className="w-10 h-10 rounded-xl bg-[#168BFF]/10 text-[#168BFF] flex items-center justify-center shrink-0">
+                        <BarChart3 className="w-5 h-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-slate-900 truncate">
+                          {s.task?.title || `Submission #${s.id}`}
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          {s.user?.name ? `by ${s.user.name} · ` : ''}
+                          {new Date(s.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">
+                    <span className="shrink-0 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full bg-amber-100 text-amber-700">
                       {String(s.status).replace(/_/g, ' ')}
                     </span>
                   </div>

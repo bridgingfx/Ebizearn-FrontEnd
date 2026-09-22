@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Compass, Zap, AlertCircle } from 'lucide-react';
+import { Search, Compass, Zap, AlertCircle, SlidersHorizontal } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
 import { mapTaskForUi } from '../../utils/apiMappers';
 import type { UiTask } from '../../types';
-import { TaskCard } from '../../components/task/TaskCard';
+import { TaskCard, PlatformMark } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
 
 const CATEGORIES = [
@@ -18,13 +18,13 @@ const CATEGORIES = [
   { slug: 'feedback', name: 'Feedback' },
 ];
 
-const PLATFORMS = ['All platforms', 'Instagram', 'TikTok', 'Facebook', 'YouTube', 'Google Reviews', 'Trustpilot', 'WhatsApp', 'LinkedIn'];
+const PLATFORMS = ['Instagram', 'TikTok', 'Facebook', 'YouTube', 'Google Reviews', 'Trustpilot', 'WhatsApp', 'LinkedIn'];
 
 const SORTS = [
-  { value: 'newest', label: 'Newest' },
+  { value: 'newest', label: 'Newest first' },
   { value: 'reward_desc', label: 'Highest reward' },
   { value: 'reward_asc', label: 'Lowest reward' },
-  { value: 'time_asc', label: 'Quickest' },
+  { value: 'time_asc', label: 'Quickest first' },
 ];
 
 interface TaskFeedPageProps {
@@ -74,18 +74,28 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
   );
 
   const isFeed = variant === 'feed';
+  const clearFilters = () => {
+    setSearch('');
+    setCategory('');
+    setPlatform('All platforms');
+    fetchTasks();
+  };
+
+  const selectClass =
+    'min-h-[48px] text-sm font-bold text-slate-700 bg-white border-2 border-slate-200 rounded-2xl px-4 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/10 transition-all cursor-pointer';
 
   return (
     <div className="space-y-5 text-left">
-      <div className="flex items-start gap-3">
-        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center text-white shrink-0 ${isFeed ? 'bg-[#7357FF]' : 'bg-[#168BFF]'}`}>
-          {isFeed ? <Zap className="w-5 h-5" /> : <Compass className="w-5 h-5" />}
+      {/* Page header */}
+      <div className="flex items-start gap-4">
+        <div className={`w-13 h-13 min-w-[52px] min-h-[52px] rounded-2xl flex items-center justify-center text-white shrink-0 shadow-lg ${isFeed ? 'bg-gradient-to-br from-[#7357FF] to-[#9D7BFF] shadow-violet-500/25' : 'bg-gradient-to-br from-[#168BFF] to-[#20C4E8] shadow-blue-500/25'}`}>
+          {isFeed ? <Zap className="w-6 h-6" /> : <Compass className="w-6 h-6" />}
         </div>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#101828]">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-[1.75rem] font-black tracking-tight text-[#101828]">
             {isFeed ? 'Task Feed' : 'Available Tasks'}
           </h1>
-          <p className="text-xs text-[#667085] mt-0.5">
+          <p className="text-sm text-[#667085] mt-1">
             {isFeed
               ? 'A live stream of open tasks across platforms.'
               : 'Open tasks from verified businesses. Complete the real action, then submit proof.'}
@@ -93,24 +103,64 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl border border-[#E7ECF3] p-3 sm:p-4 space-y-3">
+      {/* Filter bar */}
+      <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-4 sm:p-5 space-y-4">
+        {/* Search */}
         <div className="relative">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+          <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchTasks()}
             placeholder="Search tasks or companies…"
-            className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-[#168BFF]"
+            aria-label="Search tasks"
+            className="w-full min-h-[52px] pl-12 pr-12 py-3 text-base bg-slate-50 border-2 border-slate-200 rounded-2xl placeholder:text-slate-400 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/10 focus:bg-white transition-all"
           />
+          {search && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600 px-2 py-1"
+            >
+              Clear
+            </button>
+          )}
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        {/* Platform pills */}
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" role="group" aria-label="Filter by platform">
+          {['All platforms', ...PLATFORMS].map((p) => {
+            const active = platform === p;
+            return (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPlatform(p)}
+                aria-pressed={active}
+                className={`shrink-0 inline-flex items-center gap-2 min-h-[44px] px-4 rounded-full border-2 text-sm font-bold transition-all ${
+                  active
+                    ? 'bg-[#07182F] border-[#07182F] text-white shadow-md'
+                    : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50'
+                }`}
+              >
+                {p !== 'All platforms' && <PlatformMark platform={p} className="w-4 h-4" />}
+                <span>{p === 'All platforms' ? 'All' : p}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Category + sort */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <label className="flex items-center gap-2 text-sm font-bold text-slate-500 sm:w-auto">
+            <SlidersHorizontal className="w-4 h-4 shrink-0" />
+            <span className="sm:sr-only">Filters</span>
+          </label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="text-xs font-bold bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[#168BFF]"
+            className={`${selectClass} flex-1`}
             aria-label="Filter by task type"
           >
             {CATEGORIES.map((c) => (
@@ -118,19 +168,9 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
             ))}
           </select>
           <select
-            value={platform}
-            onChange={(e) => setPlatform(e.target.value)}
-            className="text-xs font-bold bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[#168BFF]"
-            aria-label="Filter by platform"
-          >
-            {PLATFORMS.map((p) => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
-          <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="text-xs font-bold bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[#168BFF]"
+            className={`${selectClass} flex-1`}
             aria-label="Sort tasks"
           >
             {SORTS.map((s) => (
@@ -140,25 +180,39 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
         </div>
       </div>
 
+      {/* Result count */}
+      {!loading && !error && (
+        <p className="text-sm font-semibold text-slate-500 px-1">
+          {visible.length} {visible.length === 1 ? 'task' : 'tasks'} available
+        </p>
+      )}
+
       {/* Results */}
       {loading ? (
-        <div className={isFeed ? 'space-y-2.5' : 'grid sm:grid-cols-2 lg:grid-cols-3 gap-4'}>
+        <div className={isFeed ? 'space-y-3' : 'grid sm:grid-cols-2 lg:grid-cols-3 gap-5'}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-3xl border border-[#E7ECF3] p-5 animate-pulse">
-              <div className="h-4 bg-gray-100 rounded w-2/3 mb-3" />
-              <div className="h-3 bg-gray-100 rounded w-1/2 mb-2" />
-              <div className="h-3 bg-gray-100 rounded w-1/3" />
+            <div key={i} className="bg-white rounded-[1.5rem] border border-[#E7ECF3] p-6 animate-pulse">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-[52px] h-[52px] bg-slate-100 rounded-2xl" />
+                <div className="flex-1">
+                  <div className="h-3.5 bg-slate-100 rounded w-2/3 mb-2" />
+                  <div className="h-3 bg-slate-100 rounded w-1/2" />
+                </div>
+              </div>
+              <div className="h-4 bg-slate-100 rounded w-full mb-2" />
+              <div className="h-4 bg-slate-100 rounded w-5/6 mb-4" />
+              <div className="h-[52px] bg-slate-100 rounded-2xl" />
             </div>
           ))}
         </div>
       ) : error ? (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-          <AlertCircle className="w-6 h-6 text-red-500 mx-auto mb-2" />
-          <p className="text-xs font-bold text-red-700">{error}</p>
+        <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-8 text-center">
+          <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
+          <p className="text-sm font-bold text-red-700">{error}</p>
           <button
             type="button"
             onClick={fetchTasks}
-            className="mt-3 px-5 py-2 rounded-xl bg-[#07182F] text-white text-xs font-bold hover:bg-[#168BFF] transition-colors"
+            className="mt-4 px-6 py-3 rounded-2xl bg-[#07182F] text-white text-sm font-bold hover:bg-[#168BFF] transition-colors min-h-[48px]"
           >
             Retry
           </button>
@@ -169,21 +223,16 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
           description="There are no open tasks matching your filters. New tasks from verified businesses appear here as soon as they're published — check back soon."
           icon={isFeed ? Zap : Compass}
           actionLabel="Clear filters"
-          onAction={() => {
-            setSearch('');
-            setCategory('');
-            setPlatform('All platforms');
-            fetchTasks();
-          }}
+          onAction={clearFilters}
         />
       ) : isFeed ? (
-        <div className="space-y-2.5">
+        <div className="space-y-3">
           {visible.map((task) => (
             <TaskCard key={task.uuid || task.id} task={task} compact />
           ))}
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {visible.map((task) => (
             <TaskCard key={task.uuid || task.id} task={task} />
           ))}

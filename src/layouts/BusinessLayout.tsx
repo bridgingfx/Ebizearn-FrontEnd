@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 import { EBizLogo } from '../components/common/EBizLogo';
+import { RegionSelector } from '../components/common/RegionSelector';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 
 export const BusinessLayout: React.FC = () => {
@@ -140,6 +141,9 @@ export const BusinessLayout: React.FC = () => {
           </Link>
 
           <div className="flex items-center gap-4 ml-auto">
+            <div className="hidden md:block">
+              <RegionSelector variant="light" />
+            </div>
             <div className="flex items-center gap-2.5 pl-2">
               <div className="hidden sm:block text-right">
                 <span className="text-xs font-bold text-gray-900 block leading-tight">{companyName}</span>

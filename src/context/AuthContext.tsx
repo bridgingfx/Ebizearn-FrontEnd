@@ -12,6 +12,11 @@ interface AuthContextType {
    *  message is thrown so the login page can display it (e.g. 403 portal
    *  mismatch). */
   login: (email: string, password: string, portal?: LoginPortal) => Promise<UserRole | null>;
+  /**
+   * Social sign-in: POST the provider ID token to /auth/social/{provider}
+   * and persist the returned Sanctum token exactly like a password login.
+   */
+  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal) => Promise<UserRole | null>;
   register: (payload: RegisterPayload) => Promise<{ ok: boolean; message?: string; role?: UserRole }>;
   logout: () => void;
   updateUser: (user: User) => void;
@@ -65,6 +70,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
       throw new Error(
         getApiError(error, 'Invalid email or password. Please check your account details and try again.')
+      );
+    }
+    setIsLoading(false);
+    return null;
+  };
+
+  const socialLogin = async (
+    provider: 'google' | 'apple',
+    idToken: string,
+    portal?: LoginPortal
+  ): Promise<UserRole | null> => {
+    setIsLoading(true);
+    try {
+      const res = await authApi.socialLogin(provider, idToken, portal);
+      if (res.success && res.data.user) {
+        updateAndPersistUser(res.data.user);
+        setToken(res.data.token);
+        localStorage.setItem(TOKEN_KEY, res.data.token);
+        localStorage.setItem(ACTIVE_ROLE_KEY, res.data.user.role);
+        setIsLoading(false);
+        return res.data.user.role;
+      }
+    } catch (error) {
+      setIsLoading(false);
+      throw new Error(
+        getApiError(
+          error,
+          'Social sign-in failed. Please try again or use your email and password instead.'
+        )
       );
     }
     setIsLoading(false);
@@ -170,6 +204,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isLoading,
         login,
+        socialLogin,
         register,
         logout,
         updateUser: updateAndPersistUser,

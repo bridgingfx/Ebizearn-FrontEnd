@@ -17,6 +17,7 @@ import {
 import { businessApi, getApiError, api } from '../../api';
 import { COUNTRY_OPTIONS } from '../../config/geoLocations';
 import { useAuth } from '../../context/AuthContext';
+import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification';
 import { TaskPreview, TaskPreviewSummary, classifyTaskPreview } from '../../components/task/TaskPreview';
 import type { UiTask } from '../../types';
 import {
@@ -101,6 +102,7 @@ const TEMPLATE_TO_PLATFORM: Record<string, string> = {
 
 export const CreateCampaignWizardPage: React.FC = () => {
   const navigate = useNavigate();
+  const { requireVerified, gate } = useRequireVerifiedEmail();
   const [searchParams] = useSearchParams();
   const templateHint = searchParams.get('template');
   const { user } = useAuth();
@@ -223,6 +225,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
   };
 
   const handleLaunch = async () => {
+    // Launching a campaign spends real budget — verified email required.
+    if (!requireVerified()) return;
     if (launching || !validateStep(4) || !validateStep(1) || categoryId == null || !platform) return;
     setLaunching(true);
     setLaunchError(null);
@@ -351,6 +355,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
+      {gate}
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Create Campaign</h1>

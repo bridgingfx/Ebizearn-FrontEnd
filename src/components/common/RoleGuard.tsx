@@ -37,5 +37,15 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
     return <Navigate to={destination} replace />;
   }
 
+  // Verified-email route gate: an authenticated user whose /me reports an
+  // unverified email cannot enter any portal page — they land on
+  // /verify-email instead. /verify-email itself is not wrapped in RoleGuard,
+  // so this cannot loop. Moderators/staff are exempt: their sessions come
+  // from staff-issued credentials, not self-service signup.
+  const isStaff = user.role === 'admin' || user.role === 'superadmin' || user.role === 'moderator';
+  if (!isStaff && user.email_verified_at == null) {
+    return <Navigate to="/verify-email" replace state={{ from: location.pathname }} />;
+  }
+
   return children;
 }

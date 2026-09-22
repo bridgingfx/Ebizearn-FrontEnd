@@ -9,10 +9,12 @@ import {
   AlertCircle,
   Loader2,
   ArrowRight,
+  Activity,
 } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { AdminDashboardMetrics } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
+import { StatCard, SectionHeader } from '../../components/common/StatCard';
 
 /**
  * Admin overview. Every number comes from GET /admin/dashboard. There are no
@@ -49,17 +51,9 @@ export const AdminOverviewPage: React.FC = () => {
     void load();
   }, [load]);
 
-  const cards = [
-    { icon: Users, label: 'Total Contributors', value: metrics?.total_contributors ?? '—', tone: 'text-blue-600', bg: 'bg-blue-100' },
-    { icon: Megaphone, label: 'Active Campaigns', value: metrics?.active_campaigns ?? '—', tone: 'text-emerald-600', bg: 'bg-emerald-100' },
-    { icon: FileCheck, label: 'Pending Verification', value: metrics?.pending_verification ?? '—', tone: 'text-amber-600', bg: 'bg-amber-100' },
-    { icon: Receipt, label: 'Pending Payouts', value: metrics?.pending_payouts ?? '—', tone: 'text-violet-600', bg: 'bg-violet-100' },
-    { icon: ShieldCheck, label: 'Open Fraud Alerts', value: metrics?.fraud_alerts_count ?? '—', tone: 'text-red-600', bg: 'bg-red-100' },
-  ];
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-gray-500">
+      <div className="flex items-center justify-center py-16 text-slate-500">
         <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading overview…
       </div>
     );
@@ -67,12 +61,12 @@ export const AdminOverviewPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+      <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-6 flex items-start gap-3">
+        <AlertCircle className="w-6 h-6 text-red-500 mt-0.5 shrink-0" />
         <div className="text-sm">
           <p className="font-bold text-red-700">Could not load admin dashboard</p>
           <p className="text-red-600 mt-1">{error}</p>
-          <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+          <button type="button" onClick={() => void load()} className="mt-2 text-sm font-bold text-red-700 underline min-h-[44px]">
             Retry
           </button>
         </div>
@@ -80,65 +74,102 @@ export const AdminOverviewPage: React.FC = () => {
     );
   }
 
+  const queueActions = [
+    {
+      to: '/admin/verification',
+      label: 'Verification queue',
+      count: metrics?.pending_verification ?? 0,
+      desc: 'Submissions awaiting review',
+      gradient: 'from-amber-500 to-orange-600',
+      shadow: 'shadow-amber-500/25',
+      icon: FileCheck,
+    },
+    {
+      to: '/admin/withdrawals',
+      label: 'Withdrawal queue',
+      count: metrics?.pending_payouts ?? 0,
+      desc: 'Payouts awaiting approval',
+      gradient: 'from-[#7257FF] to-[#9D7BFF]',
+      shadow: 'shadow-violet-500/25',
+      icon: Receipt,
+    },
+    {
+      to: '/admin/fraud',
+      label: 'Fraud alerts',
+      count: metrics?.fraud_alerts_count ?? 0,
+      desc: 'Open risk signals',
+      gradient: 'from-red-500 to-rose-600',
+      shadow: 'shadow-red-500/25',
+      icon: ShieldCheck,
+    },
+  ];
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Admin Overview</h1>
-        <p className="text-sm text-gray-500 mt-1">Live platform state — every figure is served by the API.</p>
+    <div className="space-y-8 text-left">
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-[1.75rem] bg-navy-gradient p-6 sm:p-8 text-white">
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#168BFF]/30 blur-3xl" />
+        <div className="absolute -bottom-28 left-1/3 w-72 h-72 rounded-full bg-[#7257FF]/25 blur-3xl" />
+        <div className="relative">
+          <p className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.14em] text-[#20C4E8]">
+            <Activity className="w-3.5 h-3.5" /> Platform command center
+          </p>
+          <h1 className="mt-2 text-2xl sm:text-[2rem] font-black tracking-tight">Admin Overview</h1>
+          <p className="mt-1.5 text-sm sm:text-base text-slate-300">
+            Live platform state — every figure is served by the API.
+          </p>
+        </div>
       </div>
 
       {/* Metric cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        {cards.map((c) => (
-          <div key={c.label} className="bg-white rounded-2xl p-4 border border-gray-200 shadow-xs">
-            <div className={`p-2 rounded-xl ${c.bg} w-fit mb-3`}>
-              <c.icon className={`w-4 h-4 ${c.tone}`} />
-            </div>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{c.label}</p>
-            <p className="text-xl font-extrabold text-gray-900">{c.value}</p>
-          </div>
-        ))}
+        <StatCard label="Total contributors" value={String(metrics?.total_contributors ?? '—')} icon={Users} gradient="from-[#168BFF] to-[#20C4E8]" shadow="shadow-lg shadow-blue-500/25" />
+        <StatCard label="Active campaigns" value={String(metrics?.active_campaigns ?? '—')} icon={Megaphone} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
+        <StatCard label="Pending verification" value={String(metrics?.pending_verification ?? '—')} icon={FileCheck} gradient="from-amber-500 to-orange-600" shadow="shadow-lg shadow-amber-500/25" />
+        <StatCard label="Pending payouts" value={String(metrics?.pending_payouts ?? '—')} icon={Receipt} gradient="from-[#7257FF] to-[#9D7BFF]" shadow="shadow-lg shadow-violet-500/25" />
+        <StatCard label="Open fraud alerts" value={String(metrics?.fraud_alerts_count ?? '—')} icon={ShieldCheck} gradient="from-red-500 to-rose-600" shadow="shadow-lg shadow-red-500/25" />
       </div>
 
-      {/* Quick actions */}
-      <div className="grid sm:grid-cols-3 gap-4">
-        {[
-          { to: '/admin/verification', label: 'Verification queue', count: metrics?.pending_verification ?? 0 },
-          { to: '/admin/withdrawals', label: 'Withdrawal queue', count: metrics?.pending_payouts ?? 0 },
-          { to: '/admin/fraud', label: 'Fraud alerts', count: metrics?.fraud_alerts_count ?? 0 },
-        ].map((a) => (
-          <Link
-            key={a.to}
-            to={a.to}
-            className="bg-[#0E1C2F] hover:bg-[#16293f] text-white rounded-2xl p-5 flex items-center justify-between transition-colors"
-          >
-            <div>
-              <p className="text-xs font-bold text-gray-300">{a.label}</p>
-              <p className="text-2xl font-extrabold mt-1">{a.count}</p>
-            </div>
-            <ArrowRight className="w-5 h-5 text-[#D4AF37]" />
-          </Link>
-        ))}
+      {/* Queue quick actions */}
+      <div>
+        <SectionHeader title="Needs your attention" subtitle="The three operational queues, live." />
+        <div className="grid sm:grid-cols-3 gap-4">
+          {queueActions.map((a) => {
+            const Icon = a.icon;
+            return (
+              <Link
+                key={a.to}
+                to={a.to}
+                className="group bg-[#0E1C2F] hover:bg-[#16293f] text-white rounded-[1.5rem] p-6 transition-all hover:-translate-y-0.5 hover:shadow-xl"
+              >
+                <div className="flex items-start justify-between">
+                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${a.gradient} shadow-lg ${a.shadow} flex items-center justify-center`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                </div>
+                <p className="mt-4 text-3xl font-black tracking-tight">{a.count}</p>
+                <p className="text-sm font-bold text-white mt-1">{a.label}</p>
+                <p className="text-xs text-slate-400 mt-0.5">{a.desc}</p>
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       {/* Real queues preview */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-extrabold text-gray-900">Latest verification items</h3>
-            <Link to="/admin/verification" className="text-[11px] font-bold text-[#168BFF] hover:underline">
-              Open queue
-            </Link>
-          </div>
+        <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6">
+          <SectionHeader title="Latest verification items" actionLabel="Open queue" actionTo="/admin/verification" />
           {verificationQueue.length === 0 ? (
             <EmptyState icon={FileCheck} title="Queue is clear" description="No submissions waiting for review right now." />
           ) : (
             <div className="space-y-2">
               {(verificationQueue as { id: number; task?: { title?: string }; user?: { name?: string }; created_at: string }[]).map((s) => (
-                <div key={s.id} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+                <div key={s.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] border border-slate-100 rounded-2xl">
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-gray-900 truncate">{s.task?.title || `Submission #${s.id}`}</p>
-                    <p className="text-[10px] text-gray-400">{s.user?.name || ''} · {new Date(s.created_at).toLocaleDateString()}</p>
+                    <p className="text-sm font-bold text-slate-900 truncate">{s.task?.title || `Submission #${s.id}`}</p>
+                    <p className="text-xs text-slate-400">{s.user?.name || ''} · {new Date(s.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
               ))}
@@ -146,22 +177,17 @@ export const AdminOverviewPage: React.FC = () => {
           )}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-extrabold text-gray-900">Latest fraud alerts</h3>
-            <Link to="/admin/fraud" className="text-[11px] font-bold text-[#168BFF] hover:underline">
-              Open alerts
-            </Link>
-          </div>
+        <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6">
+          <SectionHeader title="Latest fraud alerts" actionLabel="Open alerts" actionTo="/admin/fraud" />
           {fraudAlerts.length === 0 ? (
             <EmptyState icon={ShieldCheck} title="No open alerts" description="The fraud service has not raised any alerts." />
           ) : (
             <div className="space-y-2">
               {(fraudAlerts as { id: number; risk_level?: string; reason?: string; created_at?: string }[]).map((a) => (
-                <div key={a.id} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-xl">
+                <div key={a.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] border border-slate-100 rounded-2xl">
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-gray-900 truncate">{a.reason || `Alert #${a.id}`}</p>
-                    <p className="text-[10px] text-gray-400">
+                    <p className="text-sm font-bold text-slate-900 truncate">{a.reason || `Alert #${a.id}`}</p>
+                    <p className="text-xs text-slate-400">
                       {a.risk_level ? `Risk: ${a.risk_level}` : ''} {a.created_at ? `· ${new Date(a.created_at).toLocaleDateString()}` : ''}
                     </p>
                   </div>

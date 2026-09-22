@@ -36,4 +36,22 @@ export const authApi = {
 
   resetPassword: (payload: { email: string; token: string; password: string; password_confirmation: string }) =>
     api.post<ApiResponse<null>>('/auth/reset-password', payload).then((r) => r.data),
+
+  /**
+   * Social sign-in: exchange a provider ID token for a Sanctum session.
+   * The frontend obtains the ID token via the provider's JS SDK / OAuth
+   * redirect; the backend verifies it and returns { user, token } exactly
+   * like a password login. `provider` is `google` or `apple`.
+   */
+  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal) =>
+    api
+      .post<ApiResponse<AuthSession>>(`/auth/social/${provider}`, {
+        id_token: idToken,
+        ...(portal ? { portal } : {}),
+      })
+      .then((r) => r.data),
+
+  /** Re-send the email-verification message (60s cooldown enforced client-side). */
+  resendVerificationEmail: () =>
+    api.post<ApiResponse<null>>('/auth/email/resend').then((r) => r.data),
 };

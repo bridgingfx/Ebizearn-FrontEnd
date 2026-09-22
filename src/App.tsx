@@ -31,6 +31,7 @@ import { ModeratorLoginPage } from './pages/auth/ModeratorLoginPage';
 import { OnboardingWizardPage } from './pages/auth/OnboardingWizardPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
+import { VerifyEmailPage } from './components/auth/EmailVerification';
 
 // Contributor Pages
 import { ContributorDashboardPage } from './pages/contributor/ContributorDashboardPage';
@@ -140,6 +141,8 @@ export const App: React.FC = () => {
           <Route path="/business/login" element={<BusinessLoginPage />} />
           <Route path="/business/register" element={<BusinessSignupPage />} />
           <Route path="/moderator/login" element={<ModeratorLoginPage />} />
+          {/* Email-verification gate (post-signup + unverified sign-ins). */}
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
           {/* Hidden Super Admin console sign-in (no public chrome; unlinked everywhere). */}
           <Route path="/secure-control-panel/login" element={<SuperAdminLoginPage />} />
 

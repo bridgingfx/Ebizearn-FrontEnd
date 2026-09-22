@@ -12,6 +12,12 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   referral_code?: string;
+  /**
+   * Email-verification timestamp. `null` = explicitly unverified (Laravel
+   * sends `email_verified_at: null`) → show the verification gate.
+   * `undefined` = unknown/legacy response → do not gate.
+   */
+  email_verified_at?: string | null;
   /** Returned by the API for every user; optional here for legacy mocks. */
   created_at?: string;
   profile?: Profile;

@@ -1,16 +1,37 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Gift, Copy, Check, Users, ShieldCheck, AlertCircle, Layers } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  Gift,
+  Copy,
+  Check,
+  Users,
+  ShieldCheck,
+  AlertCircle,
+  Layers,
+  Share2,
+  UserPlus,
+  BadgeDollarSign,
+  ArrowRight,
+  Network,
+} from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
 import { money } from '../../utils/apiMappers';
 import type { ReferralsData } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
+import { StatCard, SectionHeader } from '../../components/common/StatCard';
 
 const statusLabels: Record<string, { label: string; className: string }> = {
-  rewarded: { label: 'Rewarded', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  qualified: { label: 'Qualified', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  pending: { label: 'Pending', className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  pending_tasks: { label: 'Awaiting activity', className: 'bg-amber-50 text-amber-700 border-amber-200' },
+  rewarded: { label: 'Rewarded', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  qualified: { label: 'Qualified', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  pending: { label: 'Pending', className: 'bg-amber-100 text-amber-700 border-amber-200' },
+  pending_tasks: { label: 'Awaiting activity', className: 'bg-amber-100 text-amber-700 border-amber-200' },
 };
+
+const LEVEL_INFO = [
+  { level: 1, title: 'Direct invites', desc: 'Friends who join with your link.', gradient: 'from-[#168BFF] to-[#20C4E8]', shadow: 'shadow-blue-500/25' },
+  { level: 2, title: 'Second circle', desc: 'People invited by your direct invites.', gradient: 'from-[#7257FF] to-[#9D7BFF]', shadow: 'shadow-violet-500/25' },
+  { level: 3, title: 'Extended network', desc: 'The next tier of the network.', gradient: 'from-[#16B364] to-[#0EA968]', shadow: 'shadow-emerald-500/25' },
+];
 
 export const ContributorReferralsPage: React.FC = () => {
   const [data, setData] = useState<ReferralsData | null>(null);
@@ -66,117 +87,163 @@ export const ContributorReferralsPage: React.FC = () => {
   const rewardPerReferral = data ? money(data.reward_per_referral_cents, 'USD') : '—';
 
   return (
-    <div className="space-y-6 text-left">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-black text-[#101828]">Invite Friends &amp; Earn</h1>
-        <p className="text-xs text-[#667085] mt-0.5">
-          Share your referral link. Earn {rewardPerReferral} when your friend completes their first verified task.
-          Rewards are credited to your wallet only after the platform's qualification rules are met — never estimated.
-        </p>
+    <div className="space-y-8 text-left">
+      {/* ── Hero ──────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden rounded-[1.75rem] bg-navy-gradient p-6 sm:p-8 text-white">
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-[#7257FF]/35 blur-3xl" />
+        <div className="absolute -bottom-28 left-1/3 w-72 h-72 rounded-full bg-[#16B364]/20 blur-3xl" />
+        <div className="relative">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.14em] bg-white/10 border border-white/15 text-[#20C4E8] px-3.5 py-1.5 rounded-full">
+            <Gift className="w-3.5 h-3.5" /> Referral program
+          </span>
+          <h1 className="mt-3 text-2xl sm:text-[2rem] font-black tracking-tight leading-tight">
+            Invite friends, earn together
+          </h1>
+          <p className="mt-1.5 text-sm sm:text-base text-slate-300 max-w-xl">
+            Share your link and earn <span className="font-extrabold text-white">{rewardPerReferral}</span> when
+            a friend completes their first verified task. Rewards land in your wallet only after
+            qualification — never estimated.
+          </p>
+        </div>
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-3xl border border-[#E7ECF3] p-6 animate-pulse">
-          <div className="h-4 bg-gray-100 rounded w-1/3 mb-4" />
-          <div className="h-10 bg-gray-100 rounded-xl" />
+        <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] p-6 animate-pulse">
+          <div className="h-4 bg-slate-100 rounded w-1/3 mb-4" />
+          <div className="h-[52px] bg-slate-100 rounded-2xl" />
         </div>
       ) : error ? (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-          <AlertCircle className="w-6 h-6 text-red-500 mx-auto mb-2" />
-          <p className="text-xs font-bold text-red-700">{error}</p>
+        <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-8 text-center">
+          <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
+          <p className="text-sm font-bold text-red-700">{error}</p>
           <button
             type="button"
             onClick={fetchReferrals}
-            className="mt-3 px-5 py-2 rounded-xl bg-[#07182F] text-white text-xs font-bold hover:bg-[#168BFF] transition-colors"
+            className="mt-4 px-6 py-3 rounded-2xl bg-[#07182F] text-white text-sm font-bold hover:bg-[#168BFF] transition-colors min-h-[48px]"
           >
             Retry
           </button>
         </div>
       ) : data ? (
         <>
-          {/* Referral link card */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#E7ECF3] shadow-xs space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-violet-50 text-[#7357FF] flex items-center justify-center">
-                <Gift className="w-5 h-5" />
+          {/* ── Referral link card ────────────────────────────────── */}
+          <div className="bg-white rounded-[1.75rem] p-6 sm:p-8 border border-[#E7ECF3] card-shadow">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7257FF] to-[#9D7BFF] shadow-lg shadow-violet-500/25 flex items-center justify-center shrink-0">
+                <Share2 className="w-7 h-7 text-white" />
               </div>
-              <div>
-                <h3 className="text-base font-bold text-gray-900">Your referral link</h3>
-                <p className="text-xs text-gray-500">
-                  Code <span className="font-black text-gray-900 font-mono">{data.referral_code}</span> · free to join, no purchase required
+              <div className="min-w-0">
+                <h2 className="text-lg font-black text-slate-900 tracking-tight">Your referral link</h2>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  Code <span className="font-black text-slate-900 font-mono tracking-wide">{data.referral_code}</span>
+                  {' · '}free to join, no purchase required
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="mt-5 flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
                 readOnly
                 value={data.referral_link}
                 onFocus={(e) => e.target.select()}
-                className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-mono text-gray-700 select-all"
+                aria-label="Your referral link"
+                className="flex-1 min-h-[54px] px-5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-sm sm:text-base font-mono text-slate-700 select-all focus:outline-none focus:border-[#7257FF]"
               />
               <button
                 type="button"
                 onClick={handleCopy}
-                className="px-6 py-2.5 bg-[#07182F] hover:bg-[#168BFF] text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shrink-0"
+                className={`min-h-[54px] px-7 rounded-2xl text-base font-extrabold transition-all flex items-center justify-center gap-2 shrink-0 ${
+                  copied
+                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25'
+                    : 'bg-[#07182F] hover:bg-[#168BFF] text-white shadow-lg'
+                }`}
               >
-                {copied ? <Check className="w-4 h-4 text-[#16B364]" /> : <Copy className="w-4 h-4" />}
-                <span>{copied ? 'Copied!' : 'Copy Link'}</span>
+                {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                <span>{copied ? 'Copied!' : 'Copy link'}</span>
               </button>
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {[
-              { label: 'Total referred', value: String(data.total_referred), tint: 'bg-blue-50 text-blue-700', icon: Users },
-              { label: 'Qualified', value: String(data.qualified_referrals), tint: 'bg-emerald-50 text-emerald-700', icon: ShieldCheck },
-              { label: 'Referral earnings', value: money(data.total_earned_cents), tint: 'bg-violet-50 text-violet-700', icon: Gift },
-              { label: 'Per referral', value: rewardPerReferral, tint: 'bg-amber-50 text-amber-700', icon: Layers },
-            ].map((s) => {
-              const Icon = s.icon;
-              return (
-                <div key={s.label} className="bg-white rounded-3xl border border-[#E7ECF3] p-4">
-                  <div className={`w-9 h-9 rounded-2xl ${s.tint} flex items-center justify-center mb-3`}>
-                    <Icon className="w-4 h-4" />
-                  </div>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{s.label}</p>
-                  <p className="text-lg font-black text-gray-900 mt-0.5">{s.value}</p>
-                </div>
-              );
-            })}
+          {/* ── Stats ─────────────────────────────────────────────── */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard label="Total referred" value={String(data.total_referred)} icon={Users} gradient="from-[#168BFF] to-[#20C4E8]" shadow="shadow-lg shadow-blue-500/25" />
+            <StatCard label="Qualified" value={String(data.qualified_referrals)} sub="Met qualification rules" icon={ShieldCheck} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
+            <StatCard label="Referral earnings" value={money(data.total_earned_cents)} icon={BadgeDollarSign} gradient="from-[#7257FF] to-[#9D7BFF]" shadow="shadow-lg shadow-violet-500/25" />
+            <StatCard label="Per referral" value={rewardPerReferral} icon={Layers} gradient="from-amber-500 to-orange-600" shadow="shadow-lg shadow-amber-500/25" />
           </div>
 
-          {/* 3-level breakdown */}
-          <div className="bg-white rounded-3xl border border-[#E7ECF3] p-5 sm:p-6">
-            <h3 className="text-sm font-black text-gray-900 mb-1">Affiliate levels</h3>
-            <p className="text-[11px] text-gray-500 mb-4">
-              Three earning levels: direct invites (L1), their invites (L2), and the next tier (L3). Only qualified activity earns.
-            </p>
-            {levelStats ? (
-              <div className="grid sm:grid-cols-3 gap-3">
-                {levelStats.map((l) => (
-                  <div key={l.level} className="rounded-2xl border border-gray-100 bg-gray-50/60 p-4">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-gray-400">Level {l.level}</p>
-                    <p className="text-lg font-black text-gray-900 mt-1">{l.count} referral{l.count === 1 ? '' : 's'}</p>
-                    <p className="text-[11px] text-emerald-700 font-bold mt-0.5">{money(l.earned)} earned</p>
-                  </div>
-                ))}
+          {/* ── 3-level tree visualization ────────────────────────── */}
+          <div className="bg-white rounded-[1.75rem] border border-[#E7ECF3] card-shadow p-6 sm:p-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-11 h-11 rounded-2xl bg-[#168BFF]/10 text-[#168BFF] flex items-center justify-center">
+                <Network className="w-6 h-6" />
               </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/60 p-4">
-                <p className="text-[11px] text-gray-500">
-                  Level-by-level breakdown isn't available from the API yet — totals above are real and current.
-                  Multi-level detail will appear here automatically once the backend ships it.
-                </p>
+              <div>
+                <h2 className="text-lg font-black text-slate-900 tracking-tight">Three earning levels</h2>
+                <p className="text-sm text-slate-500">Your network pays three tiers deep. Only qualified activity earns.</p>
               </div>
-            )}
+            </div>
+
+            <div className="mt-6 relative">
+              {/* Connector line (desktop) */}
+              <div className="hidden sm:block absolute top-8 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-[#168BFF]/30 via-[#7257FF]/30 to-[#16B364]/30" />
+              <div className="grid sm:grid-cols-3 gap-4">
+                {LEVEL_INFO.map((lvl) => {
+                  const stat = levelStats?.find((s) => s.level === lvl.level);
+                  return (
+                    <div key={lvl.level} className="relative rounded-3xl border-2 border-slate-100 bg-[#F8FAFD] p-5 text-center hover:border-slate-200 transition-colors">
+                      <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br ${lvl.gradient} shadow-lg ${lvl.shadow} flex items-center justify-center`}>
+                        <span className="text-2xl font-black text-white">L{lvl.level}</span>
+                      </div>
+                      <p className="mt-3 text-base font-extrabold text-slate-900">{lvl.title}</p>
+                      <p className="mt-1 text-xs text-slate-500 leading-relaxed">{lvl.desc}</p>
+                      {stat ? (
+                        <div className="mt-3 pt-3 border-t border-slate-200/70">
+                          <p className="text-xl font-black text-slate-900">
+                            {stat.count} <span className="text-xs font-bold text-slate-400">referral{stat.count === 1 ? '' : 's'}</span>
+                          </p>
+                          <p className="text-sm font-extrabold text-emerald-600 mt-0.5">{money(stat.earned)} earned</p>
+                        </div>
+                      ) : (
+                        <p className="mt-3 pt-3 border-t border-slate-200/70 text-xs font-bold text-slate-400">
+                          {levelStats ? 'No referrals at this level yet' : 'Live counts appear once the backend ships level data'}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {/* Referred list */}
+          {/* ── How it works ──────────────────────────────────────── */}
           <div>
-            <h3 className="text-sm font-black text-gray-900 mb-3">Your referrals</h3>
+            <SectionHeader title="How it works" subtitle="Three steps to referral earnings." />
+            <div className="grid sm:grid-cols-3 gap-4">
+              {[
+                { icon: Share2, step: '1', title: 'Share your link', desc: 'Send your unique link to friends, groups, and communities.', gradient: 'from-[#168BFF] to-[#20C4E8]', shadow: 'shadow-blue-500/25' },
+                { icon: UserPlus, step: '2', title: 'They join free', desc: 'Friends sign up free and complete their first verified task.', gradient: 'from-[#7257FF] to-[#9D7BFF]', shadow: 'shadow-violet-500/25' },
+                { icon: BadgeDollarSign, step: '3', title: 'You earn', desc: 'Your reward is credited to your wallet after qualification.', gradient: 'from-[#16B364] to-[#0EA968]', shadow: 'shadow-emerald-500/25' },
+              ].map((s) => {
+                const Icon = s.icon;
+                return (
+                  <div key={s.step} className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow p-6">
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${s.gradient} shadow-lg ${s.shadow} flex items-center justify-center mb-4`}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.12em] text-slate-400">Step {s.step}</p>
+                    <p className="mt-1 text-base font-extrabold text-slate-900">{s.title}</p>
+                    <p className="mt-1.5 text-sm text-slate-500 leading-relaxed">{s.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Earnings history ──────────────────────────────────── */}
+          <div>
+            <SectionHeader title="Referral history" subtitle="Everyone who joined with your link." />
             {data.referrals.length === 0 ? (
               <EmptyState
                 title="No referrals yet"
@@ -184,27 +251,27 @@ export const ContributorReferralsPage: React.FC = () => {
                 icon={Users}
               />
             ) : (
-              <div className="bg-white rounded-3xl border border-[#E7ECF3] divide-y divide-gray-100 overflow-hidden">
+              <div className="bg-white rounded-[1.5rem] border border-[#E7ECF3] card-shadow divide-y divide-slate-100 overflow-hidden">
                 {data.referrals.map((r) => {
-                  const st = statusLabels[r.status] || { label: r.status.replace(/_/g, ' '), className: 'bg-gray-100 text-gray-600 border-gray-200' };
+                  const st = statusLabels[r.status] || { label: r.status.replace(/_/g, ' '), className: 'bg-slate-100 text-slate-600 border-slate-200' };
                   return (
-                    <div key={r.id} className="flex items-center gap-3 px-4 py-3">
-                      <div className="w-9 h-9 rounded-2xl bg-[#07182F] text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                    <div key={r.id} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50/60 transition-colors">
+                      <div className="w-12 h-12 rounded-2xl bg-[#07182F] text-white flex items-center justify-center text-sm font-black shrink-0">
                         {(r.referred_user?.name || '?').slice(0, 1).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-gray-900 truncate">
+                        <p className="text-sm font-bold text-slate-900 truncate">
                           {r.referred_user?.name || 'New member'}
                           {typeof r.level === 'number' && (
-                            <span className="ml-2 text-[10px] font-black text-violet-600">L{r.level}</span>
+                            <span className="ml-2 text-[10px] font-black text-white bg-[#7257FF] px-2 py-0.5 rounded-full">L{r.level}</span>
                           )}
                         </p>
-                        <p className="text-[10px] text-gray-400">
+                        <p className="text-xs text-slate-400 mt-0.5">
                           Joined {new Date(r.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                       </div>
-                      <span className={`text-[10px] font-bold px-2 py-1 rounded-lg border ${st.className}`}>{st.label}</span>
-                      <p className={`text-xs font-black shrink-0 ${r.reward_cents > 0 ? 'text-emerald-700' : 'text-gray-400'}`}>
+                      <span className={`hidden sm:inline-block text-[11px] font-black px-3 py-1.5 rounded-full border ${st.className}`}>{st.label}</span>
+                      <p className={`text-base font-black shrink-0 ${r.reward_cents > 0 ? 'text-emerald-600' : 'text-slate-300'}`}>
                         {r.reward_cents > 0 ? `+${money(r.reward_cents)}` : money(0)}
                       </p>
                     </div>
@@ -213,6 +280,21 @@ export const ContributorReferralsPage: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Wallet CTA */}
+          <Link
+            to="/app/wallet"
+            className="group flex items-center gap-4 rounded-[1.75rem] bg-emerald-50 border-2 border-emerald-200 p-5 sm:p-6 hover:bg-emerald-100/60 transition-all"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#16B364] to-[#0EA968] shadow-lg shadow-emerald-500/25 flex items-center justify-center shrink-0">
+              <BadgeDollarSign className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="text-base font-extrabold text-emerald-900">Referral earnings land in your wallet</p>
+              <p className="text-sm text-emerald-700 mt-0.5">Qualified rewards are credited automatically — withdraw from $50.</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-emerald-600 group-hover:translate-x-1 transition-transform shrink-0" />
+          </Link>
         </>
       ) : null}
     </div>

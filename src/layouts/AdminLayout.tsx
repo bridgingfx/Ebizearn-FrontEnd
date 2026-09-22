@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
+import { RegionSelector } from '../components/common/RegionSelector';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 
 export const AdminLayout: React.FC = () => {
@@ -128,6 +129,9 @@ export const AdminLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="hidden sm:block">
+              <RegionSelector variant="light" />
+            </div>
             <div className="w-9 h-9 rounded-full bg-[#0E1C2F] text-white flex items-center justify-center text-xs font-bold">
               {initials}
             </div>

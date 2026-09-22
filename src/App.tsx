@@ -72,6 +72,7 @@ import { AdminBusinessesPage } from './pages/admin/AdminBusinessesPage';
 import { AdminTasksPage } from './pages/admin/AdminTasksPage';
 import { AdminWalletsPage } from './pages/admin/AdminWalletsPage';
 import { AdminReferralsPage } from './pages/admin/AdminReferralsPage';
+import { AdminDemoRequestsPage } from './pages/admin/AdminDemoRequestsPage';
 import { AdminReportsPage } from './pages/admin/AdminReportsPage';
 import { BusinessTeamPage } from './pages/business/BusinessTeamPage';
 import { EmailSettingsPanel } from './pages/admin/email/EmailSettingsPanel';
@@ -194,6 +195,7 @@ export const App: React.FC = () => {
             <Route path="withdrawals" element={<AdminPayoutsPage />} />
             <Route path="wallets" element={<AdminWalletsPage />} />
             <Route path="referrals" element={<AdminReferralsPage />} />
+            <Route path="demo-requests" element={<AdminDemoRequestsPage />} />
             <Route path="reports" element={<AdminReportsPage />} />
             <Route path="campaigns" element={<AdminCampaignsOversightPage />} />
             <Route path="tasks" element={<AdminTasksPage />} />

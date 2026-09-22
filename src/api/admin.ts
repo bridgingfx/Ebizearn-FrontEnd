@@ -43,4 +43,12 @@ export const adminApi = {
   // Phase 11: platform-wide referral overview (read-only aggregate).
   referralOverview: () =>
     api.get('/admin/referrals/overview').then((r) => r.data),
+  // Demo requests inbox (GET /admin/demo-requests, paginated latest-first).
+  demoRequests: (params?: { per_page?: number; page?: number }) =>
+    api.get('/admin/demo-requests', { params }).then((r) => r.data as {
+      success: boolean;
+      message?: string;
+      data: { id: number; name: string; email: string; company: string; message: string; status: string; created_at: string }[];
+      meta?: { total: number };
+    }),
 };

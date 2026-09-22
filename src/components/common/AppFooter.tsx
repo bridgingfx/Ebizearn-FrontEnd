@@ -21,11 +21,17 @@ export const AppFooter: React.FC = () => {
           <Link to="/contact" className="hover:text-[#168BFF] transition-colors">
             Contact
           </Link>
-          <Link to="/legal/terms" className="hover:text-[#168BFF] transition-colors">
+          <Link to="/terms" className="hover:text-[#168BFF] transition-colors">
             Terms
           </Link>
-          <Link to="/legal/privacy" className="hover:text-[#168BFF] transition-colors">
+          <Link to="/privacy" className="hover:text-[#168BFF] transition-colors">
             Privacy
+          </Link>
+          <Link to="/disclaimer" className="hover:text-[#168BFF] transition-colors">
+            Disclaimer
+          </Link>
+          <Link to="/cookies" className="hover:text-[#168BFF] transition-colors">
+            Cookies
           </Link>
         </nav>
       </div>

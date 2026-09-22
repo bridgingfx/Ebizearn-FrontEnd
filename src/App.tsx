@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PlatformDataProvider } from './context/PlatformDataContext';
 import { LiveChatWidget } from './components/common/LiveChatWidget';
+import { CookieConsent } from './components/common/CookieConsent';
 import { RoleGuard } from './components/common/RoleGuard';
 
 // Layouts
@@ -22,6 +23,10 @@ import { FaqPage } from './pages/public/FaqPage';
 import { TrustSafetyPage } from './pages/public/TrustSafetyPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { LegalPage } from './pages/public/LegalPage';
+import { TermsOfServicePage } from './pages/public/TermsOfServicePage';
+import { PrivacyPolicyPage } from './pages/public/PrivacyPolicyPage';
+import { DisclaimerPage } from './pages/public/DisclaimerPage';
+import { CookiePolicyPage } from './pages/public/CookiePolicyPage';
 import { ContributorLoginPage } from './pages/auth/ContributorLoginPage';
 import { SuperAdminLoginPage } from './pages/auth/SuperAdminLoginPage';
 import { ContributorSignupPage } from './pages/auth/ContributorSignupPage';
@@ -127,6 +132,12 @@ export const App: React.FC = () => {
             <Route path="/legal/privacy" element={<LegalPage />} />
             <Route path="/legal/cookies" element={<LegalPage />} />
             <Route path="/legal/task-policy" element={<LegalPage />} />
+
+            {/* Full standalone legal documents */}
+            <Route path="/terms" element={<TermsOfServicePage />} />
+            <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/disclaimer" element={<DisclaimerPage />} />
+            <Route path="/cookies" element={<CookiePolicyPage />} />
             
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
@@ -221,6 +232,8 @@ export const App: React.FC = () => {
 
         {/* Global Floating Live Chat Support Desk (Bottom-Right) */}
         <LiveChatWidget />
+        {/* Global Cookie Consent Notice (bottom; one-time until answered) */}
+        <CookieConsent />
       </BrowserRouter>
       </PlatformDataProvider>
     </AuthProvider>

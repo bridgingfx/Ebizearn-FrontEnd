@@ -54,4 +54,13 @@ export const authApi = {
   /** Re-send the email-verification message (60s cooldown enforced client-side). */
   resendVerificationEmail: () =>
     api.post<ApiResponse<null>>('/auth/email/resend').then((r) => r.data),
+
+  /**
+   * Verify an email address with the token from the verification email link.
+   * The email points at {FRONTEND_URL}/verify-email?token=… — the page reads
+   * the token and POSTs it here. Not authenticated; the token itself is the
+   * credential (hashed + TTL-checked server-side).
+   */
+  verifyEmail: (token: string) =>
+    api.post<ApiResponse<{ user: User }>>('/auth/email/verify', { token }).then((r) => r.data),
 };

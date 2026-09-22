@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   MailCheck,
   MailOpen,
@@ -38,16 +38,62 @@ const RESEND_COOLDOWN_SECONDS = 60;
 export const VerifyEmailPage: React.FC = () => {
   const { user, refreshMe, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [cooldown, setCooldown] = useState(0);
   const [resending, setResending] = useState(false);
   const [checking, setChecking] = useState(false);
   const [notice, setNotice] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
+  /** Token verification state for the ?token= link in the verification email. */
+  const [tokenFlow, setTokenFlow] = useState<'idle' | 'verifying' | 'failed'>('idle');
+
+  const tokenFromEmail = searchParams.get('token');
 
   useEffect(() => {
     if (cooldown <= 0) return;
     const t = window.setTimeout(() => setCooldown((c) => c - 1), 1000);
     return () => window.clearTimeout(t);
   }, [cooldown]);
+
+  /**
+   * The verification email links here with ?token=. POST it to
+   * /auth/email/verify once, then route into the app on success.
+   */
+  useEffect(() => {
+    if (!tokenFromEmail || tokenFlow !== 'idle') return;
+    setTokenFlow('verifying');
+    setNotice(null);
+    authApi
+      .verifyEmail(tokenFromEmail)
+      .then(async (res) => {
+        if (!res.success) {
+          setTokenFlow('failed');
+          setNotice({
+            kind: 'err',
+            text: res.message || 'This verification link is invalid or expired. Resend the email and try again.',
+          });
+          return;
+        }
+        setNotice({ kind: 'ok', text: 'Your email is verified — taking you to your dashboard…' });
+        await refreshMe().catch(() => undefined);
+        // The /me response is the source of truth for the landing route.
+        const me = await authApi.me().catch(() => null);
+        const latest = me?.data?.user ?? user;
+        if (latest) {
+          await navigateAfterLogin(navigate, latest.role);
+        } else {
+          navigate('/login', { replace: true });
+        }
+      })
+      .catch((err) => {
+        setTokenFlow('failed');
+        setNotice({
+          kind: 'err',
+          text: getApiError(err, 'This verification link is invalid or expired. Resend the email and try again.'),
+        });
+      });
+    // Runs once per token — tokenFromEmail is stable for the life of this page view.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenFromEmail]);
 
   const handleResend = async () => {
     if (cooldown > 0 || resending) return;
@@ -98,6 +144,33 @@ export const VerifyEmailPage: React.FC = () => {
     logout();
     navigate('/login', { replace: true });
   };
+
+  /** While the ?token= link is being verified, show a dedicated state. */
+  if (tokenFromEmail && tokenFlow === 'verifying') {
+    return (
+      <div className="min-h-screen bg-[#F7F9FC] flex flex-col">
+        <div className="bg-[#07182F] px-6 py-4">
+          <Link to="/" className="inline-flex">
+            <EBizLogo variant="dark" size="sm" subtitleText="ebizearn.com" />
+          </Link>
+        </div>
+        <div className="flex-1 flex items-center justify-center px-5 py-12">
+          <div className="w-full max-w-[520px] text-center">
+            <div className="bg-white rounded-[2rem] border border-[#E7ECF3] card-shadow p-8 sm:p-12">
+              <div className="mx-auto w-24 h-24 mb-6 rounded-[1.75rem] bg-gradient-to-br from-[#168BFF] to-[#7257FF] flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <MailCheck className="w-11 h-11 text-white" />
+              </div>
+              <h1 className="text-3xl font-black tracking-tight text-[#101828]">Verifying your email…</h1>
+              <p className="mt-3 text-base text-[#667085] leading-relaxed">
+                Please wait a moment while we activate your account.
+              </p>
+              <Loader2 className="w-8 h-8 text-[#168BFF] animate-spin mx-auto mt-8" aria-hidden="true" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] flex flex-col">

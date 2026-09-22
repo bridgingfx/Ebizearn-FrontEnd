@@ -173,7 +173,7 @@ export const EarnPage: React.FC = () => {
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Earn from $0.40 to $8.50 per task across Instagram, TikTok, YouTube, Facebook, and WhatsApp. Cash out starting from just <strong className="text-white font-bold">$5.00</strong> to PayPal, Wise, or Bank.
+              Earn from $0.40 to $8.50 per task across Instagram, TikTok, YouTube, Facebook, and WhatsApp. Cash out starting from <strong className="text-white font-bold">$50.00</strong> to PayPal, Wise, or Bank.
             </p>
           </div>
 
@@ -371,7 +371,7 @@ export const EarnPage: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
               <span className="text-xs text-gray-500">
-                &bull; Min withdrawal is $5.00. Zero hidden fees, zero membership fees.
+                &bull; Min withdrawal is $50.00. Zero hidden fees, zero membership fees.
               </span>
               <Link
                 to="/signup/contributor"
@@ -439,7 +439,7 @@ export const EarnPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          4. MULTI-RAIL CASHOUT METHODS ($5.00 MINIMUM)
+          4. MULTI-RAIL CASHOUT METHODS ($50.00 MINIMUM)
          ========================================================================= */}
       <section className="py-14 sm:py-16 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
@@ -449,21 +449,21 @@ export const EarnPage: React.FC = () => {
               Fintech Reliability
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] tracking-tight">
-              Get Paid Your Way From Just $5.00
+              Get Paid Your Way From $50.00
             </h2>
             <p className="text-xs sm:text-sm text-gray-600">
-              No arbitrary $50 or $100 payout traps. As soon as your ledger balance hits $5.00, cash out immediately to your preferred channel.
+              As soon as your ledger balance hits $50.00, cash out to your preferred channel. No payout traps, no membership fees.
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { name: 'PayPal', min: '$5.00 min', time: 'Instant' },
-              { name: 'Wise Transfer', min: '$5.00 min', time: 'Under 2h' },
-              { name: 'Direct Bank', min: '$5.00 min', time: '1-2 Days' },
-              { name: 'Revolut', min: '$5.00 min', time: 'Instant' },
-              { name: 'USDT / USDC', min: '$5.00 min', time: '10 Mins' },
-              { name: 'Mobile Money', min: '$5.00 min', time: 'Instant' },
+              { name: 'PayPal', min: '$50.00 min', time: 'Instant' },
+              { name: 'Wise Transfer', min: '$50.00 min', time: 'Under 2h' },
+              { name: 'Direct Bank', min: '$50.00 min', time: '1-2 Days' },
+              { name: 'Revolut', min: '$50.00 min', time: 'Instant' },
+              { name: 'USDT / USDC', min: '$50.00 min', time: '10 Mins' },
+              { name: 'Mobile Money', min: '$50.00 min', time: 'Instant' },
             ].map((method, idx) => (
               <div key={idx} className="p-4 rounded-2xl bg-[#F7F9FC] border border-[#E4EAF2] text-center space-y-1 hover:border-[#168BFF]/40 transition-colors">
                 <div className="text-xs font-bold text-gray-900">{method.name}</div>

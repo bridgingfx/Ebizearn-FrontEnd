@@ -44,7 +44,7 @@ export const ContributorSupportPage: React.FC = () => {
     },
     {
       q: 'What is the minimum cashout threshold?',
-      a: 'The minimum withdrawal is strictly AED 20.00. We never charge withdrawal fees or account maintenance fees.',
+      a: 'The minimum withdrawal is $50.00. We never charge withdrawal fees or account maintenance fees. Withdrawals are queued for manual processing.',
     },
   ];
 

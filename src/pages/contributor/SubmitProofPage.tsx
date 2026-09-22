@@ -144,7 +144,7 @@ export const SubmitProofPage: React.FC = () => {
               <span>Next Steps:</span>
             </div>
             <p className="text-[11px] text-gray-500 leading-relaxed">
-              Your reward has been logged to your double-entry wallet ledger. You can withdraw once your balance reaches the AED 20.00 threshold and your Emirates ID KYC is verified.
+              Your reward has been logged to your double-entry wallet ledger. You can withdraw once your balance reaches the $50.00 threshold and your Emirates ID KYC is verified.
             </p>
           </div>
 

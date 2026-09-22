@@ -22,6 +22,18 @@ import { UserAvatar } from '../../components/common/UserAvatar';
 import { adminApi, getApiError } from '../../api';
 import type { WithdrawalRequest } from '../../types';
 
+/**
+ * Honest status labels: payouts are log-only — an approved request is queued for
+ * manual processing, never instant money movement. Backend status `paid` is shown
+ * as "Queued for manual processing".
+ */
+const STATUS_LABELS: Record<string, string> = {
+  requested: 'Requested',
+  processing: 'Processing',
+  paid: 'Queued for manual processing',
+  rejected: 'Rejected',
+};
+
 const mapWithdrawalToPayout = (p: WithdrawalRequest) => ({
   id: p.id,
   status: p.status === 'paid' || p.status === 'rejected' || p.status === 'processing' ? p.status : 'requested',
@@ -115,6 +127,11 @@ export const AdminPayoutsPage: React.FC = () => {
   const pendingTotal = payouts
     .filter((p) => p.status === 'requested' || p.status === 'processing')
     .reduce((acc, p) => acc + p.amountCents, 0) / 100;
+  const queuedCount = payouts.filter((p) => p.status === 'paid').length;
+  const queuedTotal = payouts
+    .filter((p) => p.status === 'paid')
+    .reduce((acc, p) => acc + p.amountCents, 0) / 100;
+  const rejectedCount = payouts.filter((p) => p.status === 'rejected').length;
 
   return (
     <div className="space-y-6 text-left font-sans max-w-7xl mx-auto">
@@ -147,7 +164,7 @@ export const AdminPayoutsPage: React.FC = () => {
         </div>
       )}
 
-      {/* 2. EXECUTIVE TREASURY METRIC CARDS */}
+      {/* 2. PAYOUT METRIC CARDS (real values from the queue — no invented figures) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
           <div className="flex items-center justify-between">
@@ -160,29 +177,29 @@ export const AdminPayoutsPage: React.FC = () => {
 
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">24h Throughput</span>
-            <TrendingUp className="w-3.5 h-3.5 text-[#16B364]" />
+            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Queued for Manual Processing</span>
+            <TrendingUp className="w-3.5 h-3.5 text-[#168BFF]" />
           </div>
-          <div className="text-2xl font-black text-[#16B364] font-mono">AED 17,800.00</div>
-          <div className="text-[10px] text-gray-400">124 disbursements cleared</div>
+          <div className="text-2xl font-black text-[#168BFF] font-mono">AED {queuedTotal.toFixed(2)}</div>
+          <div className="text-[10px] text-gray-400">{queuedCount} approved — awaiting manual transfer</div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Avg Settlement</span>
-            <Clock className="w-3.5 h-3.5 text-[#168BFF]" />
+            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Rejected Requests</span>
+            <XCircle className="w-3.5 h-3.5 text-red-500" />
           </div>
-          <div className="text-2xl font-black text-[#168BFF]">14.2 min</div>
-          <div className="text-[10px] text-gray-400">CBUAE WPS &amp; IBAN Instant Rails</div>
+          <div className="text-2xl font-black text-red-600 font-mono">{rejectedCount}</div>
+          <div className="text-[10px] text-gray-400">Declined by moderator review</div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Reserve Liquidity</span>
+            <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Total Requests</span>
             <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
           </div>
-          <div className="text-2xl font-black text-purple-700">100% Backed</div>
-          <div className="text-[10px] text-gray-400 font-mono">AED 310,000.00 vault balance</div>
+          <div className="text-2xl font-black text-purple-700 font-mono">{payouts.length}</div>
+          <div className="text-[10px] text-gray-400">Across all statuses</div>
         </div>
       </div>
 
@@ -228,13 +245,13 @@ export const AdminPayoutsPage: React.FC = () => {
                 key={st}
                 type="button"
                 onClick={() => setFilterStatus(st)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                   filterStatus === st
                     ? 'bg-[#07182F] text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {st}
+                {st === 'all' ? 'All' : STATUS_LABELS[st]}
               </button>
             ))}
           </div>
@@ -252,9 +269,9 @@ export const AdminPayoutsPage: React.FC = () => {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                         p.status === 'paid'
-                          ? 'bg-emerald-50 text-[#16B364]'
+                          ? 'bg-blue-50 text-[#168BFF]'
                           : p.status === 'processing'
                           ? 'bg-blue-50 text-[#168BFF]'
                           : p.status === 'rejected'
@@ -262,7 +279,7 @@ export const AdminPayoutsPage: React.FC = () => {
                           : 'bg-amber-50 text-amber-600'
                       }`}
                     >
-                      {p.status}
+                      {STATUS_LABELS[p.status] || p.status}
                     </span>
                     <span className="text-[10px] text-gray-400 font-mono">&bull; {p.requestedAt}</span>
                     <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md font-bold">
@@ -289,8 +306,8 @@ export const AdminPayoutsPage: React.FC = () => {
                 </div>
 
                 {p.status === 'paid' ? (
-                  <span className="text-xs font-bold text-[#16B364] bg-emerald-50 px-3 py-1.5 rounded-xl flex items-center gap-1 border border-emerald-200">
-                    <Check className="w-3.5 h-3.5" /> Dispatched
+                  <span className="text-xs font-bold text-[#168BFF] bg-blue-50 px-3 py-1.5 rounded-xl flex items-center gap-1 border border-blue-200">
+                    <Clock className="w-3.5 h-3.5" /> Queued — manual processing
                   </span>
                 ) : p.status === 'rejected' ? (
                   <span className="text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-xl border border-red-200">
@@ -305,7 +322,7 @@ export const AdminPayoutsPage: React.FC = () => {
                       className="px-4 py-2 bg-[#16B364] hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-98 disabled:opacity-60"
                     >
                       <Check className="w-3.5 h-3.5" />
-                      <span>{processingId === p.id ? 'Processing...' : 'Approve & Dispatch'}</span>
+                      <span>{processingId === p.id ? 'Processing...' : 'Approve & Queue'}</span>
                     </button>
                     <button
                       type="button"

@@ -71,7 +71,7 @@ Verified businesses in the UAE pay real consumers to test their services and lea
     keywords: ['payout', 'withdraw', 'cashout', 'wps', 'bank', 'currency', 'aed', 'money', 'payment gateway'],
     reply: `💳 **AED Rewards & Central Bank of UAE (CBUAE) Payouts:**
 - **Currency:** All earnings and platform balances are 100% in **UAE Dirhams (AED 🇦🇪)**.
-- **Minimum Withdrawal:** Strictly **AED 20.00** with 0 account fees.
+- **Minimum Withdrawal:** Strictly **$50.00** with 0 account fees.
 - **Supported Payout Rails:**
   1. **CBUAE Wages Protection System (WPS):** Direct payroll settlement to any UAE IBAN.
   2. **Emirates NBD & FAB Instant Wire:** Real-time host-to-host AED settlement.

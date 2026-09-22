@@ -177,7 +177,7 @@ export const HomePage: React.FC = () => {
     },
     {
       q: 'How fast can I cash out and what is the minimum payout?',
-      a: 'The minimum withdrawal threshold is only $5.00. You can cash out anytime directly to your PayPal, Wise transfer, direct bank account, Revolut, or digital currency (USDT/USDC). Payouts are processed reliably with double-entry ledger security.',
+      a: 'The minimum withdrawal threshold is $50.00. You can cash out anytime directly to your PayPal, Wise transfer, direct bank account, Revolut, or digital currency (USDT/USDC). Payouts are processed reliably with double-entry ledger security.',
     },
     {
       q: 'How does AI proof verification work?',
@@ -221,7 +221,7 @@ export const HomePage: React.FC = () => {
 
               {/* Subheadline: Large, Readable, Generous Spacing */}
               <p className="text-base sm:text-lg text-gray-300 leading-relaxed max-w-xl font-normal mx-auto lg:mx-0">
-                BizNetwork connects forward-thinking brands with verified mobile contributors worldwide. Complete simple tasks on Instagram, TikTok, YouTube, and WhatsApp — get verified in seconds, and cash out starting from $5.00.
+                BizNetwork connects forward-thinking brands with verified mobile contributors worldwide. Complete simple tasks on Instagram, TikTok, YouTube, and WhatsApp — get verified in seconds, and cash out starting from $50.00.
               </p>
 
               {/* Action Buttons: High-Contrast Neon Green Primary CTA + Minimal Outline Secondary CTA */}
@@ -266,14 +266,14 @@ export const HomePage: React.FC = () => {
                 <span className="text-blue-600 font-extrabold">Verified</span>
               </div>
 
-              {/* FLOATING NOTIFICATION BUBBLE 1: Top-Left (+$5.00 Verified Cash) */}
+              {/* FLOATING NOTIFICATION BUBBLE 1: Top-Left (+$50.00 Verified Cash) */}
               <div className="absolute -top-4 -left-2 sm:-left-10 z-30 bg-white text-slate-900 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float max-w-[215px]">
                 <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
                   <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Instant Payout</div>
-                  <div className="text-xs sm:text-sm font-black text-emerald-600">+$5.00 Verified Cash</div>
+                  <div className="text-xs sm:text-sm font-black text-emerald-600">+$50.00 Verified Cash</div>
                 </div>
               </div>
 
@@ -730,7 +730,7 @@ export const HomePage: React.FC = () => {
                 <div className="space-y-3 pt-2">
                   {[
                     'Turn spare minutes into $15–$60+ extra cash every week',
-                    'Payouts starting from $5.00 directly to PayPal, Wise, or Bank',
+                    'Payouts starting from $50.00 directly to PayPal, Wise, or Bank',
                     'Computer vision AI verifies your proof in seconds',
                     'Level up for higher rewards and 10% daily streak bonuses',
                   ].map((pt, i) => (
@@ -820,7 +820,7 @@ export const HomePage: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
               <span className="text-xs text-gray-500">
-                &bull; Cashout starts from $5.00 threshold. Zero platform deduction for contributors.
+                &bull; Cashout starts from $50.00 threshold. Zero platform deduction for contributors.
               </span>
               <Link
                 to="/signup/contributor"
@@ -963,7 +963,7 @@ export const HomePage: React.FC = () => {
           </h2>
 
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
-            Zero registration fees. Payouts start from $5.00 directly to PayPal, Wise, or Bank. No follower requirements.
+            Zero registration fees. Payouts start from $50.00 directly to PayPal, Wise, or Bank. No follower requirements.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">

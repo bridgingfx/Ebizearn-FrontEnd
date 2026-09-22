@@ -170,6 +170,10 @@ export interface AiVerificationResult {
   policy_match: number;
   suggested_decision: 'approve' | 'reject' | 'flag';
   analysis_summary: string;
+  /** True when the result comes from the pre-launch placeholder heuristic. Defaults to simulated. */
+  ai_simulated?: boolean;
+  /** Human-readable label supplied by the backend (e.g. "Simulated heuristic (pre-launch)"). */
+  ai_label?: string;
 }
 
 export interface WithdrawalRequest {

@@ -188,9 +188,15 @@ export const AdminVerificationCenterPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
               <ShieldCheck className="w-5 h-5 text-[#168BFF]" />
-              <span>Standard Operating Procedure (SOP): How AI Verification Works</span>
+              <span>Standard Operating Procedure (SOP): How Verification Works</span>
             </div>
-            <span className="text-xs text-gray-400 font-mono">Algorithm Version: OCR-Vision 3.4</span>
+            <span className="text-xs text-gray-400 font-mono">Algorithm Version: Heuristic Pre-Check (Simulated)</span>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 leading-relaxed">
+            <strong>Simulated check — heuristic only.</strong> The backend currently uses a
+            heuristic pre-check (mock AI provider), not a production computer-vision service.
+            Every score and auto-decision below is a placeholder. Human review remains mandatory.
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
@@ -239,7 +245,11 @@ export const AdminVerificationCenterPage: React.FC = () => {
         </div>
       )}
 
-      {/* 3. AI OPERATIONS TELEMETRY CARDS */}
+      {/* 3. AI OPERATIONS TELEMETRY CARDS (SIMULATED) */}
+      <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 flex items-center gap-2">
+        <AlertTriangle className="w-4 h-4 shrink-0" />
+        <span><strong>Simulated metrics.</strong> Pass rates, latency, and fraud figures below are placeholders from the heuristic pre-check, not live production AI telemetry.</span>
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-[#E4EAF2] shadow-sm space-y-1">
           <div className="flex items-center justify-between">
@@ -402,9 +412,14 @@ export const AdminVerificationCenterPage: React.FC = () => {
                   <Sparkles className="w-4 h-4 text-[#168BFF]" />
                   AI Vision Evaluation
                 </span>
-                <span className="text-xs font-black text-[#16B364] px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">
-                  {currentSubmission.ai.confidence}% Confidence
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                    Simulated check — heuristic only
+                  </span>
+                  <span className="text-xs font-black text-[#16B364] px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">
+                    {currentSubmission.ai.confidence}% Confidence
+                  </span>
+                </div>
               </div>
 
               <p className="text-xs text-gray-600 leading-relaxed bg-blue-50/50 p-3 rounded-2xl border border-blue-100">

@@ -32,42 +32,52 @@ export const ContributorProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'profile' | 'socials' | 'payouts' | 'security'>('profile');
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Form State
-  const [name, setName] = useState(user?.name || 'Sarah Khan');
-  const [email, setEmail] = useState(user?.email || 'sarah@biznetwork.test');
-  const [phone, setPhone] = useState('+971 50 123 4567');
-  const [country, setCountry] = useState('United Arab Emirates');
-  const [bio, setBio] = useState('Digital creator & mobile task enthusiast. Active on Instagram, TikTok, and YouTube.');
-  const [payoutMethod, setPayoutMethod] = useState<'paypal' | 'wise' | 'bank' | 'crypto'>('paypal');
-  const [paypalEmail, setPaypalEmail] = useState('sarah.khan@paypal.me');
-  const [bankIban, setBankIban] = useState('AE070330000000000123456');
-  const [cryptoAddress, setCryptoAddress] = useState('0x71C...B29F (Polygon USDC)');
+  const profile = user?.profile;
+  const levelLabels: Record<string, string> = {
+    starter: 'Starter',
+    explorer: 'Explorer',
+    trusted: 'Trusted',
+    pro: 'Pro',
+    elite: 'Elite',
+  };
+  const levelLabel = profile?.contributor_level ? levelLabels[profile.contributor_level] ?? 'Starter' : 'Starter';
 
-  // Social Connections State
+  // Form State — prefilled from the real authenticated user profile; empty where unknown.
+  const [name, setName] = useState(user?.name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(profile?.phone || '');
+  const [country, setCountry] = useState('');
+  const [bio, setBio] = useState(profile?.bio || '');
+  const [payoutMethod, setPayoutMethod] = useState<'paypal' | 'wise' | 'bank' | 'crypto'>('paypal');
+  const [paypalEmail, setPaypalEmail] = useState('');
+  const [bankIban, setBankIban] = useState('');
+  const [cryptoAddress, setCryptoAddress] = useState('');
+
+  // Social Connections State — no accounts connected by default; connects are not persisted yet.
   const [socials, setSocials] = useState([
     {
       id: 'instagram',
       name: 'Instagram',
-      handle: '@sarah_creatives',
-      followers: '4.2k',
-      verified: true,
+      handle: 'Not Connected',
+      followers: '—',
+      verified: false,
       icon: InstagramLogo,
       badgeColor: 'bg-pink-50 text-pink-700 border-pink-200',
     },
     {
       id: 'tiktok',
       name: 'TikTok',
-      handle: '@sarah_vids',
-      followers: '12.8k',
-      verified: true,
+      handle: 'Not Connected',
+      followers: '—',
+      verified: false,
       icon: TikTokLogo,
       badgeColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
     },
     {
       id: 'youtube',
       name: 'YouTube',
-      handle: 'Sarah Khan Reviews',
-      followers: '850',
+      handle: 'Not Connected',
+      followers: '—',
       verified: false,
       icon: YouTubeLogo,
       badgeColor: 'bg-red-50 text-red-700 border-red-200',
@@ -84,9 +94,9 @@ export const ContributorProfilePage: React.FC = () => {
     {
       id: 'twitter',
       name: 'X (Twitter)',
-      handle: '@sarahk_tweets',
-      followers: '1.9k',
-      verified: true,
+      handle: 'Not Connected',
+      followers: '—',
+      verified: false,
       icon: XTwitterLogo,
       badgeColor: 'bg-gray-100 text-gray-800 border-gray-200',
     },
@@ -109,7 +119,11 @@ export const ContributorProfilePage: React.FC = () => {
         <div className="h-32 bg-gradient-to-r from-[#07182F] via-[#0D2342] to-[#168BFF] relative p-6 flex items-end justify-end">
           <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 text-xs text-white font-bold">
             <ShieldCheck className="w-4 h-4 text-[#20C4E8]" />
-            <span>ID &amp; KYC Verified Contributor</span>
+            {profile?.kyc_status === 'verified' ? (
+              <span>ID &amp; KYC Verified Contributor</span>
+            ) : (
+              <span>KYC Verification Pending</span>
+            )}
           </div>
         </div>
 
@@ -124,13 +138,13 @@ export const ContributorProfilePage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-[#101828]">{name}</h1>
                 <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200 text-[10px] font-black uppercase tracking-wider">
-                  Level 3 Pro
+                  {levelLabel}
                 </span>
               </div>
               <p className="text-xs text-gray-500 flex items-center gap-2">
-                <span>{email}</span>
+                <span>{email || 'No email on file'}</span>
                 <span>&bull;</span>
-                <span>Member since Jan 2026</span>
+                <span>Contributor account</span>
               </p>
             </div>
           </div>
@@ -138,7 +152,9 @@ export const ContributorProfilePage: React.FC = () => {
           <div className="flex items-center gap-3 sm:pt-3">
             <div className="text-right hidden sm:block">
               <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Task Quality Score</span>
-              <span className="text-lg font-black text-[#16B364]">98.4% Match Rate</span>
+              <span className="text-lg font-black text-[#16B364]">
+                {profile?.approval_rate ? `${profile.approval_rate}% Match Rate` : '—'}
+              </span>
             </div>
           </div>
         </div>
@@ -270,7 +286,7 @@ export const ContributorProfilePage: React.FC = () => {
               </p>
             </div>
             <span className="text-xs font-bold text-[#168BFF] bg-blue-50 px-3 py-1 rounded-full border border-blue-100 self-start sm:self-auto">
-              3 Channels Verified
+              No Channels Connected
             </span>
           </div>
 
@@ -337,7 +353,7 @@ export const ContributorProfilePage: React.FC = () => {
           <div className="pb-4 border-b border-gray-100">
             <h2 className="text-base font-black text-gray-900">Configured Payout Destinations</h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              Choose your default cashout route. Minimum withdrawal threshold is strictly $5.00 USD with zero processing fees.
+              Choose your default cashout route. Minimum withdrawal threshold is $50.00 USD with zero platform fees.
             </p>
           </div>
 
@@ -422,7 +438,7 @@ export const ContributorProfilePage: React.FC = () => {
             )}
 
             <div className="flex items-center justify-between pt-2">
-              <span className="text-[11px] text-gray-500">Double-entry ledger ledger ID: #LDG-88219</span>
+              <span className="text-[11px] text-gray-500">Payout details are stored securely with your account</span>
               <button
                 type="button"
                 onClick={() => {

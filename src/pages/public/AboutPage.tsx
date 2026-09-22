@@ -52,7 +52,7 @@ export const AboutPage: React.FC = () => {
   const milestones = [
     { year: '2024', title: 'Platform Launch', desc: 'Introduced BizNetwork with 1,000 pilot contributors and initial social campaigns.' },
     { year: '2025', title: 'Computer Vision AI', desc: 'Deployed automated screenshot and URL verification, cutting review turnaround to under 30 seconds.' },
-    { year: '2025', title: 'Global Multi-Rail Payouts', desc: 'Expanded direct payouts to Wise, PayPal, and digital currencies with a low $5.00 cashout threshold.' },
+    { year: '2025', title: 'Global Multi-Rail Payouts', desc: 'Expanded direct payouts to Wise, PayPal, and digital currencies with a $50.00 cashout threshold.' },
     { year: '2026', title: '500,000+ Contributors', desc: 'Surpassed $2.4M in total disbursed rewards across 150+ countries with 99.1% fraud detection accuracy.' },
   ];
 
@@ -174,7 +174,7 @@ export const AboutPage: React.FC = () => {
               <div className="space-y-2.5">
                 {[
                   '100% verified real people with KYC phone authentication',
-                  'Double-entry ledger with instant withdrawals from just $5.00',
+                  'Double-entry ledger with withdrawals from $50.00',
                   'Zero joining fees, zero subscriptions, zero hidden barriers',
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2.5 text-xs font-bold text-gray-900">

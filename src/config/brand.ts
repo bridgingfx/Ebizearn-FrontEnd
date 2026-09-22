@@ -26,7 +26,7 @@ export const BRAND: BrandConfig = {
   supportEmail: 'support@ebizearn.com',
   defaultCurrency: 'USD',
   defaultLocale: 'en',
-  minWithdrawalCents: 500, // $5.00 min withdrawal
+  minWithdrawalCents: 5000, // $50.00 min withdrawal (master spec; backend enforces payouts.withdrawal_min_cents)
   socials: {
     facebook: 'https://facebook.com/ebizearn',
     instagram: 'https://instagram.com/ebizearn',

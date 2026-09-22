@@ -99,7 +99,7 @@ export const LegalPage: React.FC = () => {
               <div>
                 <h2 className="text-lg font-black text-gray-900 mb-2">4. Payouts &amp; Escrow Guarantee</h2>
                 <p>
-                  Payouts are issued starting from a minimum threshold of $5.00 USD. Rewards are credited upon computer vision or moderator verification. Zero withdrawal fees are deducted by BizNetwork.
+                  Payouts are issued starting from a minimum threshold of $50.00 USD. Withdrawal requests are queued for manual processing. Rewards are credited upon computer vision or moderator verification. Zero withdrawal fees are deducted by BizNetwork.
                 </p>
               </div>
             </div>

@@ -191,7 +191,7 @@ export const PublicTasksPage: React.FC = () => {
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <span className="text-[10px] text-gray-400 uppercase block font-sans">Min Cashout</span>
-                <span className="text-lg font-black text-amber-400">AED 20.00</span>
+                <span className="text-lg font-black text-amber-400">$50.00</span>
               </div>
             </div>
           </div>

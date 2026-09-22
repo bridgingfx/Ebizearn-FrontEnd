@@ -19,7 +19,7 @@ export const FaqPage: React.FC = () => {
     },
     {
       q: 'When do I get paid?',
-      a: 'As soon as your task proof is verified by AI and moderator review, funds are instantly credited to your available wallet balance. You can withdraw anytime once your balance reaches $5.00 USD.',
+      a: 'As soon as your task proof is verified by AI and moderator review, funds are instantly credited to your available wallet balance. You can withdraw anytime once your balance reaches $50.00 USD. Withdrawals are queued for manual processing.',
     },
     {
       q: 'Why did my task get rejected?',

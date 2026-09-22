@@ -164,11 +164,11 @@ export const HowItWorksPage: React.FC = () => {
     },
     {
       num: '05',
-      title: 'Immediate Wallet Credit & Cash Out from $5.00',
+      title: 'Immediate Wallet Credit & Cash Out from $50.00',
       subtitle: 'PayPal, Wise, Bank & Crypto',
-      desc: 'Upon approval, your reward is credited immediately to your double-entry ledger wallet. Request payouts anytime starting from just $5.00 with zero deduction.',
+      desc: 'Upon approval, your reward is credited immediately to your double-entry ledger wallet. Request payouts anytime starting from $50.00 with zero deduction.',
       actionTitle: 'Double-Entry Accounting',
-      actionBadge: '$5.00 Min Cashout',
+      actionBadge: '$50.00 Min Cashout',
       icon: Wallet,
       screenMock: (
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
@@ -178,7 +178,7 @@ export const HowItWorksPage: React.FC = () => {
           </div>
           <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[#16B364] text-[11px] font-bold flex items-center justify-between">
             <span>Withdrawal Eligible</span>
-            <span>$5.00 Min Met &check;</span>
+            <span>$50.00 Min Met &check;</span>
           </div>
           <div className="grid grid-cols-3 gap-1 text-[10px] text-center text-gray-300">
             <span className="p-1 rounded bg-white/5">PayPal</span>
@@ -349,7 +349,7 @@ export const HowItWorksPage: React.FC = () => {
     },
     {
       q: 'What is the minimum cashout amount and how do payouts work?',
-      a: 'The minimum withdrawal is just $5.00 USD. We support instant transfers via PayPal (5-15 mins), Wise (2-4 hours), Direct Bank Wire / IBAN (1-2 business days), and USDC Crypto (5-10 mins).',
+      a: 'The minimum withdrawal is $50.00 USD. Payouts are queued for manual processing by our payouts team. We support PayPal, Wise, Direct Bank Wire / IBAN, and USDC Crypto rails.',
     },
     {
       q: 'How does BizNetwork verify that tasks are done correctly?',
@@ -536,7 +536,7 @@ export const HowItWorksPage: React.FC = () => {
           </h2>
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
             {activeTab === 'contributor'
-              ? 'Join over 528,000 contributors worldwide. 100% free to register. Cash out from $5.00.'
+              ? 'Join over 528,000 contributors worldwide. 100% free to register. Cash out from $50.00.'
               : 'Launch your campaign in 3 minutes with smart escrow protection and automated AI proof auditing.'}
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">

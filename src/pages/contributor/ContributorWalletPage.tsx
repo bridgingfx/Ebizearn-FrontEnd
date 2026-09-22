@@ -131,8 +131,8 @@ export const ContributorWalletPage: React.FC = () => {
     {
       id: 'wps_bank',
       name: 'UAE Central Bank WPS (Direct IBAN)',
-      minAED: 20.0,
-      minCents: 2000,
+      minAED: 50.0,
+      minCents: 5000,
       speed: 'Instant (5-15 mins)',
       fee: '0% Platform Fee',
       badge: '🇦🇪 UAE National Rail',
@@ -140,8 +140,8 @@ export const ContributorWalletPage: React.FC = () => {
     {
       id: 'enbd_direct',
       name: 'Emirates NBD / ADCB Direct Pay',
-      minAED: 20.0,
-      minCents: 2000,
+      minAED: 50.0,
+      minCents: 5000,
       speed: 'Instant Clearing',
       fee: '0% Platform Fee',
       badge: '🇦🇪 GCC Instant Bank',
@@ -149,8 +149,8 @@ export const ContributorWalletPage: React.FC = () => {
     {
       id: 'paypal_aed',
       name: 'PayPal / Wise (AED Payout)',
-      minAED: 35.0,
-      minCents: 3500,
+      minAED: 50.0,
+      minCents: 5000,
       speed: '2-4 hours',
       fee: '0% Platform Fee',
       badge: 'Global Currency',
@@ -158,8 +158,8 @@ export const ContributorWalletPage: React.FC = () => {
     {
       id: 'usdc_uae',
       name: 'USDC (VARA Regulated / Polygon)',
-      minAED: 35.0,
-      minCents: 3500,
+      minAED: 50.0,
+      minCents: 5000,
       speed: '3-5 mins',
       fee: '0% Platform Fee',
       badge: 'Web3 Instant',
@@ -199,7 +199,7 @@ export const ContributorWalletPage: React.FC = () => {
     const amountCents = Math.round(parseFloat(amount) * 100);
 
     if (isNaN(amountCents) || amountCents < currentMethodOption.minCents) {
-      setWithdrawError(`Minimum withdrawal amount for ${currentMethodOption.name} is AED ${currentMethodOption.minAED.toFixed(2)}.`);
+      setWithdrawError(`Minimum withdrawal amount for ${currentMethodOption.name} is $50.00.`);
       return;
     }
 
@@ -292,7 +292,7 @@ export const ContributorWalletPage: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-[#667085] mt-0.5">
-            Double-entry SHA-256 cryptographic ledger &bull; Central Bank WPS Escrow &bull; AED 20.00 Minimum cashout
+            Double-entry ledger &bull; Central Bank WPS Escrow &bull; $50.00 Minimum cashout
           </p>
         </div>
 
@@ -416,7 +416,7 @@ export const ContributorWalletPage: React.FC = () => {
             <span className="text-xs font-bold text-gray-400">د.إ</span>
           </div>
           <p className="text-[10px] text-gray-400 mt-1">
-            Dispatched via Central Bank WPS &amp; Instant IBAN
+            Disbursements recorded in the double-entry ledger
           </p>
         </div>
 
@@ -436,14 +436,14 @@ export const ContributorWalletPage: React.FC = () => {
               </span>
             </div>
             <p className="text-[11px] text-gray-600 leading-relaxed max-w-3xl">
-              All rewards are calculated in <strong>AED (United Arab Emirates Dirham)</strong>. Verified balances cash out starting from <strong>AED 20.00</strong>. eBiz Network charges <strong>0% withdrawal fee</strong> — you receive the full sum directly into your UAE bank account via WPS clearing or local instant rails.
+              All rewards are calculated in <strong>AED (United Arab Emirates Dirham)</strong>. Verified balances cash out starting from <strong>$50.00</strong>. eBiz Network charges <strong>0% withdrawal fee</strong> — you receive the full sum directly into your UAE bank account via WPS clearing or local instant rails.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0 text-xs font-semibold text-[#168BFF]">
           <span className="px-3 py-1.5 rounded-xl bg-white border border-blue-200 shadow-2xs font-mono">
-            Min: AED 20.00
+            Min: $50.00
           </span>
           <span className="px-3 py-1.5 rounded-xl bg-white border border-blue-200 shadow-2xs font-bold text-[#16B364]">
             Fee: 0% Free
@@ -730,7 +730,7 @@ export const ContributorWalletPage: React.FC = () => {
                     </button>
                   </div>
                   <span className="text-[10px] text-gray-400 block mt-1">
-                    Minimum for {currentMethodOption.name}: AED {currentMethodOption.minAED.toFixed(2)}
+                    Minimum for {currentMethodOption.name}: ${currentMethodOption.minAED.toFixed(2)}
                   </span>
                 </div>
 
@@ -753,7 +753,7 @@ export const ContributorWalletPage: React.FC = () => {
                       >
                         <span className="text-xs font-bold text-gray-900 block truncate">{opt.name}</span>
                         <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">{opt.speed}</span>
-                        <span className="text-[9px] text-gray-400 block mt-0.5">Min AED {opt.minAED.toFixed(2)}</span>
+                        <span className="text-[9px] text-gray-400 block mt-0.5">Min ${opt.minAED.toFixed(2)}</span>
                       </button>
                     ))}
                   </div>
@@ -914,15 +914,15 @@ export const ContributorWalletPage: React.FC = () => {
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-black text-[#101828]">Withdrawal Dispatched!</h4>
+                  <h4 className="text-lg font-black text-[#101828]">Withdrawal Queued!</h4>
                   <p className="text-xs text-gray-500 mt-1">
-                    Your disbursement of <strong>AED {amount}</strong> via {currentMethodOption.name} has been processed under UAE Central Bank WPS compliance.
+                    Your request of <strong>AED {amount}</strong> via {currentMethodOption.name} has been queued for manual processing by our payouts team.
                   </p>
                 </div>
                 <div className="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 text-left text-xs text-gray-600 space-y-1.5">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Estimated Arrival:</span>
-                    <span className="font-bold text-gray-900">{currentMethodOption.speed}</span>
+                    <span className="text-gray-400">Status:</span>
+                    <span className="font-bold text-gray-900">Queued — manual processing</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Fee Deducted:</span>

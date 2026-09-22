@@ -76,7 +76,7 @@ export const AdminReferralsPage: React.FC = () => {
 
   const levelRows = [1, 2, 3].map((lvl) => {
     const rows = per_level.filter((r) => r.level === lvl);
-    const sum = (status: string) => rows.filter((r) => r.status === status).reduce((a, r) => a + r.rewards_cents, 0);
+    const sum = (status: string) => rows.filter((r) => r.status === status).reduce((a, r) => a + Number(r.rewards_cents), 0);
     const count = (status: string) => rows.filter((r) => r.status === status).reduce((a, r) => a + Number(r.rewards_count), 0);
     return {
       level: lvl,

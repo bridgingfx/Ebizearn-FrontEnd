@@ -24,7 +24,7 @@ const EmailLogs: React.FC = () => {
   if (logs.length === 0) return <p className="text-xs text-gray-500 dark:text-gray-400">No emails sent yet.</p>;
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0C1322]">
+    <div className="glass rounded-2xl overflow-x-auto">
       <table className="w-full text-xs text-left">
         <thead className="bg-slate-50 dark:bg-white/5 text-[10px] uppercase text-slate-500 dark:text-gray-400">
           <tr>

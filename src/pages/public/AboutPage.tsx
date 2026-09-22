@@ -62,7 +62,7 @@ export const AboutPage: React.FC = () => {
       {/* =========================================================================
           HERO SECTION (Corporate Dark Navy #07182F)
          ========================================================================= */}
-      <section className="relative bg-[#07182F] text-white pt-24 pb-14 sm:pt-28 sm:pb-16 overflow-hidden border-b border-white/10 bg-grid-mesh-dark">
+      <section className="relative bg-[#07182F] text-white pt-24 pb-14 sm:pt-28 sm:pb-16 overflow-hidden border-b border-white/10">
         {/* Glow ambient */}
         <div className="absolute top-10 left-1/4 w-[400px] h-[400px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
         <div className="absolute bottom-0 right-10 w-[400px] h-[400px] bg-[#7357FF]/15 rounded-full blur-3xl pointer-events-none" />

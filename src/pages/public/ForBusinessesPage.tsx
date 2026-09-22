@@ -130,7 +130,7 @@ export const ForBusinessesPage: React.FC = () => {
       {/* =========================================================================
           1. BESPOKE CORPORATE PRESTIGE HERO BANNER
          ========================================================================= */}
-      <section className="relative bg-[#07182F] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 overflow-hidden border-b border-white/10 bg-grid-mesh-dark">
+      <section className="relative bg-[#07182F] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 overflow-hidden border-b border-white/10">
         {/* Glow ambient meshes */}
         <div className="absolute top-10 left-1/3 w-[550px] h-[550px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
         <div className="absolute bottom-0 right-10 w-[450px] h-[450px] bg-[#20C4E8]/15 rounded-full blur-3xl pointer-events-none" />
@@ -331,7 +331,7 @@ export const ForBusinessesPage: React.FC = () => {
       {/* =========================================================================
           3. INTERACTIVE CAMPAIGN BUDGET ESTIMATOR (AED)
          ========================================================================= */}
-      <section id="simulator" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] bg-dot-pattern">
+      <section id="simulator" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
@@ -544,7 +544,7 @@ export const ForBusinessesPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="overflow-x-auto rounded-3xl border border-[#E4EAF2] dark:border-white/10 shadow-sm">
+          <div className="glass rounded-3xl overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-[#07182F] text-white">

@@ -411,7 +411,7 @@ Here are key actions you can take right now:
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="group flex items-center gap-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-slate-900 hover:from-emerald-700 hover:to-slate-950 text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:-translate-y-1 border border-emerald-400/40"
+            className="group flex items-center gap-3 bg-gradient-to-r from-emerald-600/90 via-teal-600/90 to-slate-900/90 backdrop-blur-xl text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:-translate-y-1 border border-white/25"
             aria-label="Open eBiz AI Live Chat Assistant"
           >
             <div className="relative">

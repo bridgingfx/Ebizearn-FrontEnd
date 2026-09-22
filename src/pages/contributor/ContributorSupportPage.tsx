@@ -166,7 +166,7 @@ export const ContributorSupportPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="glass rounded-2xl overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/75 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">

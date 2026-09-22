@@ -219,7 +219,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
             description="Proof submitted by contributors for this campaign will appear here."
           />
         ) : (
-          <div className="overflow-x-auto">
+          <div className="glass rounded-2xl overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">

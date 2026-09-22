@@ -96,7 +96,7 @@ export const AdminAuditLogsPage: React.FC = () => {
       )}
 
       {!loading && !error && filtered.length > 0 && (
-        <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs overflow-hidden">
+        <div className="glass rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[640px]">
               <thead>

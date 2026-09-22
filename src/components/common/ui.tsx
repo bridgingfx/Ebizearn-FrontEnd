@@ -144,7 +144,7 @@ export const ErrorBlock: React.FC<{ message: string; onRetry?: () => void }> = (
 );
 
 export const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-[0_1px_2px_rgba(16,24,40,0.05)] ${className}`}>
+  <div className={`glass rounded-2xl ${className}`}>
     {children}
   </div>
 );

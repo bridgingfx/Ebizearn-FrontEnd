@@ -177,7 +177,7 @@ export const PublicTasksPage: React.FC = () => {
       {/* =========================================================================
           1. BESPOKE MARKETPLACE HERO BANNER
          ========================================================================= */}
-      <section className="bg-[#07182F] text-white pt-24 pb-12 sm:pt-28 sm:pb-14 px-4 sm:px-8 border-b border-white/10 relative overflow-hidden bg-grid-mesh-dark">
+      <section className="bg-[#07182F] text-white pt-24 pb-12 sm:pt-28 sm:pb-14 px-4 sm:px-8 border-b border-white/10 relative overflow-hidden">
         <div className="absolute top-10 right-1/4 w-[400px] h-[400px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
 
         <div className="max-w-7xl mx-auto relative z-10 space-y-5">
@@ -281,7 +281,7 @@ export const PublicTasksPage: React.FC = () => {
       {/* =========================================================================
           2. MARKETPLACE CATALOG (HIGH DENSITY CARDS)
          ========================================================================= */}
-      <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto bg-dot-pattern">
+      <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto">
         
         {/* Secondary Category Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">

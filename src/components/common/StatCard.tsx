@@ -29,7 +29,7 @@ export const StatCard: React.FC<StatCardProps> = ({ label, value, sub, icon: Ico
   );
 
   const cls =
-    'bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-5 sm:p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.07]';
+    'glass rounded-[1.5rem] p-5 sm:p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.07]';
 
   if (to) {
     return (

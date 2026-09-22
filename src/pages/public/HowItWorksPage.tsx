@@ -434,7 +434,7 @@ export const HowItWorksPage: React.FC = () => {
       {/* =========================================================================
           1. BESPOKE HERO: DUAL JOURNEY INTRO
          ========================================================================= */}
-      <section className="relative bg-[#07182F] text-white pt-24 pb-14 sm:pt-28 sm:pb-16 overflow-hidden border-b border-white/10 bg-grid-mesh-dark">
+      <section className="relative bg-[#07182F] text-white pt-24 pb-14 sm:pt-28 sm:pb-16 overflow-hidden border-b border-white/10">
         {/* Ambient Glows */}
         <div className="absolute top-10 left-1/4 w-[400px] h-[400px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
         <div className="absolute bottom-0 right-10 w-[400px] h-[400px] bg-[#7357FF]/15 rounded-full blur-3xl pointer-events-none" />
@@ -489,7 +489,7 @@ export const HowItWorksPage: React.FC = () => {
       {/* =========================================================================
           2. DETAILED STEP-BY-STEP FLOW
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] bg-dot-pattern">
+      <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           <div className="text-center max-w-2xl mx-auto space-y-2">

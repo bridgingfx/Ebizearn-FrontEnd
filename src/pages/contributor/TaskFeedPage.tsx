@@ -104,7 +104,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
       </div>
 
       {/* Filter bar */}
-      <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-4 sm:p-5 space-y-4">
+      <div className="glass rounded-[1.5rem] p-4 sm:p-5 space-y-4">
         {/* Search */}
         <div className="relative">
           <Search className="w-5 h-5 text-slate-400 dark:text-gray-500 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -191,7 +191,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
       {loading ? (
         <div className={isFeed ? 'space-y-3' : 'grid sm:grid-cols-2 lg:grid-cols-3 gap-5'}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 p-6 animate-pulse">
+            <div key={i} className="glass rounded-[1.5rem] p-6 animate-pulse">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-[52px] h-[52px] bg-slate-100 dark:bg-white/10 rounded-2xl" />
                 <div className="flex-1">

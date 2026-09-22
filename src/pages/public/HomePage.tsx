@@ -195,7 +195,7 @@ export const HomePage: React.FC = () => {
           - Decluttered Left Column with Generous Spacing & High-Contrast Neon CTA
           - Sleek Smartphone Mockup with 4 Popping Notification Bubbles & Reactions
          ========================================================================= */}
-      <section className="relative pt-24 pb-16 sm:pt-28 sm:pb-20 overflow-hidden bg-[#07182F] text-white border-b border-white/10 bg-grid-mesh-dark">
+      <section className="relative pt-24 pb-16 sm:pt-28 sm:pb-20 overflow-hidden bg-[#07182F] text-white border-b border-white/10">
         
         {/* Ambient subtle glow meshes */}
         <div className="absolute top-12 left-1/4 w-[450px] h-[450px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
@@ -545,7 +545,7 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           3. HOW SOCIAL MEDIA EARNING WORKS (ELIMINATING EMPTY WHITE SPACE)
          ========================================================================= */}
-      <section id="how-it-works" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] bg-dot-pattern scroll-mt-20">
+      <section id="how-it-works" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-2.5">
@@ -575,7 +575,7 @@ export const HomePage: React.FC = () => {
                   className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                     selectedSocialTab === tab.id
                       ? 'bg-[#07182F] text-white shadow-md'
-                      : 'bg-white dark:bg-[#0C1322] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-white/10 hover:border-gray-400'
+                      : 'glass text-gray-600 dark:text-gray-300 hover:border-gray-400 dark:hover:border-white/30'
                   }`}
                 >
                   {tab.label}
@@ -591,12 +591,12 @@ export const HomePage: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 sm:p-7 border border-[#E4EAF2] dark:border-white/10 hover:border-[#168BFF]/50 transition-all hover:shadow-xl space-y-4 group relative overflow-hidden"
+                  className="glass rounded-3xl p-6 sm:p-7 hover:border-[#168BFF]/50 transition-all hover:shadow-xl space-y-4 group relative overflow-hidden"
                 >
                   <div className={`h-1.5 w-full bg-gradient-to-r ${card.accentColor} absolute top-0 left-0`} />
 
                   <div className="flex items-center justify-between pt-1">
-                    <div className="p-3 rounded-2xl bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 shadow-xs group-hover:scale-110 transition-transform">
+                    <div className="p-3 rounded-2xl glass group-hover:scale-110 transition-transform">
                       <Icon className="w-6 h-6" />
                     </div>
                     <span className={`text-[10px] font-black px-2.5 py-1 rounded-full border uppercase tracking-wide ${card.badgeColor}`}>
@@ -841,7 +841,7 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           6. FOR BUSINESSES & BRANDS BANNER
          ========================================================================= */}
-      <section className="py-14 sm:py-16 bg-[#07182F] text-white relative overflow-hidden bg-grid-mesh-dark border-t border-white/10">
+      <section className="py-14 sm:py-16 bg-[#07182F] text-white relative overflow-hidden border-t border-white/10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             

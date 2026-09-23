@@ -1039,38 +1039,43 @@ const INITIAL_SUPPORT_TICKETS: PlatformSupportTicket[] = [
 
 const STORAGE_KEY = 'ebiz_unified_platform_state_v5';
 
+// Corrupted localStorage data must not crash the whole app: fall back to
+// the seeded initial state when a stored value fails to parse.
+function parseStored<T>(key: string, fallback: T): T {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? (JSON.parse(saved) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, creditWallet, updateWalletBalance, updateKycStatus } = useAuth();
 
-  const [campaigns, setCampaigns] = useState<PlatformCampaign[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_campaigns`);
-    return saved ? JSON.parse(saved) : INITIAL_CAMPAIGNS;
-  });
+  const [campaigns, setCampaigns] = useState<PlatformCampaign[]>(() =>
+    parseStored(`${STORAGE_KEY}_campaigns`, INITIAL_CAMPAIGNS)
+  );
 
-  const [tasks, setTasks] = useState<PlatformTask[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_tasks`);
-    return saved ? JSON.parse(saved) : INITIAL_TASKS;
-  });
+  const [tasks, setTasks] = useState<PlatformTask[]>(() =>
+    parseStored(`${STORAGE_KEY}_tasks`, INITIAL_TASKS)
+  );
 
-  const [submissions, setSubmissions] = useState<PlatformSubmission[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_submissions`);
-    return saved ? JSON.parse(saved) : INITIAL_SUBMISSIONS;
-  });
+  const [submissions, setSubmissions] = useState<PlatformSubmission[]>(() =>
+    parseStored(`${STORAGE_KEY}_submissions`, INITIAL_SUBMISSIONS)
+  );
 
-  const [payouts, setPayouts] = useState<PlatformPayout[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_payouts`);
-    return saved ? JSON.parse(saved) : INITIAL_PAYOUTS;
-  });
+  const [payouts, setPayouts] = useState<PlatformPayout[]>(() =>
+    parseStored(`${STORAGE_KEY}_payouts`, INITIAL_PAYOUTS)
+  );
 
-  const [tickets, setTickets] = useState<PlatformSupportTicket[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_tickets`);
-    return saved ? JSON.parse(saved) : INITIAL_SUPPORT_TICKETS;
-  });
+  const [tickets, setTickets] = useState<PlatformSupportTicket[]>(() =>
+    parseStored(`${STORAGE_KEY}_tickets`, INITIAL_SUPPORT_TICKETS)
+  );
 
-  const [globalSettings, setGlobalSettings] = useState<GlobalSettings>(() => {
-    const saved = localStorage.getItem(`${STORAGE_KEY}_settings`);
-    return saved ? JSON.parse(saved) : INITIAL_SETTINGS;
-  });
+  const [globalSettings, setGlobalSettings] = useState<GlobalSettings>(() =>
+    parseStored(`${STORAGE_KEY}_settings`, INITIAL_SETTINGS)
+  );
 
   // Sync state changes to localStorage
   useEffect(() => {

@@ -40,7 +40,7 @@ export const VerificationTimeline: React.FC<{
 
   if (reachedIndex === -1) {
     return (
-      <div className="flex items-center gap-2 text-[11px] font-bold text-red-700">
+      <div className="flex items-center gap-2 text-[11px] font-bold text-red-700 dark:text-red-300">
         <AlertCircle className="w-4 h-4" />
         Rejected — see the reviewer note. You can pick up a new task anytime.
       </div>

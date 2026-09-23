@@ -126,12 +126,12 @@ export const AdminSettingsPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+      <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
         <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
         <div className="text-sm">
-          <p className="font-bold text-red-700">Could not load settings</p>
-          <p className="text-red-600 mt-1">{error}</p>
-          <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+          <p className="font-bold text-red-700 dark:text-red-300">Could not load settings</p>
+          <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+          <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
             Retry
           </button>
         </div>
@@ -149,7 +149,7 @@ export const AdminSettingsPage: React.FC = () => {
       {notice && (
         <div
           className={`rounded-xl px-4 py-3 text-xs font-bold flex items-center gap-2 ${
-            notice.kind === 'ok' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'
+            notice.kind === 'ok' ? 'bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300' : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300'
           }`}
         >
           {notice.kind === 'ok' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}

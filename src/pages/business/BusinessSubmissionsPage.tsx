@@ -67,10 +67,10 @@ export const BusinessSubmissionsPage: React.FC = () => {
   ];
 
   const statusStyle = (status: string) => {
-    if (status === 'approved') return 'bg-emerald-100 text-emerald-700';
-    if (status === 'rejected') return 'bg-red-100 text-red-700';
+    if (status === 'approved') return 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
+    if (status === 'rejected') return 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300';
     if (status === 'action_required') return 'bg-purple-100 text-purple-700';
-    return 'bg-amber-100 text-amber-700';
+    return 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300';
   };
 
   return (
@@ -118,12 +118,12 @@ export const BusinessSubmissionsPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load submissions</p>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load submissions</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -258,9 +258,9 @@ export const BusinessSubmissionsPage: React.FC = () => {
             )}
 
             {selected.aiResult && (
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
-                <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-1">AI pre-screen</p>
-                <p className="text-xs text-blue-800">
+              <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-xl p-4 mb-4">
+                <p className="text-[11px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider mb-1">AI pre-screen</p>
+                <p className="text-xs text-blue-800 dark:text-blue-300">
                   Suggested:{' '}
                   <span className="font-bold">
                     {String(selected.aiResult.suggested_decision).replace(/_/g, ' ')}
@@ -271,12 +271,12 @@ export const BusinessSubmissionsPage: React.FC = () => {
                   )}
                 </p>
                 {selected.aiResult.analysis_summary && (
-                  <p className="text-[11px] text-blue-700 mt-1.5">{selected.aiResult.analysis_summary}</p>
+                  <p className="text-[11px] text-blue-700 dark:text-blue-300 mt-1.5">{selected.aiResult.analysis_summary}</p>
                 )}
               </div>
             )}
 
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800">
+            <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 rounded-xl p-4 text-xs text-amber-800 dark:text-amber-200">
               <p className="font-bold mb-1">Approve / reject as a business</p>
               <p>
                 Business-side review actions are not available in the current backend API. Final decisions are

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -18,6 +18,7 @@ import {
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
 import { navigateAfterLogin } from '../../components/auth/EmailVerification';
+import { prefetchWhenIdle, preloadBusinessApp } from '../../routes/prefetch';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -30,6 +31,13 @@ export const BusinessLoginPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Warm the business CRM chunk in the background: the user is one successful
+  // login away from /business, so prefetching now hides the chunk download
+  // behind the login interaction.
+  useEffect(() => {
+    prefetchWhenIdle(preloadBusinessApp);
+  }, []);
 
   const validate = (): boolean => {
     let ok = true;

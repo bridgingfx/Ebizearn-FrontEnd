@@ -85,15 +85,15 @@ export const BusinessDashboardPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-6 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/30 rounded-[1.5rem] p-6 flex items-start gap-3">
           <AlertCircle className="w-6 h-6 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load dashboard</p>
-            <p className="text-red-600 mt-1">{error}</p>
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load dashboard</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
             <button
               type="button"
               onClick={() => void load()}
-              className="mt-2 text-sm font-bold text-red-700 underline min-h-[44px]"
+              className="mt-2 text-sm font-bold text-red-700 dark:text-red-300 underline min-h-[44px]"
             >
               Retry
             </button>
@@ -167,7 +167,7 @@ export const BusinessDashboardPage: React.FC = () => {
                     <Link
                       key={c.id}
                       to={`/business/campaigns/${c.id}`}
-                      className="group block rounded-2xl border border-slate-100 bg-[#F8FAFD] hover:bg-white dark:hover:bg-[#0C1322] hover:border-[#168BFF]/40 hover:shadow-md p-4 sm:p-5 transition-all"
+                      className="group block rounded-2xl border border-slate-100 dark:border-white/10 bg-[#F8FAFD] dark:bg-white/5 hover:bg-white dark:hover:bg-[#0C1322] hover:border-[#168BFF]/40 hover:shadow-md p-4 sm:p-5 transition-all"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0 flex-1">
@@ -183,7 +183,7 @@ export const BusinessDashboardPage: React.FC = () => {
                           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500">spent</p>
                         </div>
                       </div>
-                      <div className="mt-3 h-2 rounded-full bg-slate-200/70 overflow-hidden">
+                      <div className="mt-3 h-2 rounded-full bg-slate-200/70 dark:bg-white/10 overflow-hidden">
                         <div
                           className="h-full rounded-full bg-gradient-to-r from-[#168BFF] to-[#20C4E8] transition-all"
                           style={{ width: `${pct}%` }}
@@ -216,7 +216,7 @@ export const BusinessDashboardPage: React.FC = () => {
                 {recentSubmissions.slice(0, 5).map((s: TaskSubmission) => (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between gap-3 px-4 py-3.5 bg-[#F8FAFD] border border-slate-100 rounded-2xl"
+                    className="flex items-center justify-between gap-3 px-4 py-3.5 bg-[#F8FAFD] dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl"
                   >
                     <div className="min-w-0 flex items-center gap-3">
                       <span className="w-10 h-10 rounded-xl bg-[#168BFF]/10 text-[#168BFF] flex items-center justify-center shrink-0">
@@ -232,7 +232,7 @@ export const BusinessDashboardPage: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    <span className="shrink-0 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full bg-amber-100 text-amber-700">
+                    <span className="shrink-0 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300">
                       {String(s.status).replace(/_/g, ' ')}
                     </span>
                   </div>

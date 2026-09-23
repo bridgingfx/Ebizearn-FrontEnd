@@ -113,12 +113,12 @@ export const BusinessCampaignDetailPage: React.FC = () => {
         <Link to="/business/campaigns" className="inline-flex items-center gap-2 text-xs font-bold text-[#168BFF]">
           <ArrowLeft className="w-4 h-4" /> Back to campaigns
         </Link>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load campaign</p>
-            <p className="text-red-600 mt-1">{error || 'Campaign not found.'}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load campaign</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error || 'Campaign not found.'}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -141,7 +141,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5 mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-100 text-blue-700">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300">
               {status}
             </span>
           </div>
@@ -162,8 +162,8 @@ export const BusinessCampaignDetailPage: React.FC = () => {
               onClick={() => void handleToggle()}
               className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50 ${
                 status === 'active'
-                  ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                  : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                  ? 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-500/25'
+                  : 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-500/25'
               }`}
             >
               {status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
@@ -174,7 +174,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
       </div>
 
       {actionError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs font-bold text-red-700">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3 text-xs font-bold text-red-700 dark:text-red-300">
           {actionError}
         </div>
       )}
@@ -235,7 +235,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
                     <td className="py-3 pr-4 font-bold text-gray-900 dark:text-gray-100">{s.user?.name || '—'}</td>
                     <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">{s.task?.title || `Task #${s.task_id}`}</td>
                     <td className="py-3 pr-4">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300">
                         {String(s.status).replace(/_/g, ' ')}
                       </span>
                     </td>

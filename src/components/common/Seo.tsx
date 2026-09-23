@@ -84,7 +84,16 @@ export const RouteSeo: React.FC = () => {
         };
       }
     }
-    if (!page) return; // unknown route: leave head untouched
+    if (!page) {
+      // Unknown route (renders the branded 404 page): never indexed and the
+      // head is reset so a stale title/description from the previous page
+      // doesn't linger on the 404 view.
+      page = {
+        title: 'Page not found | eBizEarn',
+        description: 'The page you are looking for does not exist on eBizEarn.',
+        noindex: true,
+      };
+    }
 
     const canonicalPath = page.canonical ?? path;
     const canonicalUrl = `${SITE_URL}${canonicalPath === '/' ? '/' : canonicalPath}`;

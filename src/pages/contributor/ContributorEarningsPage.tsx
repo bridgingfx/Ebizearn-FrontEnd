@@ -11,7 +11,7 @@ export const ContributorEarningsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-[#101828] dark:text-gray-100">Earnings & Performance</h2>
-          <p className="text-xs text-[#667085] mt-0.5">
+          <p className="text-xs text-[#667085] dark:text-gray-400 mt-0.5">
             Detailed breakdown of your completed task rewards, level progression, and payout forecasts.
           </p>
         </div>

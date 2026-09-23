@@ -100,7 +100,7 @@ export const ContributorSupportPage: React.FC = () => {
          ========================================================================= */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#168BFF] flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] flex items-center justify-center shrink-0">
             <MessageSquare className="w-6 h-6" />
           </div>
           <div>
@@ -110,7 +110,7 @@ export const ContributorSupportPage: React.FC = () => {
         </div>
 
         <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/15 text-amber-600 flex items-center justify-center shrink-0">
             <Clock className="w-6 h-6" />
           </div>
           <div>
@@ -122,7 +122,7 @@ export const ContributorSupportPage: React.FC = () => {
         </div>
 
         <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#16B364] flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/15 text-[#16B364] flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
@@ -258,7 +258,7 @@ export const ContributorSupportPage: React.FC = () => {
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#168BFF] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] flex items-center justify-center font-bold">
                 <FileText className="w-5 h-5" />
               </div>
               <div>
@@ -269,7 +269,7 @@ export const ContributorSupportPage: React.FC = () => {
 
             {ticketSubmitted ? (
               <div className="p-6 text-center space-y-2">
-                <div className="w-12 h-12 rounded-full bg-emerald-100 text-[#16B364] flex items-center justify-center mx-auto">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-[#16B364] flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-7 h-7" />
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Ticket Submitted!</h3>

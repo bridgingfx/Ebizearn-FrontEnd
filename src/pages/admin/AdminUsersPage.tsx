@@ -79,11 +79,11 @@ export const AdminUsersPage: React.FC = () => {
   const statusStyle = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
       case 'suspended':
-        return 'bg-red-100 text-red-700';
+        return 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300';
       default:
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300';
     }
   };
 
@@ -126,7 +126,7 @@ export const AdminUsersPage: React.FC = () => {
       </div>
 
       {actionError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs font-bold text-red-700">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3 text-xs font-bold text-red-700 dark:text-red-300">
           {actionError}
         </div>
       )}
@@ -138,12 +138,12 @@ export const AdminUsersPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load users</p>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load users</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -207,7 +207,7 @@ export const AdminUsersPage: React.FC = () => {
                           type="button"
                           onClick={() => setSelected(u)}
                           title="View details"
-                          className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 transition-colors"
+                          className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 dark:bg-blue-500/10 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -217,7 +217,7 @@ export const AdminUsersPage: React.FC = () => {
                             disabled={actionId === u.id}
                             onClick={() => void handleStatus(u, 'active')}
                             title="Reactivate account"
-                            className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-50"
+                            className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:bg-emerald-500/15 transition-colors disabled:opacity-50"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                           </button>
@@ -227,7 +227,7 @@ export const AdminUsersPage: React.FC = () => {
                             disabled={actionId === u.id}
                             onClick={() => void handleStatus(u, 'suspended')}
                             title="Suspend account"
-                            className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                            className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-600 dark:text-red-400 hover:bg-red-50 dark:bg-red-500/10 transition-colors disabled:opacity-50"
                           >
                             <Ban className="w-4 h-4" />
                           </button>
@@ -285,7 +285,7 @@ export const AdminUsersPage: React.FC = () => {
                 type="button"
                 disabled={actionId === selected.id}
                 onClick={() => void handleStatus(selected, 'suspended')}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 disabled:opacity-50 text-red-700 border border-red-200 text-xs font-bold rounded-xl transition-colors"
+                className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 dark:bg-red-500/15 disabled:opacity-50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 text-xs font-bold rounded-xl transition-colors"
               >
                 <Ban className="w-4 h-4" /> Suspend account
               </button>
@@ -294,14 +294,14 @@ export const AdminUsersPage: React.FC = () => {
                 type="button"
                 disabled={actionId === selected.id}
                 onClick={() => void handleStatus(selected, 'active')}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-xl transition-colors"
+                className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-50 dark:bg-emerald-500/15 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 dark:bg-emerald-500/15 disabled:opacity-50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold rounded-xl transition-colors"
               >
                 <CheckCircle2 className="w-4 h-4" /> Reactivate account
               </button>
             )}
-            <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-start gap-2">
+            <div className="mt-4 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 rounded-xl p-3.5 flex items-start gap-2">
               <ShieldAlert className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-              <p className="text-[11px] text-amber-800">
+              <p className="text-[11px] text-amber-800 dark:text-amber-200">
                 KYC document review actions need backend support that is not available yet. Only the KYC
                 status reported by the user profile is shown here.
               </p>

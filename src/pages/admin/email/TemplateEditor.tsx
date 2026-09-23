@@ -88,7 +88,7 @@ export const TemplateEditor: React.FC = () => {
             }`}
           >
             <span className="truncate">{t.name}</span>
-            {!t.is_enabled && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800">off</span>}
+            {!t.is_enabled && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200">off</span>}
           </button>
         ))}
       </div>
@@ -105,7 +105,7 @@ export const TemplateEditor: React.FC = () => {
 
           <div className="flex flex-wrap gap-1.5">
             {draft.variables.map((v) => (
-              <code key={v} className="text-[10px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-800">{`{{${v}}}`}</code>
+              <code key={v} className="text-[10px] px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-300">{`{{${v}}}`}</code>
             ))}
           </div>
 
@@ -120,7 +120,7 @@ export const TemplateEditor: React.FC = () => {
           </label>
 
           {notice && (
-            <div className={`px-4 py-2.5 rounded-xl text-xs font-semibold ${notice.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>{notice.text}</div>
+            <div className={`px-4 py-2.5 rounded-xl text-xs font-semibold ${notice.ok ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' : 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300'}`}>{notice.text}</div>
           )}
 
           <div className="flex gap-2">
@@ -129,7 +129,7 @@ export const TemplateEditor: React.FC = () => {
               <Save className="w-4 h-4" />{busy ? 'Saving…' : 'Save template'}
             </button>
             <button type="button" onClick={reset} disabled={busy}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-gray-300 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-gray-300 flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
               <RotateCcw className="w-4 h-4" />Restore default
             </button>
           </div>

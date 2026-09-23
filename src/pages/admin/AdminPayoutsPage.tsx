@@ -103,17 +103,17 @@ export const AdminPayoutsPage: React.FC = () => {
   const statusStyle = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
       case 'rejected':
-        return 'bg-red-100 text-red-700';
+        return 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300';
       case 'processing':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300';
       case 'failed':
-        return 'bg-red-50 text-red-600';
+        return 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400';
       case 'cancelled':
         return 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400';
       default:
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300';
     }
   };
 
@@ -123,7 +123,7 @@ export const AdminPayoutsPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-white/10">
         <div>
           <h2 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">Withdrawals</h2>
-          <p className="text-xs sm:text-sm text-[#667085] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#667085] dark:text-gray-400 mt-0.5">
             Review and action contributor withdrawal requests. Amounts are debited by the server ledger —
             this page only approves or rejects.
           </p>
@@ -169,12 +169,12 @@ export const AdminPayoutsPage: React.FC = () => {
       </div>
 
       {loadError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load payout queue</p>
-            <p className="text-red-600 mt-1">{loadError}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load payout queue</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{loadError}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -182,7 +182,7 @@ export const AdminPayoutsPage: React.FC = () => {
       )}
 
       {actionError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs font-bold text-red-700">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3 text-xs font-bold text-red-700 dark:text-red-300">
           {actionError}
         </div>
       )}
@@ -258,7 +258,7 @@ export const AdminPayoutsPage: React.FC = () => {
                       type="button"
                       disabled={processingId === p.id}
                       onClick={() => setRejectingId(p.id)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-50 hover:bg-red-100 disabled:opacity-50 text-red-700 border border-red-200 text-xs font-bold rounded-xl transition-colors"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 dark:bg-red-500/15 disabled:opacity-50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 text-xs font-bold rounded-xl transition-colors"
                     >
                       <XCircle className="w-3.5 h-3.5" /> Reject
                     </button>

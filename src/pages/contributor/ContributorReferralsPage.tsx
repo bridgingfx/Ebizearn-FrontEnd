@@ -21,10 +21,10 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { StatCard, SectionHeader } from '../../components/common/StatCard';
 
 const statusLabels: Record<string, { label: string; className: string }> = {
-  rewarded: { label: 'Rewarded', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  qualified: { label: 'Qualified', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  pending: { label: 'Pending', className: 'bg-amber-100 text-amber-700 border-amber-200' },
-  pending_tasks: { label: 'Awaiting activity', className: 'bg-amber-100 text-amber-700 border-amber-200' },
+  rewarded: { label: 'Rewarded', className: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30' },
+  qualified: { label: 'Qualified', className: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30' },
+  pending: { label: 'Pending', className: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30' },
+  pending_tasks: { label: 'Awaiting activity', className: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30' },
 };
 
 const LEVEL_INFO = [
@@ -195,9 +195,9 @@ export const ContributorReferralsPage: React.FC = () => {
           <div className="h-[52px] bg-slate-100 dark:bg-white/10 rounded-2xl" />
         </div>
       ) : error ? (
-        <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-8 text-center">
+        <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/30 rounded-[1.5rem] p-8 text-center">
           <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
-          <p className="text-sm font-bold text-red-700">{error}</p>
+          <p className="text-sm font-bold text-red-700 dark:text-red-300">{error}</p>
           <button
             type="button"
             onClick={fetchReferrals}
@@ -276,21 +276,21 @@ export const ContributorReferralsPage: React.FC = () => {
                 {LEVEL_INFO.map((lvl) => {
                   const stat = levelStats?.find((s) => s.level === lvl.level);
                   return (
-                    <div key={lvl.level} className="relative rounded-3xl border-2 border-slate-100 bg-[#F8FAFD] p-5 text-center hover:border-slate-200 dark:hover:border-white/10 transition-colors">
+                    <div key={lvl.level} className="relative rounded-3xl border-2 border-slate-100 dark:border-white/10 bg-[#F8FAFD] dark:bg-white/5 p-5 text-center hover:border-slate-200 dark:hover:border-white/10 transition-colors">
                       <div className={`mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br ${lvl.gradient} shadow-lg ${lvl.shadow} flex items-center justify-center`}>
                         <span className="text-2xl font-black text-white">L{lvl.level}</span>
                       </div>
                       <p className="mt-3 text-base font-extrabold text-slate-900 dark:text-gray-100">{lvl.title}</p>
                       <p className="mt-1 text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{lvl.desc}</p>
                       {stat ? (
-                        <div className="mt-3 pt-3 border-t border-slate-200/70">
+                        <div className="mt-3 pt-3 border-t border-slate-200/70 dark:border-white/10">
                           <p className="text-xl font-black text-slate-900 dark:text-gray-100">
                             {stat.count} <span className="text-xs font-bold text-slate-400 dark:text-gray-500">referral{stat.count === 1 ? '' : 's'}</span>
                           </p>
                           <p className="text-sm font-extrabold text-emerald-600 mt-0.5">{money(stat.earned)} earned</p>
                         </div>
                       ) : (
-                        <p className="mt-3 pt-3 border-t border-slate-200/70 text-xs font-bold text-slate-400 dark:text-gray-500">
+                        <p className="mt-3 pt-3 border-t border-slate-200/70 dark:border-white/10 text-xs font-bold text-slate-400 dark:text-gray-500">
                           {levelStats ? 'No referrals at this level yet' : 'Live counts appear once the backend ships level data'}
                         </p>
                       )}
@@ -355,7 +355,7 @@ export const ContributorReferralsPage: React.FC = () => {
                         </p>
                       </div>
                       <span className={`hidden sm:inline-block text-[11px] font-black px-3 py-1.5 rounded-full border ${st.className}`}>{st.label}</span>
-                      <p className={`text-base font-black shrink-0 ${r.reward_cents > 0 ? 'text-emerald-600' : 'text-slate-300'}`}>
+                      <p className={`text-base font-black shrink-0 ${r.reward_cents > 0 ? 'text-emerald-600' : 'text-slate-300 dark:text-gray-600'}`}>
                         {r.reward_cents > 0 ? `+${money(r.reward_cents)}` : money(0)}
                       </p>
                     </div>
@@ -368,14 +368,14 @@ export const ContributorReferralsPage: React.FC = () => {
           {/* Wallet CTA */}
           <Link
             to="/app/wallet"
-            className="group flex items-center gap-4 rounded-[1.75rem] bg-emerald-50 border-2 border-emerald-200 p-5 sm:p-6 hover:bg-emerald-100/60 transition-all"
+            className="group flex items-center gap-4 rounded-[1.75rem] bg-emerald-50 dark:bg-emerald-500/15 border-2 border-emerald-200 dark:border-emerald-500/30 p-5 sm:p-6 hover:bg-emerald-100/60 dark:hover:bg-emerald-500/20 transition-all"
           >
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#16B364] to-[#0EA968] shadow-lg shadow-emerald-500/25 flex items-center justify-center shrink-0">
               <BadgeDollarSign className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1">
               <p className="text-base font-extrabold text-emerald-900">Referral earnings land in your wallet</p>
-              <p className="text-sm text-emerald-700 mt-0.5">Qualified rewards are credited automatically — withdraw from $50.</p>
+              <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-0.5">Qualified rewards are credited automatically — withdraw from $50.</p>
             </div>
             <ArrowRight className="w-5 h-5 text-emerald-600 group-hover:translate-x-1 transition-transform shrink-0" />
           </Link>

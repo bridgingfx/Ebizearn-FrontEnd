@@ -77,7 +77,7 @@ export const ContributorProfilePage: React.FC = () => {
       followers: '—',
       verified: false,
       icon: YouTubeLogo,
-      badgeColor: 'bg-red-50 text-red-700 border-red-200',
+      badgeColor: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30',
     },
     {
       id: 'facebook',
@@ -86,7 +86,7 @@ export const ContributorProfilePage: React.FC = () => {
       followers: '—',
       verified: false,
       icon: FacebookLogo,
-      badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
+      badgeColor: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/30',
     },
     {
       id: 'twitter',
@@ -137,7 +137,7 @@ export const ContributorProfilePage: React.FC = () => {
             <div className="space-y-1 sm:pt-3">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100">{name}</h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200 text-[10px] font-black uppercase tracking-wider">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-[#16B364] border border-emerald-200 dark:border-emerald-500/30 text-[10px] font-black uppercase tracking-wider">
                   {levelLabel}
                 </span>
               </div>
@@ -285,7 +285,7 @@ export const ContributorProfilePage: React.FC = () => {
                 Social account linking ships with a future update — once live, the handle you use to complete tasks is recorded at submission time.
               </p>
             </div>
-            <span className="text-xs font-bold text-[#168BFF] bg-blue-50 px-3 py-1 rounded-full border border-blue-100 self-start sm:self-auto">
+            <span className="text-xs font-bold text-[#168BFF] bg-blue-50 dark:bg-blue-500/10 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-500/25 self-start sm:self-auto">
               No Channels Connected
             </span>
           </div>
@@ -306,12 +306,12 @@ export const ContributorProfilePage: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-black text-gray-900 dark:text-gray-100">{platform.name}</span>
                         {platform.verified ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200 text-[10px] font-bold">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-[#16B364] border border-emerald-200 dark:border-emerald-500/30 text-[10px] font-bold">
                             <CheckCircle2 className="w-3 h-3" />
                             Verified
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 text-[10px] font-bold">
                             <AlertCircle className="w-3 h-3" />
                             Action Required
                           </span>
@@ -372,7 +372,7 @@ export const ContributorProfilePage: React.FC = () => {
                 key={rail.id}
                 className={`p-4 rounded-2xl border text-left transition-all ${
                   payoutMethod === rail.id
-                    ? 'border-[#168BFF] bg-blue-50/40 ring-1 ring-[#168BFF]'
+                    ? 'border-[#168BFF] bg-blue-50/40 dark:bg-blue-500/15 ring-1 ring-[#168BFF]'
                     : 'border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322]'
                 }`}
               >
@@ -412,7 +412,7 @@ export const ContributorProfilePage: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#168BFF] flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] flex items-center justify-center font-bold">
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>

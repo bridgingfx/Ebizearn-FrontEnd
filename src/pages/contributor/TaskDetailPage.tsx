@@ -257,9 +257,9 @@ export const TaskDetailPage: React.FC = () => {
               </div>
             )}
 
-            <div className="flex items-start gap-2 p-3 rounded-2xl bg-amber-50/70 border border-amber-200/60">
+            <div className="flex items-start gap-2 p-3 rounded-2xl bg-amber-50/70 dark:bg-amber-500/15 border border-amber-200/60 dark:border-amber-500/30">
               <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-px" />
-              <p className="text-[11px] text-amber-800 leading-snug">
+              <p className="text-[11px] text-amber-800 dark:text-amber-200 leading-snug">
                 <span className="font-black">Retention rule:</span> reversing this action before the{' '}
                 {humanizeRetention(task.retentionHours)} period ends can reverse this reward.
               </p>
@@ -273,7 +273,7 @@ export const TaskDetailPage: React.FC = () => {
             {submission ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 flex items-center justify-center">
                     <FileCheck className="w-5 h-5" />
                   </div>
                   <div>
@@ -285,8 +285,8 @@ export const TaskDetailPage: React.FC = () => {
                   <VerificationTimeline status={submission.status} aiResult={submission.aiResult} />
                 </div>
                 {submission.review_notes && (
-                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs">
-                    <span className="text-amber-800 font-bold block mb-0.5">Reviewer note</span>
+                  <div className="p-3 bg-amber-50 dark:bg-amber-500/15 rounded-xl border border-amber-200 dark:border-amber-500/30 text-xs">
+                    <span className="text-amber-800 dark:text-amber-200 font-bold block mb-0.5">Reviewer note</span>
                     <p className="text-amber-900">{submission.review_notes}</p>
                   </div>
                 )}
@@ -299,7 +299,7 @@ export const TaskDetailPage: React.FC = () => {
               </div>
             ) : !started ? (
               <div className="space-y-4 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#168BFF] flex items-center justify-center mx-auto">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] flex items-center justify-center mx-auto">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
@@ -310,7 +310,7 @@ export const TaskDetailPage: React.FC = () => {
                   </p>
                 </div>
                 {startError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl text-left" role="alert">{startError}</div>
+                  <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-xs rounded-xl text-left" role="alert">{startError}</div>
                 )}
                 <button
                   type="button"
@@ -335,7 +335,7 @@ export const TaskDetailPage: React.FC = () => {
                 </div>
 
                 {submitError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl" role="alert">{submitError}</div>
+                  <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-xs rounded-xl" role="alert">{submitError}</div>
                 )}
 
                 {/* Screenshot upload */}

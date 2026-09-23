@@ -37,6 +37,10 @@ export const LazyHomePage = React.lazy(() => named(import('../pages/public/HomeP
 export const LazyHowItWorksPage = React.lazy(() =>
   named(import('../pages/public/HowItWorksPage'), 'HowItWorksPage'),
 );
+export const LazyNotFoundPage = React.lazy(() =>
+  named(import('../pages/public/NotFoundPage'), 'NotFoundPage'),
+);
+
 export const LazyPublicTasksPage = React.lazy(() =>
   named(import('../pages/public/PublicTasksPage'), 'PublicTasksPage'),
 );

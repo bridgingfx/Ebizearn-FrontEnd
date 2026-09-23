@@ -71,12 +71,12 @@ export const AdminAuditLogsPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load audit logs</p>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load audit logs</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -121,7 +121,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSelected(l)}
-                        className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 transition-colors"
+                        className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 dark:bg-blue-500/10 transition-colors"
                         title="View before/after state"
                       >
                         <Eye className="w-4 h-4" />

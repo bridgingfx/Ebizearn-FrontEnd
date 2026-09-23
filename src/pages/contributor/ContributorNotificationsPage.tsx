@@ -264,7 +264,7 @@ export const ContributorNotificationsPage: React.FC = () => {
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100">Notifications</h1>
-            <p className="text-xs text-[#667085] mt-0.5">
+            <p className="text-xs text-[#667085] dark:text-gray-400 mt-0.5">
               {unread.length > 0 ? `${unread.length} unread update${unread.length === 1 ? '' : 's'}` : 'You are all caught up.'}
             </p>
           </div>
@@ -281,7 +281,7 @@ export const ContributorNotificationsPage: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-xs rounded-2xl flex items-start gap-2">
+        <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-xs rounded-2xl flex items-start gap-2">
           <AlertCircle className="w-4 h-4 shrink-0 mt-px" />
           <span>{error}</span>
         </div>
@@ -302,7 +302,7 @@ export const ContributorNotificationsPage: React.FC = () => {
             const inner = (
               <div
                 className={`flex items-start gap-3.5 bg-white dark:bg-[#0C1322] rounded-2xl border p-4 transition-all ${
-                  isRead ? 'border-[#E7ECF3] dark:border-white/10' : 'border-[#168BFF]/30 shadow-sm bg-blue-50/30'
+                  isRead ? 'border-[#E7ECF3] dark:border-white/10' : 'border-[#168BFF]/30 shadow-sm bg-blue-50/30 dark:bg-blue-500/10'
                 }`}
                 onClick={() => markOneRead(n.id)}
               >

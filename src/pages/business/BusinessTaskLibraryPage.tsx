@@ -154,9 +154,9 @@ export const BusinessTaskLibraryPage: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-start gap-3">
+      <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-2xl p-5 flex items-start gap-3">
         <BookOpen className="w-5 h-5 text-[#168BFF] mt-0.5 shrink-0" />
-        <div className="text-xs text-blue-900">
+        <div className="text-xs text-blue-900 dark:text-blue-200">
           <p className="font-bold mb-1">How templates work</p>
           <p>
             A template pre-selects the closest matching task type in the campaign wizard. You still write your

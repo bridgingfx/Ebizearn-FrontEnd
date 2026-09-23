@@ -75,12 +75,12 @@ export const AdminSystemHealthPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load system health</p>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load system health</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -91,7 +91,7 @@ export const AdminSystemHealthPage: React.FC = () => {
         <>
           <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-600">
+              <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>

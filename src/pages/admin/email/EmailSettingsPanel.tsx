@@ -5,10 +5,10 @@ import { ProviderManager } from './ProviderManager';
 import { TemplateEditor } from './TemplateEditor';
 
 const STATUS_STYLES: Record<EmailLog['status'], string> = {
-  sent: 'bg-emerald-50 text-emerald-700',
-  logged: 'bg-blue-50 text-blue-700',
-  skipped: 'bg-amber-50 text-amber-700',
-  failed: 'bg-red-50 text-red-700',
+  sent: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
+  logged: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300',
+  skipped: 'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300',
+  failed: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300',
 };
 
 const EmailLogs: React.FC = () => {
@@ -19,7 +19,7 @@ const EmailLogs: React.FC = () => {
     emailApi.logs().then((res) => setLogs(res.data)).catch((err) => setError(getApiError(err, 'Could not load logs.')));
   }, []);
 
-  if (error) return <p className="text-xs text-red-600">{error}</p>;
+  if (error) return <p className="text-xs text-red-600 dark:text-red-400">{error}</p>;
   if (!logs) return <p className="text-xs text-gray-500 dark:text-gray-400">Loading…</p>;
   if (logs.length === 0) return <p className="text-xs text-gray-500 dark:text-gray-400">No emails sent yet.</p>;
 
@@ -44,7 +44,7 @@ const EmailLogs: React.FC = () => {
               <td className="px-4 py-2.5">{l.provider_name ?? '—'}</td>
               <td className="px-4 py-2.5">
                 <span className={`px-2 py-0.5 rounded-full font-bold ${STATUS_STYLES[l.status]}`}>{l.status}</span>
-                {l.error && <p className="text-[10px] text-red-600 mt-1 max-w-xs break-words">{l.error}</p>}
+                {l.error && <p className="text-[10px] text-red-600 dark:text-red-400 mt-1 max-w-xs break-words">{l.error}</p>}
               </td>
             </tr>
           ))}

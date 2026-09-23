@@ -52,3 +52,22 @@ export const PageLoader: React.FC = () => {
 };
 
 export default PageLoader;
+
+/**
+ * Suspense fallback wrapper that only renders PageLoader after a short delay.
+ * React Suspense suspends even for very fast chunk loads, and a full-screen
+ * overlay flashing in and out in ~50ms feels jarring; waiting 200ms means
+ * the loader only appears when the download genuinely takes a moment.
+ * Use this as the <Suspense fallback>, not PageLoader directly.
+ */
+export const DeferredPageLoader: React.FC<{ delayMs?: number }> = ({ delayMs = 200 }) => {
+  const [visible, setVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setVisible(true), delayMs);
+    return () => clearTimeout(t);
+  }, [delayMs]);
+
+  if (!visible) return null;
+  return <PageLoader />;
+};

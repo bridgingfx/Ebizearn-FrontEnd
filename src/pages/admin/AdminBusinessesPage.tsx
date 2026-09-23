@@ -66,7 +66,7 @@ export const AdminBusinessesPage: React.FC = () => {
       </div>
 
       {actionError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs font-bold text-red-700">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3 text-xs font-bold text-red-700 dark:text-red-300">
           {actionError}
         </div>
       )}
@@ -78,12 +78,12 @@ export const AdminBusinessesPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load business accounts</p>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load business accounts</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -103,12 +103,12 @@ export const AdminBusinessesPage: React.FC = () => {
           {users.map((u) => (
             <div key={u.id} className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-5">
               <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <span
                   className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${
-                    u.status === 'suspended' ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'
+                    u.status === 'suspended' ? 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300' : 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
                   }`}
                 >
                   {u.status}
@@ -125,7 +125,7 @@ export const AdminBusinessesPage: React.FC = () => {
                   type="button"
                   disabled={actionId === u.id}
                   onClick={() => void handleStatus(u, 'active')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50 text-emerald-700 border border-emerald-200 text-xs font-bold transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/15 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 dark:bg-emerald-500/15 disabled:opacity-50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold transition-colors"
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" /> Reactivate
                 </button>
@@ -134,7 +134,7 @@ export const AdminBusinessesPage: React.FC = () => {
                   type="button"
                   disabled={actionId === u.id}
                   onClick={() => void handleStatus(u, 'suspended')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 disabled:opacity-50 text-red-700 border border-red-200 text-xs font-bold transition-colors"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 dark:bg-red-500/15 disabled:opacity-50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 text-xs font-bold transition-colors"
                 >
                   <Ban className="w-3.5 h-3.5" /> Suspend
                 </button>

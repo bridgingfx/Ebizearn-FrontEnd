@@ -130,7 +130,7 @@ export const AdminReportsPage: React.FC = () => {
       />
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-medium rounded-xl px-4 py-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-sm font-medium rounded-xl px-4 py-3">
           {error}
         </div>
       )}

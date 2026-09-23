@@ -152,7 +152,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200 dark:border-white/10">
         <div>
           <h2 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">AI Verification Center</h2>
-          <p className="text-xs sm:text-sm text-[#667085] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#667085] dark:text-gray-400 mt-0.5">
             Proof review with heuristic AI pre-screen scores and manual decision recording. Human review remains mandatory.
           </p>
         </div>
@@ -160,12 +160,12 @@ export const AdminVerificationCenterPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowSopGuide(!showSopGuide)}
-            className="px-3.5 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-[#168BFF] text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 dark:bg-blue-500/15 text-[#168BFF] text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Info className="w-3.5 h-3.5" />
             <span>{showSopGuide ? 'Hide SOP Rules' : 'Verification SOP Rules'}</span>
           </button>
-          <span className="text-xs font-bold px-3 py-1 bg-amber-50 text-amber-700 rounded-full border border-amber-200">
+          <span className="text-xs font-bold px-3 py-1 bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 rounded-full border border-amber-200 dark:border-amber-500/30">
             {queue.length} Submissions in Queue
           </span>
         </div>
@@ -184,15 +184,15 @@ export const AdminVerificationCenterPage: React.FC = () => {
       </div>
 
       {loadError && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load verification queue</p>
-            <p className="text-red-600 mt-1">{loadError}</p>
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load verification queue</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{loadError}</p>
             <button
               type="button"
               onClick={() => void reloadQueue()}
-              className="mt-2 text-xs font-bold text-red-700 underline"
+              className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline"
             >
               Retry
             </button>
@@ -202,7 +202,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
       {/* 2. SOP & AI CRITERIA EXPLANATION ACCORDION */}
       {showSopGuide && (
-        <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-blue-200 shadow-sm space-y-4 animate-in fade-in duration-200">
+        <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-blue-200 dark:border-blue-500/30 shadow-sm space-y-4 animate-in fade-in duration-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-gray-100">
               <ShieldCheck className="w-5 h-5 text-[#168BFF]" />
@@ -211,19 +211,19 @@ export const AdminVerificationCenterPage: React.FC = () => {
             <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">Algorithm Version: Heuristic Pre-Check (Simulated)</span>
           </div>
 
-          <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-[11px] text-amber-800 leading-relaxed">
+          <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 text-[11px] text-amber-800 dark:text-amber-200 leading-relaxed">
             <strong>Simulated check — heuristic only.</strong> The backend currently uses a
             heuristic pre-check (mock AI provider), not a production computer-vision service.
             Every score and auto-decision below is a placeholder. Human review remains mandatory.
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-100 space-y-1.5">
+            <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-500/15 border border-emerald-100 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">
                   Confidence ≥ 90%
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-[#16B364] font-bold text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-[#16B364] font-bold text-[10px]">
                   Auto-Approve
                 </span>
               </div>
@@ -232,12 +232,12 @@ export const AdminVerificationCenterPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-100 space-y-1.5">
+            <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-500/15 border border-amber-100 dark:border-amber-500/25 space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-800 uppercase tracking-wider text-[11px]">
+                <span className="font-bold text-amber-800 dark:text-amber-200 uppercase tracking-wider text-[11px]">
                   Confidence 70% - 89%
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold text-[10px]">
                   Moderator Queue
                 </span>
               </div>
@@ -246,12 +246,12 @@ export const AdminVerificationCenterPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-red-50/70 border border-red-100 space-y-1.5">
+            <div className="p-4 rounded-2xl bg-red-50/70 dark:bg-red-500/10 border border-red-100 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-red-800 uppercase tracking-wider text-[11px]">
                   Confidence {'<'} 70% / Fraud
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300 font-bold text-[10px]">
                   Auto-Quarantine
                 </span>
               </div>
@@ -396,16 +396,16 @@ export const AdminVerificationCenterPage: React.FC = () => {
                   AI Vision Evaluation
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-300">
                     Simulated check — heuristic only
                   </span>
-                  <span className="text-xs font-black text-[#16B364] px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">
+                  <span className="text-xs font-black text-[#16B364] px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-500/30">
                     {currentSubmission.ai.confidence}% Confidence
                   </span>
                 </div>
               </div>
 
-              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed bg-blue-50/50 p-3 rounded-2xl border border-blue-100">
+              <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed bg-blue-50/50 dark:bg-blue-500/10 p-3 rounded-2xl border border-blue-100 dark:border-blue-500/25">
                 {currentSubmission.ai.summary}
               </p>
             </div>
@@ -464,14 +464,14 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
             {/* Decision Status Animation */}
             {decisionExecuted && (
-              <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-2">
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Decision recorded: {decisionExecuted.toUpperCase()}. The server applied the outcome.</span>
               </div>
             )}
 
             {decisionError && (
-              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-start gap-2">
+              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-xs font-bold flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 <span>{decisionError}</span>
               </div>
@@ -494,7 +494,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                   type="button"
                   disabled={isProcessing}
                   onClick={() => handleDecision('action_required')}
-                  className="py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="py-2.5 bg-amber-50 dark:bg-amber-500/15 hover:bg-amber-100 dark:hover:bg-amber-500/20 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-500/30 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                 >
                   Request Resubmission (24h)
                 </button>
@@ -502,7 +502,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                   type="button"
                   disabled={isProcessing}
                   onClick={() => handleDecision('rejected')}
-                  className="py-2.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="py-2.5 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 dark:bg-red-500/15 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 rounded-xl text-xs font-bold transition-colors cursor-pointer"
                 >
                   Reject & Release Slot
                 </button>

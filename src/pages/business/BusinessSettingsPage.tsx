@@ -60,9 +60,9 @@ export const BusinessSettingsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-5 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="mt-5 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-amber-800">
+          <p className="text-xs text-amber-800 dark:text-amber-200">
             <span className="font-bold">Profile editing is not available yet.</span> The current backend API
             has no business-profile update endpoint, so these fields are read-only. Contact support at{' '}
             <span className="font-bold">support@ebizearn.com</span> if your company details need to change.

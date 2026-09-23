@@ -96,7 +96,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
           <h1 className="text-2xl sm:text-[1.75rem] font-black tracking-tight text-[#101828] dark:text-gray-100">
             {isFeed ? 'Task Feed' : 'Available Tasks'}
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-[#667085] dark:text-gray-400 mt-1">
             {isFeed
               ? 'A live stream of open tasks across platforms.'
               : 'Open tasks from verified businesses. Complete the real action, then submit proof.'}

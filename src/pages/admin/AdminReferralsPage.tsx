@@ -127,14 +127,14 @@ export const AdminReferralsPage: React.FC = () => {
                     <tr key={r.level} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                       <td className="px-5 py-3.5 font-bold text-gray-900 dark:text-gray-100">Level {r.level}</td>
                       <td className="px-5 py-3.5 text-right tabular-nums">
-                        <span className="font-bold text-emerald-700">{fmtMoney(r.rewarded)}</span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-300">{fmtMoney(r.rewarded)}</span>
                         <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({r.rewardedCount})</span>
                       </td>
                       <td className="px-5 py-3.5 text-right tabular-nums">
-                        <span className="font-bold text-amber-700">{fmtMoney(r.pending)}</span>
+                        <span className="font-bold text-amber-700 dark:text-amber-300">{fmtMoney(r.pending)}</span>
                         <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">({r.pendingCount})</span>
                       </td>
-                      <td className="px-5 py-3.5 text-right tabular-nums font-bold text-red-600">{fmtMoney(r.reversed)}</td>
+                      <td className="px-5 py-3.5 text-right tabular-nums font-bold text-red-600 dark:text-red-400">{fmtMoney(r.reversed)}</td>
                     </tr>
                   ))}
                 </tbody>

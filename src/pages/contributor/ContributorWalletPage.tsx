@@ -173,12 +173,12 @@ export const ContributorWalletPage: React.FC = () => {
   };
 
   const txnMeta: Record<string, { icon: typeof ArrowDownLeft; tint: string; sign: string }> = {
-    task_reward: { icon: ArrowDownLeft, tint: 'bg-emerald-100 text-emerald-700', sign: '+' },
-    referral_reward: { icon: ArrowDownLeft, tint: 'bg-violet-100 text-violet-700', sign: '+' },
-    bonus: { icon: ArrowDownLeft, tint: 'bg-blue-100 text-blue-700', sign: '+' },
-    withdrawal: { icon: ArrowUpRight, tint: 'bg-slate-200 text-slate-700 dark:text-gray-300', sign: '−' },
-    withdrawal_reversal: { icon: ArrowDownLeft, tint: 'bg-amber-100 text-amber-700', sign: '+' },
-    admin_adjustment: { icon: ArrowDownLeft, tint: 'bg-slate-200 text-slate-700 dark:text-gray-300', sign: '' },
+    task_reward: { icon: ArrowDownLeft, tint: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300', sign: '+' },
+    referral_reward: { icon: ArrowDownLeft, tint: 'bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300', sign: '+' },
+    bonus: { icon: ArrowDownLeft, tint: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300', sign: '+' },
+    withdrawal: { icon: ArrowUpRight, tint: 'bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-gray-300', sign: '−' },
+    withdrawal_reversal: { icon: ArrowDownLeft, tint: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300', sign: '+' },
+    admin_adjustment: { icon: ArrowDownLeft, tint: 'bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-gray-300', sign: '' },
   };
 
   const canWithdraw = availableCents >= minWithdrawalCents && !wallet?.is_locked;
@@ -191,9 +191,9 @@ export const ContributorWalletPage: React.FC = () => {
       {loading ? (
         <div className="rounded-[1.75rem] bg-slate-200 animate-pulse h-64" />
       ) : error ? (
-        <div className="bg-red-50 border-2 border-red-200 rounded-[1.75rem] p-8 text-center">
+        <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/30 rounded-[1.75rem] p-8 text-center">
           <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
-          <p className="text-sm font-bold text-red-700">{error}</p>
+          <p className="text-sm font-bold text-red-700 dark:text-red-300">{error}</p>
           <button
             type="button"
             onClick={fetchAll}
@@ -268,14 +268,14 @@ export const ContributorWalletPage: React.FC = () => {
           </div>
 
           {wallet?.is_locked && (
-            <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-red-50 border-2 border-red-200">
-              <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700 font-medium">Your wallet is currently locked. Contact support for assistance.</p>
+            <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/30">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700 dark:text-red-300 font-medium">Your wallet is currently locked. Contact support for assistance.</p>
             </div>
           )}
 
           {withdrawSuccess && (
-            <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200" role="status">
+            <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/15 border-2 border-emerald-200 dark:border-emerald-500/30" role="status">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
               <p className="text-sm text-emerald-800 font-medium">{withdrawSuccess}</p>
             </div>
@@ -390,9 +390,9 @@ export const ContributorWalletPage: React.FC = () => {
           </div>
 
           {/* Trust strip */}
-          <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-50/70 border border-blue-100">
+          <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/25">
             <BadgeCheck className="w-5 h-5 text-[#168BFF] shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-900 leading-relaxed">
+            <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
               <span className="font-bold">Ledger-backed balances.</span> Every figure above comes from your
               platform ledger — no estimates. Withdrawals are queued and paid manually after a compliance check.
             </p>
@@ -424,7 +424,7 @@ export const ContributorWalletPage: React.FC = () => {
             </div>
 
             {withdrawError && (
-              <div className="p-4 bg-red-50 border-2 border-red-200 text-red-700 text-sm font-medium rounded-2xl" role="alert">
+              <div className="p-4 bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-sm font-medium rounded-2xl" role="alert">
                 {withdrawError}
               </div>
             )}
@@ -461,7 +461,7 @@ export const ContributorWalletPage: React.FC = () => {
                         onClick={() => setMethod(m.value)}
                         aria-pressed={active}
                         className={`p-3 rounded-2xl border-2 text-left transition-all min-h-[76px] ${
-                          active ? 'border-[#168BFF] bg-blue-50/60' : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                          active ? 'border-[#168BFF] bg-blue-50/60 dark:bg-blue-500/10' : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
                         }`}
                       >
                         <MIcon className={`w-5 h-5 ${active ? 'text-[#168BFF]' : 'text-slate-400 dark:text-gray-500'}`} />
@@ -486,9 +486,9 @@ export const ContributorWalletPage: React.FC = () => {
                   className="w-full min-h-[52px] px-4 text-base bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
                 />
               </div>
-              <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-blue-50 border border-blue-100">
+              <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/25">
                 <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                <p className="text-[13px] text-blue-800 leading-relaxed">
+                <p className="text-[13px] text-blue-800 dark:text-blue-300 leading-relaxed">
                   Withdrawals are queued and paid manually by the platform team after a compliance check. You'll see the status in your activity history.
                 </p>
               </div>

@@ -82,7 +82,7 @@ export const HomePage: React.FC = () => {
       title: 'Story Reposts & Link Stickers',
       reward: '$0.40 - $1.50',
       time: '2 mins',
-      slots: '420 slots left',
+      slots: 'Limited slots available',
       desc: 'Share verified promotional creative to your personal story with official brand sticker and campaign tags.',
       icon: InstagramLogo,
       badgeColor: 'bg-pink-50 text-pink-700 border-pink-200',
@@ -94,7 +94,7 @@ export const HomePage: React.FC = () => {
       title: 'Duets, Sounds & Video Reviews',
       reward: '$2.00 - $8.50',
       time: '5 mins',
-      slots: '185 slots left',
+      slots: 'New tasks go live daily',
       desc: 'Record a quick 15-second authentic reaction duet or use sponsored sound clips to boost brand visibility.',
       icon: TikTokLogo,
       badgeColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
@@ -106,7 +106,7 @@ export const HomePage: React.FC = () => {
       title: 'Feedback, Likes & Community Votes',
       reward: '$1.00 - $3.50',
       time: '4 mins',
-      slots: '310 slots left',
+      slots: 'Limited slots available',
       desc: 'Watch pre-release video trailers or product demos, leave thoughtful constructive feedback, and subscribe.',
       icon: YouTubeLogo,
       badgeColor: 'bg-red-50 text-red-700 border-red-200',
@@ -118,7 +118,7 @@ export const HomePage: React.FC = () => {
       title: 'Niche Group & Community Shares',
       reward: '$0.35 - $1.00',
       time: '2 mins',
-      slots: '650 slots left',
+      slots: 'New tasks go live daily',
       desc: 'Share verified brand campaigns and announcements into relevant discussion communities and local groups.',
       icon: FacebookLogo,
       badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -130,7 +130,7 @@ export const HomePage: React.FC = () => {
       title: 'Status Updates & Broadcast Posts',
       reward: '$0.45 - $1.20',
       time: '1 min',
-      slots: '290 slots left',
+      slots: 'Limited slots available',
       desc: 'Publish verified business promotions to your WhatsApp Status for 24 hours and submit view screenshot.',
       icon: WhatsAppLogo,
       badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -142,7 +142,7 @@ export const HomePage: React.FC = () => {
       title: 'Pre-Release Testing & Store Ratings',
       reward: '$1.80 - $5.00',
       time: '5 mins',
-      slots: '140 slots left',
+      slots: 'New tasks go live daily',
       desc: 'Download newly launched iOS or Android apps, test core navigation flows, and leave genuine user ratings.',
       icon: Smartphone,
       badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
@@ -390,7 +390,7 @@ export const HomePage: React.FC = () => {
                       </div>
                       <div className="text-left">
                         <div className="text-[10px] font-bold text-white">Instagram Story Repost</div>
-                        <div className="text-[9px] text-gray-300">2 min • 420 slots left</div>
+                        <div className="text-[9px] text-gray-300">2 min • Limited slots</div>
                       </div>
                     </div>
                     <span className="text-[11px] font-bold text-emerald-300">+$1.20</span>

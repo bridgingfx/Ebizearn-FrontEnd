@@ -11,6 +11,8 @@ import {
   Settings,
   HelpCircle,
   LogOut,
+  MoreHorizontal,
+  X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -38,6 +40,26 @@ export const BusinessLayout: React.FC = () => {
   ];
 
   const [logoutOpen, setLogoutOpen] = React.useState(false);
+  const [moreOpen, setMoreOpen] = React.useState(false);
+
+  // Mobile bottom tab bar: 5 primary destinations + "More" sheet (9 sidebar
+  // items don't fit a tab bar). Matches ContributorLayout's bottom-bar style.
+  const mobileTabs = [
+    { name: 'Home', path: '/business', icon: LayoutDashboard, exact: true },
+    { name: 'Campaigns', path: '/business/campaigns', icon: Megaphone },
+    { name: 'Tasks', path: '/business/tasks', icon: BookOpen },
+    { name: 'Proof', path: '/business/submissions', icon: CheckSquare },
+    { name: 'Reports', path: '/business/reports', icon: BarChart3 },
+  ];
+  const moreItems = [
+    { name: 'Billing & Invoices', path: '/business/billing', icon: CreditCard },
+    { name: 'Team Access', path: '/business/team', icon: Users },
+    { name: 'Settings', path: '/business/settings', icon: Settings },
+    { name: 'Support', path: '/business/support', icon: HelpCircle },
+  ];
+  const tabActive = (tab: { path: string; exact?: boolean }) =>
+    tab.exact ? location.pathname === tab.path : location.pathname.startsWith(tab.path);
+  const moreActive = moreItems.some((item) => location.pathname.startsWith(item.path));
 
   const handleLogout = () => {
     logout();
@@ -166,6 +188,112 @@ export const BusinessLayout: React.FC = () => {
         </main>
 
       </div>
+
+      {/* =========================================================================
+          MOBILE BOTTOM TAB BAR (glass) + "MORE" SHEET
+          md:hidden — the desktop sidebar is hidden on mobile, so this gives
+          business users on phones full nav access: 5 primary tabs + More.
+         ========================================================================= */}
+      <nav
+        aria-label="Business navigation"
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/85 dark:bg-[#0C1322]/85 backdrop-blur-xl border-t border-gray-200 dark:border-white/10 shadow-[0_-4px_24px_rgba(0,0,0,0.08)]"
+      >
+        <div className="grid grid-cols-6 px-1 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+          {mobileTabs.map((tab) => {
+            const Icon = tab.icon;
+            const active = tabActive(tab);
+            return (
+              <Link
+                key={tab.path}
+                to={tab.path}
+                aria-current={active ? 'page' : undefined}
+                className={`flex flex-col items-center gap-0.5 py-1.5 rounded-xl transition-colors ${
+                  active
+                    ? 'text-[#168BFF]'
+                    : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                }`}
+              >
+                <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 2} />
+                <span className="text-[9px] font-bold leading-none whitespace-nowrap tracking-tight">{tab.name}</span>
+                {active && <span className="w-1 h-1 rounded-full bg-[#168BFF] mt-0.5" />}
+              </Link>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            aria-label="More options"
+            aria-expanded={moreOpen}
+            className={`flex flex-col items-center gap-0.5 py-1.5 rounded-xl transition-colors ${
+              moreActive
+                ? 'text-[#168BFF]'
+                : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+            }`}
+          >
+            <MoreHorizontal className="w-5 h-5" strokeWidth={moreActive ? 2.5 : 2} />
+            <span className="text-[9px] font-bold leading-none whitespace-nowrap tracking-tight">More</span>
+            {moreActive && <span className="w-1 h-1 rounded-full bg-[#168BFF] mt-0.5" />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile "More" bottom sheet */}
+      {moreOpen && (
+        <div className="md:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="More options">
+          <button
+            type="button"
+            aria-label="Close menu"
+            onClick={() => setMoreOpen(false)}
+            className="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px] cursor-pointer"
+          />
+          <div className="absolute bottom-0 inset-x-0 bg-white/95 dark:bg-[#0C1322]/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/10 rounded-t-3xl p-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl">
+            <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-white/20 mx-auto mb-3" />
+            <div className="flex items-center justify-between px-1 mb-2">
+              <span className="text-xs font-black text-gray-900 dark:text-gray-100">Business menu</span>
+              <button
+                type="button"
+                onClick={() => setMoreOpen(false)}
+                aria-label="Close"
+                className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="space-y-1">
+              {moreItems.map((item) => {
+                const Icon = item.icon;
+                const active = location.pathname.startsWith(item.path);
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    onClick={() => setMoreOpen(false)}
+                    className={`flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold transition-colors ${
+                      active
+                        ? 'bg-[#168BFF] text-white shadow-md'
+                        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.name}
+                  </Link>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => {
+                  setMoreOpen(false);
+                  setLogoutOpen(true);
+                }}
+                className="w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

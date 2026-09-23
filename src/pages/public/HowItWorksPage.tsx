@@ -97,14 +97,14 @@ export const HowItWorksPage: React.FC = () => {
       title: 'Choose Open Social Media Tasks',
       subtitle: 'Instagram, TikTok, YouTube & More',
       desc: 'Browse hundreds of live tasks filtered by your favorite social channels. Each task clearly states the exact cash reward, estimated time, and remaining slots.',
-      actionTitle: 'Select From 1,840+ Tasks',
+      actionTitle: 'Browse Tasks By Channel',
       actionBadge: '$0.40 - $8.50 Reward',
       icon: Compass,
       screenMock: (
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
             <span className="font-bold text-[#20C4E8]">Marketplace Filter</span>
-            <span className="text-gray-400 dark:text-gray-500 font-mono">1,842 Live</span>
+            <span className="text-gray-400 dark:text-gray-500 font-mono">Open Tasks</span>
           </div>
           <div className="space-y-2">
             <div className="p-2.5 rounded-xl bg-white/10 border border-pink-500/30 flex items-center justify-between">
@@ -258,7 +258,7 @@ export const HowItWorksPage: React.FC = () => {
       screenMock: (
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
-            <span className="font-bold text-white">Escrow Allocation</span>
+            <span className="font-bold text-white">Escrow Allocation · Example</span>
             <span className="text-emerald-400 font-mono font-bold">$1,000.00 USD</span>
           </div>
           <div className="space-y-1 text-[11px] text-gray-300">
@@ -413,7 +413,7 @@ export const HowItWorksPage: React.FC = () => {
           <p className="text-xs sm:text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed font-normal">
             {activeTab === 'contributor'
               ? 'From choosing your first task to withdrawing cash into your bank or PayPal account in 5 straightforward steps. Zero fees to start.'
-              : 'Launch targeted social campaigns, lock funds in escrow, mobilize 500k+ verified earners, and pay only for AI-audited results.'}
+              : 'Launch targeted social campaigns, lock funds in escrow, mobilize verified earners across every major social channel, and pay only for AI-audited results.'}
           </p>
 
           {/* Dual Perspective Toggle Selector */}

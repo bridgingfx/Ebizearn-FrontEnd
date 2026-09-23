@@ -105,13 +105,13 @@ export const BusinessCampaignsPage: React.FC = () => {
   const statusStyle = (status: string) => {
     switch (status) {
       case 'active':
-        return 'bg-emerald-100 text-emerald-700';
+        return 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
       case 'draft':
         return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
       case 'paused':
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300';
       case 'completed':
-        return 'bg-blue-100 text-blue-700';
+        return 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300';
       default:
         return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
     }
@@ -120,10 +120,10 @@ export const BusinessCampaignsPage: React.FC = () => {
   const spentOf = (c: Campaign) => Math.max(0, (c.total_budget_cents ?? 0) - (c.remaining_budget_cents ?? 0));
 
   const kpiCards = [
-    { icon: Zap, label: 'Active Campaigns', value: String(kpis.active), tone: 'text-[#168BFF]', bg: 'bg-blue-100' },
-    { icon: Wallet, label: 'Total Budget', value: money(kpis.totalBudget, 'USD'), tone: 'text-violet-600', bg: 'bg-violet-100' },
-    { icon: CheckSquare, label: 'Verified Tasks', value: kpis.verified.toLocaleString(), tone: 'text-emerald-600', bg: 'bg-emerald-100' },
-    { icon: Target, label: 'Avg. Reward / Task', value: money(kpis.avgCost, 'USD'), tone: 'text-amber-600', bg: 'bg-amber-100' },
+    { icon: Zap, label: 'Active Campaigns', value: String(kpis.active), tone: 'text-[#168BFF]', bg: 'bg-blue-100 dark:bg-blue-500/15' },
+    { icon: Wallet, label: 'Total Budget', value: money(kpis.totalBudget, 'USD'), tone: 'text-violet-600', bg: 'bg-violet-100 dark:bg-violet-500/15' },
+    { icon: CheckSquare, label: 'Verified Tasks', value: kpis.verified.toLocaleString(), tone: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-500/15' },
+    { icon: Target, label: 'Avg. Reward / Task', value: money(kpis.avgCost, 'USD'), tone: 'text-amber-600', bg: 'bg-amber-100 dark:bg-amber-500/15' },
   ];
 
   return (
@@ -150,12 +150,12 @@ export const BusinessCampaignsPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load campaigns</p>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load campaigns</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -211,7 +211,7 @@ export const BusinessCampaignsPage: React.FC = () => {
           </div>
 
           {actionError && (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs font-bold text-red-700">
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3 text-xs font-bold text-red-700 dark:text-red-300">
               {actionError}
             </div>
           )}
@@ -252,7 +252,7 @@ export const BusinessCampaignsPage: React.FC = () => {
                           disabled={togglingId === c.id}
                           onClick={() => void handleToggle(c)}
                           title={status === 'active' ? 'Pause campaign' : 'Resume campaign'}
-                          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 transition-colors disabled:opacity-50"
+                          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 dark:bg-blue-500/10 transition-colors disabled:opacity-50"
                         >
                           {status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                         </button>

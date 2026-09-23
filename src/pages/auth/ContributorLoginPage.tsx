@@ -19,6 +19,7 @@ import {
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
 import { navigateAfterLogin } from '../../components/auth/EmailVerification';
+import { prefetchWhenIdle, preloadContributorApp } from '../../routes/prefetch';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -41,6 +42,13 @@ export const ContributorLoginPage: React.FC = () => {
     }
     // Runs once — clears the one-time navigation state after reading it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Warm the contributor portal chunk in the background: the user is one
+  // successful login away from /app, so prefetching now hides the chunk
+  // download behind the login interaction.
+  useEffect(() => {
+    prefetchWhenIdle(preloadContributorApp);
   }, []);
 
   const validate = (): boolean => {

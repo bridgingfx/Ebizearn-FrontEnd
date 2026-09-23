@@ -50,7 +50,7 @@ export const EarnPage: React.FC = () => {
       name: 'Instagram Stories & Reels',
       reward: '$0.40 - $1.50',
       avgTime: '2 mins',
-      liveTasks: '420 tasks live',
+      availability: 'New tasks go live daily',
       desc: 'Repost sponsored campaign creatives, share brand link stickers on your Story, or tag friends in promotional posts.',
       badge: 'Highest Demand',
       color: 'from-pink-500 to-rose-500',
@@ -62,7 +62,7 @@ export const EarnPage: React.FC = () => {
       name: 'TikTok Duets & Video Reactions',
       reward: '$2.00 - $8.50',
       avgTime: '4 mins',
-      liveTasks: '185 tasks live',
+      availability: 'New tasks go live daily',
       desc: 'Record a quick 15-second authentic reaction, duet with a brand product video, or use a sponsored promotional audio sound.',
       badge: 'Highest Payout',
       color: 'from-[#20C4E8] to-[#168BFF]',
@@ -74,7 +74,7 @@ export const EarnPage: React.FC = () => {
       name: 'YouTube Feedback & Reviews',
       reward: '$1.00 - $3.50',
       avgTime: '3 mins',
-      liveTasks: '310 tasks live',
+      availability: 'New tasks go live daily',
       desc: 'Watch pre-release software walkthroughs, write structured and constructive comments, and help test video engagement.',
       badge: 'Fast Review',
       color: 'from-red-500 to-orange-500',
@@ -86,7 +86,7 @@ export const EarnPage: React.FC = () => {
       name: 'Facebook Communities & Groups',
       reward: '$0.35 - $1.00',
       avgTime: '2 mins',
-      liveTasks: '650 tasks live',
+      availability: 'New tasks go live daily',
       desc: 'Share verified brand campaigns into niche interest groups and local community circles where you are already an active member.',
       badge: 'Easiest Entry',
       color: 'from-blue-600 to-indigo-600',
@@ -98,7 +98,7 @@ export const EarnPage: React.FC = () => {
       name: 'WhatsApp Status & Broadcasts',
       reward: '$0.45 - $1.20',
       avgTime: '1 min',
-      liveTasks: '290 tasks live',
+      availability: 'New tasks go live daily',
       desc: 'Post verified brand graphics to your WhatsApp Status for 24 hours. Submit view count screenshot the following day.',
       badge: 'Quickest Action',
       color: 'from-emerald-500 to-teal-500',
@@ -241,7 +241,7 @@ export const EarnPage: React.FC = () => {
                   </div>
                   <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
                     <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Availability</span>
-                    <span className="text-xs sm:text-sm font-black text-[#20C4E8]">{currentChannel.liveTasks}</span>
+                    <span className="text-xs sm:text-sm font-black text-[#20C4E8]">{currentChannel.availability}</span>
                   </div>
                 </div>
 

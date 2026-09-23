@@ -94,7 +94,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
       </div>
 
       {actionError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-medium rounded-xl px-4 py-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-sm font-medium rounded-xl px-4 py-3">
           {actionError}
         </div>
       )}
@@ -167,7 +167,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                             type="button"
                             disabled={actingId === c.id}
                             onClick={() => void setStatus(c.id, 'paused')}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200 hover:bg-amber-100 transition-colors disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 ring-1 ring-inset ring-amber-200 dark:ring-amber-500/30 hover:bg-amber-100 dark:hover:bg-amber-500/20 dark:bg-amber-500/15 transition-colors disabled:opacity-50"
                           >
                             {actingId === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Pause className="w-3.5 h-3.5" />}
                             Pause
@@ -178,7 +178,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                             type="button"
                             disabled={actingId === c.id}
                             onClick={() => void setStatus(c.id, 'active')}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-100 transition-colors disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-1 ring-inset ring-emerald-200 dark:ring-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 dark:bg-emerald-500/15 transition-colors disabled:opacity-50"
                           >
                             {actingId === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
                             Resume

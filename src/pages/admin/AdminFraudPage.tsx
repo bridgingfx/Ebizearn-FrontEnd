@@ -45,9 +45,9 @@ export const AdminFraudPage: React.FC = () => {
     switch (sev) {
       case 'critical':
       case 'high':
-        return 'bg-red-100 text-red-700';
+        return 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300';
       case 'medium':
-        return 'bg-amber-100 text-amber-700';
+        return 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300';
       default:
         return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
     }
@@ -84,12 +84,12 @@ export const AdminFraudPage: React.FC = () => {
       )}
 
       {error && !loading && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
           <div className="text-sm">
-            <p className="font-bold text-red-700">Could not load fraud alerts</p>
-            <p className="text-red-600 mt-1">{error}</p>
-            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 underline">
+            <p className="font-bold text-red-700 dark:text-red-300">Could not load fraud alerts</p>
+            <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+            <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
               Retry
             </button>
           </div>
@@ -115,7 +115,7 @@ export const AdminFraudPage: React.FC = () => {
               key={a.id}
               className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-5 flex flex-col sm:flex-row sm:items-center gap-4"
             >
-              <div className="p-2.5 rounded-xl bg-red-50 text-red-600 w-fit">
+              <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 w-fit">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">

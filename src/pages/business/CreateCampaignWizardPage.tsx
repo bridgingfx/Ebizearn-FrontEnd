@@ -335,7 +335,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
   if (launchSuccessId != null) {
     return (
       <div className="max-w-2xl mx-auto text-center py-16 space-y-5">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+        <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-8 h-8" />
         </div>
         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Campaign launched</h1>
@@ -381,7 +381,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                 s.id === step
                   ? 'bg-[#168BFF] text-white'
                   : s.id < step
-                    ? 'bg-emerald-100 text-emerald-700'
+                    ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
                     : 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500'
               }`}
             >
@@ -403,7 +403,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
               placeholder="e.g. Launch our new coffee brand on Instagram"
               className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
             />
-            {err('title') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('title')}</p>}
+            {err('title') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('title')}</p>}
           </div>
           <div>
             <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Objective (optional)</label>
@@ -423,7 +423,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
               placeholder="What is this campaign about? What will contributors be doing?"
               className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] resize-none"
             />
-            {err('description') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('description')}</p>}
+            {err('description') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('description')}</p>}
           </div>
         </div>
       )}
@@ -447,7 +447,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                   type="button"
                   onClick={() => setPlatform(p.name)}
                   className={`text-left p-4 rounded-xl border-2 transition-all ${
-                    selected ? 'border-[#168BFF] bg-blue-50 shadow-sm' : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
+                    selected ? 'border-[#168BFF] bg-blue-50 dark:bg-blue-500/10 shadow-sm' : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
                   }`}
                   aria-pressed={selected}
                 >
@@ -461,7 +461,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
               );
             })}
           </div>
-          {err('platform') && <p className="text-[11px] font-bold text-red-600">{err('platform')}</p>}
+          {err('platform') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{err('platform')}</p>}
         </div>
       )}
 
@@ -480,13 +480,13 @@ export const CreateCampaignWizardPage: React.FC = () => {
             </div>
           )}
           {categoriesError && !categoriesLoading && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm">
-              <p className="font-bold text-red-700">Could not load categories</p>
-              <p className="text-red-600 mt-1">{categoriesError}</p>
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 text-sm">
+              <p className="font-bold text-red-700 dark:text-red-300">Could not load categories</p>
+              <p className="text-red-600 dark:text-red-400 mt-1">{categoriesError}</p>
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="mt-2 text-xs font-bold text-red-700 underline"
+                className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline"
               >
                 Reload
               </button>
@@ -500,7 +500,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                   type="button"
                   onClick={() => setCategoryId(c.id)}
                   className={`text-left p-4 rounded-xl border-2 transition-all ${
-                    categoryId === c.id ? 'border-[#168BFF] bg-blue-50' : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
+                    categoryId === c.id ? 'border-[#168BFF] bg-blue-50 dark:bg-blue-500/10' : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
                   }`}
                   aria-pressed={categoryId === c.id}
                 >
@@ -513,7 +513,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
               ))}
             </div>
           )}
-          {err('category_id') && <p className="text-[11px] font-bold text-red-600">{err('category_id')}</p>}
+          {err('category_id') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{err('category_id')}</p>}
         </div>
       )}
 
@@ -532,7 +532,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                 onChange={(e) => setRewardUsd(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
               />
-              {err('reward') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('reward')}</p>}
+              {err('reward') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('reward')}</p>}
               <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Platform minimum: ${MIN_REWARD_USD.toFixed(2)}.</p>
             </div>
             <div>
@@ -544,7 +544,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                 onChange={(e) => setContributors(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
               />
-              {err('contributors') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('contributors')}</p>}
+              {err('contributors') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('contributors')}</p>}
               <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Minimum: {MIN_CONTRIBUTORS}.</p>
             </div>
           </div>
@@ -558,7 +558,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
               placeholder={'1. Follow @yourbrand on Instagram\n2. Like the pinned post\n3. Leave a genuine comment\n4. Take a screenshot as proof'}
               className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] resize-none"
             />
-            {err('instructions') && <p className="text-[11px] font-bold text-red-600 mt-1">{err('instructions')}</p>}
+            {err('instructions') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('instructions')}</p>}
           </div>
 
           <div>
@@ -572,7 +572,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                   aria-pressed={proofRequirements.includes(p)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-bold border-2 transition-all ${
                     proofRequirements.includes(p)
-                      ? 'border-[#168BFF] bg-blue-50 text-[#168BFF]'
+                      ? 'border-[#168BFF] bg-blue-50 dark:bg-blue-500/10 text-[#168BFF]'
                       : 'border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400'
                   }`}
                 >
@@ -686,7 +686,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
                   </div>
                 ))}
               </dl>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-800">
+              <div className="bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 rounded-xl p-3.5 text-xs text-amber-800 dark:text-amber-200">
                 <p className="font-bold mb-1">What happens at launch</p>
                 <p>
                   The server creates your campaign, calculates the real platform fee, and holds an estimated{' '}
@@ -696,13 +696,13 @@ export const CreateCampaignWizardPage: React.FC = () => {
               </div>
 
               {launchError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 text-left">
+                <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3 text-left">
                   <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
                   <div className="text-sm">
-                    <p className="font-bold text-red-700">Launch failed</p>
-                    <p className="text-red-600 mt-1">{launchError}</p>
+                    <p className="font-bold text-red-700 dark:text-red-300">Launch failed</p>
+                    <p className="text-red-600 dark:text-red-400 mt-1">{launchError}</p>
                     {Object.keys(fieldErrors).length > 0 && (
-                      <ul className="text-red-600 mt-2 space-y-1 list-disc list-inside">
+                      <ul className="text-red-600 dark:text-red-400 mt-2 space-y-1 list-disc list-inside">
                         {Object.entries(fieldErrors).map(([k, msgs]) =>
                           msgs.map((m, i) => (
                             <li key={`${k}-${i}`} className="text-xs">

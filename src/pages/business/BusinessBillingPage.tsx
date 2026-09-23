@@ -164,7 +164,7 @@ export const BusinessBillingPage: React.FC = () => {
           <div className="bg-white dark:bg-[#0C1322] rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-gray-100 dark:border-white/10 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#168BFF] flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] flex items-center justify-center font-bold">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-black text-gray-900 dark:text-gray-100">Add Campaign Funds</h3>
@@ -178,7 +178,7 @@ export const BusinessBillingPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed">
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 text-xs text-amber-800 dark:text-amber-200 leading-relaxed">
               <strong className="block mb-1">Online top-ups are not connected yet</strong>
               <p>
                 Self-service wallet funding is not available right now. To fund your campaign

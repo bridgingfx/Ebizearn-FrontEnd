@@ -6,7 +6,7 @@ import { LiveChatWidget } from './components/common/LiveChatWidget';
 import { CookieConsent } from './components/common/CookieConsent';
 import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
-import { PageLoader } from './components/common/PageLoader';
+import { DeferredPageLoader } from './components/common/PageLoader';
 
 // Layouts — the public shell stays in the main bundle (first paint);
 // role shells are lazy so their code ships with their portal chunk.
@@ -41,6 +41,7 @@ import {
   LazyForgotPasswordPage,
   LazyResetPasswordPage,
   LazyVerifyEmailPage,
+  LazyNotFoundPage,
   LazyContributorDashboardPage,
   LazyTaskDetailPage,
   LazyTaskFeedPage,
@@ -113,7 +114,7 @@ export const App: React.FC = () => {
         <ScrollToTop />
         <RouteSeo />
         <BootAuth />
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={<DeferredPageLoader />}>
         <Routes>
           {/* Public Marketing Routes */}
           <Route element={<PublicLayout />}>
@@ -229,8 +230,8 @@ export const App: React.FC = () => {
 
           {/* SuperAdmin alias */}
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Branded 404 — the catch-all renders a real page, never a blank redirect. */}
+          <Route path="*" element={<LazyNotFoundPage />} />
         </Routes>
         </Suspense>
 

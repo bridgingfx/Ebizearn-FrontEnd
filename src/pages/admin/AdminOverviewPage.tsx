@@ -61,12 +61,12 @@ export const AdminOverviewPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-6 flex items-start gap-3">
+      <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/30 rounded-[1.5rem] p-6 flex items-start gap-3">
         <AlertCircle className="w-6 h-6 text-red-500 mt-0.5 shrink-0" />
         <div className="text-sm">
-          <p className="font-bold text-red-700">Could not load admin dashboard</p>
-          <p className="text-red-600 mt-1">{error}</p>
-          <button type="button" onClick={() => void load()} className="mt-2 text-sm font-bold text-red-700 underline min-h-[44px]">
+          <p className="font-bold text-red-700 dark:text-red-300">Could not load admin dashboard</p>
+          <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+          <button type="button" onClick={() => void load()} className="mt-2 text-sm font-bold text-red-700 dark:text-red-300 underline min-h-[44px]">
             Retry
           </button>
         </div>
@@ -166,7 +166,7 @@ export const AdminOverviewPage: React.FC = () => {
           ) : (
             <div className="space-y-2">
               {(verificationQueue as { id: number; task?: { title?: string }; user?: { name?: string }; created_at: string }[]).map((s) => (
-                <div key={s.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] border border-slate-100 rounded-2xl">
+                <div key={s.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl">
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">{s.task?.title || `Submission #${s.id}`}</p>
                     <p className="text-xs text-slate-400 dark:text-gray-500">{s.user?.name || ''} · {new Date(s.created_at).toLocaleDateString()}</p>
@@ -184,7 +184,7 @@ export const AdminOverviewPage: React.FC = () => {
           ) : (
             <div className="space-y-2">
               {(fraudAlerts as { id: number; risk_level?: string; reason?: string; created_at?: string }[]).map((a) => (
-                <div key={a.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] border border-slate-100 rounded-2xl">
+                <div key={a.id} className="flex items-center justify-between px-4 py-3 bg-[#F8FAFD] dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl">
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">{a.reason || `Alert #${a.id}`}</p>
                     <p className="text-xs text-slate-400 dark:text-gray-500">

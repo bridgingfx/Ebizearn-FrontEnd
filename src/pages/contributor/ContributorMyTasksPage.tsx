@@ -23,10 +23,10 @@ interface EnrichedSubmission extends TaskSubmission {
 }
 
 const STATUS_META: Record<string, { label: string; className: string; icon: typeof Clock }> = {
-  submitted: { label: 'Submitted', className: 'bg-blue-50 text-blue-700 border-blue-200', icon: Clock },
-  under_review: { label: 'Under review', className: 'bg-amber-50 text-amber-700 border-amber-200', icon: ShieldCheck },
-  approved: { label: 'Approved', className: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: CheckCircle2 },
-  rejected: { label: 'Rejected', className: 'bg-red-50 text-red-700 border-red-200', icon: AlertCircle },
+  submitted: { label: 'Submitted', className: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/30', icon: Clock },
+  under_review: { label: 'Under review', className: 'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30', icon: ShieldCheck },
+  approved: { label: 'Approved', className: 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30', icon: CheckCircle2 },
+  rejected: { label: 'Rejected', className: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30', icon: AlertCircle },
   action_required: { label: 'Action required', className: 'bg-orange-50 text-orange-700 border-orange-200', icon: AlertCircle },
 };
 
@@ -93,7 +93,7 @@ export const ContributorMyTasksPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-black text-[#101828] dark:text-gray-100">My Tasks</h1>
-          <p className="text-xs text-[#667085] mt-0.5">
+          <p className="text-xs text-[#667085] dark:text-gray-400 mt-0.5">
             Your submissions and their real verification status.
           </p>
         </div>
@@ -147,9 +147,9 @@ export const ContributorMyTasksPage: React.FC = () => {
           ))}
         </div>
       ) : error ? (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl p-6 text-center">
           <AlertCircle className="w-6 h-6 text-red-500 mx-auto mb-2" />
-          <p className="text-xs font-bold text-red-700">{error}</p>
+          <p className="text-xs font-bold text-red-700 dark:text-red-300">{error}</p>
           <button
             type="button"
             onClick={fetchMine}
@@ -287,8 +287,8 @@ export const ContributorMyTasksPage: React.FC = () => {
             )}
 
             {selected.review_notes && (
-              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs">
-                <span className="text-amber-800 font-bold block mb-0.5">Reviewer note</span>
+              <div className="p-3 bg-amber-50 dark:bg-amber-500/15 rounded-xl border border-amber-200 dark:border-amber-500/30 text-xs">
+                <span className="text-amber-800 dark:text-amber-200 font-bold block mb-0.5">Reviewer note</span>
                 <p className="text-amber-900">{selected.review_notes}</p>
               </div>
             )}

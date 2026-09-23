@@ -513,14 +513,14 @@ export const TaskPreviewSummary: React.FC<{ task: UiTask }> = ({ task }) => {
           <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">Proof required</p>
           <ul className="flex flex-wrap gap-1.5">
             {requirements.map((r) => (
-              <li key={r} className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-1 rounded-lg capitalize">
+              <li key={r} className="text-[10px] font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 px-2 py-1 rounded-lg capitalize">
                 {r}
               </li>
             ))}
           </ul>
         </div>
       )}
-      <p className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200/60 rounded-xl px-3 py-2 leading-snug">
+      <p className="text-[10px] text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-500/15 border border-amber-200/60 dark:border-amber-500/30 rounded-xl px-3 py-2 leading-snug">
         <span className="font-black">Retention:</span> {humanizeRetention(task.retentionHours)} — reversing the action
         early can reverse this reward.
       </p>

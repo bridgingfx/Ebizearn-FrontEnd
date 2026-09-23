@@ -9,7 +9,7 @@ import {
   AuthError,
 } from '../../components/auth/AuthSplitLayout';
 import { PhoneField } from '../../components/auth/PhoneInput';
-import { phoneToE164, validatePhone, type PhoneValue } from '../../utils/phone';
+import { phoneDigits, phoneToE164, validatePhone, type PhoneValue } from '../../utils/phone';
 import { DEFAULT_DIAL } from '../../utils/countryDialCodes';
 import { getPendingPhoneRole, clearPendingPhoneRole } from '../../utils/pendingAuth';
 import { navigateAfterLogin } from '../../components/auth/EmailVerification';
@@ -82,8 +82,8 @@ export const PhoneSetupPage: React.FC = () => {
     setSaving(true);
     try {
       const res = await authApi.updatePhone({
-        phone: phoneToE164(phone),
         phone_country_code: phone.dialCode,
+        phone_number: phoneDigits(phone.number),
       });
       const latest = res?.data?.user;
       if (res.success && latest) {
@@ -91,12 +91,7 @@ export const PhoneSetupPage: React.FC = () => {
       } else {
         // Backend accepted it but returned no user — patch locally so the
         // phone gate doesn't re-trigger on the next sign-in.
-        updateUser({
-          ...user,
-          profile: user.profile
-            ? { ...user.profile, phone: phoneToE164(phone) }
-            : user.profile,
-        });
+        updateUser({ ...user, phone: phoneToE164(phone) });
       }
       await proceed();
     } catch (err) {
@@ -201,6 +196,14 @@ export const PhoneSetupPage: React.FC = () => {
               <ArrowRight className="w-5 h-5" />
             </>
           )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => void proceed()}
+          className="mx-auto block text-sm font-bold text-slate-500 dark:text-gray-400 hover:text-[#168BFF] transition-colors min-h-[44px]"
+        >
+          Skip for now
         </button>
       </form>
     </AuthSplitLayout>

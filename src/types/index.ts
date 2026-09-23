@@ -18,6 +18,12 @@ export interface User {
    * `undefined` = unknown/legacy response → do not gate.
    */
   email_verified_at?: string | null;
+  /**
+   * E.164 account phone ("+971501234567"), serialized from users.phone.
+   * Source of truth for the post-Google-signup phone gate (profile.phone
+   * is a legacy mirror).
+   */
+  phone?: string | null;
   /** Returned by the API for every user; optional here for legacy mocks. */
   created_at?: string;
   profile?: Profile;

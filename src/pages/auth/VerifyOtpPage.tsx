@@ -67,10 +67,11 @@ const OTP_BULLETS = [
 /**
  * Email-OTP step shown right after a successful email signup.
  *
- * Contract: register created the (unverified) user with NO session token.
- * This page sends/verifies the 6-digit code via `otp/send` + `otp/verify`;
- * on success it persists the returned Sanctum token exactly like a login
- * (auto-logged-in) via AuthContext.completeSession.
+ * Contract: register created the (unverified) user with NO session token and
+ * the backend sent the first OTP email inside the register transaction.
+ * This page verifies the 6-digit code via `otp/verify` (resends via
+ * `otp/send`); on success it persists the returned Sanctum token exactly
+ * like a login (auto-logged-in) via AuthContext.completeSession.
  *
  * The OTP endpoints are deployed separately by the backend worker — a 404
  * surfaces the friendly "being set up" banner with a retry button instead

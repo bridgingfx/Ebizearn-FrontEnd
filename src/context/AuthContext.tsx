@@ -111,15 +111,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return null;
   };
 
-  const register = async (payload: RegisterPayload): Promise<{ ok: boolean; message?: string; role?: UserRole }> => {
+  const register = async (payload: RegisterPayload): Promise<{ ok: boolean; message?: string; role?: UserRole; requiresOtp?: boolean }> => {
     setIsLoading(true);
     try {
       const res = await authApi.register(payload);
       if (res.success && res.data.user) {
+        if (res.data.requires_otp) {
+          // Pending email-OTP verification — no session token is issued yet.
+          // The caller must route to /verify-otp; the token arrives from otp/verify.
+          setIsLoading(false);
+          return { ok: true, role: res.data.user.role, requiresOtp: true };
+        }
         updateAndPersistUser(res.data.user);
-        setToken(res.data.token);
-        localStorage.setItem(TOKEN_KEY, res.data.token);
-        localStorage.setItem(ACTIVE_ROLE_KEY, res.data.user.role);
         setIsLoading(false);
         return { ok: true, role: res.data.user.role };
       }

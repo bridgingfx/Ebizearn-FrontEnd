@@ -23,7 +23,7 @@ import { PasswordInput } from './PasswordInput';
 import {
   PhoneField,
 } from '../../components/auth/PhoneInput';
-import { phoneToE164, validatePhone, type PhoneValue } from '../../utils/phone';
+import { phoneDigits, validatePhone, type PhoneValue } from '../../utils/phone';
 import { DEFAULT_DIAL } from '../../utils/countryDialCodes';
 import { setPendingOtpEmail } from '../../utils/pendingAuth';
 
@@ -77,7 +77,8 @@ export const BusinessSignupPage: React.FC = () => {
         role: 'business',
         company_name: companyName.trim(),
         referral_code: referralCode.trim() || undefined,
-        phone: phoneToE164(phone),
+        phone_country_code: phone.dialCode,
+        phone_number: phoneDigits(phone.number),
       });
 
       if (!res.success || !res.data?.user) {
@@ -86,15 +87,11 @@ export const BusinessSignupPage: React.FC = () => {
         return;
       }
 
-      // Fire the first OTP send, then hand off to the code-entry step. If
-      // otp/send 404s (backend not deployed yet) we still navigate — the OTP
-      // page shows the friendly "being set up" banner with a retry button.
+      // The backend sends the first OTP email itself inside the register
+      // transaction — no otp/send call here (that would deliver a second
+      // email). Hand off to the code-entry step; resends go through the
+      // VerifyOtpPage "Resend code" button.
       setPendingOtpEmail(email.trim(), 'business');
-      try {
-        await authApi.otpSend(email.trim());
-      } catch {
-        // Handled on the OTP page; never blocks the user.
-      }
       setSubmitting(false);
       navigate('/verify-otp', { replace: true });
     } catch (err) {

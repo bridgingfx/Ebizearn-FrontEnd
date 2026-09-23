@@ -131,7 +131,9 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           if (mode === 'register') {
             const me = await authApi.me().catch(() => null);
             const latestUser = me?.data?.user;
-            const hasPhone = !!latestUser?.profile?.phone;
+            // users.phone is the source of truth (E.164); profile.phone is a
+            // legacy mirror — check both so the gate never misfires.
+            const hasPhone = !!(latestUser?.phone || latestUser?.profile?.phone);
             if (latestUser && !hasPhone) {
               setPendingPhoneRole(role);
               navigate('/setup-phone', { replace: true });

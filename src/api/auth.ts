@@ -9,8 +9,26 @@ export interface RegisterPayload {
   country_code?: string;
   referral_code?: string;
   company_name?: string;
-  /** Full international number, E.164-ish (e.g. "+971501234567"). Required at signup. */
-  phone?: string;
+  /**
+   * Phone contract (matches the backend register validation): the dial code
+   * (e.g. "+971") and the digits-only national number (4–15 digits).
+   * The backend normalizes these to a single E.164 value. Required at signup.
+   */
+  phone_country_code: string;
+  phone_number: string;
+}
+
+/**
+ * Register response contract: the account is created PENDING verification —
+ * NO session token is issued here. The token arrives later from otp/verify.
+ */
+export interface RegisterResponse {
+  user: User;
+  requires_otp: boolean;
+  otp?: {
+    expires_in_seconds: number;
+    resend_cooldown_seconds: number;
+  };
 }
 
 export interface AuthSession {
@@ -27,7 +45,7 @@ export const authApi = {
     api.post<ApiResponse<AuthSession>>('/auth/login', { email, password, ...(portal ? { portal } : {}) }).then((r) => r.data),
 
   register: (payload: RegisterPayload) =>
-    api.post<ApiResponse<AuthSession>>('/auth/register', payload).then((r) => r.data),
+    api.post<ApiResponse<RegisterResponse>>('/auth/register', payload).then((r) => r.data),
 
   logout: () => api.post('/auth/logout'),
 
@@ -71,8 +89,9 @@ export const authApi = {
   /* ------------------------------------------------------------------ */
 
   /**
-   * Send a 6-digit email OTP. Called right after a successful register —
-   * the account exists but is unverified and no session token was issued.
+   * Send (or re-send) a 6-digit email OTP. The backend already sends the
+   * first code automatically inside the register transaction, so this is
+   * ONLY the resend path (VerifyOtpPage "Resend code" button).
    * 60s resend cooldown enforced server-side (`cooldown` error code).
    */
   otpSend: (email: string) =>
@@ -88,14 +107,13 @@ export const authApi = {
       .then((r) => r.data),
 
   /**
-   * Attach a phone number to the signed-in user's profile (used by the
-   * post-Google-signup phone step). Body: E.164 phone + dial code.
+   * Attach a phone number to the signed-in user's account (used by the
+   * post-Google-signup phone step). Same phone contract as register:
+   * dial code + digits-only national number; the backend normalizes to E.164.
    *
-   * BACKEND-CONTRACT ASSUMPTION: endpoint is PUT /api/v1/profile accepting
-   * { phone, phone_country_code }. Gracefully handled if 404 (backend not
-   * deployed yet) — the UI shows a "being set up" message + retry + skip.
+   * PUT /api/v1/profile  { phone_country_code, phone_number }
    */
-  updatePhone: (payload: { phone: string; phone_country_code: string }) =>
+  updatePhone: (payload: { phone_country_code: string; phone_number: string }) =>
     api.put<ApiResponse<{ user: User }>>('/profile', payload).then((r) => r.data),
 };
 

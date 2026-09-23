@@ -21,6 +21,8 @@ import { EarnPage } from './pages/public/EarnPage';
 import { ForBusinessesPage } from './pages/public/ForBusinessesPage';
 import { AboutPage } from './pages/public/AboutPage';
 import { FaqPage } from './pages/public/FaqPage';
+import { BlogIndexPage } from './pages/public/BlogIndexPage';
+import { BlogPostPage } from './pages/public/BlogPostPage';
 import { TrustSafetyPage } from './pages/public/TrustSafetyPage';
 import { ContactPage } from './pages/public/ContactPage';
 import { LegalPage } from './pages/public/LegalPage';
@@ -125,6 +127,8 @@ export const App: React.FC = () => {
             <Route path="/for-businesses" element={<ForBusinessesPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/faq" element={<FaqPage />} />
+            <Route path="/blog" element={<BlogIndexPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/trust-safety" element={<TrustSafetyPage />} />
             <Route path="/pricing" element={<ForBusinessesPage />} />
             <Route path="/payments" element={<FaqPage />} />

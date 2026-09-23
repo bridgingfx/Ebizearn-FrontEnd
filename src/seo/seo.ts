@@ -12,6 +12,7 @@
  * - JSON-LD is honest: no ratings, reviews, or invented statistics.
  */
 import { earnFaqs, homeFaqs, faqPageFaqs, type FaqItem } from './faqData';
+import { blogPosts } from '../blog/loader';
 
 export const SITE_URL = 'https://ebizearn.com';
 export const SITE_NAME = 'eBizEarn';
@@ -24,6 +25,10 @@ export interface PageSeo {
   /** Canonical path (defaults to the route path itself). */
   canonical?: string;
   ogType?: 'website' | 'article';
+  /** Override the default og:image / twitter:image (absolute URL). */
+  ogImage?: string;
+  /** Alt text for a custom og:image. */
+  ogImageAlt?: string;
   /** When true: robots noindex,nofollow (auth + private portals). */
   noindex?: boolean;
   /** JSON-LD schema objects injected for this route. */
@@ -61,9 +66,29 @@ export function webSiteSchema(): Record<string, unknown> {
   };
 }
 
-/** FAQPage schema built from the same Q&A rendered on the page. */
-export function faqPageSchema(faqs: FaqItem[]): Record<string, unknown> {
+/** Blog (listing) schema — honest, no ratings/reviews/invented stats. */
+export function blogListingSchema(): Record<string, unknown> {
   return {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'eBizEarn Blog',
+    url: `${SITE_URL}/blog`,
+    description:
+      'Guides and explainers from eBizEarn: how social-media tasks work, how rewards and payouts work, and how to stay safe online.',
+    blogPost: blogPosts.map((p) => ({
+      '@type': 'BlogPosting',
+      headline: p.title,
+      description: p.excerpt,
+      url: `${SITE_URL}/blog/${p.slug}`,
+      datePublished: p.publishedAt,
+      dateModified: p.updatedAt,
+      author: { '@type': 'Person', name: p.author },
+    })),
+  };
+}
+
+/** FAQPage schema built from the same Q&A rendered on the page. */
+export function faqPageSchema(faqs: FaqItem[]): Record<string, unknown> {  return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: faqs.map((f) => ({
@@ -124,6 +149,12 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
     description:
       'eBizEarn payments explained: wallet crediting after proof verification, $50.00 minimum withdrawal, PayPal, Wise, bank, Revolut, USDT/USDC, and mobile money payouts.',
     canonical: '/faq',
+  },
+  '/blog': {
+    title: 'Blog — Guides on Tasks, Rewards & Payouts | eBizEarn',
+    description:
+      'The eBizEarn blog: practical guides on how social-media tasks work, how rewards and payouts work, and how to stay safe online. Honest, no hype.',
+    jsonLd: [blogListingSchema()],
   },
   '/trust-safety': {
     title: 'Trust & Safety — Verification, Escrow & Fraud Prevention | eBizEarn',

@@ -10,6 +10,8 @@ import {
   isPrivatePath,
   type PageSeo,
 } from '../../seo/seo';
+import { getPostBySlug } from '../../blog/loader';
+import { articleSchemas } from '../../blog/schemas';
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string): void {
   const selector = `meta[${attr}="${key}"]`;
@@ -64,8 +66,24 @@ export const RouteSeo: React.FC = () => {
 
   useEffect(() => {
     const path = normalizePath(pathname);
-    const page: PageSeo | undefined =
+    let page: PageSeo | undefined =
       SEO_BY_PATH[path] ?? (isPrivatePath(path) ? PRIVATE_SEO : undefined);
+
+    // Dynamic blog post routes: /blog/:slug (not in the static map).
+    if (!page && path.startsWith('/blog/')) {
+      const post = getPostBySlug(path.slice('/blog/'.length));
+      if (post) {
+        page = {
+          title: `${post.title} | eBizEarn Blog`,
+          description: post.excerpt,
+          canonical: `/blog/${post.slug}`,
+          ogType: 'article',
+          ogImage: post.heroImage ? `${SITE_URL}${post.heroImage}` : undefined,
+          ogImageAlt: post.heroImage ? post.title : undefined,
+          jsonLd: articleSchemas(post),
+        };
+      }
+    }
     if (!page) return; // unknown route: leave head untouched
 
     const canonicalPath = page.canonical ?? path;
@@ -78,23 +96,31 @@ export const RouteSeo: React.FC = () => {
     upsertCanonical(canonicalUrl);
 
     // Open Graph
+    const ogImage = page.ogImage ?? OG_IMAGE;
+    const ogImageAlt = page.ogImageAlt ?? OG_IMAGE_ALT;
     upsertMeta('property', 'og:site_name', SITE_NAME);
     upsertMeta('property', 'og:locale', 'en_US');
     upsertMeta('property', 'og:type', page.ogType ?? 'website');
     upsertMeta('property', 'og:title', page.title);
     upsertMeta('property', 'og:description', page.description);
     upsertMeta('property', 'og:url', ogUrl);
-    upsertMeta('property', 'og:image', OG_IMAGE);
-    upsertMeta('property', 'og:image:alt', OG_IMAGE_ALT);
-    upsertMeta('property', 'og:image:width', '1200');
-    upsertMeta('property', 'og:image:height', '630');
+    upsertMeta('property', 'og:image', ogImage);
+    upsertMeta('property', 'og:image:alt', ogImageAlt);
+    if (!page.ogImage) {
+      upsertMeta('property', 'og:image:width', '1200');
+      upsertMeta('property', 'og:image:height', '630');
+    } else {
+      // Custom hero image of unknown dimensions: drop stale dimension tags.
+      document.head.querySelector('meta[property="og:image:width"]')?.remove();
+      document.head.querySelector('meta[property="og:image:height"]')?.remove();
+    }
 
     // Twitter Card
     upsertMeta('name', 'twitter:card', 'summary_large_image');
     upsertMeta('name', 'twitter:title', page.title);
     upsertMeta('name', 'twitter:description', page.description);
-    upsertMeta('name', 'twitter:image', OG_IMAGE);
-    upsertMeta('name', 'twitter:image:alt', OG_IMAGE_ALT);
+    upsertMeta('name', 'twitter:image', ogImage);
+    upsertMeta('name', 'twitter:image:alt', ogImageAlt);
 
     upsertJsonLd(page.jsonLd ?? []);
   }, [pathname]);

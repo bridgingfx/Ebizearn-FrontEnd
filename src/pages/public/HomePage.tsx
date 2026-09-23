@@ -63,6 +63,7 @@ import {
 } from '../../components/common/PlatformIcons';
 import { RequestDemoModal } from '../../components/common/RequestDemoModal';
 import { homeFaqs } from '../../seo/faqData';
+import { BlogStrip } from '../../blog/components/BlogStrip';
 
 export const HomePage: React.FC = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -886,6 +887,11 @@ export const HomePage: React.FC = () => {
 
         </div>
       </section>
+
+      {/* =========================================================================
+          8. LATEST FROM THE BLOG (renders nothing until writers publish)
+         ========================================================================= */}
+      <BlogStrip />
 
       {/* =========================================================================
           8. FINAL CALL TO ACTION BANNER

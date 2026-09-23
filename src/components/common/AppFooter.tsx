@@ -21,6 +21,9 @@ export const AppFooter: React.FC = () => {
           <Link to="/contact" className="hover:text-[#168BFF] transition-colors">
             Contact
           </Link>
+          <Link to="/blog" className="hover:text-[#168BFF] transition-colors">
+            Blog
+          </Link>
           <Link to="/terms" className="hover:text-[#168BFF] transition-colors">
             Terms
           </Link>

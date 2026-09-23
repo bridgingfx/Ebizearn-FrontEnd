@@ -232,11 +232,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
       setDraftError(null);
       try {
         const res = await businessApi.campaign(draftId);
-        // NOTE: the show endpoint wraps as data: { campaign, submissions }
-        // while the TS type claims data: Campaign — unwrap defensively.
-        const raw = res.data as unknown;
-        const d = ((raw as { campaign?: Campaign & { platform?: string } } | null)?.campaign ??
-          raw) as (Campaign & { platform?: string }) | undefined;
+        // The show endpoint wraps as data: { campaign, submissions } —
+        // unwrap the campaign (typed in src/api/business.ts).
+        const d = res.success ? (res.data.campaign as (Campaign & { platform?: string }) | undefined) : undefined;
         if (!res.success || !d) {
           setDraftError(res.message || 'Could not load the draft.');
           return;

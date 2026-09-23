@@ -30,19 +30,13 @@ export const BusinessCampaignDetailPage: React.FC = () => {
     setError(null);
     try {
       const res = await businessApi.campaign(Number(id));
-      if (res.success) {
-        setCampaign(res.data as Campaign);
-        try {
-          const subRes = await businessApi.submissions();
-          if (subRes.success) {
-            const taskIds = new Set((res.data?.tasks ?? []).map((t: Task) => t.id));
-            setSubmissions(
-              (subRes.data || []).filter((s: TaskSubmission) => s.task_id != null && taskIds.has(Number(s.task_id))),
-            );
-          }
-        } catch {
-          // Submissions are supplementary; the campaign itself is the point.
-        }
+      // Backend shape (source of truth): data = { campaign, submissions }.
+      // Submissions ride along as a Laravel paginator — no second request needed.
+      if (res.success && res.data?.campaign) {
+        const payload = res.data;
+        setCampaign(payload.campaign as Campaign);
+        const pager = payload.submissions;
+        setSubmissions(Array.isArray(pager) ? pager : (pager?.data ?? []));
       } else {
         setError(res.message || 'Campaign not found.');
       }

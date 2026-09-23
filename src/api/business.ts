@@ -11,7 +11,20 @@ export const businessApi = {
     api.patch(`/business/campaigns/wizard/draft/${id}`, payload).then((r) => r.data),
   launchDraft: (id: number | string, idempotencyKey?: string) =>
     api.post(`/business/campaigns/${id}/launch`, idempotencyKey ? { idempotency_key: idempotencyKey } : {}).then((r) => r.data),
-  campaign: (id: number | string) => api.get(`/business/campaigns/${id}`).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  /**
+   * GET /business/campaigns/{id} — backend source of truth. The show endpoint
+   * wraps as data: { campaign, submissions } where submissions is a Laravel
+   * paginator (page 1, 15/page) of this campaign's submissions. Never treat
+   * data itself as the campaign.
+   */
+  campaign: (id: number | string) => api.get(`/business/campaigns/${id}`).then((r) => r.data as {
+    success: boolean;
+    message?: string;
+    data: {
+      campaign: Campaign;
+      submissions: { data: TaskSubmission[]; current_page: number; last_page: number; total: number } | TaskSubmission[];
+    };
+  }),
   updateCampaignStatus: (id: number | string, status: 'active' | 'paused' | 'cancelled') =>
     api.patch(`/business/campaigns/${id}/status`, { status }).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
   submissions: () => api.get('/business/submissions').then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),

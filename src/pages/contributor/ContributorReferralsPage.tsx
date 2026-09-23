@@ -154,19 +154,27 @@ export const ContributorReferralsPage: React.FC = () => {
     }
   };
 
-  /** Level breakdown, when the backend provides `level` on referral rows. */
+  /** Level breakdown from the backend's per-level `by_level` stats. */
   const levelStats = useMemo(() => {
-    if (!data) return null;
-    const withLevel = data.referrals.filter((r) => typeof r.level === 'number');
-    if (withLevel.length === 0) return null;
-    return [1, 2, 3].map((lvl) => ({
-      level: lvl,
-      count: withLevel.filter((r) => r.level === lvl).length,
-      earned: withLevel.filter((r) => r.level === lvl).reduce((s, r) => s + (r.reward_cents || 0), 0),
-    }));
+    if (!data?.by_level) return null;
+    return [1, 2, 3].map((lvl) => {
+      const st = data.by_level[lvl];
+      return {
+        level: lvl,
+        count: st?.total ?? 0,
+        earned: (data.referrals || []).filter((r) => r.level === lvl).reduce((s, r) => s + (r.reward_cents || 0), 0),
+      };
+    });
   }, [data]);
 
-  const rewardPerReferral = data ? money(data.reward_per_referral_cents, 'USD') : '—';
+  /** Qualified referrals = rows the backend marked rewarded across all levels. */
+  const qualifiedReferrals = useMemo(() => {
+    if (!data?.by_level) return 0;
+    return Object.values(data.by_level).reduce((s, st) => s + (st?.rewarded ?? 0), 0);
+  }, [data]);
+
+  /** Level-1 direct reward: what you earn when a friend completes their first verified task. */
+  const rewardPerReferral = data?.by_level?.[1]?.reward_cents != null ? money(data.by_level[1].reward_cents, 'USD') : '—';
 
   return (
     <div className="space-y-8 text-left">
@@ -252,7 +260,7 @@ export const ContributorReferralsPage: React.FC = () => {
           {/* ── Stats ─────────────────────────────────────────────── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard label="Total referred" value={String(data.total_referred)} icon={Users} gradient="from-[#168BFF] to-[#20C4E8]" shadow="shadow-lg shadow-blue-500/25" />
-            <StatCard label="Qualified" value={String(data.qualified_referrals)} sub="Met qualification rules" icon={ShieldCheck} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
+            <StatCard label="Qualified" value={String(qualifiedReferrals)} sub="Met qualification rules" icon={ShieldCheck} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
             <StatCard label="Referral earnings" value={money(data.total_earned_cents)} icon={BadgeDollarSign} gradient="from-[#7257FF] to-[#9D7BFF]" shadow="shadow-lg shadow-violet-500/25" />
             <StatCard label="Per referral" value={rewardPerReferral} icon={Layers} gradient="from-amber-500 to-orange-600" shadow="shadow-lg shadow-amber-500/25" />
           </div>
@@ -351,7 +359,12 @@ export const ContributorReferralsPage: React.FC = () => {
                           )}
                         </p>
                         <p className="text-xs text-slate-400 dark:text-gray-500 mt-0.5">
-                          Joined {new Date(r.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          Joined {(() => {
+                            const joinedAt = r.referred_user?.joined_at || r.qualified_at;
+                            return joinedAt
+                              ? new Date(joinedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                              : 'recently';
+                          })()}
                         </p>
                       </div>
                       <span className={`hidden sm:inline-block text-[11px] font-black px-3 py-1.5 rounded-full border ${st.className}`}>{st.label}</span>

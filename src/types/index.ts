@@ -241,25 +241,38 @@ export interface AuditLog {
   actor?: User;
 }
 
-/** Referral row from GET /contributor/referrals (real API). */
+/** Referral row from GET /contributor/referrals (real API). Backend shape is
+ *  authoritative: { id, level, status, reward_cents, qualified_at,
+ *  referred_user: { id, name, joined_at } | null } — there is no `created_at`
+ *  and no referred_user.email on this row. */
 export interface ReferralEntry {
   id: number;
   status: string;
   reward_cents: number;
-  created_at: string;
-  /** Present once the backend ships multi-level affiliate data. */
-  level?: number;
-  referred_user?: { id: number; name: string; email: string };
+  /** Present on every row — the backend ships multi-level affiliate data. */
+  level: number;
+  qualified_at?: string | null;
+  referred_user?: { id: number; name: string; joined_at: string } | null;
 }
 
-/** Referrals payload from GET /contributor/referrals. */
+/** Per-level stats from GET /contributor/referrals `by_level` (keys are level numbers). */
+export interface ReferralLevelStats {
+  total: number;
+  rewarded: number;
+  reward_cents: number;
+  reward_mode?: string;
+  reward_description?: string;
+}
+
+/** Referrals payload from GET /contributor/referrals (real API, backend shape).
+ *  Qualified counts and per-level reward amounts live under `by_level`. */
 export interface ReferralsData {
   referral_code: string;
   referral_link: string;
+  levels: number;
   total_referred: number;
-  qualified_referrals: number;
+  by_level: Record<number, ReferralLevelStats>;
   total_earned_cents: number;
-  reward_per_referral_cents: number;
   referrals: ReferralEntry[];
 }
 

@@ -10,25 +10,25 @@ export const tasksApi = {
   contributorDashboard: () => api.get('/contributor/dashboard').then((r) => r.data),
   myTasks: (params?: { status?: string }) =>
     api.get('/contributor/my-tasks', { params }).then((r) => r.data as { success: boolean; data: TaskSubmission[]; meta?: unknown }),
-  /** GET /contributor/referrals — referral code/link, 3-level stats, earnings. */
+  /** GET /contributor/referrals — referral code/link, per-level stats, earnings. Backend shape (source of truth):
+   *  data: { referral_code, referral_link, levels, total_referred, by_level: { [level]: { total, rewarded, reward_cents, ... } }, total_earned_cents, referrals: [...] } */
   referrals: () =>
     api.get('/contributor/referrals').then((r) => r.data as {
       success: boolean;
       data: {
         referral_code: string;
         referral_link: string;
+        levels: number;
         total_referred: number;
-        qualified_referrals: number;
+        by_level: Record<number, { total: number; rewarded: number; reward_cents: number; reward_mode?: string; reward_description?: string }>;
         total_earned_cents: number;
-        reward_per_referral_cents: number;
         referrals: Array<{
           id: number;
+          level: number;
           status: string;
           reward_cents: number;
-          created_at: string;
-          /** Present once the backend ships multi-level affiliate data. */
-          level?: number;
-          referred_user?: { id: number; name: string; email: string };
+          qualified_at?: string | null;
+          referred_user?: { id: number; name: string; joined_at: string } | null;
         }>;
       };
     }),

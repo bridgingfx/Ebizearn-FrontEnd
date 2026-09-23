@@ -197,7 +197,7 @@ export const ContributorNotificationsPage: React.FC = () => {
           }
         }
 
-        const refData = (refRes as { success?: boolean; data?: { referrals?: { id: number; created_at: string; referred_user?: { name: string } }[] } }).data;
+        const refData = (refRes as { success?: boolean; data?: { referrals?: { id: number; qualified_at?: string | null; referred_user?: { name: string; joined_at: string } | null }[] } }).data;
         if (refData?.referrals) {
           for (const r of refData.referrals.slice(0, 10)) {
             out.push({
@@ -205,7 +205,7 @@ export const ContributorNotificationsPage: React.FC = () => {
               kind: 'referral',
               title: 'New referral',
               description: `${r.referred_user?.name || 'Someone'} joined using your referral link.`,
-              createdAt: r.created_at,
+              createdAt: r.referred_user?.joined_at || r.qualified_at || new Date(0).toISOString(),
               link: '/app/referrals',
             });
           }

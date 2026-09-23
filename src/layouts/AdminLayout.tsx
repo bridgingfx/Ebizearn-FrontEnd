@@ -18,6 +18,8 @@ import {
   ScrollText,
   LogOut,
   Mail,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
@@ -52,6 +54,7 @@ export const AdminLayout: React.FC = () => {
   ];
 
   const [logoutOpen, setLogoutOpen] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleLogout = () => {
     // Capture the role BEFORE logout clears the session, then return the
@@ -124,10 +127,22 @@ export const AdminLayout: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="bg-white dark:bg-[#0C1322] border-b border-gray-200 dark:border-white/10 sticky top-0 z-20 px-6 py-4 flex items-center justify-between transition-colors">
-          <div>
-            <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block leading-tight">{user?.name || 'Admin'}</span>
-            <span className="text-[10px] text-gray-400 dark:text-gray-500 block leading-none capitalize">{user?.role} workspace</span>
+        <header className="bg-white dark:bg-[#0C1322] border-b border-gray-200 dark:border-white/10 sticky top-0 z-20 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between transition-colors">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="md:hidden p-2 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/15 transition-colors"
+              aria-label={mobileMenuOpen ? 'Close admin menu' : 'Open admin menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="admin-mobile-menu"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            <div className="min-w-0">
+              <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block leading-tight truncate">{user?.name || 'Admin'}</span>
+              <span className="text-[10px] text-gray-400 dark:text-gray-500 block leading-none capitalize truncate">{user?.role} workspace</span>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -140,6 +155,48 @@ export const AdminLayout: React.FC = () => {
             </div>
           </div>
         </header>
+
+        {mobileMenuOpen && (
+          <div
+            id="admin-mobile-menu"
+            className="md:hidden sticky top-[61px] z-20 bg-white dark:bg-[#0C1322] border-b border-gray-200 dark:border-white/10 px-4 py-3 shadow-lg"
+          >
+            <nav className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-[65vh] overflow-y-auto" aria-label="Admin mobile navigation">
+              {navItems.map((item) => {
+                const isActive = item.exact
+                  ? location.pathname === item.path
+                  : location.pathname.startsWith(item.path);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                      isActive
+                        ? 'bg-[#D4AF37] text-[#0E1C2F] shadow-sm'
+                        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </Link>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setLogoutOpen(true);
+                }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4 shrink-0" />
+                <span>Logout</span>
+              </button>
+            </nav>
+          </div>
+        )}
 
         <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
           <Outlet />

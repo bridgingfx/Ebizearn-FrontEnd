@@ -92,7 +92,7 @@ export const BusinessSignupPage: React.FC = () => {
         { icon: HandCoins, title: 'Pay for results', text: 'Only approved, authentic work is charged.' },
       ]}
     >
-      <div className="mb-6">
+      <div className="mb-4 lg:mb-3">
         <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Create business account</h2>
         <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Set up your campaign workspace</p>
       </div>
@@ -103,7 +103,7 @@ export const BusinessSignupPage: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleSignup} className="space-y-5" noValidate>
+      <form onSubmit={handleSignup} className="space-y-4 lg:space-y-3" noValidate>
         <AuthField id="companyName" label="Company / brand name" error={fieldErrors.companyName}>
           <input
             id="companyName"
@@ -116,7 +116,7 @@ export const BusinessSignupPage: React.FC = () => {
           />
         </AuthField>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <AuthField id="name" label="Contact name" error={fieldErrors.name}>
             <input
               id="name"
@@ -192,17 +192,17 @@ export const BusinessSignupPage: React.FC = () => {
         </p>
       </form>
 
-      <div className="mt-6 flex items-center gap-4">
+      <div className="mt-5 lg:mt-4 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
         <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5 lg:mt-4">
         <SocialLoginButtons portal="business" mode="register" />
       </div>
 
-      <div className="mt-7 text-center text-base text-slate-500 dark:text-gray-400 space-y-1.5">
+      <div className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400 space-y-1">
         <p>
           Already have a business account?{' '}
           <Link to="/business/login" className="text-[#168BFF] font-bold hover:underline">Business sign in</Link>

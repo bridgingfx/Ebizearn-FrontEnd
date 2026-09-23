@@ -112,11 +112,11 @@ export const post: BlogPost = {
       items: [
         {
           q: 'How do I know if an earning website is a scam?',
-          a: 'Check for the core red flags: upfront fees, guaranteed earnings, password requests, no identifiable company, and changing withdrawal rules. Then verify independently: read the terms, search for real user reviews about payouts, and confirm the business model makes sense (businesses paying for tasks, not joiners paying fees).',
+          a: 'Check for the core red flags: upfront fees, earnings that are "guaranteed", password requests, no identifiable company, and changing withdrawal rules. Then verify independently: read the terms, search for real user reviews about payouts, and confirm the business model makes sense (businesses paying for tasks, not joiners paying fees).',
         },
         {
           q: 'What are red flags of fake earning platforms?',
-          a: 'The most common: paying to join, guaranteed income claims, requests for your social media passwords, anonymous operators with no legal pages, fake payout screenshots, countdown-pressure tactics, and new conditions appearing when you try to withdraw.',
+          a: 'The most common: paying to join, claims that payouts are guaranteed, requests for your social media passwords, anonymous operators with no legal pages, fake payout screenshots, countdown-pressure tactics, and new conditions appearing when you try to withdraw.',
         },
         {
           q: 'Are TikTok earning apps legit?',

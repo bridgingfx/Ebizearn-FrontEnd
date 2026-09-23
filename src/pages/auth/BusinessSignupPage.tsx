@@ -97,7 +97,7 @@ export const BusinessSignupPage: React.FC = () => {
       ]}
     >
       <div className="mb-4 lg:mb-3">
-        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Create business account</h2>
+        <h2 className="text-[1.75rem] font-bold tracking-tight text-slate-900 dark:text-gray-100">Create business account</h2>
         <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Set up your campaign workspace</p>
       </div>
 

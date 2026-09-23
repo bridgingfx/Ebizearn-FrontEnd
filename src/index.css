@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
-/* Apple's system font stack (the same family Apple uses on apple.com).
-   SF Pro is a licensed system font and cannot be bundled — this stack
-   renders the REAL SF Pro on Apple devices, Segoe UI on Windows,
-   Roboto on Android. Hierarchy comes from weight / size / letter-spacing. */
+/* Apple's EXACT system font stack (the same family Apple uses on apple.com).
+   SF Pro is a licensed system font and cannot be bundled — the system
+   keywords resolve the REAL SF Pro on Apple devices, with Helvetica/Arial
+   fallback elsewhere, exactly like apple.com. No webfont downloads.
+   Hierarchy comes from weight / size / letter-spacing — never a second family. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Single corporate font family for the whole site: Apple's system stack (SF Pro on Apple devices).
-   Hierarchy comes from weight / size / letter-spacing — never a second family. */
 @theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --default-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @layer base {
@@ -34,7 +34,7 @@
     background-color: #F7F9FC;
     color: #101828;
     min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
     letter-spacing: -0.011em;
     font-optical-sizing: auto;
     text-rendering: optimizeLegibility;
@@ -46,10 +46,17 @@
     color: #E8ECF3;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
-    letter-spacing: -0.022em;
-    font-weight: 800;
+  /* Apple-style heading weights: semibold/bold like apple.com — never extra-heavy. */
+  h1, h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  h3, h4, h5, h6 {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    letter-spacing: -0.015em;
+    font-weight: 600;
   }
 
   /* ── Keyboard focus that is always visible ───────────────────────

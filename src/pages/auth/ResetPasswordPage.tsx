@@ -52,7 +52,7 @@ export const ResetPasswordPage: React.FC = () => {
       <div className="max-w-md w-full bg-white dark:bg-[#0C1322] rounded-3xl p-8 border border-[#E4EAF2] dark:border-white/10 shadow-floating">
         <div className="text-center mb-6">
           <AuthFavicon />
-          <h2 className="text-2xl font-black text-[#101828] dark:text-gray-100">Choose New Password</h2>
+          <h2 className="text-2xl font-bold text-[#101828] dark:text-gray-100">Choose New Password</h2>
           <p className="text-xs text-[#667085] mt-1">Set a new password for your eBizEarn account.</p>
         </div>
 

@@ -161,7 +161,7 @@ export const VerifyEmailPage: React.FC = () => {
               <div className="mx-auto w-24 h-24 mb-6 rounded-[1.75rem] bg-gradient-to-br from-[#168BFF] to-[#7257FF] flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <MailCheck className="w-11 h-11 text-white" />
               </div>
-              <h1 className="text-3xl font-black tracking-tight text-[#101828] dark:text-gray-100">Verifying your email…</h1>
+              <h1 className="text-3xl font-bold tracking-tight text-[#101828] dark:text-gray-100">Verifying your email…</h1>
               <p className="mt-3 text-base text-[#667085] leading-relaxed">
                 Please wait a moment while we activate your account.
               </p>
@@ -196,7 +196,7 @@ export const VerifyEmailPage: React.FC = () => {
               </div>
             </div>
 
-            <h1 className="text-3xl font-black tracking-tight text-[#101828] dark:text-gray-100">Check your email</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-[#101828] dark:text-gray-100">Check your email</h1>
             <p className="mt-3 text-base text-[#667085] leading-relaxed">
               We sent a verification link to{' '}
               <span className="font-bold text-[#101828] dark:text-gray-100 break-all">{user?.email || 'your email address'}</span>.
@@ -354,7 +354,7 @@ export const useRequireVerifiedEmail = () => {
         <div className="mx-auto w-16 h-16 rounded-3xl bg-gradient-to-br from-[#168BFF] to-[#7257FF] flex items-center justify-center shadow-lg shadow-blue-500/25 mb-4">
           <MailCheck className="w-8 h-8 text-white" />
         </div>
-        <h3 className="text-xl font-black text-[#101828] dark:text-gray-100">Verify your email first</h3>
+        <h3 className="text-xl font-bold text-[#101828] dark:text-gray-100">Verify your email first</h3>
         <p className="mt-2 text-sm text-[#667085] leading-relaxed">
           To keep your money safe, this action needs a verified email address. It takes less than a
           minute — check your inbox for our verification link.

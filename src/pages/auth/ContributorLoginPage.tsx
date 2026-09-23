@@ -106,7 +106,7 @@ export const ContributorLoginPage: React.FC = () => {
       ]}
     >
       <div className="mb-5 lg:mb-4">
-        <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Welcome back</h2>
+        <h2 className="text-[1.75rem] font-bold tracking-tight text-slate-900 dark:text-gray-100">Welcome back</h2>
         <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Sign in to your contributor account</p>
       </div>
 

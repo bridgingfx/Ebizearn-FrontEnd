@@ -20,6 +20,7 @@ import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
 
 const INDUSTRIES = ['Tech & SaaS', 'E-Commerce', 'Consumer Brands', 'Mobile Apps', 'Real Estate', 'Finance', 'Other'];
 
@@ -41,7 +42,9 @@ export const BusinessSignupPage: React.FC = () => {
     if (companyName.trim().length < 2) errs.companyName = 'Enter your company or brand name.';
     if (name.trim().length < 2) errs.name = 'Enter the contact person’s name.';
     if (!EMAIL_RE.test(email.trim())) errs.email = 'Enter a valid work email address.';
-    if (password.length < 8) errs.password = 'Use at least 8 characters.';
+    if (!STRONG_PASSWORD_RE.test(password)) {
+      errs.password = 'Use 10+ characters with uppercase, lowercase, number, and symbol.';
+    }
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -168,14 +171,14 @@ export const BusinessSignupPage: React.FC = () => {
           id="password"
           label="Password"
           error={fieldErrors.password}
-          hint="At least 8 characters. Use a mix of letters and numbers."
+          hint="At least 10 characters with uppercase, lowercase, number, and symbol."
         >
           <PasswordInput
             id="password"
             value={password}
             onChange={setPassword}
             placeholder="Create a password"
-            minLength={8}
+            minLength={10}
             autoComplete="new-password"
             large
             showStrength

@@ -25,4 +25,3 @@ dist-ssr
 
 # local env files (never commit; use .env.example templates)
 .env
-.env.production

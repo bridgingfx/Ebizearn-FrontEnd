@@ -22,6 +22,7 @@ import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
 
 const COUNTRIES = [
   { code: 'AE', name: 'United Arab Emirates' },
@@ -53,7 +54,9 @@ export const ContributorSignupPage: React.FC = () => {
     const errs: Record<string, string> = {};
     if (name.trim().length < 2) errs.name = 'Enter your full name.';
     if (!EMAIL_RE.test(email.trim())) errs.email = 'Enter a valid email address.';
-    if (password.length < 8) errs.password = 'Use at least 8 characters.';
+    if (!STRONG_PASSWORD_RE.test(password)) {
+      errs.password = 'Use 10+ characters with uppercase, lowercase, number, and symbol.';
+    }
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -103,15 +106,15 @@ export const ContributorSignupPage: React.FC = () => {
         { icon: Sparkles, title: 'Free forever', text: 'No fees, no deposits, no upgrades.' },
       ]}
     >
-      <div className="mb-6 p-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex items-start gap-3">
-        <CheckCircle2 className="w-6 h-6 text-[#16B364] shrink-0 mt-0.5" />
+      <div className="mb-4 lg:mb-3 p-3 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex items-start gap-3">
+        <CheckCircle2 className="w-5 h-5 text-[#16B364] shrink-0 mt-0.5" />
         <div>
-          <p className="text-base font-extrabold text-emerald-900">100% free to join & earn</p>
+          <p className="text-sm font-extrabold text-emerald-900">100% free to join & earn</p>
           <p className="text-sm text-emerald-700 leading-snug">No registration fees, no upgrade plans, no deposit. Ever.</p>
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-4 lg:mb-3">
         <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Create your free account</h2>
         <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Start earning from verified digital tasks today</p>
       </div>
@@ -122,7 +125,7 @@ export const ContributorSignupPage: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleSignup} className="space-y-5" noValidate>
+      <form onSubmit={handleSignup} className="space-y-4 lg:space-y-3" noValidate>
         <AuthField id="name" label="Full name" error={fieldErrors.name}>
           <input
             id="name"
@@ -152,14 +155,14 @@ export const ContributorSignupPage: React.FC = () => {
           id="password"
           label="Password"
           error={fieldErrors.password}
-          hint="At least 8 characters. Use a mix of letters and numbers."
+          hint="At least 10 characters with uppercase, lowercase, number, and symbol."
         >
           <PasswordInput
             id="password"
             value={password}
             onChange={setPassword}
             placeholder="Create a password"
-            minLength={8}
+            minLength={10}
             autoComplete="new-password"
             large
             showStrength
@@ -206,17 +209,17 @@ export const ContributorSignupPage: React.FC = () => {
         </p>
       </form>
 
-      <div className="mt-6 flex items-center gap-4">
+      <div className="mt-5 lg:mt-4 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
         <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5 lg:mt-4">
         <SocialLoginButtons portal="contributor" mode="register" />
       </div>
 
-      <p className="mt-7 text-center text-base text-slate-500 dark:text-gray-400">
+      <p className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400">
         Already have an account?{' '}
         <Link to="/login" className="text-[#168BFF] font-bold hover:underline">
           Sign in

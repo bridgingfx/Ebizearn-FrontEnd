@@ -20,6 +20,7 @@ import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
 
 const INDUSTRIES = ['Tech & SaaS', 'E-Commerce', 'Consumer Brands', 'Mobile Apps', 'Real Estate', 'Finance', 'Other'];
 
@@ -41,7 +42,9 @@ export const BusinessSignupPage: React.FC = () => {
     if (companyName.trim().length < 2) errs.companyName = 'Enter your company or brand name.';
     if (name.trim().length < 2) errs.name = 'Enter the contact person’s name.';
     if (!EMAIL_RE.test(email.trim())) errs.email = 'Enter a valid work email address.';
-    if (password.length < 8) errs.password = 'Use at least 8 characters.';
+    if (!STRONG_PASSWORD_RE.test(password)) {
+      errs.password = 'Use 10+ characters with uppercase, lowercase, number, and symbol.';
+    }
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -92,7 +95,7 @@ export const BusinessSignupPage: React.FC = () => {
         { icon: HandCoins, title: 'Pay for results', text: 'Only approved, authentic work is charged.' },
       ]}
     >
-      <div className="mb-6">
+      <div className="mb-4 lg:mb-3">
         <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Create business account</h2>
         <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Set up your campaign workspace</p>
       </div>
@@ -103,7 +106,7 @@ export const BusinessSignupPage: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleSignup} className="space-y-5" noValidate>
+      <form onSubmit={handleSignup} className="space-y-4 lg:space-y-3" noValidate>
         <AuthField id="companyName" label="Company / brand name" error={fieldErrors.companyName}>
           <input
             id="companyName"
@@ -168,14 +171,14 @@ export const BusinessSignupPage: React.FC = () => {
           id="password"
           label="Password"
           error={fieldErrors.password}
-          hint="At least 8 characters. Use a mix of letters and numbers."
+          hint="At least 10 characters with uppercase, lowercase, number, and symbol."
         >
           <PasswordInput
             id="password"
             value={password}
             onChange={setPassword}
             placeholder="Create a password"
-            minLength={8}
+            minLength={10}
             autoComplete="new-password"
             large
             showStrength
@@ -192,17 +195,17 @@ export const BusinessSignupPage: React.FC = () => {
         </p>
       </form>
 
-      <div className="mt-6 flex items-center gap-4">
+      <div className="mt-5 lg:mt-4 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
         <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5 lg:mt-4">
         <SocialLoginButtons portal="business" mode="register" />
       </div>
 
-      <div className="mt-7 text-center text-base text-slate-500 dark:text-gray-400 space-y-1.5">
+      <div className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400 space-y-1">
         <p>
           Already have a business account?{' '}
           <Link to="/business/login" className="text-[#168BFF] font-bold hover:underline">Business sign in</Link>

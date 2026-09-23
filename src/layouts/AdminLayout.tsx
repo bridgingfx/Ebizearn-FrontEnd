@@ -154,10 +154,11 @@ export const AdminLayout: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 pb-16 md:pb-0">
-        <header className="bg-white dark:bg-[#0C1322] border-b border-gray-200 dark:border-white/10 sticky top-0 z-20 px-6 py-4 flex items-center justify-between transition-colors">
-          <div>
-            <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block leading-tight">{user?.name || 'Admin'}</span>
-            <span className="text-[10px] text-gray-400 dark:text-gray-500 block leading-none capitalize">{user?.role} workspace</span>
+        <header className="bg-white dark:bg-[#0C1322] border-b border-gray-200 dark:border-white/10 sticky top-0 z-20 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between transition-colors">
+          <div className="min-w-0">
+            <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block leading-tight truncate">{user?.name || 'Admin'}</span>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 block leading-none capitalize truncate">{user?.role} workspace</span>
+
           </div>
 
           <div className="flex items-center gap-3">

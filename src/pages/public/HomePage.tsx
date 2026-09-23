@@ -166,7 +166,7 @@ export const HomePage: React.FC = () => {
           - Decluttered Left Column with Generous Spacing & High-Contrast Neon CTA
           - Sleek Smartphone Mockup with 4 Popping Notification Bubbles & Reactions
          ========================================================================= */}
-      <section className="relative pt-24 pb-16 sm:pt-28 sm:pb-20 overflow-hidden bg-[#07182F] text-white border-b border-white/10">
+      <section className="relative pt-24 pb-10 sm:pt-28 sm:pb-12 lg:pb-10 overflow-hidden bg-[#07182F] text-white border-b border-white/10">
         
         {/* Ambient subtle glow meshes */}
         <div className="absolute top-12 left-1/4 w-[450px] h-[450px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
@@ -174,10 +174,10 @@ export const HomePage: React.FC = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             
             {/* LEFT COLUMN: Clean, Decluttered, High-Trust Copy */}
-            <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
+            <div className="lg:col-span-6 space-y-5 text-center lg:text-left">
               
               {/* Subtle Pill Tag */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-gray-300 backdrop-blur-md">
@@ -186,14 +186,14 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Bold Headline matching mockup */}
-              <h1 className="text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-black text-white tracking-tight leading-[1.12]">
+              <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[48px] font-black text-white tracking-tight leading-[1.12]">
                 Turn Daily Social Media <br />
                 Time Into <span className="text-[#38BDF8]">Verified</span> <br className="hidden sm:inline" />
                 Cash Income.
               </h1>
 
               {/* Subheadline: Large, Readable, Generous Spacing */}
-              <p className="text-base sm:text-lg text-gray-300 leading-relaxed max-w-xl font-normal mx-auto lg:mx-0">
+              <p className="text-base lg:text-[1.05rem] text-gray-300 leading-relaxed max-w-xl font-normal mx-auto lg:mx-0">
                 eBizEarn connects forward-thinking brands with verified mobile contributors worldwide. Complete simple tasks on Instagram, TikTok, YouTube, and WhatsApp — get verified in seconds, and cash out starting from $50.00.
               </p>
 
@@ -201,7 +201,7 @@ export const HomePage: React.FC = () => {
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
                 <Link
                   to="/contributor/register"
-                  className="bg-[#22C55E] hover:bg-[#16a34a] text-[#07182F] font-black text-sm sm:text-base px-7 py-4 rounded-xl shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2.5 group"
+                  className="bg-[#22C55E] hover:bg-[#16a34a] text-[#07182F] font-black text-sm sm:text-base px-7 py-3.5 rounded-xl shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2.5 group"
                 >
                   <span>Get Started & Earn Free</span>
                   <ArrowRight className="w-5 h-5 text-[#07182F] group-hover:translate-x-0.5 transition-transform" />
@@ -209,7 +209,7 @@ export const HomePage: React.FC = () => {
 
                 <Link
                   to="/tasks"
-                  className="bg-white/5 hover:bg-white/10 text-white font-bold text-sm sm:text-base px-6 py-4 rounded-xl border border-white/20 hover:border-white/40 backdrop-blur-md hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                  className="bg-white/5 hover:bg-white/10 text-white font-bold text-sm sm:text-base px-6 py-3.5 rounded-xl border border-white/20 hover:border-white/40 backdrop-blur-md hover:-translate-y-0.5 transition-all flex items-center gap-2"
                 >
                   <span>View Tasks</span>
                 </Link>
@@ -218,73 +218,73 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* RIGHT COLUMN: Sleek Smartphone Mockup with 4 Popping Notification Bubbles */}
-            <div className="lg:col-span-6 relative flex justify-center items-center py-6 sm:py-8 select-none">
+            <div className="lg:col-span-6 relative flex justify-center items-center py-5 sm:py-6 select-none">
               
               {/* Atmospheric background aura */}
-              <div className="absolute w-[320px] sm:w-[420px] h-[320px] sm:h-[420px] bg-gradient-to-tr from-[#0ea5e9]/25 via-[#10b981]/20 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+              <div className="absolute w-[280px] sm:w-[360px] h-[280px] sm:h-[360px] bg-gradient-to-tr from-[#0ea5e9]/25 via-[#10b981]/20 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
               {/* Floating Reaction Emojis around phone */}
-              <div className="absolute top-2 right-12 sm:right-20 z-30 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg border border-pink-100 flex items-center gap-1.5 text-xs font-bold animate-float-slow">
+              <div className="absolute top-1 right-10 sm:right-16 z-30 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-pink-100 flex items-center gap-1.5 text-[11px] font-bold animate-float-slow">
                 <span className="text-base">❤️</span>
                 <span className="text-pink-600 font-extrabold">+1 Like</span>
               </div>
 
-              <div className="absolute bottom-28 -right-2 sm:right-4 z-30 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg border border-orange-100 flex items-center gap-1.5 text-xs font-bold animate-float">
+              <div className="absolute bottom-20 right-0 sm:right-6 z-30 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-orange-100 flex items-center gap-1.5 text-[11px] font-bold animate-float">
                 <span className="text-base">🔥</span>
                 <span className="text-orange-600 font-extrabold">Hot Task</span>
               </div>
 
-              <div className="absolute -top-3 left-16 sm:left-24 z-30 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-lg border border-blue-100 flex items-center gap-1.5 text-xs font-bold animate-float-delayed">
+              <div className="absolute -top-1 left-16 sm:left-24 z-30 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-blue-100 flex items-center gap-1.5 text-[11px] font-bold animate-float-delayed">
                 <span className="text-base">👍</span>
                 <span className="text-blue-600 font-extrabold">Verified</span>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 1: Top-Left (+$50.00 Verified Cash) */}
-              <div className="absolute -top-4 -left-2 sm:-left-10 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float max-w-[215px]">
-                <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <div className="absolute top-5 left-0 sm:-left-4 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-3 py-2.5 rounded-xl shadow-2xl border border-slate-100/90 flex items-center gap-2.5 animate-float max-w-[185px]">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
                 <div>
                   <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Instant Payout</div>
-                  <div className="text-xs sm:text-sm font-black text-emerald-600">+$50.00 Verified Cash</div>
+                  <div className="text-xs font-black text-emerald-600">+$50.00 Verified Cash</div>
                 </div>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 2: Top-Right (Upload Review Photo) */}
-              <div className="absolute top-12 -right-4 sm:-right-8 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float-delayed max-w-[225px]">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
+              <div className="absolute top-14 right-0 sm:-right-2 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-3 py-2.5 rounded-xl shadow-2xl border border-slate-100/90 flex items-center gap-2.5 animate-float-delayed max-w-[190px]">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md">
                   <Camera className="w-4 h-4 text-white" />
                 </div>
                 <div>
                   <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">New Task</div>
-                  <div className="text-xs sm:text-sm font-black text-gray-900 dark:text-gray-100">Upload Review Photo</div>
+                  <div className="text-xs font-black text-gray-900 dark:text-gray-100">Upload Review Photo</div>
                 </div>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 3: Bottom-Left (Review: TikTok Video) */}
-              <div className="absolute bottom-14 -left-4 sm:-left-10 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float max-w-[225px]">
-                <div className="w-9 h-9 rounded-full bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-md">
+              <div className="absolute bottom-14 left-0 sm:-left-3 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-3 py-2.5 rounded-xl shadow-2xl border border-slate-100/90 flex items-center gap-2.5 animate-float max-w-[190px]">
+                <div className="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center text-white shrink-0 shadow-md">
                   <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                 </div>
                 <div>
                   <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Sponsored Campaign</div>
-                  <div className="text-xs sm:text-sm font-black text-gray-900 dark:text-gray-100">Review: TikTok Video</div>
+                  <div className="text-xs font-black text-gray-900 dark:text-gray-100">Review: TikTok Video</div>
                 </div>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 4: Bottom-Right ($38.90 Total) */}
-              <div className="absolute -bottom-3 -right-2 sm:-right-6 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-4 py-3 rounded-2xl shadow-2xl border border-slate-100/90 flex items-center gap-3 animate-float-delayed max-w-[210px]">
-                <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-md font-black text-sm">
-                  <DollarSign className="w-5 h-5 text-white" />
+              <div className="absolute bottom-1 right-2 sm:right-0 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-3 py-2.5 rounded-xl shadow-2xl border border-slate-100/90 flex items-center gap-2.5 animate-float-delayed max-w-[180px]">
+                <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-md font-black text-sm">
+                  <DollarSign className="w-4 h-4 text-white" />
                 </div>
                 <div>
                   <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Today's Balance</div>
-                  <div className="text-xs sm:text-sm font-black text-emerald-600">$38.90 Total</div>
+                  <div className="text-xs font-black text-emerald-600">$38.90 Total</div>
                 </div>
               </div>
 
               {/* THE SLEEK SMARTPHONE MOCKUP BODY */}
-              <div className="relative w-[280px] sm:w-[315px] h-[580px] sm:h-[620px] rounded-[48px] border-[8px] sm:border-[10px] border-slate-800 bg-slate-950 p-2 sm:p-2.5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_50px_rgba(14,165,233,0.2)] ring-1 ring-white/20 transition-transform duration-500 hover:scale-[1.01]">
+              <div className="relative w-[240px] sm:w-[270px] xl:w-[286px] h-[500px] sm:h-[545px] xl:h-[575px] rounded-[42px] border-[7px] sm:border-[8px] border-slate-800 bg-slate-950 p-2 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8),0_0_50px_rgba(14,165,233,0.2)] ring-1 ring-white/20 transition-transform duration-500 hover:scale-[1.01]">
                 
                 {/* Dynamic Island pill */}
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-5 bg-black rounded-full z-30 flex items-center justify-between px-3">
@@ -298,7 +298,7 @@ export const HomePage: React.FC = () => {
                 <div className="absolute -top-16 -left-16 w-60 h-60 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-2xl pointer-events-none z-20" />
 
                 {/* Smartphone Screen Content */}
-                <div className="w-full h-full rounded-[38px] overflow-hidden bg-gradient-to-b from-[#0e7490] via-[#047857] to-[#022c22] p-4 pt-10 flex flex-col justify-between text-white relative shadow-inner">
+                <div className="w-full h-full rounded-[34px] overflow-hidden bg-gradient-to-b from-[#0e7490] via-[#047857] to-[#022c22] p-3.5 pt-10 flex flex-col justify-between text-white relative shadow-inner">
                   
                   {/* Status Bar */}
                   <div className="flex items-center justify-between px-1 text-[11px] font-bold text-white/90">

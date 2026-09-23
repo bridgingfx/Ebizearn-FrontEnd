@@ -55,9 +55,9 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
 }) => {
   const midnight = artworkTheme === 'midnight';
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:grid lg:grid-cols-[1.05fr_1fr] dark:bg-[#0B0F19]">
+    <div className="min-h-screen bg-white flex flex-col lg:h-screen lg:grid lg:grid-cols-[1.05fr_1fr] lg:overflow-hidden dark:bg-[#0B0F19]">
       {/* ── Artwork side ─────────────────────────────────────────── */}
-      <div className="relative overflow-hidden min-h-[300px] sm:min-h-[340px] lg:min-h-screen">
+      <div className="relative overflow-hidden min-h-[300px] sm:min-h-[340px] lg:min-h-0 lg:h-screen">
         <img
           src={image}
           alt={imageAlt}
@@ -78,25 +78,25 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-[#07182F]/95 via-[#07182F]/45 to-[#07182F]/10 lg:bg-gradient-to-t lg:from-[#07182F]/95 lg:via-[#07182F]/40 lg:to-transparent" />
         )}
 
-        <div className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-10 lg:p-12 min-h-[inherit]">
+        <div className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-10 lg:p-8 xl:p-10 min-h-[inherit]">
           <Link to="/" aria-label="eBizEarn home" className="inline-flex w-fit">
             <EBizLogo variant="dark" size="md" subtitleText="ebizearn.com" />
           </Link>
 
           <div className="mt-10 lg:mt-0 max-w-xl">
-            <div className="mb-6">{badge}</div>
-            <h1 className="text-3xl sm:text-4xl xl:text-[3.4rem] font-black tracking-tight text-white leading-[1.08]">
+            <div className="mb-4 xl:mb-5">{badge}</div>
+            <h1 className="text-3xl sm:text-4xl lg:text-[2.65rem] xl:text-[3.15rem] font-black tracking-tight text-white leading-[1.08]">
               {headline}
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-slate-200 leading-relaxed max-w-lg">{subtext}</p>
+            <p className="mt-3 xl:mt-4 text-base lg:text-[1.05rem] text-slate-200 leading-relaxed max-w-lg">{subtext}</p>
 
-            <ul className="mt-8 hidden sm:grid sm:grid-cols-3 gap-4">
+            <ul className="mt-5 xl:mt-7 hidden sm:grid sm:grid-cols-3 gap-3 xl:gap-4">
               {bullets.map((b) => {
                 const Icon = b.icon;
                 return (
                   <li
                     key={b.title}
-                    className={`rounded-2xl backdrop-blur-md border p-4 ${
+                    className={`rounded-2xl backdrop-blur-md border p-3 xl:p-4 ${
                       midnight
                         ? 'bg-black/45 border-[#D4AF37]/25 shadow-[0_8px_28px_rgba(0,0,0,0.45)]'
                         : 'bg-white/10 border-white/15'
@@ -114,10 +114,10 @@ export const AuthSplitLayout: React.FC<AuthSplitLayoutProps> = ({
       </div>
 
       {/* ── Form side ────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0B0F19] px-5 sm:px-10 py-10 lg:py-14 transition-colors">
-        <div className="w-full max-w-[430px] flex-1 flex items-center">{children}</div>
+      <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-[#0B0F19] px-5 sm:px-10 py-8 lg:h-screen lg:py-5 xl:py-7 lg:overflow-y-auto transition-colors">
+        <div className="w-full max-w-[430px] flex-1 flex flex-col justify-center min-w-0">{children}</div>
         <div className="w-full max-w-[430px]">
-          <AppFooter />
+          <AppFooter compact />
         </div>
       </div>
     </div>

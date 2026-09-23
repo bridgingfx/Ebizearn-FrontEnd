@@ -104,7 +104,7 @@ export const ContributorLoginPage: React.FC = () => {
         { icon: Sparkles, title: 'Free forever', text: 'No fees, no deposits, no upgrades.' },
       ]}
     >
-      <div className="mb-7">
+      <div className="mb-5 lg:mb-4">
         <h2 className="text-[1.75rem] font-black tracking-tight text-slate-900 dark:text-gray-100">Welcome back</h2>
         <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Sign in to your contributor account</p>
       </div>
@@ -125,7 +125,7 @@ export const ContributorLoginPage: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleLogin} className="space-y-5" noValidate>
+      <form onSubmit={handleLogin} className="space-y-4 lg:space-y-3.5" noValidate>
         <AuthField id="email" label="Email address" error={emailError}>
           <input
             id="email"
@@ -166,17 +166,17 @@ export const ContributorLoginPage: React.FC = () => {
         </AuthSubmitButton>
       </form>
 
-      <div className="mt-6 flex items-center gap-4">
+      <div className="mt-5 lg:mt-4 flex items-center gap-4">
         <span className="flex-1 h-px bg-slate-200" />
         <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
         <span className="flex-1 h-px bg-slate-200" />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5 lg:mt-4">
         <SocialLoginButtons portal="contributor" mode="login" />
       </div>
 
-      <p className="mt-7 text-center text-base text-slate-500 dark:text-gray-400">
+      <p className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400">
         New to eBiz Earn?{' '}
         <Link to="/contributor/register" className="text-[#168BFF] font-bold hover:underline">
           Create a free account

@@ -95,13 +95,15 @@ export interface Campaign {
   uuid: string;
   business_id: number;
   category_id: number;
+  /** Platform chosen in the wizard (Instagram, TikTok, …) — persisted on the campaign row. */
+  platform?: string | null;
   title: string;
   objective?: string;
   description: string;
   instructions_markdown?: string;
   /** Wizard submits an array (["Screenshot", …]); older campaigns store a map ({ screenshot: true }). */
   proof_requirements_json?: Record<string, unknown> | string[];
-  status: 'draft' | 'active' | 'paused' | 'completed' | 'cancelled';
+  status: 'draft' | 'pending_review' | 'active' | 'paused' | 'completed' | 'cancelled';
   total_budget_cents: number;
   remaining_budget_cents: number;
   reserved_budget_cents: number;

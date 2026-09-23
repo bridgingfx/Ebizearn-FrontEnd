@@ -1,6 +1,8 @@
 import type { Campaign, Task, TaskSubmission, UiTask } from '../types';
 
-export const money = (cents = 0, currency = 'AED') => `${currency} ${(Number(cents || 0) / 100).toFixed(2)}`;
+// Platform-denominated money formatter: eBizEarn rewards, wallets and
+// thresholds are denominated in USD (see Terms of Service § Rewards).
+export const money = (cents = 0, currency = 'USD') => `${currency} ${(Number(cents || 0) / 100).toFixed(2)}`;
 
 const detectPlatform = (value = '') => {
   const text = value.toLowerCase();

@@ -205,7 +205,7 @@ export const ContributorMyTasksPage: React.FC = () => {
                     <p className="text-base font-black text-[#16B364]">{task ? money(task.reward_cents) : '—'}</p>
                     {s.aiResult && (
                       <p className="text-[10px] text-gray-400 dark:text-gray-500">
-                        {s.aiResult.ai_label || (s.aiResult.ai_simulated ? 'Simulated check' : 'AI check')}: {Math.round((s.aiResult.confidence_score || 0) * 100)}%
+                        {s.aiResult.ai_label || (s.aiResult.ai_simulated === false ? 'AI check' : 'Simulated check')}: {Math.round((s.aiResult.confidence_score || 0) * 100)}%
                       </p>
                     )}
                   </div>

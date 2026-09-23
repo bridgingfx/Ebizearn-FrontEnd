@@ -120,7 +120,7 @@ export const PublicTasksPage: React.FC = () => {
 
   // Honest live stats — computed from the real catalog, never invented.
   const openCount = liveTasks.length;
-  const avgRewardAed =
+  const avgRewardUsd =
     openCount > 0
       ? (liveTasks.reduce((sum, t) => sum + (t.reward_cents || 0), 0) / openCount / 100).toFixed(2)
       : '—';
@@ -201,7 +201,7 @@ export const PublicTasksPage: React.FC = () => {
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 grid grid-cols-2 sm:grid-cols-3 gap-4 shrink-0 text-center">
               <div>
                 <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block">Avg Reward</span>
-                <span className="text-lg font-black text-[#16B364]">{avgRewardAed === '—' ? '—' : `AED ${avgRewardAed}`}</span>
+                <span className="text-lg font-black text-[#16B364]">{avgRewardUsd === '—' ? '—' : `$${avgRewardUsd} USD`}</span>
               </div>
               <div>
                 <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block">Brands Hiring</span>
@@ -355,7 +355,7 @@ export const PublicTasksPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTasks.map((task) => {
               const Icon = task.icon;
-              const rewardAed = (task.reward_cents / 100).toFixed(2);
+              const rewardUsd = (task.reward_cents / 100).toFixed(2);
               const slotsLeft = task.slots_total - task.slots_taken;
               const progressPct = Math.round((task.slots_taken / task.slots_total) * 100);
 
@@ -385,8 +385,8 @@ export const PublicTasksPage: React.FC = () => {
                       </div>
 
                       <div className="text-right">
-                        <span className="text-base sm:text-lg font-black text-[#16B364]">AED {rewardAed}</span>
-                        <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold">د.إ Net</span>
+                        <span className="text-base sm:text-lg font-black text-[#16B364]">${rewardUsd}</span>
+                        <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold">USD Net</span>
                       </div>
                     </div>
 

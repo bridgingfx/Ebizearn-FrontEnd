@@ -42,7 +42,7 @@ const KNOWLEDGE_RESPONSES = [
     reply: `🌐 **Worldwide & Geo-Targeted Community Broadcast Tasks:**
 When an enterprise runs a campaign targeting specific global regions, countries, states, or cities:
 - **How to Earn:** Join active local or professional WhatsApp groups, LinkedIn chapters, or community forums matching the target region (or open global networks) and share the sponsor's announcement flyer and link.
-- **Fair Regional Pricing:** Payouts adjust dynamically by country and currency (USD $, AED د.إ, GBP £, EUR €, SAR ﷼).
+- **Fair Regional Pricing:** All task payouts are credited in US Dollars (USD $) regardless of contributor country — your payout provider converts to local currency at withdrawal.
 - **Proof Requirement:** Upload a clean screenshot clearly displaying the group name matching the campaign target region along with your published message and timestamp.
 - **Automated Validation:** Vision OCR AI automatically cross-checks verified workplace IP, GPS geofence compliance, and group member counts.
 
@@ -57,7 +57,7 @@ When an enterprise runs a campaign targeting specific global regions, countries,
     reply: `⭐ **Trustpilot & Google Maps Review Tasks:**
 Verified businesses in the UAE pay real consumers to test their services and leave genuine feedback:
 - **How to Earn:** Open the sponsor's direct link on Trustpilot or Google Maps, write an honest 4 to 5-star review based on campaign guidelines, and publish it.
-- **Reward:** **AED 8.00 to AED 18.00** per verified review.
+- **Reward:** **$8.00 to $18.00 USD** per verified review.
 - **Proof Requirement:** Submit the live review URL and a screenshot of your published review showing your name and date.
 - **Anti-Deletion Lock:** Under our 72-hour retention hold, funds are protected in your Pending Balance to safeguard against post-deletion.
 
@@ -69,12 +69,12 @@ Verified businesses in the UAE pay real consumers to test their services and lea
   },
   {
     keywords: ['payout', 'withdraw', 'cashout', 'wps', 'bank', 'currency', 'aed', 'money', 'payment gateway'],
-    reply: `💳 **AED Rewards & Central Bank of UAE (CBUAE) Payouts:**
-- **Currency:** All earnings and platform balances are 100% in **UAE Dirhams (AED 🇦🇪)**.
+    reply: `💳 **USD Rewards & Global Payout Rails:**
+- **Currency:** All earnings and platform balances are 100% in **US Dollars (USD)**.
 - **Minimum Withdrawal:** Strictly **$50.00** with 0 account fees.
 - **Supported Payout Rails:**
   1. **CBUAE Wages Protection System (WPS):** Direct payroll settlement to any UAE IBAN.
-  2. **Emirates NBD & FAB Instant Wire:** Real-time host-to-host AED settlement.
+  2. **Emirates NBD & FAB Instant Wire:** Real-time host-to-host settlement.
   3. **Checkout.com UAE & Stripe:** Instant card & mobile wallet payouts.
   4. **Circle USDC Rail:** High-speed blockchain treasury settlement.
 
@@ -104,7 +104,7 @@ Per eBiz Security Specification:
     keywords: ['kyc', 'emirates id', 'passport', 'tier 3', 'identity', 'verification', 'aml'],
     reply: `🆔 **Emirates ID (Tier 3) KYC Verification:**
 In compliance with Central Bank of the UAE (CBUAE) anti-money laundering regulations:
-- **Threshold:** KYC is mandatory for cumulative withdrawals exceeding **AED 50.00**.
+- **Threshold:** KYC is mandatory for cumulative withdrawals exceeding **$50.00**.
 - **Documents Accepted:** Emirates ID (Front & Back) or UAE Residence Visa.
 - **Automated AI Scan:** Our Vision AI checks optical holograms, EXIF authenticity, and matches legal names in under 60 seconds.
 - **Privacy:** All documents are encrypted with AES-256 and stored strictly in UAE data centers.
@@ -130,11 +130,11 @@ Grow your brand across local and global communities with 100% verified human eng
   },
   {
     keywords: ['human', 'agent', 'person', 'operator', 'representative', 'live agent', 'talk to human', 'real person', 'support agent'],
-    reply: `👨‍💼 **Live Operations Desk Connection:**
-I have alerted our Global Operations Team officer **Tariq Al-Hashemi**. While he connects, I am fully equipped to answer any question regarding tasks, multi-currency payouts, or campaign setups!
+    reply: `👨‍💼 **Talk to a human:**
+I'm a fully automated assistant — no live agent is connected to this chat right now, and I can't transfer you to one.
 
-If you need a human agent to manually investigate your account, re-review an AI proof decision, or handle an escrow inquiry:
-👉 You can [🎫 Generate an Official Support Ticket](/contact) immediately, or use the **'Create Support Ticket'** form directly in this chat!`,
+If you need a person to investigate your account, re-review a verification decision, or handle an escrow inquiry:
+👉 [🎫 Generate a Support Ticket](/contact) or use the **'Create Support Ticket'** form directly in this chat, and a real support specialist will follow up there (typically within 2 hours for general inquiries).`,
     isHumanEscalation: true,
     actionLinks: [
       { label: '🎫 Generate Support Ticket', url: '/contact' },
@@ -144,7 +144,7 @@ If you need a human agent to manually investigate your account, re-review an AI 
   {
     keywords: ['ticket', 'generate ticket', 'support ticket', 'dispute', 'complaint', 'issue', 'help desk'],
     reply: `🎫 **Official Support Ticket Portal:**
-Our Global Operations Desk investigates all priority tickets with a guaranteed SLA response of **< 2 hours**:
+Our Global Operations Desk investigates all priority tickets with a response target of **< 2 hours** (not a guarantee):
 - **Common Tickets:** Proof OCR verification disputes, multi-currency bank transfer inquiries, KYC approvals, and Business escrow adjustments.
 - **Tracking:** Every ticket receives a canonical tracking ID (e.g. \`#TKT-GLB-8921\`) that you can monitor in real time.
 
@@ -180,12 +180,14 @@ export const LiveChatWidget: React.FC = () => {
     {
       id: 'welcome',
       sender: 'agent',
-      text: `Hello! 👋 Welcome to the **eBiz Networking AI Live Desk**.
+      text: `Hello! 👋 Welcome to the **eBiz AI Live Desk**.
 
-I am your intelligent assistant backed by the **Global Operations & Verification Desk** 🌐. I can assist you with:
+I'm an **automated assistant, not a human agent** — I answer instantly from our help guides. For anything that needs a real person, [🎫 generate a support ticket](/contact) and our support team will follow up with you.
+
+I can help with:
 - Earning rewards with 🌐 [Worldwide & Geo-Targeted Tasks](/tasks)
 - [Trustpilot & Google Reviews](/tasks)
-- [Multi-Currency Cashouts (USD / AED / EUR / GBP)](/app/wallet) & 72h retention hold
+- [USD Cashouts (auto-convert to local currency)](/app/wallet) & 72h retention hold
 - [ID & Profile KYC Verification](/app/wallet)
 - [Launching Geo-Targeted Enterprise Campaigns](/business/campaigns/new)
 
@@ -325,14 +327,14 @@ If you wish to speak to a human officer or file an official dispute, you can [�
 Our AI operations system and Dubai HQ verification desk 🇦🇪 have analyzed your request. On **eBiz Networking**, all tasks and payouts are governed by CBUAE escrow protocols with strict geo-targeting and anti-deletion holds.
 
 Here are key actions you can take right now:
-- **Earn Money in AED:** [Browse Verified Tasks](/tasks)
+- **Earn Money in USD:** [Browse Verified Tasks](/tasks)
 - **Review Platform Tasks:** [Trustpilot & Google Reviews](/tasks)
 - **Check Your Balance:** [Contributor Wallet & Payouts](/app/wallet)
 - **Launch Campaign for Your Brand:** [Create Business Campaign](/business/campaigns/new)
 - **Need Personalized Assistance?** [🎫 Generate a Support Ticket](/contact) to receive human review in < 2 hours.`;
 
         actionLinks = [
-          { label: 'Browse Tasks (Earn AED)', url: '/tasks' },
+          { label: 'Browse Tasks (Earn USD)', url: '/tasks' },
           { label: 'Contributor Wallet', url: '/app/wallet' },
           { label: '🎫 Generate Support Ticket', url: '/contact' },
         ];
@@ -375,8 +377,8 @@ Here are key actions you can take right now:
         category: ticketCategory,
         priority: ticketPriority,
         description: ticketDescription,
-        userName: user?.name || 'Sarah Khan',
-        userEmail: user?.email || 'sarah.khan@example.ae',
+        userName: user?.name || 'Guest visitor',
+        userEmail: user?.email || '',
         source: 'web_chat',
       });
 
@@ -388,7 +390,7 @@ Here are key actions you can take right now:
       const confirmationMsg: ChatMessage = {
         id: `ticket_confirm_${Date.now()}`,
         sender: 'system',
-        text: `✅ **Support Ticket Created Successfully!**\n\nYour official ticket **#${createdTicket.id}** has been registered directly into our Dubai Operations moderation queue.\n\n- **Category:** ${createdTicket.category}\n- **Priority:** ${createdTicket.priority}\n- **Assigned Agent:** ${createdTicket.assignedAgent}\n- **Guaranteed SLA:** Within 2 hours\n\nYou can track updates on your ticket anytime in [My Support Center](/app/support) or from the [Contact Page](/contact).`,
+        text: `✅ **Support Ticket Created Successfully!**\n\nYour official ticket **#${createdTicket.id}** has been registered directly into our Dubai Operations moderation queue.\n\n- **Category:** ${createdTicket.category}\n- **Priority:** ${createdTicket.priority}\n- **Assigned Team:** ${createdTicket.assignedAgent}\n- **Typical first response:** within 2 hours for general inquiries\n\nYou can track updates on your ticket anytime in [My Support Center](/app/support) or from the [Contact Page](/contact).`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         ticketCard: createdTicket,
         actionLinks: [
@@ -443,37 +445,37 @@ Here are key actions you can take right now:
             LIVE CHAT WINDOW DRAWER (Right Side)
            ========================================================================= */}
         {isOpen && (
-          <div className="w-[360px] sm:w-[430px] max-h-[640px] h-[86vh] bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div className="w-[calc(100vw-2.5rem)] max-w-[360px] sm:max-w-[430px] max-h-[640px] h-[86vh] bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
             {/* Header */}
             <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950 text-white px-4 py-3.5 flex items-center justify-between border-b border-emerald-500/30 shadow-md">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 flex items-center justify-center font-black text-slate-950 text-base shadow-inner">
-                    {isHumanActive ? 'T' : 'AI'}
+                    AI
                   </div>
                   <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-slate-950 rounded-full"></span>
                 </div>
 
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-sm text-white">eBiz AI Live Desk</span>
+                    <span className="font-bold text-sm text-white">eBiz AI Support</span>
                     <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-full border border-emerald-400/40 flex items-center gap-1 font-mono font-semibold">
-                      <ShieldCheck className="w-2.5 h-2.5" /> Verified
+                      <ShieldCheck className="w-2.5 h-2.5" /> Automated
                     </span>
                   </div>
 
                   <div className="text-xs text-slate-300 flex items-center gap-1.5">
                     {isHumanActive ? (
                       <>
-                        <span className="text-emerald-300 font-bold">Tariq Al-Hashemi</span>
+                        <span className="text-emerald-300 font-bold">Human review requested</span>
                         <span className="text-slate-500 dark:text-gray-400">•</span>
-                        <span className="text-[11px] text-slate-300">Dubai HQ Desk 🇦🇪</span>
+                        <span className="text-[11px] text-slate-300">create a ticket for a real-person reply</span>
                       </>
                     ) : (
                       <>
-                        <span>Autonomous Business AI</span>
+                        <span>Automated assistant</span>
                         <span className="text-slate-500 dark:text-gray-400">•</span>
-                        <span className="text-[11px] text-emerald-400 font-medium">Dubai Internet City 🇦🇪</span>
+                        <span className="text-[11px] text-emerald-400 font-medium">not a human agent</span>
                       </>
                     )}
                   </div>
@@ -726,7 +728,7 @@ Here are key actions you can take right now:
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></div>
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></div>
                   <span className="text-[11px] text-slate-600 dark:text-gray-400">
-                    {isHumanActive ? 'Tariq Al-Hashemi is responding...' : 'eBiz AI is retrieving verified policy...'}
+                    {isHumanActive ? 'A support specialist will follow up on your ticket.' : 'eBiz AI is typing...'}
                   </span>
                 </div>
               )}
@@ -763,7 +765,7 @@ Here are key actions you can take right now:
                   className="shrink-0 flex items-center gap-1 text-[10.5px] font-semibold text-slate-700 dark:text-gray-300 bg-white dark:bg-[#0C1322] hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-300 dark:border-white/20 px-2 py-0.5 rounded-full transition-colors"
                 >
                   <Coins className="w-3 h-3 text-amber-500" />
-                  <span>Tasks (AED)</span>
+                  <span>Tasks (USD)</span>
                 </Link>
               </div>
 
@@ -809,7 +811,7 @@ Here are key actions you can take right now:
 
               <div className="mt-2 flex items-center justify-between text-[10px] text-slate-400 dark:text-gray-500 px-1">
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-emerald-600" /> AI response: {'<'} 1s • Human SLA: {'<'} 2h
+                  <Clock className="w-3 h-3 text-emerald-600" /> Automated answers • human review via ticket
                 </span>
                 <span className="font-mono text-[10px] text-slate-400 dark:text-gray-500">eBiz Desk v5.3 • Dubai 🇦🇪</span>
               </div>

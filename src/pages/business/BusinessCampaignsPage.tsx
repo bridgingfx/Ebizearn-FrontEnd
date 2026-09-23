@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Megaphone,
   Plus,
@@ -19,7 +19,9 @@ import type { Campaign } from '../../types';
 import { money } from '../../utils/apiMappers';
 import { EmptyState } from '../../components/common/EmptyState';
 
-type Tab = 'active' | 'draft' | 'paused' | 'all';
+type Tab = 'active' | 'in_review' | 'draft' | 'paused' | 'all';
+
+const VALID_TABS: Tab[] = ['active', 'in_review', 'draft', 'paused', 'all'];
 
 export const BusinessCampaignsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -27,7 +29,11 @@ export const BusinessCampaignsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [tab, setTab] = useState<Tab>('all');
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => {
+    const t = searchParams.get('tab');
+    return (VALID_TABS as string[]).includes(t ?? '') ? (t as Tab) : 'all';
+  });
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -58,6 +64,7 @@ export const BusinessCampaignsPage: React.FC = () => {
       const tabOk =
         tab === 'all' ||
         (tab === 'active' && c.status === 'active') ||
+        (tab === 'in_review' && c.status === 'pending_review') ||
         (tab === 'draft' && c.status === 'draft') ||
         (tab === 'paused' && c.status === 'paused');
       const qOk = !q || c.title.toLowerCase().includes(q);
@@ -97,6 +104,7 @@ export const BusinessCampaignsPage: React.FC = () => {
 
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: 'active', label: 'Active', count: campaigns.filter((c) => c.status === 'active').length },
+    { id: 'in_review', label: 'In review', count: campaigns.filter((c) => c.status === 'pending_review').length },
     { id: 'draft', label: 'Drafts', count: campaigns.filter((c) => c.status === 'draft').length },
     { id: 'paused', label: 'Paused', count: campaigns.filter((c) => c.status === 'paused').length },
     { id: 'all', label: 'All', count: campaigns.length },
@@ -106,6 +114,8 @@ export const BusinessCampaignsPage: React.FC = () => {
     switch (status) {
       case 'active':
         return 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
+      case 'pending_review':
+        return 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300';
       case 'draft':
         return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
       case 'paused':
@@ -279,12 +289,21 @@ export const BusinessCampaignsPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <Link
-                      to={`/business/campaigns/${c.id}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
-                    >
-                      <Eye className="w-3.5 h-3.5" /> View details
-                    </Link>
+                    {c.status === 'draft' ? (
+                      <Link
+                        to={`/business/campaigns/create?draft=${c.id}`}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> Continue editing
+                      </Link>
+                    ) : (
+                      <Link
+                        to={`/business/campaigns/${c.id}`}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> View details
+                      </Link>
+                    )}
                   </div>
                 );
               })}

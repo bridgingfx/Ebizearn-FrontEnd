@@ -14,7 +14,7 @@ export const VerificationTimeline: React.FC<{
 }> = ({ status, aiResult }) => {
   const stages = [
     { key: 'submitted', label: 'Submitted' },
-    { key: 'checking', label: aiResult?.ai_simulated ? 'Checking (simulated)' : 'Checking' },
+    { key: 'checking', label: aiResult?.ai_simulated === false ? 'Checking' : 'Checking (simulated)' },
     { key: 'review', label: 'Moderator review' },
     { key: 'approved', label: 'Approved' },
     { key: 'pending', label: 'Pending balance' },

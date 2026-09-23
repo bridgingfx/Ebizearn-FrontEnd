@@ -266,8 +266,10 @@ export const BusinessSubmissionsPage: React.FC = () => {
                     {String(selected.aiResult.suggested_decision).replace(/_/g, ' ')}
                   </span>{' '}
                   · confidence {Math.round(Number(selected.aiResult.confidence_score) || 0)}%
-                  {selected.aiResult.ai_label && (
-                    <span className="text-blue-600"> · {selected.aiResult.ai_label}</span>
+                  {(selected.aiResult.ai_label || (selected.aiResult.ai_simulated === false ? '' : 'Simulated heuristic (pre-launch)')) && (
+                    <span className="text-blue-600">
+                      {' '}· {selected.aiResult.ai_label || 'Simulated heuristic (pre-launch)'}
+                    </span>
                   )}
                 </p>
                 {selected.aiResult.analysis_summary && (

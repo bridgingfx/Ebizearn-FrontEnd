@@ -89,8 +89,8 @@ export const ForBusinessesPage: React.FC = () => {
     },
     {
       feature: 'Cost Per Verified Action',
-      eBiz: 'AED 2.50 – AED 18.00 per confirmed action',
-      agencies: 'AED 2,500 – AED 25,000+ upfront flat retainer',
+      eBiz: '$2.50 – $18.00 per confirmed action',
+      agencies: '$2,500 – $25,000+ upfront flat retainer',
       botFarms: 'Cheap, but causes irreversible brand reputational damage',
     },
     {
@@ -174,7 +174,7 @@ export const ForBusinessesPage: React.FC = () => {
                   className="px-6 py-4 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 backdrop-blur-md transition-all flex items-center gap-2"
                 >
                   <Sliders className="w-4 h-4 text-[#20C4E8]" />
-                  <span>AED Budget Simulator</span>
+                  <span>USD Budget Simulator</span>
                 </a>
               </div>
 
@@ -186,7 +186,7 @@ export const ForBusinessesPage: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Lock className="w-4 h-4 text-[#20C4E8] shrink-0" />
-                  <span>Central Bank Escrow (AED)</span>
+                  <span>Central Bank Escrow (USD)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Award className="w-4 h-4 text-[#7357FF] shrink-0" />
@@ -219,7 +219,7 @@ export const ForBusinessesPage: React.FC = () => {
                 <div className="bg-[#040F1E] rounded-2xl p-4 border border-white/10 space-y-3 font-mono text-xs">
                   <div className="flex justify-between items-center text-gray-400 dark:text-gray-500 text-[10px]">
                     <span>SPONSOR: ROYAL_CRESCENT_UAE</span>
-                    <span className="text-[#20C4E8]">ESCROW: 🇦🇪 AED 12,750.00</span>
+                    <span className="text-[#20C4E8]">ESCROW: 🇦🇪 $12,750.00</span>
                   </div>
 
                   <div className="text-white font-bold text-sm flex items-center gap-2">
@@ -231,7 +231,7 @@ export const ForBusinessesPage: React.FC = () => {
                   <div className="space-y-1.5 pt-1">
                     <div className="flex justify-between text-[10px] text-gray-300">
                       <span>425 of 500 Reviews Confirmed</span>
-                      <span className="text-[#16B364] font-bold">AED 6,375.00 Disbursed</span>
+                      <span className="text-[#16B364] font-bold">$6,375.00 Disbursed</span>
                     </div>
                     <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                       <div className="h-full bg-gradient-to-r from-[#20C4E8] to-[#168BFF] w-[85%] rounded-full" />
@@ -306,20 +306,20 @@ export const ForBusinessesPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          3. INTERACTIVE CAMPAIGN BUDGET ESTIMATOR (AED)
+          3. INTERACTIVE CAMPAIGN BUDGET ESTIMATOR (USD)
          ========================================================================= */}
       <section id="simulator" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
-              UAE AED Budget Simulator
+              UAE USD Budget Simulator
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               Interactive Campaign Cost & Turnaround Calculator
             </h2>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              Customize your campaign parameters and inspect transparent budget breakdowns denominated in United Arab Emirates Dirham (AED).
+              Customize your campaign parameters and inspect transparent budget breakdowns denominated in US Dollars (USD).
             </p>
           </div>
 
@@ -349,7 +349,7 @@ export const ForBusinessesPage: React.FC = () => {
                       {objectiveConfig[key].label}
                     </div>
                     <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
-                      Rec: AED {objectiveConfig[key].defaultReward.toFixed(2)}
+                      Rec: ${'$'}{objectiveConfig[key].defaultReward.toFixed(2)}
                     </div>
                   </button>
                 ))}
@@ -386,10 +386,10 @@ export const ForBusinessesPage: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
-                  3. Reward Paid Per Verified Task (AED 🇦🇪)
+                  3. Reward Paid Per Verified Task (USD)
                 </label>
                 <span className="text-sm font-bold text-[#16B364] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
-                  AED {rewardPerTask.toFixed(2)} د.إ
+                  ${rewardPerTask.toFixed(2)} USD
                 </span>
               </div>
               <input
@@ -402,9 +402,9 @@ export const ForBusinessesPage: React.FC = () => {
                 className="w-full accent-[#16B364] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
               />
               <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
-                <span>Min (AED {objectiveConfig[objective].minReward.toFixed(2)})</span>
+                <span>Min (${objectiveConfig[objective].minReward.toFixed(2)})</span>
                 <span>Standard</span>
-                <span>Executive Incentive (AED 30.00)</span>
+                <span>Executive Incentive ($30.00)</span>
               </div>
             </div>
 
@@ -412,17 +412,17 @@ export const ForBusinessesPage: React.FC = () => {
             <div className="p-6 rounded-2xl bg-[#07182F] text-white space-y-4 shadow-lg">
               <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs">
                 <span className="text-gray-300">Direct Contributor Payout Subtotal</span>
-                <span className="font-bold text-white">AED {contributorBudget.toFixed(2)}</span>
+                <span className="font-bold text-white">USD {contributorBudget.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs">
                 <span className="text-gray-300">UAE Central Bank Escrow & AI Vision Moderation Fee (15%)</span>
-                <span className="font-bold text-white">AED {platformFee.toFixed(2)}</span>
+                <span className="font-bold text-white">USD {platformFee.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between pt-1">
                 <div>
                   <span className="text-xs text-gray-300 block">Total Escrowed Budget (100% Refundable)</span>
                   <div className="text-2xl sm:text-3xl font-extrabold text-[#20C4E8] mt-0.5">
-                    AED {totalBudget} <span className="text-xs font-normal text-white">د.إ</span>
+                    ${totalBudget} <span className="text-xs font-normal text-white">USD</span>
                   </div>
                 </div>
                 <div className="text-right">

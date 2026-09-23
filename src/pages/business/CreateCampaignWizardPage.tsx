@@ -19,7 +19,7 @@ import { COUNTRY_OPTIONS } from '../../config/geoLocations';
 import { useAuth } from '../../context/AuthContext';
 import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification';
 import { TaskPreview, TaskPreviewSummary, classifyTaskPreview } from '../../components/task/TaskPreview';
-import type { UiTask } from '../../types';
+import type { UiTask, Campaign } from '../../types';
 import {
   InstagramLogo,
   TikTokLogo,
@@ -38,9 +38,10 @@ import {
  * Step 6 renders a live TaskPreview built from the wizard state, so the
  * business sees exactly what contributors will see before spending budget.
  *
- * NOTE: the platform choice drives the preview (frontend-only) until the
- * backend ships a dedicated platform field; the category_id remains the
- * API field of record for the task type.
+ * The platform choice (step 2) is sent as `platform` and persisted on the
+ * campaign row and the materialized task pool. Step 3 picks a task type
+ * from the public /task-types catalog (sent as `task_type_key`) — the
+ * backend requires it and enforces the type's reward band.
  */
 
 const STEPS = [
@@ -70,6 +71,18 @@ interface TaskCategory {
   is_active?: boolean;
 }
 
+/** Public /task-types catalog entry: proof contract + enforceable reward band. */
+interface TaskType {
+  key: string;
+  name: string;
+  description?: string | null;
+  is_allowed?: boolean;
+  policy_note?: string | null;
+  reward_band_min_cents: number;
+  reward_band_max_cents: number;
+  allowed_platforms?: string[];
+}
+
 const MIN_REWARD_USD = 0.2;
 const MIN_CONTRIBUTORS = 5;
 /** Estimated platform fee mirrored from backend config (platform.platformFeePercent, default 15).
@@ -91,13 +104,23 @@ const TEMPLATE_TO_CATEGORY = (template: string, categories: TaskCategory[]): Tas
   return categories[0];
 };
 
-/** Template → platform pre-selection (purely drives the preview, frontend-only). */
+/** Template → platform pre-selection. */
 const TEMPLATE_TO_PLATFORM: Record<string, string> = {
   tiktok: 'TikTok',
   share: 'Instagram',
   comment: 'YouTube',
   whatsapp: 'WhatsApp',
   app: 'Instagram',
+};
+
+/** Template → task-type pre-selection (matches the public /task-types catalog keys). */
+const TEMPLATE_TO_TASK_TYPE: Record<string, string> = {
+  tiktok: 'follow',
+  share: 'share',
+  comment: 'like_comment',
+  whatsapp: 'share',
+  app: 'app_test',
+  survey: 'survey',
 };
 
 export const CreateCampaignWizardPage: React.FC = () => {
@@ -111,6 +134,20 @@ export const CreateCampaignWizardPage: React.FC = () => {
   const [categories, setCategories] = useState<TaskCategory[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [taskTypes, setTaskTypes] = useState<TaskType[]>([]);
+  const [taskTypesLoading, setTaskTypesLoading] = useState(true);
+  const [taskTypesError, setTaskTypesError] = useState<string | null>(null);
+  // Resume-draft mode: ?draft=<campaignId> pre-fills the wizard from a saved draft.
+  const [draftId] = useState<string | null>(() => searchParams.get('draft'));
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
+  // Stable per wizard-session idempotency key: a retried / double-clicked
+  // Launch resolves to the same campaign instead of escrow-holding twice.
+  const [idempotencyKey] = useState<string>(() =>
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
 
   // Step 1 — Goal
   const [title, setTitle] = useState('');
@@ -122,6 +159,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
 
   // Step 3 — Task type
   const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [taskTypeKey, setTaskTypeKey] = useState<string>('');
 
   // Step 4 — Reward
   const [rewardUsd, setRewardUsd] = useState<string>('0.20');
@@ -139,6 +177,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
   const [launchError, setLaunchError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [launchSuccessId, setLaunchSuccessId] = useState<number | null>(null);
+  // Draft save (step 6 secondary action — no money moves)
+  const [savingDraft, setSavingDraft] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -161,8 +201,85 @@ export const CreateCampaignWizardPage: React.FC = () => {
         setCategoriesLoading(false);
       }
     };
+    const fetchTaskTypes = async () => {
+      setTaskTypesLoading(true);
+      setTaskTypesError(null);
+      try {
+        const res = await api.get<TaskType[]>('/task-types');
+        const list = (res.data as unknown as { data?: TaskType[] }).data ?? (res.data as unknown as TaskType[]);
+        const types = (Array.isArray(list) ? list : []).filter((t) => t.is_allowed !== false);
+        setTaskTypes(types);
+        if (templateHint) {
+          const key = TEMPLATE_TO_TASK_TYPE[templateHint.toLowerCase()];
+          if (key && types.some((t) => t.key === key)) setTaskTypeKey(key);
+        }
+      } catch (e) {
+        setTaskTypesError(getApiError(e, 'Could not load task types.'));
+      } finally {
+        setTaskTypesLoading(false);
+      }
+    };
     void fetchCategories();
+    void fetchTaskTypes();
   }, [templateHint]);
+
+  // Resume mode: ?draft=<id> pre-fills the wizard from a saved draft so the
+  // business can finish it later instead of starting over.
+  useEffect(() => {
+    if (!draftId) return;
+    const loadDraft = async () => {
+      setDraftLoading(true);
+      setDraftError(null);
+      try {
+        const res = await businessApi.campaign(draftId);
+        // NOTE: the show endpoint wraps as data: { campaign, submissions }
+        // while the TS type claims data: Campaign — unwrap defensively.
+        const raw = res.data as unknown;
+        const d = ((raw as { campaign?: Campaign & { platform?: string } } | null)?.campaign ??
+          raw) as (Campaign & { platform?: string }) | undefined;
+        if (!res.success || !d) {
+          setDraftError(res.message || 'Could not load the draft.');
+          return;
+        }
+        if (d.status !== 'draft') {
+          setDraftError('This campaign is no longer a draft and cannot be edited here.');
+          return;
+        }
+        setTitle(d.title || '');
+        setObjective(d.objective || '');
+        setDescription(d.description || '');
+        if (d.platform) setPlatform(d.platform);
+        if (d.category_id) setCategoryId(d.category_id);
+        const wizard = (d.proof_requirements_json as unknown as { wizard?: { task_type_key?: string } } | undefined)
+          ?.wizard;
+        if (wizard?.task_type_key) setTaskTypeKey(wizard.task_type_key);
+        if (d.reward_per_task_cents) setRewardUsd(String(d.reward_per_task_cents / 100));
+        if (d.target_contributors_count) setContributors(String(d.target_contributors_count));
+        if (d.instructions_markdown) setInstructions(d.instructions_markdown);
+        // Proof chips: fresh wizard posts an array; a saved draft merges the
+        // array with the stashed `wizard` answers object — accept both.
+        const proof = d.proof_requirements_json as unknown;
+        if (Array.isArray(proof)) {
+          const chips = proof.filter((p): p is string => typeof p === 'string');
+          if (chips.length > 0) setProofRequirements(chips);
+        } else if (proof && typeof proof === 'object') {
+          const chips = Object.entries(proof as Record<string, unknown>)
+            .filter(([k, v]) => k !== 'wizard' && typeof v === 'string')
+            .map(([, v]) => v as string);
+          if (chips.length > 0) setProofRequirements(chips);
+        }
+        const countries = d.target_countries_json;
+        if (countries && countries.length > 0) setCountry(countries[0] === 'ALL' ? 'GLOBAL' : countries[0]);
+        if (d.min_contributor_level) setMinLevel(d.min_contributor_level);
+        if (d.retention_hours) setRetentionHours(String(d.retention_hours));
+      } catch (e) {
+        setDraftError(getApiError(e, 'Could not load the draft.'));
+      } finally {
+        setDraftLoading(false);
+      }
+    };
+    void loadDraft();
+  }, [draftId]);
 
   const rewardCents = Math.round((parseFloat(rewardUsd) || 0) * 100);
   const contributorCount = parseInt(contributors, 10) || 0;
@@ -174,6 +291,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
   }, [rewardCents, contributorCount]);
 
   const fmtUsd = (cents: number) => (cents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
+  const selectedTaskType = taskTypes.find((t) => t.key === taskTypeKey);
 
   const validateStep = (s: number): boolean => {
     setFieldErrors({});
@@ -192,16 +311,26 @@ export const CreateCampaignWizardPage: React.FC = () => {
       return true;
     }
     if (s === 3) {
-      if (categoryId == null) {
-        setFieldErrors({ category_id: ['Pick the task type that best matches this campaign.'] });
-        return false;
-      }
-      return true;
+      const errs: Record<string, string[]> = {};
+      if (categoryId == null) errs.category_id = ['Pick the category that best matches this campaign.'];
+      if (!taskTypeKey) errs.task_type_key = ['Pick the task type — it sets the proof contributors must submit and the allowed reward range.'];
+      setFieldErrors(errs);
+      return Object.keys(errs).length === 0;
     }
     if (s === 4) {
       const errs: Record<string, string[]> = {};
-      if (!(parseFloat(rewardUsd) >= MIN_REWARD_USD))
-        errs.reward = [`Reward must be at least $${MIN_REWARD_USD.toFixed(2)} per task (platform minimum).`];
+      const cents = Math.round((parseFloat(rewardUsd) || 0) * 100);
+      const bandMin = selectedTaskType ? Math.max(MIN_REWARD_USD * 100, selectedTaskType.reward_band_min_cents) : MIN_REWARD_USD * 100;
+      const bandMax = selectedTaskType?.reward_band_max_cents;
+      if (bandMax != null && bandMax < bandMin) {
+        errs.reward = [
+          `“${selectedTaskType?.name}” pays at most ${fmtUsd(bandMax)}, below the $${MIN_REWARD_USD.toFixed(2)} platform minimum — pick a different task type.`,
+        ];
+      } else if (!(cents >= bandMin) || (bandMax != null && !(cents <= bandMax))) {
+        errs.reward = selectedTaskType
+          ? [`Reward must be between ${fmtUsd(bandMin)} and ${fmtUsd(bandMax ?? bandMin)} per task for “${selectedTaskType.name}”.`]
+          : [`Reward must be at least $${MIN_REWARD_USD.toFixed(2)} per task (platform minimum).`];
+      }
       if (!(contributorCount >= MIN_CONTRIBUTORS))
         errs.contributors = [`You need at least ${MIN_CONTRIBUTORS} contributors.`];
       if (instructions.trim().length < 10)
@@ -224,23 +353,92 @@ export const CreateCampaignWizardPage: React.FC = () => {
     setProofRequirements((prev) => (prev.includes(req) ? prev.filter((r) => r !== req) : [...prev, req]));
   };
 
+  /** Wizard state mapped to the draft endpoint's field names (draft create + update). */
+  const draftPayload = (): Record<string, unknown> => {
+    const p: Record<string, unknown> = {
+      title: title.trim(),
+      description: description.trim(),
+      category_id: categoryId,
+      task_type_key: taskTypeKey,
+      platform,
+      reward_cents: rewardCents,
+      contributors: contributorCount,
+      instructions: instructions.trim(),
+      proof_requirements: proofRequirements,
+      countries: [country],
+    };
+    if (objective.trim()) p.objective = objective.trim();
+    if (country !== 'GLOBAL') p.country_code = country;
+    if (minLevel) p.min_contributor_level = minLevel;
+    if (retentionHours && parseInt(retentionHours, 10) >= 0)
+      p.retention_days = Math.max(1, Math.ceil(parseInt(retentionHours, 10) / 24));
+    return p;
+  };
+
+  const handleSaveDraft = async () => {
+    // Saving a draft moves no money, but keep the verified-email gate consistent.
+    if (!requireVerified()) return;
+    if (savingDraft || launching) return;
+    if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4)) {
+      setLaunchError('Please complete steps 1–4 before saving a draft.');
+      return;
+    }
+    setSavingDraft(true);
+    setLaunchError(null);
+    setFieldErrors({});
+    try {
+      const res = draftId
+        ? await businessApi.updateCampaignDraft(draftId, draftPayload())
+        : await businessApi.saveCampaignDraft(draftPayload());
+      if (res.success && res.data) {
+        navigate('/business/campaigns?tab=draft');
+      } else {
+        setLaunchError(res.message || 'Draft could not be saved. Please try again.');
+      }
+    } catch (e: unknown) {
+      const apiErr = e as { response?: { data?: { message?: string } } };
+      setLaunchError(apiErr.response?.data?.message || getApiError(e, 'Draft could not be saved. Please try again.'));
+    } finally {
+      setSavingDraft(false);
+    }
+  };
+
   const handleLaunch = async () => {
     // Launching a campaign spends real budget — verified email required.
     if (!requireVerified()) return;
-    if (launching || !validateStep(4) || !validateStep(1) || categoryId == null || !platform) return;
+    if (launching || !validateStep(4) || !validateStep(1) || categoryId == null || !taskTypeKey || !platform) return;
     setLaunching(true);
     setLaunchError(null);
     setFieldErrors({});
     try {
+      if (draftId) {
+        // Resume mode: sync any edits onto the draft row first, then launch
+        // the draft itself — one campaign, one escrow hold, no duplicates.
+        const sync = await businessApi.updateCampaignDraft(draftId, draftPayload());
+        if (!sync.success) {
+          setLaunchError(sync.message || 'Could not save the draft before launch. Please try again.');
+          return;
+        }
+        const res = await businessApi.launchDraft(draftId, idempotencyKey);
+        if (res.success && res.data) {
+          setLaunchSuccessId(res.data.id);
+        } else {
+          setLaunchError(res.message || 'Campaign could not be launched. Please try again.');
+        }
+        return;
+      }
       const payload: Record<string, unknown> = {
         title: title.trim(),
         description: description.trim(),
         category_id: categoryId,
+        task_type_key: taskTypeKey,
+        platform,
         reward_per_task_cents: rewardCents,
         target_contributors_count: contributorCount,
         instructions_markdown: instructions.trim(),
         proof_requirements_json: proofRequirements,
         target_countries: [country],
+        idempotency_key: idempotencyKey,
       };
       if (objective.trim()) payload.objective = objective.trim();
       if (minLevel) payload.min_contributor_level = minLevel;
@@ -322,7 +520,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
   const reviewRows: [string, string][] = [
     ['Title', previewTask.title],
     ['Platform', platform],
-    ['Task type', selectedCategory?.name || '—'],
+    ['Category', selectedCategory?.name || '—'],
+    ['Task type', selectedTaskType?.name || '—'],
     ['Target audience', COUNTRY_OPTIONS.find((c) => c.code === country)?.label || country],
     ['Reward / task', fmtUsd(rewardCents)],
     ['Contributors', String(contributorCount || 0)],
@@ -338,9 +537,10 @@ export const CreateCampaignWizardPage: React.FC = () => {
         <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 flex items-center justify-center mx-auto">
           <CheckCircle2 className="w-8 h-8" />
         </div>
-        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Campaign launched</h1>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">Campaign funded — pending review</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Your campaign is live and the budget hold is on file. Contributors can start completing tasks right away.
+          Your budget hold is on file and your campaign was submitted for review. New campaigns go live after a
+          quick review by our team — you will find it under Campaigns once it is approved.
         </p>
         <button
           type="button"
@@ -358,9 +558,31 @@ export const CreateCampaignWizardPage: React.FC = () => {
       {gate}
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Create Campaign</h1>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
+          {draftId ? 'Edit Campaign Draft' : 'Create Campaign'}
+        </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Real budget, real contributors, real verification.</p>
       </div>
+
+      {draftId && (
+        <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-2xl px-5 py-3.5 text-sm">
+          {draftLoading ? (
+            <p className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-bold">
+              <Loader2 className="w-4 h-4 animate-spin" /> Loading your saved draft…
+            </p>
+          ) : draftError ? (
+            <div>
+              <p className="font-bold text-red-700 dark:text-red-300">Could not resume the draft</p>
+              <p className="text-red-600 dark:text-red-400 mt-1">{draftError}</p>
+            </div>
+          ) : (
+            <p className="text-blue-800 dark:text-blue-200">
+              <span className="font-bold">Editing a saved draft.</span> Launching funds and submits this
+              campaign — no duplicate is created.
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Progress */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5">
@@ -434,7 +656,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
           <div>
             <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">Where will contributors act?</h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-              Choose the platform for this campaign. It drives the task preview contributors will see.
+              Choose the platform for this campaign. It is saved with your campaign and drives the task preview
+              contributors will see.
             </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -469,9 +692,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
       {step === 3 && (
         <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6 space-y-4">
           <div>
-            <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">What should contributors do?</h3>
+            <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">Category</h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-              Task type for <span className="font-bold text-gray-700 dark:text-gray-300">{platform}</span> tasks.
+              The category this campaign appears under.
             </p>
           </div>
           {categoriesLoading && (
@@ -514,6 +737,69 @@ export const CreateCampaignWizardPage: React.FC = () => {
             </div>
           )}
           {err('category_id') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{err('category_id')}</p>}
+
+          <div className="pt-2">
+            <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">Task type *</h3>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+              What exactly contributors do on{' '}
+              <span className="font-bold text-gray-700 dark:text-gray-300">{platform}</span> — sets the proof they
+              must submit and the allowed reward range.
+            </p>
+          </div>
+          {taskTypesLoading && (
+            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm py-6">
+              <Loader2 className="w-5 h-5 animate-spin" /> Loading task types…
+            </div>
+          )}
+          {taskTypesError && !taskTypesLoading && (
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 text-sm">
+              <p className="font-bold text-red-700 dark:text-red-300">Could not load task types</p>
+              <p className="text-red-600 dark:text-red-400 mt-1">{taskTypesError}</p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline"
+              >
+                Reload
+              </button>
+            </div>
+          )}
+          {!taskTypesLoading && !taskTypesError && taskTypes.length === 0 && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 py-4">
+              No task types are available right now. Please reload the page or try again later.
+            </p>
+          )}
+          {!taskTypesLoading && !taskTypesError && taskTypes.length > 0 && (
+            <div className="grid sm:grid-cols-2 gap-3">
+              {taskTypes.map((t) => {
+                const selected = taskTypeKey === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => setTaskTypeKey(t.key)}
+                    className={`text-left p-4 rounded-xl border-2 transition-all ${
+                      selected ? 'border-[#168BFF] bg-blue-50 dark:bg-blue-500/10' : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
+                    }`}
+                    aria-pressed={selected}
+                  >
+                    <p className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                      {selected && <Check className="w-4 h-4 text-[#168BFF]" />}
+                      {t.name}
+                    </p>
+                    {t.description && <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">{t.description}</p>}
+                    <p className="text-[11px] font-bold text-[#168BFF] mt-1.5">
+                      {fmtUsd(t.reward_band_min_cents)} – {fmtUsd(t.reward_band_max_cents)} per task
+                    </p>
+                    {t.policy_note && (
+                      <p className="text-[10px] text-amber-600 dark:text-amber-400 mt-1 leading-snug">{t.policy_note}</p>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {err('task_type_key') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{err('task_type_key')}</p>}
         </div>
       )}
 
@@ -534,6 +820,13 @@ export const CreateCampaignWizardPage: React.FC = () => {
               />
               {err('reward') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('reward')}</p>}
               <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Platform minimum: ${MIN_REWARD_USD.toFixed(2)}.</p>
+              {selectedTaskType && (
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                  “{selectedTaskType.name}” allows{' '}
+                  {fmtUsd(Math.max(MIN_REWARD_USD * 100, selectedTaskType.reward_band_min_cents))} –{' '}
+                  {fmtUsd(selectedTaskType.reward_band_max_cents)} per task.
+                </p>
+              )}
             </div>
             <div>
               <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Number of contributors *</label>
@@ -691,7 +984,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
                 <p>
                   The server creates your campaign, calculates the real platform fee, and holds an estimated{' '}
                   {fmtUsd(estimate.total)} from your balance. If your balance is too low, the launch is stopped
-                  with a clear funding error — nothing is created and nothing is charged.
+                  with a clear funding error — nothing is created and nothing is charged. Once funded, the
+                  campaign enters a short review queue and goes live after approval.
                 </p>
               </div>
 
@@ -718,7 +1012,25 @@ export const CreateCampaignWizardPage: React.FC = () => {
 
               <button
                 type="button"
-                disabled={launching}
+                disabled={launching || savingDraft || draftLoading}
+                onClick={() => void handleSaveDraft()}
+                className="w-full px-6 py-3 border-2 border-gray-200 dark:border-white/10 hover:border-[#168BFF] hover:text-[#168BFF] disabled:opacity-50 text-gray-700 dark:text-gray-300 text-sm font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2"
+              >
+                {savingDraft ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> Saving draft…
+                  </>
+                ) : (
+                  'Save draft & finish later'
+                )}
+              </button>
+              <p className="-mt-2 text-[11px] text-gray-400 dark:text-gray-500 text-center">
+                Drafts move no money. Find them under Campaigns → Drafts.
+              </p>
+
+              <button
+                type="button"
+                disabled={launching || savingDraft || draftLoading}
                 onClick={() => void handleLaunch()}
                 className="w-full px-6 py-3.5 bg-[#168BFF] hover:bg-[#1275DD] disabled:opacity-50 text-white text-sm font-bold rounded-xl transition-colors inline-flex items-center justify-center gap-2"
               >
@@ -742,7 +1054,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
         <button
           type="button"
           onClick={back}
-          disabled={step === 1 || launching}
+          disabled={step === 1 || launching || draftLoading}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-40 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back
@@ -751,7 +1063,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
           <button
             type="button"
             onClick={next}
-            disabled={(categoriesLoading && step === 3) || launching}
+            disabled={((categoriesLoading || taskTypesLoading) && step === 3) || launching || draftLoading}
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#07182F] hover:bg-[#168BFF] disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-colors"
           >
             Continue <ArrowRight className="w-4 h-4" />

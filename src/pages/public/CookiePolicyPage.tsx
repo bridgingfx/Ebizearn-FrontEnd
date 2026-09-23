@@ -1,10 +1,7 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 import { LegalShell, LegalSection } from '../../components/common/LegalShell';
-
-/** Storage key used by the consent banner. Exported so the banner and this
-    page share one source of truth. */
-export const COOKIE_CONSENT_KEY = 'ebizearn_cookie_consent_v1';
+import { COOKIE_CONSENT_KEY } from '../../config/consent';
 
 const clearConsent = () => {
   try {

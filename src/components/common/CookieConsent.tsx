@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Cookie, X } from 'lucide-react';
-import { COOKIE_CONSENT_KEY } from '../../pages/public/CookiePolicyPage';
+import { COOKIE_CONSENT_KEY } from '../../config/consent';
 
 type ConsentState = 'accepted' | 'declined' | null;
 

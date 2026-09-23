@@ -131,7 +131,7 @@ export const OnboardingWizardPage: React.FC = () => {
                   aria-pressed={country === c.code}
                   className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-all ${
                     country === c.code
-                      ? 'border-[#168BFF] bg-blue-50/50 shadow-sm'
+                      ? 'border-[#168BFF] bg-blue-50/50 dark:bg-blue-500/10 shadow-sm'
                       : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 bg-white dark:bg-[#0C1322]'
                   }`}
                 >
@@ -163,7 +163,7 @@ export const OnboardingWizardPage: React.FC = () => {
                 aria-pressed={language === l.code}
                 className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
                   language === l.code
-                    ? 'border-[#168BFF] bg-blue-50/50'
+                    ? 'border-[#168BFF] bg-blue-50/50 dark:bg-blue-500/10'
                     : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
                 }`}
               >
@@ -199,14 +199,14 @@ export const OnboardingWizardPage: React.FC = () => {
                     aria-pressed={isSelected}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       isSelected
-                        ? 'border-[#7257FF] bg-purple-50/40 shadow-sm'
+                        ? 'border-[#7257FF] bg-purple-50/40 dark:bg-purple-500/10 shadow-sm'
                         : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
                     }`}
                   >
-                    <p className={`text-xs font-bold ${isSelected ? 'text-[#7257FF]' : 'text-gray-800 dark:text-gray-200'}`}>
+                    <p className={`text-xs font-bold ${isSelected ? 'text-[#7257FF] dark:text-purple-300' : 'text-gray-800 dark:text-gray-200'}`}>
                       {item.label}
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{item.desc}</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-400 mt-0.5">{item.desc}</p>
                   </button>
                 );
               })}

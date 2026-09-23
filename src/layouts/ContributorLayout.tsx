@@ -187,7 +187,7 @@ export const ContributorLayout: React.FC = () => {
                 }`}
               >
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.5 : 2} />
-                <span className="text-[9px] font-bold leading-none">{tab.name}</span>
+                <span className="text-[9px] font-bold leading-none whitespace-nowrap tracking-tight">{tab.name}</span>
                 {active && <span className="w-1 h-1 rounded-full bg-[#168BFF] mt-0.5" />}
               </Link>
             );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authApi, getApiError } from '../../api';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { AuthFavicon } from './AuthFavicon';
 import { AppFooter } from '../../components/common/AppFooter';
 
@@ -41,8 +41,8 @@ export const ForgotPasswordPage: React.FC = () => {
           <p className="text-xs text-[#667085] mt-1">Enter your account email to generate a reset link.</p>
         </div>
 
-        {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">{error}</div>}
-        {message && <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl">{message}</div>}
+        {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl" role="alert">{error}</div>}
+        {message && <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xl" role="status">{message}</div>}
         {resetUrl && (
           <Link to={resetUrl.replace(window.location.origin, '')} className="mb-4 block p-3 bg-blue-50 border border-blue-200 text-[#168BFF] text-xs font-bold rounded-xl hover:bg-blue-100">
             Open local reset form
@@ -51,12 +51,12 @@ export const ForgotPasswordPage: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]" />
+            <label htmlFor="forgot-email" className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+            <input id="forgot-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" autoComplete="email" inputMode="email" className="w-full px-3.5 py-2.5 min-h-[44px] text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]" />
           </div>
-          <button type="submit" disabled={submitting} className="w-full py-3 bg-[#07182F] hover:bg-[#0D2342] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60">
-            <span>{submitting ? 'Creating Link...' : 'Send Reset Link'}</span>
-            <ArrowRight className="w-4 h-4" />
+          <button type="submit" disabled={submitting} className="w-full py-3 bg-[#07182F] hover:bg-[#0D2342] text-white font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-60 min-h-[48px]">
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <ArrowRight className="w-4 h-4" />}
+            <span>{submitting ? 'Creating link…' : 'Send Reset Link'}</span>
           </button>
         </form>
 

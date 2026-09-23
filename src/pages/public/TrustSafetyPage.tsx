@@ -5,7 +5,7 @@ export const TrustSafetyPage: React.FC = () => {
   return (
     <div className="pt-24 pb-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-10">
       <div className="text-center max-w-2xl mx-auto space-y-2.5">
-        <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
+        <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] dark:bg-emerald-500/15 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
           Security & Integrity
         </span>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">

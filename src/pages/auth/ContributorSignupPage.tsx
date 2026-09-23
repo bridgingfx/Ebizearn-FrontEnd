@@ -162,6 +162,7 @@ export const ContributorSignupPage: React.FC = () => {
             minLength={8}
             autoComplete="new-password"
             large
+            showStrength
           />
         </AuthField>
 

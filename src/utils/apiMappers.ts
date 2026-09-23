@@ -30,7 +30,7 @@ export const mapTaskForUi = (task: Task): UiTask => {
     platform,
     categoryName,
     description: campaign?.description || campaign?.objective || task.title,
-    badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
+    badgeColor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30',
     country: campaign?.target_countries_json?.join(', ') || 'Global',
     retentionHours: campaign?.retention_hours || 24,
     flyerUrl: undefined,

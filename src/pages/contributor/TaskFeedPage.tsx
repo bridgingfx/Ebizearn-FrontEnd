@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Compass, Zap, AlertCircle, SlidersHorizontal } from 'lucide-react';
+import { Search, Compass, Zap, SlidersHorizontal } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
 import { mapTaskForUi } from '../../utils/apiMappers';
 import type { UiTask } from '../../types';
 import { TaskCard, PlatformMark } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ErrorBlock } from '../../components/common/ui';
 
 const CATEGORIES = [
   { slug: '', name: 'All types' },
@@ -206,17 +207,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
           ))}
         </div>
       ) : error ? (
-        <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-8 text-center">
-          <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
-          <p className="text-sm font-bold text-red-700">{error}</p>
-          <button
-            type="button"
-            onClick={fetchTasks}
-            className="mt-4 px-6 py-3 rounded-2xl bg-[#07182F] text-white text-sm font-bold hover:bg-[#168BFF] transition-colors min-h-[48px]"
-          >
-            Retry
-          </button>
-        </div>
+        <ErrorBlock message={error} onRetry={fetchTasks} />
       ) : visible.length === 0 ? (
         <EmptyState
           title="No tasks right now"

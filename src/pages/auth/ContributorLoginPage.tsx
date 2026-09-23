@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
   Banknote,
+  CheckCircle2,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -30,6 +31,17 @@ export const ContributorLoginPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  /** One-time notice passed from the password-reset flow. */
+  const [notice] = useState<string | null>(() => (location.state as { notice?: string } | null)?.notice || null);
+
+  useEffect(() => {
+    if (notice) {
+      window.history.replaceState({}, document.title);
+    }
+    // Runs once — clears the one-time navigation state after reading it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const validate = (): boolean => {
     let ok = true;
@@ -92,6 +104,16 @@ export const ContributorLoginPage: React.FC = () => {
       {error && (
         <div className="mb-5">
           <AuthError message={error} />
+        </div>
+      )}
+
+      {notice && (
+        <div
+          className="mb-5 p-4 bg-emerald-50 border-2 border-emerald-200 text-emerald-800 text-sm font-medium rounded-2xl flex items-start gap-2.5"
+          role="status"
+        >
+          <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
+          <span>{notice}</span>
         </div>
       )}
 

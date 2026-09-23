@@ -102,8 +102,10 @@ export const Navbar: React.FC = () => {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-gray-300 hover:text-white p-2"
-            aria-label="Toggle Menu"
+            className="text-gray-300 hover:text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -112,7 +114,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#07182F] border-b border-white/10 px-4 pt-3 pb-6 space-y-3">
+        <div id="mobile-menu" className="lg:hidden bg-[#07182F] border-b border-white/10 px-4 pt-3 pb-6 space-y-3">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -127,20 +129,32 @@ export const Navbar: React.FC = () => {
             <div className="flex justify-center">
               <RegionSelector variant="dark" />
             </div>
-            <Link
-              to="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 text-sm font-medium text-white border border-white/20 rounded-xl"
-            >
-              Login
-            </Link>
-            <Link
-              to="/contributor/register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 text-sm font-semibold text-white bg-gradient-brand rounded-xl shadow-md"
-            >
-              Sign Up Free
-            </Link>
+            {user ? (
+              <Link
+                to={role === 'business' ? '/business' : role === 'admin' || role === 'superadmin' || role === 'moderator' ? '/admin' : '/app'}
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-3 text-sm font-semibold text-white bg-gradient-brand rounded-xl shadow-md"
+              >
+                Go to {role === 'business' ? 'Business CRM' : role === 'admin' || role === 'superadmin' || role === 'moderator' ? 'Admin Panel' : 'Contributor App'}
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-3 text-sm font-medium text-white border border-white/20 rounded-xl"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/contributor/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-3 text-sm font-semibold text-white bg-gradient-brand rounded-xl shadow-md"
+                >
+                  Sign Up Free
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

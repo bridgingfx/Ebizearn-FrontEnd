@@ -11,7 +11,7 @@ export const post: BlogPost = {
   updatedAt: '2026-09-23',
   readingMinutes: 7,
   content: [
-    { type: 'intro', text: 'You invite a friend, they invite two friends, and somehow you earn from all of them — multi-level referral programs sound either like magic or like a scam, depending on who explains them. The reality is simpler and less dramatic than both. A 3-level referral program is just a commission structure with a defined depth: you earn when your direct invitees act, and smaller amounts when their invitees (and one level beyond) act. This article explains the mechanics level by level, why legitimate platforms use them, where they differ from pyramid schemes, and what they can realistically contribute to your earnings.' },
+    { type: 'intro', text: 'You invite a friend, they invite two friends, and somehow you earn from all of them — multi-level referral programs sound either like magic or like a scam, depending on who explains them. The reality is simpler and less dramatic than both. A 3-level referral program is just a commission structure with a defined depth: you earn when your direct invitees act, and smaller amounts when their invitees (and one level beyond) act. This article explains the mechanics level by level, why legitimate platforms use them, where they differ from pyramid schemes, and what they can realistically contribute to your earnings. For the other major commission model, see [fixed rewards vs revenue share](/blog/referral-programs-fixed-rewards-vs-revenue-share).' },
     { type: 'h2', text: 'The three levels, explained plainly' },
     { type: 'p', text: 'Every referral program has a "you" at the center. The levels describe how far down the invitation chain commissions reach:' },
     { type: 'list', items: [

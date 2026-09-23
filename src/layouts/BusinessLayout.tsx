@@ -136,9 +136,9 @@ export const BusinessLayout: React.FC = () => {
         <header className="bg-white dark:bg-[#0C1322] border-b border-[#E7ECF3] dark:border-white/10 sticky top-0 z-20 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs transition-colors">
           <Link
             to="/business/billing"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-xs font-bold text-[#168BFF] transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 dark:bg-blue-500/15 dark:hover:bg-blue-500/25 dark:border-blue-500/30 dark:text-blue-300 rounded-xl text-xs font-bold text-[#168BFF] transition-colors"
           >
-            <CreditCard className="w-3.5 h-3.5 text-[#168BFF]" />
+            <CreditCard className="w-3.5 h-3.5" />
             <span>Billing & funds</span>
           </Link>
 

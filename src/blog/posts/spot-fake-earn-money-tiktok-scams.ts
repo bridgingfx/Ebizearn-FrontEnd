@@ -70,7 +70,7 @@ export const post: BlogPost = {
     },
     {
       type: 'p',
-      text: 'Check for the basics: published terms of service, a privacy policy, a working support email or chat, and some identifiable company or team. Anonymous platforms with only a Telegram contact and no legal pages can disappear with your balance overnight — and frequently do.',
+      text: 'Check for the basics: published terms of service, a privacy policy, a working support email or chat, and some identifiable company or team. Anonymous platforms with only a Telegram contact and no legal pages can disappear with your balance overnight — and frequently do. (Legitimate platforms publish readable [terms, privacy, and safety pages](/trust-safety) before you do a single task.)',
     },
     {
       type: 'h2',

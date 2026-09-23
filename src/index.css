@@ -51,6 +51,24 @@
     letter-spacing: -0.022em;
     font-weight: 800;
   }
+
+  /* ── Keyboard focus that is always visible ───────────────────────
+     Many inputs/buttons use focus:outline-none + a colored ring, but
+     plain links and some buttons had no keyboard indicator at all.
+     This gives every focusable element a brand-blue focus ring ONLY
+     for keyboard users (mouse clicks stay clean). Elements that set
+     their own focus-visible ring keep theirs (higher specificity). */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 3px solid rgba(22, 139, 255, 0.55);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+      transition: none;
+    }
+  }
 }
 
 @keyframes float {

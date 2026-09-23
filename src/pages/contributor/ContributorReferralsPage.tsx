@@ -33,6 +33,88 @@ const LEVEL_INFO = [
   { level: 3, title: 'Extended network', desc: 'The next tier of the network.', gradient: 'from-[#16B364] to-[#0EA968]', shadow: 'shadow-emerald-500/25' },
 ];
 
+/** Share row: native share sheet when available, plus direct X / Telegram / WhatsApp links. */
+const ShareButtons: React.FC<{ link: string }> = ({ link }) => {
+  const [shared, setShared] = useState(false);
+  const text = 'I’m earning real cash completing small tasks on eBizEarn — it’s free to join. Use my link:';
+  const encodedLink = encodeURIComponent(link);
+  const encodedText = encodeURIComponent(`${text} ${link}`);
+  const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+
+  const handleNativeShare = async () => {
+    try {
+      await navigator.share({ title: 'eBizEarn referral', text, url: link });
+    } catch {
+      // User dismissed the sheet — not an error.
+    } finally {
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    }
+  };
+
+  const channels = [
+    {
+      name: 'X',
+      href: `https://twitter.com/intent/tweet?text=${encodedText}`,
+      cls: 'bg-black text-white hover:bg-[#1d1d1f]',
+      glyph: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+          <path d="M18.9 2H22l-6.8 7.8L23.3 22h-6.3l-4.9-6.4L6.5 22H3.4l7.3-8.3L1.5 2h6.4l4.4 5.9L18.9 2zm-1.1 18.1h1.7L7 3.8H5.2l12.6 16.3z" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Telegram',
+      href: `https://t.me/share/url?url=${encodedLink}&text=${encodeURIComponent(text)}`,
+      cls: 'bg-[#229ED9] text-white hover:bg-[#1b8ec4]',
+      glyph: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+          <path d="M21.9 4.6 2.8 12.1c-.8.3-.8 1.4.1 1.6l4.7 1.5 1.8 5.6c.3.8 1.3.9 1.8.2l2.6-3.2 4.9 3.6c.6.5 1.6.1 1.8-.7l3.4-14.1c.2-1-.9-1.8-1.9-1.4zM8.6 13.6l9.8-7.5c.2-.1.4.2.2.3l-8.1 8.9-.3 3-1.6-4.7z" />
+        </svg>
+      ),
+    },
+    {
+      name: 'WhatsApp',
+      href: `https://wa.me/?text=${encodedText}`,
+      cls: 'bg-[#25D366] text-white hover:bg-[#1fb857]',
+      glyph: (
+        <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.7-1.3 1.4-1.9 1.5-.5 0-1.1.2-3.6-.8-3-1.2-4.9-4.2-5.1-4.4-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.2 0 .4l-.4.5c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.5.3.2.5.1.7-.1l.9-1c.2-.3.4-.2.7-.1l2 1c.3.1.5.2.6.4 0 .1 0 .7-.2 1.4z" />
+        </svg>
+      ),
+    },
+  ];
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-2.5">
+      <span className="text-xs font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">Share via</span>
+      {canNativeShare && (
+        <button
+          type="button"
+          onClick={handleNativeShare}
+          className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-xl bg-gradient-to-r from-[#168BFF] to-[#7257FF] text-white text-sm font-extrabold shadow-md hover:brightness-105 transition-all"
+        >
+          <Share2 className="w-4 h-4" />
+          {shared ? 'Shared!' : 'Share…'}
+        </button>
+      )}
+      {channels.map((c) => (
+        <a
+          key={c.name}
+          href={c.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Share your referral link on ${c.name}`}
+          className={`inline-flex items-center gap-2 min-h-[44px] px-4 rounded-xl text-sm font-extrabold transition-all ${c.cls}`}
+        >
+          {c.glyph}
+          {c.name}
+        </a>
+      ))}
+    </div>
+  );
+};
+
 export const ContributorReferralsPage: React.FC = () => {
   const [data, setData] = useState<ReferralsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -163,6 +245,8 @@ export const ContributorReferralsPage: React.FC = () => {
                 <span>{copied ? 'Copied!' : 'Copy link'}</span>
               </button>
             </div>
+
+            <ShareButtons link={data.referral_link} />
           </div>
 
           {/* ── Stats ─────────────────────────────────────────────── */}

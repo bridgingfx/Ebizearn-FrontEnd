@@ -128,7 +128,7 @@ export const EarnPage: React.FC = () => {
       req: '5 verified tasks with 90%+ score',
       perk: 'Unlocks app testing & priority AI review',
       cap: '$45 / day cap',
-      badge: 'bg-blue-100 text-[#168BFF]',
+      badge: 'bg-blue-100 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300',
     },
     {
       level: 'Trusted Partner',
@@ -136,7 +136,7 @@ export const EarnPage: React.FC = () => {
       req: '25 tasks verified + 95% pass rate',
       perk: 'Unlocks high-paying TikTok & UGC tasks',
       cap: 'No daily cap',
-      badge: 'bg-purple-100 text-[#7357FF]',
+      badge: 'bg-purple-100 text-[#7357FF] dark:bg-purple-500/15 dark:text-purple-300',
     },
     {
       level: 'Elite Squad',
@@ -144,7 +144,7 @@ export const EarnPage: React.FC = () => {
       req: 'Top 5% contributors worldwide',
       perk: 'Direct brand campaigns & +10% cash bonus',
       cap: 'Unlimited + Bonuses',
-      badge: 'bg-emerald-100 text-[#16B364]',
+      badge: 'bg-emerald-100 text-[#16B364] dark:bg-emerald-500/15 dark:text-emerald-300',
     },
   ];
 
@@ -313,7 +313,7 @@ export const EarnPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] dark:bg-emerald-500/15 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
               Earning Calculator
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
@@ -343,7 +343,7 @@ export const EarnPage: React.FC = () => {
                 step="1"
                 value={tasksPerDay}
                 onChange={(e) => setTasksPerDay(parseInt(e.target.value, 10))}
-                className="w-full accent-[#168BFF] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
+                className="w-full accent-[#168BFF] h-2.5 bg-gray-200 dark:bg-white/15 rounded-lg cursor-pointer"
               />
               
               <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
@@ -397,7 +397,7 @@ export const EarnPage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] dark:bg-purple-500/15 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
               Merit-Based Rewards
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
@@ -448,7 +448,7 @@ export const EarnPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           
           <div className="max-w-2xl mx-auto space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
               Fintech Reliability
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
@@ -498,7 +498,7 @@ export const EarnPage: React.FC = () => {
       <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
               Earning Questions
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">

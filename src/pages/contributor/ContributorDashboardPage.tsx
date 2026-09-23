@@ -9,7 +9,6 @@ import {
   TrendingUp,
   ShieldCheck,
   Compass,
-  AlertCircle,
   Sparkles,
 } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
@@ -18,6 +17,7 @@ import type { UiTask } from '../../types';
 import { TaskCard } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
 import { StatCard, SectionHeader } from '../../components/common/StatCard';
+import { ErrorBlock } from '../../components/common/ui';
 
 interface DashboardStats {
   available_balance_cents: number;
@@ -81,7 +81,7 @@ export const ContributorDashboardPage: React.FC = () => {
           </div>
           <Link
             to="/app/tasks"
-            className="shrink-0 inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-white dark:bg-[#0C1322] text-[#07182F] font-extrabold text-base shadow-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
+            className="shrink-0 inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-white dark:bg-white/10 text-[#07182F] dark:text-white font-extrabold text-base shadow-lg hover:bg-slate-100 dark:hover:bg-white/20 transition-all"
           >
             <Compass className="w-5 h-5 text-[#168BFF]" />
             Find tasks
@@ -101,10 +101,7 @@ export const ContributorDashboardPage: React.FC = () => {
           ))}
         </div>
       ) : loadError ? (
-        <div className="bg-red-50 border-2 border-red-200 rounded-[1.5rem] p-8 text-center">
-          <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
-          <p className="text-sm font-bold text-red-700">{loadError}</p>
-        </div>
+        <ErrorBlock message={loadError} />
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard

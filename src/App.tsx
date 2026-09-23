@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PlatformDataProvider } from './context/PlatformDataContext';
@@ -6,86 +6,82 @@ import { LiveChatWidget } from './components/common/LiveChatWidget';
 import { CookieConsent } from './components/common/CookieConsent';
 import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
+import { PageLoader } from './components/common/PageLoader';
 
-// Layouts
+// Layouts — the public shell stays in the main bundle (first paint);
+// role shells are lazy so their code ships with their portal chunk.
 import { PublicLayout } from './layouts/PublicLayout';
-import { ContributorLayout } from './layouts/ContributorLayout';
-import { BusinessLayout } from './layouts/BusinessLayout';
-import { AdminLayout } from './layouts/AdminLayout';
-
-// Public & Auth Pages
-import { HomePage } from './pages/public/HomePage';
-import { HowItWorksPage } from './pages/public/HowItWorksPage';
-import { PublicTasksPage } from './pages/public/PublicTasksPage';
-import { EarnPage } from './pages/public/EarnPage';
-import { ForBusinessesPage } from './pages/public/ForBusinessesPage';
-import { AboutPage } from './pages/public/AboutPage';
-import { FaqPage } from './pages/public/FaqPage';
-import { BlogIndexPage } from './pages/public/BlogIndexPage';
-import { BlogPostPage } from './pages/public/BlogPostPage';
-import { TrustSafetyPage } from './pages/public/TrustSafetyPage';
-import { ContactPage } from './pages/public/ContactPage';
-import { LegalPage } from './pages/public/LegalPage';
-import { TermsOfServicePage } from './pages/public/TermsOfServicePage';
-import { PrivacyPolicyPage } from './pages/public/PrivacyPolicyPage';
-import { DisclaimerPage } from './pages/public/DisclaimerPage';
-import { CookiePolicyPage } from './pages/public/CookiePolicyPage';
-import { ContributorLoginPage } from './pages/auth/ContributorLoginPage';
-import { SuperAdminLoginPage } from './pages/auth/SuperAdminLoginPage';
-import { ContributorSignupPage } from './pages/auth/ContributorSignupPage';
-import { BusinessSignupPage } from './pages/auth/BusinessSignupPage';
-import { BusinessLoginPage } from './pages/auth/BusinessLoginPage';
-import { ModeratorLoginPage } from './pages/auth/ModeratorLoginPage';
-import { OnboardingWizardPage } from './pages/auth/OnboardingWizardPage';
-import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
-import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
-import { VerifyEmailPage } from './components/auth/EmailVerification';
-
-// Contributor Pages
-import { ContributorDashboardPage } from './pages/contributor/ContributorDashboardPage';
-import { TaskDetailPage } from './pages/contributor/TaskDetailPage';
-import { TaskFeedPage } from './pages/contributor/TaskFeedPage';
-import { ContributorWalletPage } from './pages/contributor/ContributorWalletPage';
-import { ContributorEarningsPage } from './pages/contributor/ContributorEarningsPage';
-import { ContributorMyTasksPage } from './pages/contributor/ContributorMyTasksPage';
-import { ContributorReferralsPage } from './pages/contributor/ContributorReferralsPage';
-import { ContributorNotificationsPage } from './pages/contributor/ContributorNotificationsPage';
-import { ContributorProfilePage } from './pages/contributor/ContributorProfilePage';
-import { ContributorSupportPage } from './pages/contributor/ContributorSupportPage';
-
-// Business Pages
-import { BusinessDashboardPage } from './pages/business/BusinessDashboardPage';
-import { BusinessCampaignsPage } from './pages/business/BusinessCampaignsPage';
-import { BusinessCampaignDetailPage } from './pages/business/BusinessCampaignDetailPage';
-import { BusinessTaskLibraryPage } from './pages/business/BusinessTaskLibraryPage';
-import { BusinessContributorsPage } from './pages/business/BusinessContributorsPage';
-import { BusinessSubmissionsPage } from './pages/business/BusinessSubmissionsPage';
-import { BusinessReportsPage } from './pages/business/BusinessReportsPage';
-import { BusinessBillingPage } from './pages/business/BusinessBillingPage';
-import { BusinessSettingsPage } from './pages/business/BusinessSettingsPage';
-import { BusinessSupportPage } from './pages/business/BusinessSupportPage';
-import { CreateCampaignWizardPage } from './pages/business/CreateCampaignWizardPage';
-
-// Admin Pages
-import { AdminOverviewPage } from './pages/admin/AdminOverviewPage';
-import { AdminVerificationCenterPage } from './pages/admin/AdminVerificationCenterPage';
-import { AdminFraudPage } from './pages/admin/AdminFraudPage';
-import { AdminPayoutsPage } from './pages/admin/AdminPayoutsPage';
-import { AdminUsersPage } from './pages/admin/AdminUsersPage';
-import { AdminCampaignsOversightPage } from './pages/admin/AdminCampaignsOversightPage';
-import { AdminSupportPage } from './pages/admin/AdminSupportPage';
-import { AdminAnalyticsPage } from './pages/admin/AdminAnalyticsPage';
-import { AdminSystemHealthPage } from './pages/admin/AdminSystemHealthPage';
-import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
-import { AdminAuditLogsPage } from './pages/admin/AdminAuditLogsPage';
-import { AdminBusinessesPage } from './pages/admin/AdminBusinessesPage';
-import { AdminTasksPage } from './pages/admin/AdminTasksPage';
-import { AdminWalletsPage } from './pages/admin/AdminWalletsPage';
-import { AdminReferralsPage } from './pages/admin/AdminReferralsPage';
-import { AdminDemoRequestsPage } from './pages/admin/AdminDemoRequestsPage';
-import { AdminReportsPage } from './pages/admin/AdminReportsPage';
-import { BusinessTeamPage } from './pages/business/BusinessTeamPage';
-import { EmailSettingsPanel } from './pages/admin/email/EmailSettingsPanel';
+import {
+  LazyContributorLayout,
+  LazyBusinessLayout,
+  LazyAdminLayout,
+  LazyHomePage,
+  LazyHowItWorksPage,
+  LazyPublicTasksPage,
+  LazyEarnPage,
+  LazyForBusinessesPage,
+  LazyAboutPage,
+  LazyFaqPage,
+  LazyBlogIndexPage,
+  LazyBlogPostPage,
+  LazyTrustSafetyPage,
+  LazyContactPage,
+  LazyLegalPage,
+  LazyTermsOfServicePage,
+  LazyPrivacyPolicyPage,
+  LazyDisclaimerPage,
+  LazyCookiePolicyPage,
+  LazyContributorLoginPage,
+  LazySuperAdminLoginPage,
+  LazyContributorSignupPage,
+  LazyBusinessSignupPage,
+  LazyBusinessLoginPage,
+  LazyModeratorLoginPage,
+  LazyOnboardingWizardPage,
+  LazyForgotPasswordPage,
+  LazyResetPasswordPage,
+  LazyVerifyEmailPage,
+  LazyContributorDashboardPage,
+  LazyTaskDetailPage,
+  LazyTaskFeedPage,
+  LazyContributorWalletPage,
+  LazyContributorEarningsPage,
+  LazyContributorMyTasksPage,
+  LazyContributorReferralsPage,
+  LazyContributorNotificationsPage,
+  LazyContributorProfilePage,
+  LazyContributorSupportPage,
+  LazyBusinessDashboardPage,
+  LazyBusinessCampaignsPage,
+  LazyBusinessCampaignDetailPage,
+  LazyBusinessTaskLibraryPage,
+  LazyBusinessContributorsPage,
+  LazyBusinessSubmissionsPage,
+  LazyBusinessReportsPage,
+  LazyBusinessBillingPage,
+  LazyBusinessSettingsPage,
+  LazyBusinessSupportPage,
+  LazyCreateCampaignWizardPage,
+  LazyBusinessTeamPage,
+  LazyAdminOverviewPage,
+  LazyAdminVerificationCenterPage,
+  LazyAdminFraudPage,
+  LazyAdminPayoutsPage,
+  LazyAdminUsersPage,
+  LazyAdminCampaignsOversightPage,
+  LazyAdminSupportPage,
+  LazyAdminAnalyticsPage,
+  LazyAdminSystemHealthPage,
+  LazyAdminSettingsPage,
+  LazyAdminAuditLogsPage,
+  LazyAdminBusinessesPage,
+  LazyAdminTasksPage,
+  LazyAdminWalletsPage,
+  LazyAdminReferralsPage,
+  LazyAdminDemoRequestsPage,
+  LazyAdminReportsPage,
+  LazyEmailSettingsPanel,
+} from './routes/lazy';
 
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -117,51 +113,52 @@ export const App: React.FC = () => {
         <ScrollToTop />
         <RouteSeo />
         <BootAuth />
+        <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public Marketing Routes */}
           <Route element={<PublicLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/how-it-works" element={<HowItWorksPage />} />
-            <Route path="/tasks" element={<PublicTasksPage />} />
-            <Route path="/earn" element={<EarnPage />} />
-            <Route path="/for-businesses" element={<ForBusinessesPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/faq" element={<FaqPage />} />
-            <Route path="/blog" element={<BlogIndexPage />} />
-            <Route path="/blog/:slug" element={<BlogPostPage />} />
-            <Route path="/trust-safety" element={<TrustSafetyPage />} />
-            <Route path="/pricing" element={<ForBusinessesPage />} />
-            <Route path="/payments" element={<FaqPage />} />
-            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/" element={<LazyHomePage />} />
+            <Route path="/how-it-works" element={<LazyHowItWorksPage />} />
+            <Route path="/tasks" element={<LazyPublicTasksPage />} />
+            <Route path="/earn" element={<LazyEarnPage />} />
+            <Route path="/for-businesses" element={<LazyForBusinessesPage />} />
+            <Route path="/about" element={<LazyAboutPage />} />
+            <Route path="/faq" element={<LazyFaqPage />} />
+            <Route path="/blog" element={<LazyBlogIndexPage />} />
+            <Route path="/blog/:slug" element={<LazyBlogPostPage />} />
+            <Route path="/trust-safety" element={<LazyTrustSafetyPage />} />
+            <Route path="/pricing" element={<LazyForBusinessesPage />} />
+            <Route path="/payments" element={<LazyFaqPage />} />
+            <Route path="/contact" element={<LazyContactPage />} />
             <Route path="/legal" element={<Navigate to="/legal/terms" replace />} />
-            <Route path="/legal/terms" element={<LegalPage />} />
-            <Route path="/legal/privacy" element={<LegalPage />} />
-            <Route path="/legal/cookies" element={<LegalPage />} />
-            <Route path="/legal/task-policy" element={<LegalPage />} />
+            <Route path="/legal/terms" element={<LazyLegalPage />} />
+            <Route path="/legal/privacy" element={<LazyLegalPage />} />
+            <Route path="/legal/cookies" element={<LazyLegalPage />} />
+            <Route path="/legal/task-policy" element={<LazyLegalPage />} />
 
             {/* Full standalone legal documents */}
-            <Route path="/terms" element={<TermsOfServicePage />} />
-            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-            <Route path="/disclaimer" element={<DisclaimerPage />} />
-            <Route path="/cookies" element={<CookiePolicyPage />} />
-            
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/onboarding" element={<OnboardingWizardPage />} />
+            <Route path="/terms" element={<LazyTermsOfServicePage />} />
+            <Route path="/privacy" element={<LazyPrivacyPolicyPage />} />
+            <Route path="/disclaimer" element={<LazyDisclaimerPage />} />
+            <Route path="/cookies" element={<LazyCookiePolicyPage />} />
+
+            <Route path="/forgot-password" element={<LazyForgotPasswordPage />} />
+            <Route path="/reset-password" element={<LazyResetPasswordPage />} />
+            <Route path="/onboarding" element={<LazyOnboardingWizardPage />} />
           </Route>
 
           {/* Dedicated portal auth routes (full-screen, unbranded nav chrome).
               Each role gets its own entry page — no shared login hub. */}
-          <Route path="/login" element={<ContributorLoginPage />} />
+          <Route path="/login" element={<LazyContributorLoginPage />} />
           <Route path="/contributor/login" element={<Navigate to="/login" replace />} />
-          <Route path="/contributor/register" element={<ContributorSignupPage />} />
-          <Route path="/business/login" element={<BusinessLoginPage />} />
-          <Route path="/business/register" element={<BusinessSignupPage />} />
-          <Route path="/moderator/login" element={<ModeratorLoginPage />} />
+          <Route path="/contributor/register" element={<LazyContributorSignupPage />} />
+          <Route path="/business/login" element={<LazyBusinessLoginPage />} />
+          <Route path="/business/register" element={<LazyBusinessSignupPage />} />
+          <Route path="/moderator/login" element={<LazyModeratorLoginPage />} />
           {/* Email-verification gate (post-signup + unverified sign-ins). */}
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/verify-email" element={<LazyVerifyEmailPage />} />
           {/* Hidden Super Admin console sign-in (no public chrome; unlinked everywhere). */}
-          <Route path="/secure-control-panel/login" element={<SuperAdminLoginPage />} />
+          <Route path="/secure-control-panel/login" element={<LazySuperAdminLoginPage />} />
 
           {/* Legacy signup aliases */}
           <Route path="/signup" element={<Navigate to="/contributor/register" replace />} />
@@ -169,65 +166,65 @@ export const App: React.FC = () => {
           <Route path="/signup/business" element={<Navigate to="/business/register" replace />} />
 
           {/* Contributor Portal Routes */}
-          <Route path="/app" element={<RoleGuard allowedRoles={['contributor']}><ContributorLayout /></RoleGuard>}>
-            <Route index element={<ContributorDashboardPage />} />
-            <Route path="tasks" element={<TaskFeedPage variant="cards" />} />
-            <Route path="feed" element={<TaskFeedPage variant="feed" />} />
-            <Route path="tasks/:id" element={<TaskDetailPage />} />
-            <Route path="tasks/:id/submit" element={<TaskDetailPage />} />
-            <Route path="my-tasks" element={<ContributorMyTasksPage />} />
-            <Route path="earnings" element={<ContributorEarningsPage />} />
-            <Route path="wallet" element={<ContributorWalletPage />} />
-            <Route path="referrals" element={<ContributorReferralsPage />} />
-            <Route path="notifications" element={<ContributorNotificationsPage />} />
-            <Route path="profile" element={<ContributorProfilePage />} />
-            <Route path="support" element={<ContributorSupportPage />} />
+          <Route path="/app" element={<RoleGuard allowedRoles={['contributor']}><LazyContributorLayout /></RoleGuard>}>
+            <Route index element={<LazyContributorDashboardPage />} />
+            <Route path="tasks" element={<LazyTaskFeedPage variant="cards" />} />
+            <Route path="feed" element={<LazyTaskFeedPage variant="feed" />} />
+            <Route path="tasks/:id" element={<LazyTaskDetailPage />} />
+            <Route path="tasks/:id/submit" element={<LazyTaskDetailPage />} />
+            <Route path="my-tasks" element={<LazyContributorMyTasksPage />} />
+            <Route path="earnings" element={<LazyContributorEarningsPage />} />
+            <Route path="wallet" element={<LazyContributorWalletPage />} />
+            <Route path="referrals" element={<LazyContributorReferralsPage />} />
+            <Route path="notifications" element={<LazyContributorNotificationsPage />} />
+            <Route path="profile" element={<LazyContributorProfilePage />} />
+            <Route path="support" element={<LazyContributorSupportPage />} />
           </Route>
 
           {/* Business CRM Routes */}
-          <Route path="/business" element={<RoleGuard allowedRoles={['business']}><BusinessLayout /></RoleGuard>}>
-            <Route index element={<BusinessDashboardPage />} />
-            <Route path="campaigns" element={<BusinessCampaignsPage />} />
-            <Route path="campaigns/create" element={<CreateCampaignWizardPage />} />
-            <Route path="campaigns/:id" element={<BusinessCampaignDetailPage />} />
-            <Route path="tasks" element={<BusinessTaskLibraryPage />} />
-            <Route path="contributors" element={<BusinessContributorsPage />} />
-            <Route path="submissions" element={<BusinessSubmissionsPage />} />
-            <Route path="proofs" element={<BusinessSubmissionsPage />} />
-            <Route path="reports" element={<BusinessReportsPage />} />
-            <Route path="billing" element={<BusinessBillingPage />} />
-            <Route path="team" element={<BusinessTeamPage />} />
-            <Route path="settings" element={<BusinessSettingsPage />} />
-            <Route path="support" element={<BusinessSupportPage />} />
+          <Route path="/business" element={<RoleGuard allowedRoles={['business']}><LazyBusinessLayout /></RoleGuard>}>
+            <Route index element={<LazyBusinessDashboardPage />} />
+            <Route path="campaigns" element={<LazyBusinessCampaignsPage />} />
+            <Route path="campaigns/create" element={<LazyCreateCampaignWizardPage />} />
+            <Route path="campaigns/:id" element={<LazyBusinessCampaignDetailPage />} />
+            <Route path="tasks" element={<LazyBusinessTaskLibraryPage />} />
+            <Route path="contributors" element={<LazyBusinessContributorsPage />} />
+            <Route path="submissions" element={<LazyBusinessSubmissionsPage />} />
+            <Route path="proofs" element={<LazyBusinessSubmissionsPage />} />
+            <Route path="reports" element={<LazyBusinessReportsPage />} />
+            <Route path="billing" element={<LazyBusinessBillingPage />} />
+            <Route path="team" element={<LazyBusinessTeamPage />} />
+            <Route path="settings" element={<LazyBusinessSettingsPage />} />
+            <Route path="support" element={<LazyBusinessSupportPage />} />
           </Route>
 
           {/* Admin & Super Admin Command Center Routes. Moderators share the
               admin shell; superadmin-only pages (ops, email) stay restricted. */}
-          <Route path="/admin" element={<RoleGuard allowedRoles={['admin', 'superadmin', 'moderator']}><AdminLayout /></RoleGuard>}>
-            <Route index element={<AdminOverviewPage />} />
+          <Route path="/admin" element={<RoleGuard allowedRoles={['admin', 'superadmin', 'moderator']}><LazyAdminLayout /></RoleGuard>}>
+            <Route index element={<LazyAdminOverviewPage />} />
             {/* Super-admin landing (from the restricted console route):
                 real platform overview, no demo data. Dedicated super-admin
                 provisioning UI arrives with the ops provisioning API. */}
-            <Route path="super" element={<RoleGuard allowedRoles={['superadmin']}><AdminOverviewPage /></RoleGuard>} />
-            <Route path="email" element={<RoleGuard allowedRoles={['superadmin']}><EmailSettingsPanel /></RoleGuard>} />
-            <Route path="users" element={<AdminUsersPage />} />
-            <Route path="businesses" element={<AdminBusinessesPage />} />
-            <Route path="verification" element={<AdminVerificationCenterPage />} />
-            <Route path="payouts" element={<AdminPayoutsPage />} />
-            <Route path="withdrawals" element={<AdminPayoutsPage />} />
-            <Route path="wallets" element={<AdminWalletsPage />} />
-            <Route path="referrals" element={<AdminReferralsPage />} />
-            <Route path="demo-requests" element={<AdminDemoRequestsPage />} />
-            <Route path="reports" element={<AdminReportsPage />} />
-            <Route path="campaigns" element={<AdminCampaignsOversightPage />} />
-            <Route path="tasks" element={<AdminTasksPage />} />
-            <Route path="fraud" element={<AdminFraudPage />} />
-            <Route path="support" element={<AdminSupportPage />} />
-            <Route path="analytics" element={<AdminAnalyticsPage />} />
-            <Route path="health" element={<AdminSystemHealthPage />} />
-            <Route path="settings" element={<AdminSettingsPage />} />
-            <Route path="audit" element={<AdminAuditLogsPage />} />
-            <Route path="audit-logs" element={<AdminAuditLogsPage />} />
+            <Route path="super" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminOverviewPage /></RoleGuard>} />
+            <Route path="email" element={<RoleGuard allowedRoles={['superadmin']}><LazyEmailSettingsPanel /></RoleGuard>} />
+            <Route path="users" element={<LazyAdminUsersPage />} />
+            <Route path="businesses" element={<LazyAdminBusinessesPage />} />
+            <Route path="verification" element={<LazyAdminVerificationCenterPage />} />
+            <Route path="payouts" element={<LazyAdminPayoutsPage />} />
+            <Route path="withdrawals" element={<LazyAdminPayoutsPage />} />
+            <Route path="wallets" element={<LazyAdminWalletsPage />} />
+            <Route path="referrals" element={<LazyAdminReferralsPage />} />
+            <Route path="demo-requests" element={<LazyAdminDemoRequestsPage />} />
+            <Route path="reports" element={<LazyAdminReportsPage />} />
+            <Route path="campaigns" element={<LazyAdminCampaignsOversightPage />} />
+            <Route path="tasks" element={<LazyAdminTasksPage />} />
+            <Route path="fraud" element={<LazyAdminFraudPage />} />
+            <Route path="support" element={<LazyAdminSupportPage />} />
+            <Route path="analytics" element={<LazyAdminAnalyticsPage />} />
+            <Route path="health" element={<LazyAdminSystemHealthPage />} />
+            <Route path="settings" element={<LazyAdminSettingsPage />} />
+            <Route path="audit" element={<LazyAdminAuditLogsPage />} />
+            <Route path="audit-logs" element={<LazyAdminAuditLogsPage />} />
           </Route>
 
           {/* SuperAdmin alias */}
@@ -235,6 +232,7 @@ export const App: React.FC = () => {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
 
         {/* Global Floating Live Chat Support Desk (Bottom-Right) */}
         <LiveChatWidget />
@@ -247,4 +245,3 @@ export const App: React.FC = () => {
 };
 
 export default App;
-

@@ -12,7 +12,23 @@ interface PasswordInputProps {
   dark?: boolean;
   /** Roomy 52px variant for the redesigned auth pages (all-ages readability). */
   large?: boolean;
+  /** Show an honest password-strength meter under the field (signup pages). */
+  showStrength?: boolean;
 }
+
+/** Simple honest strength score — length plus character-class variety. */
+const scorePassword = (value: string): { level: 0 | 1 | 2 | 3; label: string } => {
+  if (value.length < 8) return { level: 0, label: 'Too short' };
+  let classes = 0;
+  if (/[a-z]/.test(value)) classes += 1;
+  if (/[A-Z]/.test(value)) classes += 1;
+  if (/[0-9]/.test(value)) classes += 1;
+  if (/[^A-Za-z0-9]/.test(value)) classes += 1;
+  const score = value.length >= 12 ? classes + 1 : classes;
+  if (score <= 1) return { level: 1, label: 'Weak' };
+  if (score <= 3) return { level: 2, label: 'Good' };
+  return { level: 3, label: 'Strong' };
+};
 
 export const PasswordInput: React.FC<PasswordInputProps> = ({
   id,
@@ -23,6 +39,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   autoComplete,
   dark = false,
   large = false,
+  showStrength = false,
 }) => {
   const [visible, setVisible] = useState(false);
   const Icon = visible ? EyeOff : Eye;
@@ -30,8 +47,17 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
   const sizeClass = large ? 'min-h-[52px] px-4 text-base' : 'py-2 text-xs sm:text-sm';
   const iconOffset = large ? 'left-4 top-[18px]' : 'left-3 top-3';
 
+  const strength = showStrength && !dark && value ? scorePassword(value) : null;
+  const strengthMeta = [
+    { width: '100%', color: 'bg-red-500', text: 'text-red-600' },
+    { width: '38%', color: 'bg-amber-500', text: 'text-amber-600' },
+    { width: '68%', color: 'bg-[#168BFF]', text: 'text-[#168BFF]' },
+    { width: '100%', color: 'bg-[#16B364]', text: 'text-emerald-600' },
+  ];
+
   return (
-    <div className="relative">
+    <div>
+      <div className="relative">
       <Lock className={`w-4 h-4 text-gray-400 dark:text-gray-500 absolute ${iconOffset}`} />
       <input
         id={id}
@@ -57,6 +83,21 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
       >
         <Icon className="w-5 h-5" />
       </button>
+      </div>
+      {strength && (
+        <div className="mt-2" aria-live="polite">
+          <div className="h-1.5 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-300 ${strengthMeta[strength.level].color}`}
+              style={{ width: strengthMeta[strength.level].width }}
+            />
+          </div>
+          <p className={`mt-1 text-xs font-bold ${strengthMeta[strength.level].text}`}>
+            Password strength: {strength.label}
+            {strength.level < 2 && ' — add upper/lowercase, numbers or symbols.'}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

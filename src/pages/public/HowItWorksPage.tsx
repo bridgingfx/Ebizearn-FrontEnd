@@ -451,7 +451,7 @@ export const HowItWorksPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
               {activeTab === 'contributor' ? 'Contributor Journey' : 'Advertiser Workflow'}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
@@ -490,7 +490,7 @@ export const HowItWorksPage: React.FC = () => {
                       </p>
 
                       <div className="pt-2 flex items-center gap-3">
-                        <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200">
+                        <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-50 text-[#16B364] border border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30">
                           {s.actionBadge}
                         </span>
                         <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
@@ -521,7 +521,7 @@ export const HowItWorksPage: React.FC = () => {
       <section className="py-14 sm:py-16 bg-[#F8FAFC] dark:bg-[#0B0F19] border-t border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center space-y-2">
-            <span className="px-3 py-1 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3 py-1 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
               Transparency First
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100">

@@ -275,7 +275,7 @@ export const ContributorWalletPage: React.FC = () => {
           )}
 
           {withdrawSuccess && (
-            <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200">
+            <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200" role="status">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
               <p className="text-sm text-emerald-800 font-medium">{withdrawSuccess}</p>
             </div>
@@ -403,10 +403,16 @@ export const ContributorWalletPage: React.FC = () => {
       {/* ── Withdrawal modal (same endpoint, same validation) ────── */}
       {withdrawOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-4" onClick={() => setWithdrawOpen(false)}>
-          <div className="bg-white dark:bg-[#0C1322] rounded-[1.75rem] w-full max-w-md p-6 sm:p-7 space-y-5" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="bg-white dark:bg-[#0C1322] rounded-[1.75rem] w-full max-w-md p-6 sm:p-7 space-y-5"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="withdraw-modal-title"
+          >
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-gray-100">Request withdrawal</h3>
+                <h3 id="withdraw-modal-title" className="text-xl font-black text-slate-900 dark:text-gray-100">Request withdrawal</h3>
                 <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
                   Available: <span className="font-extrabold text-emerald-600">{money(availableCents, currency)}</span>
                   {' · '}Minimum: {money(minWithdrawalCents, currency)}

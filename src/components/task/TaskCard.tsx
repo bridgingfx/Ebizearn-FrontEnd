@@ -36,16 +36,16 @@ const platformLogos: Record<string, LogoComponent> = {
 
 /** Soft tinted tile behind each platform mark. */
 const platformTile: Record<string, string> = {
-  Instagram: 'bg-pink-50',
+  Instagram: 'bg-pink-50 dark:bg-white/10',
   TikTok: 'bg-slate-100 dark:bg-white/10',
-  YouTube: 'bg-red-50',
-  Facebook: 'bg-blue-50',
-  Meta: 'bg-blue-50',
-  LinkedIn: 'bg-sky-50',
+  YouTube: 'bg-red-50 dark:bg-white/10',
+  Facebook: 'bg-blue-50 dark:bg-white/10',
+  Meta: 'bg-blue-50 dark:bg-white/10',
+  LinkedIn: 'bg-sky-50 dark:bg-white/10',
   'Google Reviews': 'bg-white dark:bg-[#0C1322] border border-slate-200 dark:border-white/10',
   Google: 'bg-white dark:bg-[#0C1322] border border-slate-200 dark:border-white/10',
-  Trustpilot: 'bg-emerald-50',
-  WhatsApp: 'bg-green-50',
+  Trustpilot: 'bg-emerald-50 dark:bg-white/10',
+  WhatsApp: 'bg-green-50 dark:bg-white/10',
   X: 'bg-slate-100 dark:bg-white/10',
   Twitter: 'bg-slate-100 dark:bg-white/10',
 };
@@ -158,7 +158,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
             </p>
           </div>
           {slotsLeft <= 5 && slotsLeft > 0 && (
-            <span className="shrink-0 text-[11px] font-black px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+            <span className="shrink-0 text-[11px] font-black px-2.5 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30">
               {slotsLeft} left
             </span>
           )}
@@ -202,9 +202,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
         )}
 
         {/* Retention notice */}
-        <div className="mt-4 flex items-start gap-2.5 p-3 rounded-2xl bg-amber-50/70 border border-amber-200/60">
-          <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-800 leading-relaxed">
+        <div className="mt-4 flex items-start gap-2.5 p-3 rounded-2xl bg-amber-50/70 border border-amber-200/60 dark:bg-amber-500/10 dark:border-amber-500/25">
+          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800 dark:text-amber-200/90 leading-relaxed">
             Reversing this action before the {retention} period ends can reverse this reward.
           </p>
         </div>

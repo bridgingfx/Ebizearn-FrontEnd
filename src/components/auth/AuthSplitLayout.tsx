@@ -218,7 +218,7 @@ export const authInputClass =
 
 export const AuthError: React.FC<{ message: string }> = ({ message }) => (
   <div
-    className="p-4 bg-red-50 border-2 border-red-200 text-red-700 text-sm font-medium rounded-2xl flex items-start gap-2.5"
+    className="p-4 bg-red-50 border-2 border-red-200 dark:bg-red-500/10 dark:border-red-500/25 text-red-700 dark:text-red-300 text-sm font-medium rounded-2xl flex items-start gap-2.5"
     role="alert"
   >
     <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />

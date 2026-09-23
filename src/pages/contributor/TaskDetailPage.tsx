@@ -310,7 +310,7 @@ export const TaskDetailPage: React.FC = () => {
                   </p>
                 </div>
                 {startError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl text-left">{startError}</div>
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl text-left" role="alert">{startError}</div>
                 )}
                 <button
                   type="button"
@@ -335,12 +335,12 @@ export const TaskDetailPage: React.FC = () => {
                 </div>
 
                 {submitError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">{submitError}</div>
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl" role="alert">{submitError}</div>
                 )}
 
                 {/* Screenshot upload */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Screenshot proof</label>
+                  <label htmlFor="proof-screenshot" className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Screenshot proof</label>
                   {screenshot ? (
                     <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-900">
                       <img src={screenshot} alt="Proof screenshot" className="w-full max-h-56 object-contain" />
@@ -360,11 +360,12 @@ export const TaskDetailPage: React.FC = () => {
                       </p>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 dark:border-white/10 hover:border-[#168BFF] rounded-2xl p-6 cursor-pointer transition-colors bg-gray-50/50">
+                    <label htmlFor="proof-screenshot" className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 dark:border-white/10 hover:border-[#168BFF] rounded-2xl p-6 cursor-pointer transition-colors bg-gray-50/50">
                       <Upload className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-300">Tap to upload screenshot</span>
                       <span className="text-[10px] text-gray-400 dark:text-gray-500">PNG or JPG, up to 8 MB — sent with your submission</span>
                       <input
+                        id="proof-screenshot"
                         type="file"
                         accept="image/png,image/jpeg,image/webp"
                         className="hidden"
@@ -376,29 +377,31 @@ export const TaskDetailPage: React.FC = () => {
 
                 {/* Proof URL */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Proof link (optional)</label>
+                  <label htmlFor="proof-url" className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Proof link (optional)</label>
                   <div className="relative">
                     <LinkIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
                     <input
+                      id="proof-url"
                       type="url"
                       value={proofUrl}
                       onChange={(e) => setProofUrl(e.target.value)}
                       placeholder="https://… link to your completed action"
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                      className="w-full pl-9 pr-3 py-2.5 min-h-[44px] text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                     />
                   </div>
                 </div>
 
                 {/* Note */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Note for the reviewer (optional)</label>
+                  <label htmlFor="proof-note" className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Note for the reviewer (optional)</label>
                   <textarea
+                    id="proof-note"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     rows={2}
                     maxLength={1000}
                     placeholder="Anything the reviewer should know…"
-                    className="w-full px-3 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF] resize-none"
+                    className="w-full px-3 py-2.5 min-h-[60px] text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF] resize-none"
                   />
                 </div>
 

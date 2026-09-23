@@ -9,6 +9,37 @@ import { ChevronDown, Quote, Lightbulb, ArrowRight, CircleCheck } from 'lucide-r
 import type { ContentBlock } from '../types';
 import { blockAnchorId } from '../loader';
 
+/**
+ * Renders inline markdown links inside paragraph-level text:
+ * `[label](/internal-path)` -> react-router Link,
+ * `[label](https://external)` -> external anchor.
+ * Purely additive: no existing post content uses []() syntax,
+ * so this only activates where writers add it.
+ */
+function renderInlineLinks(text: string): React.ReactNode {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => {
+    const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+    if (!m) return <React.Fragment key={i}>{part}</React.Fragment>;
+    const [, label, href] = m;
+    const cls =
+      'font-semibold text-[#168BFF] underline decoration-[#168BFF]/40 underline-offset-2 hover:decoration-[#168BFF]';
+    if (href.startsWith('/')) {
+      return (
+        <Link key={i} to={href} className={cls}>
+          {label}
+        </Link>
+      );
+    }
+    return (
+      <a key={i} href={href} target="_blank" rel="noopener noreferrer nofollow" className={cls}>
+        {label}
+      </a>
+    );
+  });
+}
+
 function FaqAccordion({ items }: { items: { q: string; a: string }[] }): React.ReactElement {
   const [openIdx, setOpenIdx] = useState<number | null>(0);
   return (
@@ -33,7 +64,7 @@ function FaqAccordion({ items }: { items: { q: string; a: string }[] }): React.R
             </button>
             {isOpen && (
               <div className="px-5 pb-5 pt-1 text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-white/10">
-                {faq.a}
+                {renderInlineLinks(faq.a)}
               </div>
             )}
           </div>
@@ -54,7 +85,7 @@ export const BlockRenderer: React.FC<{ blocks: ContentBlock[] }> = ({ blocks }) 
                 key={idx}
                 className="text-lg sm:text-xl leading-relaxed text-gray-700 dark:text-gray-300 font-medium"
               >
-                {block.text}
+                {renderInlineLinks(block.text)}
               </p>
             );
           case 'h2':
@@ -76,7 +107,7 @@ export const BlockRenderer: React.FC<{ blocks: ContentBlock[] }> = ({ blocks }) 
           case 'p':
             return (
               <p key={idx} className="text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
-                {block.text}
+                {renderInlineLinks(block.text)}
               </p>
             );
           case 'list':
@@ -116,7 +147,7 @@ export const BlockRenderer: React.FC<{ blocks: ContentBlock[] }> = ({ blocks }) 
               >
                 <Quote className="w-6 h-6 text-[#168BFF] mb-2" />
                 <p className="text-[15px] italic leading-relaxed text-gray-700 dark:text-gray-300">
-                  {block.text}
+                  {renderInlineLinks(block.text)}
                 </p>
                 {block.cite && (
                   <cite className="block mt-2 text-xs font-semibold not-italic text-gray-500 dark:text-gray-400">
@@ -137,7 +168,7 @@ export const BlockRenderer: React.FC<{ blocks: ContentBlock[] }> = ({ blocks }) 
                     {block.title}
                   </p>
                   <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                    {block.text}
+                    {renderInlineLinks(block.text)}
                   </p>
                 </div>
               </div>

@@ -137,7 +137,7 @@ export const AboutPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             
             <div className="space-y-4">
-              <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+              <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
                 The Industry Problem
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 leading-tight">
@@ -163,7 +163,7 @@ export const AboutPage: React.FC = () => {
             </div>
 
             <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-4">
-              <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
+              <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] dark:bg-emerald-500/15 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
                 The eBizEarn Solution
               </span>
               <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-gray-100">
@@ -196,7 +196,7 @@ export const AboutPage: React.FC = () => {
       <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] dark:bg-purple-500/15 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
               Operating Standard
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100">
@@ -233,7 +233,7 @@ export const AboutPage: React.FC = () => {
       <section className="py-14 sm:py-16 bg-[#F7F9FC] dark:bg-[#0B0F19] border-t border-[#E4EAF2] dark:border-white/10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
               Our Journey
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100">

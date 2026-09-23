@@ -3,12 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { Check, ArrowRight, ArrowLeft, Globe, Sparkles, CheckCircle2, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
+const PREFS_KEY = 'ebizearn_onboarding_prefs';
+
+interface OnboardingPrefs {
+  country: string;
+  language: string;
+  interests: string[];
+  bio: string;
+}
+
+const loadPrefs = (): Partial<OnboardingPrefs> => {
+  try {
+    const raw = localStorage.getItem(PREFS_KEY);
+    if (raw) return JSON.parse(raw) as Partial<OnboardingPrefs>;
+  } catch {
+    /* corrupted prefs — start fresh */
+  }
+  return {};
+};
+
 export const OnboardingWizardPage: React.FC = () => {
+  const saved = loadPrefs();
   const [step, setStep] = useState(1);
-  const [country, setCountry] = useState('AE');
-  const [language, setLanguage] = useState('en');
-  const [interests, setInterests] = useState<string[]>(['social', 'app-testing']);
-  const [bio, setBio] = useState('Eager digital contributor passionate about testing apps and social campaigns.');
+  const [country, setCountry] = useState(saved.country || 'AE');
+  const [language, setLanguage] = useState(saved.language || 'en');
+  const [interests, setInterests] = useState<string[]>(saved.interests || []);
+  const [bio, setBio] = useState(saved.bio || '');
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -19,6 +39,13 @@ export const OnboardingWizardPage: React.FC = () => {
   };
 
   const finishOnboarding = () => {
+    // Choices are real — persist them on this device so the next visit remembers them.
+    try {
+      const prefs: OnboardingPrefs = { country, language, interests, bio: bio.trim() };
+      localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+    } catch {
+      /* storage unavailable — the flow still completes */
+    }
     navigate('/app');
   };
 
@@ -36,10 +63,10 @@ export const OnboardingWizardPage: React.FC = () => {
         
         {/* Stepper Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <ol className="flex items-center justify-between mb-4" aria-label="Onboarding steps">
             {stepsList.map((s, idx) => (
               <React.Fragment key={s.num}>
-                <div className="flex flex-col items-center">
+                <li className="flex flex-col items-center" aria-current={step === s.num ? 'step' : undefined}>
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       step === s.num
@@ -54,17 +81,18 @@ export const OnboardingWizardPage: React.FC = () => {
                   <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
                     {s.title}
                   </span>
-                </div>
+                </li>
                 {idx < stepsList.length - 1 && (
                   <div
                     className={`flex-1 h-[2px] mx-2 ${
                       step > idx + 1 ? 'bg-[#16B364]' : 'bg-gray-200'
                     }`}
+                    aria-hidden="true"
                   />
                 )}
               </React.Fragment>
             ))}
-          </div>
+          </ol>
           <div className="text-center">
             <h2 className="text-xl font-bold text-[#101828] dark:text-gray-100">
               {step === 1 && 'Select Your Country'}
@@ -100,6 +128,7 @@ export const OnboardingWizardPage: React.FC = () => {
                   key={c.code}
                   type="button"
                   onClick={() => setCountry(c.code)}
+                  aria-pressed={country === c.code}
                   className={`p-3 rounded-xl border text-left flex items-center gap-3 transition-all ${
                     country === c.code
                       ? 'border-[#168BFF] bg-blue-50/50 shadow-sm'
@@ -131,6 +160,7 @@ export const OnboardingWizardPage: React.FC = () => {
                 key={l.code}
                 type="button"
                 onClick={() => setLanguage(l.code)}
+                aria-pressed={language === l.code}
                 className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
                   language === l.code
                     ? 'border-[#168BFF] bg-blue-50/50'
@@ -166,6 +196,7 @@ export const OnboardingWizardPage: React.FC = () => {
                     key={item.id}
                     type="button"
                     onClick={() => toggleInterest(item.id)}
+                    aria-pressed={isSelected}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       isSelected
                         ? 'border-[#7257FF] bg-purple-50/40 shadow-sm'
@@ -187,18 +218,19 @@ export const OnboardingWizardPage: React.FC = () => {
         {step === 4 && (
           <div className="space-y-4 text-left">
             <div>
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Tell us a bit about your skills</label>
+              <label htmlFor="onboarding-bio" className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Tell us a bit about your skills</label>
               <textarea
+                id="onboarding-bio"
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Share your background or the types of tasks you excel at..."
-                className="w-full px-3.5 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
+                placeholder="e.g. I review mobile apps and create short social videos. Fast and detail-oriented."
+                className="w-full px-3.5 py-2.5 min-h-[72px] text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
               />
             </div>
             <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-2 text-[11px] text-blue-800">
               <Sparkles className="w-4 h-4 text-[#168BFF] shrink-0" />
-              <span>Great profiles get priority matching on high-value brand campaigns!</span>
+              <span>A complete profile helps businesses choose the right contributors for their campaigns.</span>
             </div>
           </div>
         )}
@@ -211,7 +243,8 @@ export const OnboardingWizardPage: React.FC = () => {
             </div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">You're Ready to Earn!</h3>
             <p className="text-xs text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-              Your profile is active as a <strong>Starter Contributor</strong>. You have instant access to open tasks without waiting for manual document review. Higher tier tasks unlock automatically as you complete tasks with high accuracy!
+              Your preferences are saved on this device. Head to the task feed, pick a verified task,
+              and submit your proof — approved rewards credit straight to your wallet.
             </p>
             <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-white/10 text-left text-xs space-y-1.5 max-w-sm mx-auto">
               <div className="flex items-center gap-2 text-[#16B364] font-semibold">

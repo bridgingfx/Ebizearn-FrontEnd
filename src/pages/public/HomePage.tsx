@@ -306,7 +306,7 @@ export const HomePage: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       <Wifi className="w-3 h-3 text-white/80" />
                       <div className="w-4 h-2 rounded-sm border border-white/80 p-0.5 flex items-center">
-                        <div className="w-full h-full bg-white dark:bg-[#0C1322] rounded-2xs" />
+                        <div className="w-full h-full bg-white rounded-[2px]" />
                       </div>
                     </div>
                   </div>
@@ -480,7 +480,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-2.5">
-            <span className="px-3.5 py-1 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider border border-blue-100">
+            <span className="px-3.5 py-1 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-100 dark:border-blue-500/30">
               Zero Followers Required
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
@@ -603,7 +603,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] dark:bg-purple-500/15 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
               The Reality Check
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
@@ -692,7 +692,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] dark:bg-emerald-500/15 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
               Real Expectations
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
@@ -722,7 +722,7 @@ export const HomePage: React.FC = () => {
                 step="0.5"
                 value={calculatorHours}
                 onChange={(e) => setCalculatorHours(parseFloat(e.target.value))}
-                className="w-full accent-[#168BFF] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
+                className="w-full accent-[#168BFF] h-2.5 bg-gray-200 dark:bg-white/15 rounded-lg cursor-pointer"
               />
               
               <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
@@ -844,7 +844,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] text-xs font-bold uppercase tracking-wider">
+            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
               Transparency First
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">

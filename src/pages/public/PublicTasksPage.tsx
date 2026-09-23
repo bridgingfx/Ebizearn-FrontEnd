@@ -57,22 +57,22 @@ export const PublicTasksPage: React.FC = () => {
 
   const categories = [
     { id: 'all', name: 'All Formats' },
-    { id: 'community', name: '📢 Community Groups (Global & Local)' },
-    { id: 'reviews', name: '⭐ Trustpilot & Google Reviews' },
+    { id: 'community', name: 'Community Groups (Global & Local)' },
+    { id: 'reviews', name: 'Trustpilot & Google Reviews' },
     { id: 'social', name: 'Social Shares & Posts' },
     { id: 'video', name: 'Video Duets & UGC' },
     { id: 'survey', name: 'Surveys & Polls' },
   ];
 
   const regions = [
-    { id: 'all', name: 'Worldwide (All) 🌐' },
-    { id: 'global', name: 'Global Remote 🌍' },
-    { id: 'us', name: 'United States 🇺🇸' },
-    { id: 'uk', name: 'United Kingdom 🇬🇧' },
-    { id: 'uae', name: 'UAE 🇦🇪' },
-    { id: 'saudi', name: 'Saudi Arabia 🇸🇦' },
-    { id: 'europe', name: 'Europe 🇪🇺' },
-    { id: 'asia', name: 'Asia-Pacific 🇸🇬' },
+    { id: 'all', name: 'Worldwide (All)' },
+    { id: 'global', name: 'Global Remote' },
+    { id: 'us', name: 'United States' },
+    { id: 'uk', name: 'United Kingdom' },
+    { id: 'uae', name: 'UAE' },
+    { id: 'saudi', name: 'Saudi Arabia' },
+    { id: 'europe', name: 'Europe' },
+    { id: 'asia', name: 'Asia-Pacific' },
   ];
 
   const platforms = [
@@ -198,17 +198,17 @@ export const PublicTasksPage: React.FC = () => {
             </div>
 
             {/* Quick Live Stats Pill */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 grid grid-cols-2 sm:grid-cols-3 gap-4 shrink-0 text-center font-mono">
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 grid grid-cols-2 sm:grid-cols-3 gap-4 shrink-0 text-center">
               <div>
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block font-sans">Avg Reward</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block">Avg Reward</span>
                 <span className="text-lg font-black text-[#16B364]">{avgRewardAed === '—' ? '—' : `AED ${avgRewardAed}`}</span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block font-sans">Brands Hiring</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block">Brands Hiring</span>
                 <span className="text-lg font-black text-[#20C4E8]">{loading ? '…' : brandCount}</span>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block font-sans">Min Cashout</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase block">Min Cashout</span>
                 <span className="text-lg font-black text-amber-400">$50.00</span>
               </div>
             </div>
@@ -254,7 +254,7 @@ export const PublicTasksPage: React.FC = () => {
             {/* Region & Granular Location Filter Pills */}
             <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/10">
               <span className="text-xs font-bold text-gray-300 uppercase tracking-wider mr-1 flex items-center gap-1">
-                <span>🌍 Region / Country:</span>
+                <span>Region / Country:</span>
               </span>
               {regions.map((reg) => {
                 const isActive = selectedRegion === reg.id;
@@ -265,7 +265,7 @@ export const PublicTasksPage: React.FC = () => {
                     onClick={() => setSelectedRegion(reg.id)}
                     className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                       isActive
-                        ? 'bg-emerald-400 text-slate-950 font-black shadow-md'
+                        ? 'bg-[#168BFF] text-white shadow-md'
                         : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/10'
                     }`}
                   >
@@ -286,12 +286,12 @@ export const PublicTasksPage: React.FC = () => {
         {/* Secondary Category Filters */}
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
           {loadError && (
-            <div className="w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs font-semibold text-amber-800 flex items-center justify-between gap-3">
+            <div className="w-full rounded-2xl border border-amber-200 bg-amber-50 dark:bg-amber-500/10 dark:border-amber-500/25 px-4 py-2.5 text-xs font-semibold text-amber-800 dark:text-amber-200 flex items-center justify-between gap-3">
               <span>Live task data could not load: {loadError}</span>
               <button
                 type="button"
                 onClick={loadTasks}
-                className="shrink-0 text-xs font-black text-amber-900 underline"
+                className="shrink-0 text-xs font-black text-amber-900 dark:text-amber-200 underline"
               >
                 Retry
               </button>
@@ -374,11 +374,11 @@ export const PublicTasksPage: React.FC = () => {
                           {task.platform}
                         </span>
                         {task.emirateState && task.emirateState !== 'All Emirates' && task.emirateState !== 'Worldwide' ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 font-mono">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30">
                             📍 {task.cityArea ? `${task.cityArea}, ` : ''}{task.emirateState}
                           </span>
                         ) : (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-mono">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30">
                             🌐 {task.region || 'Worldwide'}
                           </span>
                         )}
@@ -399,11 +399,11 @@ export const PublicTasksPage: React.FC = () => {
                           </span>
                         )}
                         {task.targetChannelType && (
-                          <span className="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-md font-medium">
+                          <span className="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30 px-2 py-0.5 rounded-md font-medium">
                             💬 {task.targetChannelType === 'whatsapp_group' ? 'WhatsApp Group' : 'LinkedIn Group'}
                           </span>
                         )}
-                        <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded-md font-mono">
+                        <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30 px-1.5 py-0.5 rounded-md">
                           🛡️ {task.retentionHours || 72}h Hold
                         </span>
                       </div>

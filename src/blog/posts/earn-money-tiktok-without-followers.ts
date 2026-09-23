@@ -39,7 +39,7 @@ export const post: BlogPost = {
     {
       type: 'callout',
       title: 'Watch for fake campaigns',
-      text: 'Legitimate duet campaigns never ask you to pay a fee to participate, share your TikTok password, or download apps from outside official stores. If a campaign demands money upfront, it is a scam — see our red-flags guide.',
+      text: 'Legitimate duet campaigns never ask you to pay a fee to participate, share your TikTok password, or download apps from outside official stores. If a campaign demands money upfront, it is a scam — see our [red-flags guide](/blog/spot-fake-earn-money-tiktok-scams).',
     },
     {
       type: 'h2',

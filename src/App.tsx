@@ -41,6 +41,8 @@ import {
   LazyForgotPasswordPage,
   LazyResetPasswordPage,
   LazyVerifyEmailPage,
+  LazyVerifyOtpPage,
+  LazyPhoneSetupPage,
   LazyNotFoundPage,
   LazyContributorDashboardPage,
   LazyTaskDetailPage,
@@ -158,6 +160,10 @@ export const App: React.FC = () => {
           <Route path="/moderator/login" element={<LazyModeratorLoginPage />} />
           {/* Email-verification gate (post-signup + unverified sign-ins). */}
           <Route path="/verify-email" element={<LazyVerifyEmailPage />} />
+          {/* Email-OTP step: shown right after email signup (register → otp/send → code entry → otp/verify → auto-login). */}
+          <Route path="/verify-otp" element={<LazyVerifyOtpPage />} />
+          {/* Post-Google-signup required phone step (no email OTP in this flow). */}
+          <Route path="/setup-phone" element={<LazyPhoneSetupPage />} />
           {/* Hidden Super Admin console sign-in (no public chrome; unlinked everywhere). */}
           <Route path="/secure-control-panel/login" element={<LazySuperAdminLoginPage />} />
 

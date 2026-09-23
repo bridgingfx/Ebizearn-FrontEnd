@@ -18,6 +18,12 @@ interface AuthContextType {
    */
   socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal) => Promise<UserRole | null>;
   register: (payload: RegisterPayload) => Promise<{ ok: boolean; message?: string; role?: UserRole }>;
+  /**
+   * Persist a { user, token } pair exactly like a login (used by the OTP
+   * verification step: otp/verify returns the Sanctum token on success).
+   * Returns the user's role for post-auth routing.
+   */
+  completeSession: (user: User, token: string) => UserRole;
   logout: () => void;
   updateUser: (user: User) => void;
   refreshMe: () => Promise<void>;
@@ -125,6 +131,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { ok: false, message: 'Registration failed. Please try again.' };
   };
 
+  const completeSession = (user: User, token: string): UserRole => {
+    updateAndPersistUser(user);
+    setToken(token);
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(ACTIVE_ROLE_KEY, user.role);
+    setIsLoading(false);
+    return user.role;
+  };
+
   const logout = () => {
     try {
       authApi.logout().catch(() => {});
@@ -206,6 +221,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         socialLogin,
         register,
+        completeSession,
         logout,
         updateUser: updateAndPersistUser,
         refreshMe,

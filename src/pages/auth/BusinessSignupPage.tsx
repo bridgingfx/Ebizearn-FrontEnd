@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
   Building2,
@@ -8,6 +7,7 @@ import {
   Landmark,
   ScanSearch,
 } from 'lucide-react';
+import { authApi, getApiError } from '../../api';
 import {
   AuthSplitLayout,
   AuthBadge,
@@ -19,6 +19,12 @@ import {
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
+import {
+  PhoneField,
+} from '../../components/auth/PhoneInput';
+import { phoneToE164, validatePhone, type PhoneValue } from '../../utils/phone';
+import { DEFAULT_DIAL } from '../../utils/countryDialCodes';
+import { setPendingOtpEmail } from '../../utils/pendingAuth';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
@@ -31,11 +37,11 @@ export const BusinessSignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [industry, setIndustry] = useState('Tech & SaaS');
+  const [phone, setPhone] = useState<PhoneValue>({ dialCode: DEFAULT_DIAL, number: '' });
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const { register } = useAuth();
   const navigate = useNavigate();
 
   const validate = (): boolean => {
@@ -43,6 +49,8 @@ export const BusinessSignupPage: React.FC = () => {
     if (companyName.trim().length < 2) errs.companyName = 'Enter your company or brand name.';
     if (name.trim().length < 2) errs.name = 'Enter the contact person’s name.';
     if (!EMAIL_RE.test(email.trim())) errs.email = 'Enter a valid work email address.';
+    const phoneErr = validatePhone(phone);
+    if (phoneErr) errs.phone = phoneErr;
     if (!STRONG_PASSWORD_RE.test(password)) {
       errs.password = 'Use 10+ characters with uppercase, lowercase, number, and symbol.';
     }
@@ -56,21 +64,40 @@ export const BusinessSignupPage: React.FC = () => {
     if (!validate()) return;
     setSubmitting(true);
 
-    const result = await register({
-      name: name.trim(),
-      email: email.trim(),
-      password,
-      role: 'business',
-      company_name: companyName.trim(),
-    });
+    try {
+      // IMPORTANT: per the OTP contract the account is created unverified
+      // with NO session token — so call authApi directly and do NOT persist
+      // anything here. The token arrives later from otp/verify.
+      const res = await authApi.register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        role: 'business',
+        company_name: companyName.trim(),
+        phone: phoneToE164(phone),
+      });
 
-    setSubmitting(false);
-    if (result.ok) {
-      // New businesses verify email before touching the CRM.
-      navigate('/verify-email', { replace: true });
-      return;
+      if (!res.success || !res.data?.user) {
+        setSubmitting(false);
+        setError(res.message || 'Could not create your business account. Please check the form and try again.');
+        return;
+      }
+
+      // Fire the first OTP send, then hand off to the code-entry step. If
+      // otp/send 404s (backend not deployed yet) we still navigate — the OTP
+      // page shows the friendly "being set up" banner with a retry button.
+      setPendingOtpEmail(email.trim(), 'business');
+      try {
+        await authApi.otpSend(email.trim());
+      } catch {
+        // Handled on the OTP page; never blocks the user.
+      }
+      setSubmitting(false);
+      navigate('/verify-otp', { replace: true });
+    } catch (err) {
+      setSubmitting(false);
+      setError(getApiError(err, 'Could not create your business account. Please check the form and try again.'));
     }
-    setError(result.message || 'Could not create your business account. Please check the form and try again.');
   };
 
   return (
@@ -156,6 +183,24 @@ export const BusinessSignupPage: React.FC = () => {
             className={authInputClass}
           />
         </AuthField>
+
+        <PhoneField
+          id="phone"
+          label="Business phone"
+          value={phone}
+          onChange={(v) => {
+            setPhone(v);
+            if (fieldErrors.phone) {
+              const next = { ...fieldErrors };
+              const err = validatePhone(v);
+              if (err) next.phone = err;
+              else delete next.phone;
+              setFieldErrors(next);
+            }
+          }}
+          error={fieldErrors.phone || undefined}
+          hint="Required for account security and payout notifications."
+        />
 
         <AuthField id="website" label="Website URL" hint="Optional">
           <input

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
   BadgeCheck,
@@ -10,6 +9,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
+import { authApi, getApiError } from '../../api';
 import {
   AuthSplitLayout,
   AuthBadge,
@@ -21,6 +21,12 @@ import {
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
+import {
+  PhoneField,
+} from '../../components/auth/PhoneInput';
+import { phoneToE164, validatePhone, type PhoneValue } from '../../utils/phone';
+import { DEFAULT_DIAL } from '../../utils/countryDialCodes';
+import { setPendingOtpEmail } from '../../utils/pendingAuth';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
@@ -44,11 +50,11 @@ export const ContributorSignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('AE');
+  const [phone, setPhone] = useState<PhoneValue>({ dialCode: DEFAULT_DIAL, number: '' });
   const [referralCode, setReferralCode] = useState(refCodeFromUrl);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const { register } = useAuth();
   const navigate = useNavigate();
 
   const validate = (): boolean => {
@@ -58,6 +64,8 @@ export const ContributorSignupPage: React.FC = () => {
     if (!STRONG_PASSWORD_RE.test(password)) {
       errs.password = 'Use 10+ characters with uppercase, lowercase, number, and symbol.';
     }
+    const phoneErr = validatePhone(phone);
+    if (phoneErr) errs.phone = phoneErr;
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -68,22 +76,41 @@ export const ContributorSignupPage: React.FC = () => {
     if (!validate()) return;
     setSubmitting(true);
 
-    const result = await register({
-      name: name.trim(),
-      email: email.trim(),
-      password,
-      role: 'contributor',
-      country_code: country,
-      referral_code: referralCode.trim() || undefined,
-    });
+    try {
+      // IMPORTANT: per the OTP contract the account is created unverified
+      // with NO session token — so call authApi directly and do NOT persist
+      // anything here. The token arrives later from otp/verify.
+      const res = await authApi.register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        role: 'contributor',
+        country_code: country,
+        referral_code: referralCode.trim() || undefined,
+        phone: phoneToE164(phone),
+      });
 
-    setSubmitting(false);
-    if (result.ok) {
-      // Never drop a new user straight into the dashboard: verify email first.
-      navigate('/verify-email', { replace: true });
-      return;
+      if (!res.success || !res.data?.user) {
+        setSubmitting(false);
+        setError(res.message || 'Could not create your account. Please check the form and try again.');
+        return;
+      }
+
+      // Fire the first OTP send, then hand off to the code-entry step. If
+      // otp/send 404s (backend not deployed yet) we still navigate — the OTP
+      // page shows the friendly "being set up" banner with a retry button.
+      setPendingOtpEmail(email.trim(), 'contributor');
+      try {
+        await authApi.otpSend(email.trim());
+      } catch {
+        // Handled on the OTP page; never blocks the user.
+      }
+      setSubmitting(false);
+      navigate('/verify-otp', { replace: true });
+    } catch (err) {
+      setSubmitting(false);
+      setError(getApiError(err, 'Could not create your account. Please check the form and try again.'));
     }
-    setError(result.message || 'Could not create your account. Please check the form and try again.');
   };
 
   return (
@@ -201,6 +228,24 @@ export const ContributorSignupPage: React.FC = () => {
             </div>
           </AuthField>
         </div>
+
+        <PhoneField
+          id="phone"
+          label="Phone number"
+          value={phone}
+          onChange={(v) => {
+            setPhone(v);
+            if (fieldErrors.phone) {
+              const next = { ...fieldErrors };
+              const err = validatePhone(v);
+              if (err) next.phone = err;
+              else delete next.phone;
+              setFieldErrors(next);
+            }
+          }}
+          error={fieldErrors.phone || undefined}
+          hint="Required for account security and payout alerts."
+        />
 
         <AuthSubmitButton loading={submitting} loadingLabel="Creating your account…">
           <span>Create free account</span>

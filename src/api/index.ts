@@ -1,7 +1,7 @@
 export { api, getApiError, TOKEN_KEY } from './client';
 export type { ApiResponse } from './client';
-export { authApi } from './auth';
-export type { RegisterPayload, AuthSession, LoginPortal } from './auth';
+export { authApi, getOtpError } from './auth';
+export type { RegisterPayload, AuthSession, LoginPortal, OtpErrorCode, OtpFailure } from './auth';
 export { profileApi } from './profile';
 export { tasksApi } from './tasks';
 export { walletApi } from './wallet';

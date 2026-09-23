@@ -105,6 +105,12 @@ export const LazyResetPasswordPage = React.lazy(() =>
 export const LazyVerifyEmailPage = React.lazy(() =>
   named(import('../components/auth/EmailVerification'), 'VerifyEmailPage'),
 );
+export const LazyVerifyOtpPage = React.lazy(() =>
+  named(import('../pages/auth/VerifyOtpPage'), 'VerifyOtpPage'),
+);
+export const LazyPhoneSetupPage = React.lazy(() =>
+  named(import('../pages/auth/PhoneSetupPage'), 'PhoneSetupPage'),
+);
 
 // ── Contributor portal (/app/*) ──────────────────────────────────────────
 export const LazyContributorDashboardPage = React.lazy(() =>

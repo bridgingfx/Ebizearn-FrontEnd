@@ -4,8 +4,10 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import type { LoginPortal } from '../../api';
+import { authApi } from '../../api';
 import { GoogleLogo } from '../common/PlatformIcons';
 import { navigateAfterLogin } from './EmailVerification';
+import { setPendingPhoneRole } from '../../utils/pendingAuth';
 
 /* ------------------------------------------------------------------ */
 /* Script loading                                                      */
@@ -123,6 +125,19 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       try {
         const role = await socialLogin('google', idToken, portal);
         if (role) {
+          // Registration flow only: if the fresh Google account has no phone
+          // on file, show the ONE required phone step before continuing.
+          // (Google already verified the email — no email OTP here.)
+          if (mode === 'register') {
+            const me = await authApi.me().catch(() => null);
+            const latestUser = me?.data?.user;
+            const hasPhone = !!latestUser?.profile?.phone;
+            if (latestUser && !hasPhone) {
+              setPendingPhoneRole(role);
+              navigate('/setup-phone', { replace: true });
+              return;
+            }
+          }
           // Same post-auth routing as password login: unverified accounts
           // land on the email-verification gate, verified users on the dashboard.
           await navigateAfterLogin(navigate, role);
@@ -139,7 +154,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         setSigningIn(false);
       }
     };
-  }, [socialLogin, portal, navigate]);
+  }, [socialLogin, portal, navigate, mode]);
 
   const handleCredential = useCallback((response: GsiCredentialResponse) => {
     if (response?.credential) {

@@ -417,11 +417,11 @@ export const HowItWorksPage: React.FC = () => {
           </p>
 
           {/* Dual Perspective Toggle Selector */}
-          <div className="inline-flex p-1.5 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md">
+          <div className="inline-flex flex-wrap justify-center p-1.5 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md">
             <button
               type="button"
               onClick={() => setActiveTab('contributor')}
-              className={`px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`px-4 sm:px-6 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'contributor'
                   ? 'bg-gradient-brand text-white shadow-lg'
                   : 'text-gray-300 hover:text-white'
@@ -432,7 +432,7 @@ export const HowItWorksPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('business')}
-              className={`px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`px-4 sm:px-6 py-2.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'business'
                   ? 'bg-gradient-brand text-white shadow-lg'
                   : 'text-gray-300 hover:text-white'

@@ -227,7 +227,7 @@ export const EarnPage: React.FC = () => {
                 </p>
 
                 {/* Key Metrics Strip */}
-                <div className="grid grid-cols-3 gap-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                   <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10">
                     <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Reward Range</span>
                     <span className="text-lg sm:text-xl font-black text-[#16B364]">{currentChannel.reward}</span>

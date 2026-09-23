@@ -23,7 +23,12 @@ export const StatCard: React.FC<StatCardProps> = ({ label, value, sub, icon: Ico
         <Icon className="w-6 h-6 text-white" />
       </div>
       <p className="text-[11px] font-black uppercase tracking-[0.08em] text-slate-400 dark:text-gray-500">{label}</p>
-      <p className="text-[1.65rem] font-black text-slate-900 dark:text-white tracking-tight mt-1 leading-none">{value}</p>
+      <p
+        className="text-[1.65rem] font-black text-slate-900 dark:text-white tracking-tight mt-1 leading-none truncate"
+        title={value}
+      >
+        {value}
+      </p>
       {sub && <p className="text-xs font-medium text-slate-500 dark:text-gray-400 mt-2">{sub}</p>}
     </>
   );

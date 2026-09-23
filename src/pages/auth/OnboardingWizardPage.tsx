@@ -113,7 +113,7 @@ export const OnboardingWizardPage: React.FC = () => {
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
               We match tasks that are geo-targeted to your location. Choose your primary country of residence:
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪' },
                 { code: 'US', name: 'United States', flag: '🇺🇸' },
@@ -181,7 +181,7 @@ export const OnboardingWizardPage: React.FC = () => {
         {step === 3 && (
           <div className="space-y-3">
             <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Select categories you enjoy doing (select all that apply):</p>
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {[
                 { id: 'social', label: 'Social Media Campaigns', desc: 'Posts & shares' },
                 { id: 'survey', label: 'Consumer Surveys', desc: 'Feedback & opinions' },

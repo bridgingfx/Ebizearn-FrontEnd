@@ -450,7 +450,7 @@ export const ContributorWalletPage: React.FC = () => {
               </div>
               <div>
                 <span className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">Payout method</span>
-                <div className="grid grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {PAYOUT_METHODS.map((m) => {
                     const MIcon = m.icon;
                     const active = method === m.value;

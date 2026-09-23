@@ -76,7 +76,7 @@ function FeaturedHero({ post }: { post: BlogPost }): React.ReactElement {
           <p className="text-sm sm:text-base text-white/80 leading-relaxed line-clamp-2">
             {post.excerpt}
           </p>
-          <div className="flex items-center gap-4 text-xs text-white/70 pt-1">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/70 pt-1">
             <span className="font-semibold text-white">{post.author}</span>
             <span aria-hidden>·</span>
             <span>{formatBlogDate(post.publishedAt)}</span>

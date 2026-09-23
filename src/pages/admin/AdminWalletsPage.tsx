@@ -83,11 +83,11 @@ export const AdminWalletsPage: React.FC = () => {
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-white dark:bg-[#0C1322] rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-xs">
           <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total available</p>
-          <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{fmt(totals.available)}</p>
+          <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100 break-words">{fmt(totals.available)}</p>
         </div>
         <div className="bg-white dark:bg-[#0C1322] rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-xs">
           <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Total pending</p>
-          <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{fmt(totals.pending)}</p>
+          <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100 break-words">{fmt(totals.pending)}</p>
         </div>
       </div>
 

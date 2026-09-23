@@ -263,7 +263,7 @@ export const ProviderManager: React.FC = () => {
               </label>
             )}
             {driver === 'smtp' && (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label className="block text-[11px] font-bold text-gray-600 dark:text-gray-400">Port
                   <input type="number" value={form.port ?? ''} onChange={(e) => set('port', e.target.value ? Number(e.target.value) : undefined)} className={`${inputClass} mt-1 font-normal`} />
                 </label>
@@ -300,7 +300,7 @@ export const ProviderManager: React.FC = () => {
               </label>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="block text-[11px] font-bold text-gray-600 dark:text-gray-400">From email
                 <input required type="email" value={form.from_email} onChange={(e) => set('from_email', e.target.value)} className={`${inputClass} mt-1 font-normal`} placeholder="info@ebizearn.com" />
               </label>

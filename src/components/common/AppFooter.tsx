@@ -11,7 +11,7 @@ export const AppFooter: React.FC = () => {
     <footer className="border-t border-gray-200 dark:border-white/10 py-5 mt-10">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-gray-500 dark:text-gray-400">
         <p>© 2026 eBiz Network (ebizearn.com). All rights reserved.</p>
-        <nav className="flex items-center gap-4" aria-label="Footer">
+        <nav className="flex flex-wrap items-center justify-center gap-4" aria-label="Footer">
           <Link to="/how-it-works" className="hover:text-[#168BFF] transition-colors">
             How It Works
           </Link>

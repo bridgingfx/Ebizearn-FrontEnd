@@ -274,18 +274,18 @@ export const BusinessCampaignsPage: React.FC = () => {
 
                     <div className="grid grid-cols-3 gap-2 text-center mb-4">
                       <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100">{money(c.reward_per_task_cents, 'USD')}</p>
-                        <p className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">per task</p>
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={money(c.reward_per_task_cents, 'USD')}>{money(c.reward_per_task_cents, 'USD')}</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">per task</p>
                       </div>
                       <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100">
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={`${c.completed_contributors_count ?? 0}/${c.target_contributors_count ?? 0}`}>
                           {(c.completed_contributors_count ?? 0)}/{(c.target_contributors_count ?? 0)}
                         </p>
-                        <p className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">done</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">done</p>
                       </div>
                       <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100">{money(spentOf(c), 'USD')}</p>
-                        <p className="text-[9px] text-gray-400 dark:text-gray-500 font-bold uppercase">spent</p>
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={money(spentOf(c), 'USD')}>{money(spentOf(c), 'USD')}</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">spent</p>
                       </div>
                     </div>
 

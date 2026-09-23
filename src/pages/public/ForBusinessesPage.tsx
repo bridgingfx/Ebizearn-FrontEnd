@@ -418,10 +418,10 @@ export const ForBusinessesPage: React.FC = () => {
                 <span className="text-gray-300">UAE Central Bank Escrow & AI Vision Moderation Fee (15%)</span>
                 <span className="font-bold text-white">USD {platformFee.toFixed(2)}</span>
               </div>
-              <div className="flex items-center justify-between pt-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                 <div>
                   <span className="text-xs text-gray-300 block">Total Escrowed Budget (100% Refundable)</span>
-                  <div className="text-2xl sm:text-3xl font-extrabold text-[#20C4E8] mt-0.5">
+                  <div className="text-xl sm:text-2xl font-extrabold text-[#20C4E8] mt-0.5">
                     ${totalBudget} <span className="text-xs font-normal text-white">USD</span>
                   </div>
                 </div>
@@ -512,7 +512,7 @@ export const ForBusinessesPage: React.FC = () => {
           </div>
 
           <div className="glass rounded-3xl overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+            <table className="min-w-[640px] w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-[#07182F] text-white">
                   <th className="p-4 sm:p-5 font-bold">Key Criteria</th>

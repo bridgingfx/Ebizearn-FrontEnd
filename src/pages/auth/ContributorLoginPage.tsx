@@ -15,6 +15,7 @@ import {
   AuthError,
   AuthSubmitButton,
   authInputClass,
+  AuthMethodDivider,
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
@@ -124,6 +125,8 @@ export const ContributorLoginPage: React.FC = () => {
           <span>{notice}</span>
         </div>
       )}
+
+      <AuthMethodDivider label="Continue with email" className="mb-5" />
 
       <form onSubmit={handleLogin} className="space-y-4 lg:space-y-3.5" noValidate>
         <AuthField id="email" label="Email address" error={emailError}>

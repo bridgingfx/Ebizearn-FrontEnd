@@ -185,6 +185,20 @@ export const AuthBadge: React.FC<{ icon: React.ReactNode; label: string; classNa
   </span>
 );
 
+/** Small labeled divider (e.g. "Continue with email") matching the "OR" divider style. */
+export const AuthMethodDivider: React.FC<{ label: string; className?: string }> = ({
+  label,
+  className = '',
+}) => (
+  <div className={`flex items-center gap-4 ${className}`} aria-hidden="true">
+    <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+    <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 whitespace-nowrap">
+      {label}
+    </span>
+    <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+  </div>
+);
+
 interface AuthFieldProps {
   id: string;
   label: string;

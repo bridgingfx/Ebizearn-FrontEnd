@@ -15,6 +15,7 @@ import {
   AuthError,
   AuthSubmitButton,
   authInputClass,
+  AuthMethodDivider,
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
@@ -105,6 +106,8 @@ export const BusinessSignupPage: React.FC = () => {
           <AuthError message={error} />
         </div>
       )}
+
+      <AuthMethodDivider label="Sign up with your email" className="mb-5" />
 
       <form onSubmit={handleSignup} className="space-y-4 lg:space-y-3" noValidate>
         <AuthField id="companyName" label="Company / brand name" error={fieldErrors.companyName}>

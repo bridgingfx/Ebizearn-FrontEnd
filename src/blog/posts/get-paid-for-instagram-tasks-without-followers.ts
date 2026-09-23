@@ -5,7 +5,7 @@ export const post: BlogPost = {
   title: 'How to Get Paid for Instagram Tasks (Without 10K Followers)',
   excerpt: 'You do not need 10K followers to get paid for Instagram tasks. See which tasks are open to small accounts, how verification works, and how to get more of them.',
   category: 'Instagram',
-  tags: ['instagram', 'tasks', 'beginners', 'earn online', 'no followers'],
+  tags: ['instagram', 'tasks', 'beginners', 'earn-online', 'no-followers'],
   author: 'eBizEarn Editorial Team',
   publishedAt: '2026-09-23',
   updatedAt: '2026-09-23',

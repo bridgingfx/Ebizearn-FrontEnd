@@ -5,7 +5,7 @@ export const post: BlogPost = {
   title: 'Get Paid to Like, Follow and Share: 5 Platforms Compared',
   excerpt: 'An honest comparison of five platforms where you can get paid to like, follow, and share — what each one does well, where each falls short, and how to choose.',
   category: 'Getting Started',
-  tags: ['platforms', 'comparison', 'social media tasks', 'microtasks', 'earn online'],
+  tags: ['platforms', 'comparison', 'social-media-tasks', 'microtasks', 'earn-online'],
   author: 'eBizEarn Editorial Team',
   publishedAt: '2026-09-23',
   updatedAt: '2026-09-23',

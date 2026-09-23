@@ -5,7 +5,7 @@ export const post: BlogPost = {
   title: 'Get Paid to Post Instagram Stories: What Brands Pay For',
   excerpt: 'Why do businesses pay for Instagram story reposts? A straight explanation of what brands buy, how story tasks are verified, and how to get more of them.',
   category: 'Instagram',
-  tags: ['instagram', 'stories', 'tasks', 'businesses', 'earn online'],
+  tags: ['instagram', 'stories', 'tasks', 'businesses', 'earn-online'],
   author: 'eBizEarn Editorial Team',
   publishedAt: '2026-09-23',
   updatedAt: '2026-09-23',

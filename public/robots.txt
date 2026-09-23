@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
+# Public content: all marketing pages, legal pages, and /blog/ are crawlable.
+Allow: /blog/
+
 # Member portals (require sign-in; also noindexed via meta robots)
 Disallow: /app/
 Disallow: /business/

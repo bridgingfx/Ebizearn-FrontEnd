@@ -5,7 +5,7 @@ export const post: BlogPost = {
   title: 'Can You Really Earn With Social Media Tasks? Honest Guide',
   excerpt: 'Can you really earn money with social media tasks? Yes — but not like the hype says. An honest look at how the money works, what limits it, and who it suits.',
   category: 'Getting Started',
-  tags: ['honest earnings', 'social media tasks', 'microtasks', 'scams', 'beginners'],
+  tags: ['honest-earnings', 'social-media-tasks', 'microtasks', 'scams', 'beginners'],
   author: 'eBizEarn Editorial Team',
   publishedAt: '2026-09-23',
   updatedAt: '2026-09-23',

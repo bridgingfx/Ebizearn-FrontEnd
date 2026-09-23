@@ -5,7 +5,7 @@ export const post: BlogPost = {
   title: 'Instagram vs TikTok Tasks: Which Earns More in 2026?',
   excerpt: 'Instagram vs TikTok tasks: an honest 2026 comparison of task types, effort, and earning dynamics — and how to choose the right platform for your accounts.',
   category: 'Instagram',
-  tags: ['instagram', 'tiktok', 'comparison', 'tasks', 'earn online'],
+  tags: ['instagram', 'tiktok', 'comparison', 'tasks', 'earn-online'],
   author: 'eBizEarn Editorial Team',
   publishedAt: '2026-09-23',
   updatedAt: '2026-09-23',

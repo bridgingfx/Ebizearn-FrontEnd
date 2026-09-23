@@ -5,7 +5,7 @@ export const post: BlogPost = {
   title: 'Social Media Tasks vs. Surveys: Which Pays More in 2026?',
   excerpt: 'Social media tasks vs. paid surveys: an honest comparison of pay per hour, qualification headaches, flexibility, and which one deserves your spare time in 2026.',
   category: 'Getting Started',
-  tags: ['social media tasks', 'surveys', 'comparison', 'earn online', 'side income'],
+  tags: ['social-media-tasks', 'surveys', 'comparison', 'earn-online', 'side-income'],
   author: 'eBizEarn Editorial Team',
   publishedAt: '2026-09-23',
   updatedAt: '2026-09-23',

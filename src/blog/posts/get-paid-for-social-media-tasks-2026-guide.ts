@@ -5,7 +5,7 @@ export const post: BlogPost = {
   title: 'Get Paid for Social Media Tasks: How It Works in 2026',
   excerpt: 'A hype-free guide to getting paid for social media tasks in 2026: how task marketplaces work, what tasks pay, and how verification and payouts really happen.',
   category: 'Getting Started',
-  tags: ['social media tasks', 'microtasks', 'earn online', 'beginners', 'verification', 'payouts'],
+  tags: ['social-media-tasks', 'microtasks', 'earn-online', 'beginners', 'verification', 'payouts'],
   author: 'eBizEarn Editorial Team',
   publishedAt: '2026-09-23',
   updatedAt: '2026-09-23',

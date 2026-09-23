@@ -246,7 +246,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           type="button"
           onClick={handleGoogle}
           disabled={busy !== null}
-          className="min-h-[52px] px-4 rounded-2xl bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 dark:active:bg-white/10 transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+          className="min-h-[52px] px-3 sm:px-4 rounded-2xl bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 dark:active:bg-white/10 transition-all flex items-center justify-center gap-2.5 disabled:opacity-60"
           aria-label={`${verb} with Google`}
         >
           {busy === 'google' ? (
@@ -254,7 +254,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           ) : (
             <GoogleLogo className="w-5 h-5 shrink-0" />
           )}
-          <span className="text-base font-semibold text-slate-700 dark:text-gray-300">{verb} with Google</span>
+          <span className="text-[15px] font-semibold whitespace-nowrap text-slate-700 dark:text-gray-300">{verb} with Google</span>
         </button>
 
         {/* Apple — official black button */}
@@ -262,7 +262,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           type="button"
           onClick={handleApple}
           disabled={busy !== null}
-          className="min-h-[52px] px-4 rounded-2xl bg-black hover:bg-[#1d1d1f] active:bg-[#2d2d2f] transition-all flex items-center justify-center gap-3 disabled:opacity-60"
+          className="min-h-[52px] px-3 sm:px-4 rounded-2xl bg-black hover:bg-[#1d1d1f] active:bg-[#2d2d2f] transition-all flex items-center justify-center gap-2.5 disabled:opacity-60"
           aria-label={`${verb} with Apple`}
         >
           {busy === 'apple' ? (
@@ -270,7 +270,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           ) : (
             <AppleLogo className="w-5 h-5 shrink-0 text-white" />
           )}
-          <span className="text-base font-semibold text-white">{verb} with Apple</span>
+          <span className="text-[15px] font-semibold whitespace-nowrap text-white">{verb} with Apple</span>
         </button>
       </div>
 

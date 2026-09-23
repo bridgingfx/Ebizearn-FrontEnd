@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   Building2,
+  Gift,
   HandCoins,
   Landmark,
   ScanSearch,
@@ -38,6 +39,7 @@ export const BusinessSignupPage: React.FC = () => {
   const [website, setWebsite] = useState('');
   const [industry, setIndustry] = useState('Tech & SaaS');
   const [phone, setPhone] = useState<PhoneValue>({ dialCode: DEFAULT_DIAL, number: '' });
+  const [referralCode, setReferralCode] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +76,7 @@ export const BusinessSignupPage: React.FC = () => {
         password,
         role: 'business',
         company_name: companyName.trim(),
+        referral_code: referralCode.trim() || undefined,
         phone: phoneToE164(phone),
       });
 
@@ -231,6 +234,21 @@ export const BusinessSignupPage: React.FC = () => {
             large
             showStrength
           />
+        </AuthField>
+
+        <AuthField id="referral" label="Referral code" hint="Optional">
+          <div className="relative">
+            <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-4 top-[18px]" />
+            <input
+              id="referral"
+              type="text"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value)}
+              placeholder="Optional"
+              autoComplete="off"
+              className={`${authInputClass} pl-11 uppercase`}
+            />
+          </div>
         </AuthField>
 
         <AuthSubmitButton loading={submitting} loadingLabel="Setting up your workspace…" className="bg-[#07182F] hover:bg-[#0D2342] shadow-lg shadow-slate-900/25">

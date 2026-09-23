@@ -199,35 +199,18 @@ export const ContributorSignupPage: React.FC = () => {
           />
         </AuthField>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <AuthField id="country" label="Country">
-            <select
-              id="country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className={`${authInputClass} min-h-[52px]`}
-            >
-              {COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code}>{c.name}</option>
-              ))}
-            </select>
-          </AuthField>
-
-          <AuthField id="referral" label="Referral code" hint="Optional">
-            <div className="relative">
-              <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-4 top-[18px]" />
-              <input
-                id="referral"
-                type="text"
-                value={referralCode}
-                onChange={(e) => setReferralCode(e.target.value)}
-                placeholder="Optional"
-                autoComplete="off"
-                className={`${authInputClass} pl-11 uppercase`}
-              />
-            </div>
-          </AuthField>
-        </div>
+        <AuthField id="country" label="Country">
+          <select
+            id="country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className={`${authInputClass} min-h-[52px]`}
+          >
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>{c.name}</option>
+            ))}
+          </select>
+        </AuthField>
 
         <PhoneField
           id="phone"
@@ -246,6 +229,21 @@ export const ContributorSignupPage: React.FC = () => {
           error={fieldErrors.phone || undefined}
           hint="Required for account security and payout alerts."
         />
+
+        <AuthField id="referral" label="Referral code" hint="Optional">
+          <div className="relative">
+            <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-4 top-[18px]" />
+            <input
+              id="referral"
+              type="text"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value)}
+              placeholder="Optional"
+              autoComplete="off"
+              className={`${authInputClass} pl-11 uppercase`}
+            />
+          </div>
+        </AuthField>
 
         <AuthSubmitButton loading={submitting} loadingLabel="Creating your account…">
           <span>Create free account</span>

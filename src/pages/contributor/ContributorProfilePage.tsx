@@ -259,7 +259,7 @@ export const ContributorProfilePage: React.FC = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 px-6 border-t border-gray-100 dark:border-white/10 overflow-x-auto">
+        <div className="flex items-center gap-2 px-6 border-t border-gray-100 dark:border-white/10 overflow-x-auto no-scrollbar">
           {[
             { id: 'profile', label: 'Personal Information', icon: User },
             { id: 'kyc', label: 'KYC Verification', icon: ShieldCheck },

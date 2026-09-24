@@ -22,8 +22,8 @@ export const TICKET_STATUS_LABELS: Record<TicketStatus, string> = {
 
 export const TICKET_STATUS_STYLES: Record<TicketStatus, string> = {
   open: 'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30',
-  in_progress: 'bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] border-blue-200 dark:border-blue-500/30',
-  resolved: 'bg-emerald-50 dark:bg-emerald-500/15 text-[#16B364] border-emerald-200 dark:border-emerald-500/30',
+  in_progress: 'bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] dark:text-blue-300 border-blue-200 dark:border-blue-500/30',
+  resolved: 'bg-emerald-50 dark:bg-emerald-500/15 text-[#16B364] dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30',
   closed: 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-white/10',
 };
 

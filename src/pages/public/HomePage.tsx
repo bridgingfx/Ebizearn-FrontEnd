@@ -240,7 +240,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 1: Top-Left (+$50.00 Verified Cash) */}
-              <div className="absolute top-5 left-0 sm:-left-4 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-3 py-2.5 rounded-xl shadow-2xl border border-slate-100/90 flex items-center gap-2.5 animate-float max-w-[185px]">
+              <div className="absolute top-12 left-0 sm:-left-4 z-30 bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 px-3 py-2.5 rounded-xl shadow-2xl border border-slate-100/90 flex items-center gap-2.5 animate-float max-w-[185px]">
                 <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>

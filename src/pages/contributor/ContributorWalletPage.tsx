@@ -321,7 +321,7 @@ export const ContributorWalletPage: React.FC = () => {
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <h2 className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-gray-100">Activity</h2>
-              <div className="inline-flex rounded-2xl bg-slate-100 dark:bg-white/10 p-1 w-fit" role="tablist" aria-label="Transaction filter">
+              <div className="inline-flex max-w-full overflow-x-auto no-scrollbar rounded-2xl bg-slate-100 dark:bg-white/10 p-1" role="tablist" aria-label="Transaction filter">
                 {(
                   [
                     { value: 'all', label: 'All' },
@@ -335,7 +335,7 @@ export const ContributorWalletPage: React.FC = () => {
                     role="tab"
                     aria-selected={tab === t.value}
                     onClick={() => setTab(t.value)}
-                    className={`min-h-[44px] px-5 rounded-xl text-sm font-bold transition-all ${
+                    className={`min-h-[44px] px-5 rounded-xl text-sm font-bold transition-all shrink-0 ${
                       tab === t.value ? 'bg-white dark:bg-[#0C1322] text-slate-900 dark:text-gray-100 shadow-md' : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-300'
                     }`}
                   >

@@ -81,14 +81,14 @@ export const BusinessLayout: React.FC = () => {
           DESKTOP SIDEBAR
          ========================================================================= */}
       <aside className="hidden md:flex flex-col w-64 bg-[#07182F] text-white sticky top-0 h-screen p-5 justify-between shadow-xl z-30 shrink-0">
-        <div>
+        <div className="flex-1 min-h-0 flex flex-col">
           {/* Logo */}
-          <Link to="/" className="flex items-center pb-5 border-b border-white/10 mb-6">
+          <Link to="/" className="flex items-center pb-5 border-b border-white/10 mb-6 shrink-0">
             <EBizLogo variant="dark" size="sm" subtitleText="Business Enterprise" />
           </Link>
 
           {/* Nav Items */}
-          <nav className="space-y-1.5">
+          <nav className="space-y-1.5 flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar -mx-1 px-1 py-1">
             {navItems.map((item) => {
               const isActive = item.exact
                 ? location.pathname === item.path
@@ -113,7 +113,7 @@ export const BusinessLayout: React.FC = () => {
         </div>
 
         {/* Sidebar Footer */}
-        <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
+        <div className="space-y-3 pt-4 border-t border-white/10 text-xs shrink-0">
           <Link
             to="/business/support"
             className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
@@ -259,7 +259,7 @@ export const BusinessLayout: React.FC = () => {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 max-h-[55vh] overflow-y-auto">
               {moreItems.map((item) => {
                 const Icon = item.icon;
                 const active = location.pathname.startsWith(item.path);

@@ -335,7 +335,7 @@ export const ContributorSupportPage: React.FC = () => {
                       {TICKET_CATEGORY_LABELS[t.category] ?? t.category}
                     </td>
                     <td className="py-4 px-5">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${TICKET_STATUS_STYLES[t.status]}`}>
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border whitespace-nowrap ${TICKET_STATUS_STYLES[t.status]}`}>
                         {TICKET_STATUS_LABELS[t.status]}
                       </span>
                     </td>

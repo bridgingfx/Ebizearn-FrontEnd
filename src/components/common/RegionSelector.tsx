@@ -86,7 +86,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`Region: ${current.name}, currency ${current.currency}. Change region`}
-        className={`flex items-center gap-2 pl-2 pr-2.5 py-1.5 rounded-full border transition-all min-h-[40px] ${
+        className={`flex items-center gap-2 pl-2 pr-2.5 rounded-full border transition-all h-10 shrink-0 ${
           dark
             ? 'border-white/15 bg-white/[0.06] hover:bg-white/[0.12] text-white'
             : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-gray-200 shadow-xs'

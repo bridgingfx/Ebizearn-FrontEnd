@@ -273,7 +273,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
         <div className="space-y-4">
           {/* Quick Queue Item Switcher */}
           {queue.length > 1 && (
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 bg-white dark:bg-[#0C1322] p-2.5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 bg-white dark:bg-[#0C1322] p-2.5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs">
               <span className="text-xs font-bold text-gray-500 dark:text-gray-400 shrink-0 ml-1">Pending Queue:</span>
               <div className="flex items-center gap-2">
                 {queue.map((sub) => {

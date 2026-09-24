@@ -67,7 +67,7 @@ const Card: React.FC<{ title: string; icon: React.ElementType; action?: React.Re
   <section className={`bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs ${className}`}>
     <header className="px-5 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between gap-3">
       <h2 className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-2">
-        <Icon className="w-4 h-4 text-[#168BFF]" /> {title}
+        <Icon className="w-4 h-4 text-[#168BFF] dark:text-blue-300" /> {title}
       </h2>
       {action}
     </header>
@@ -77,7 +77,7 @@ const Card: React.FC<{ title: string; icon: React.ElementType; action?: React.Re
 
 const Field: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
   <div className="min-w-0">
-    <dt className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{label}</dt>
+    <dt className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{label}</dt>
     <dd className="text-xs font-semibold text-gray-900 dark:text-gray-100 mt-0.5 break-words">{value ?? '—'}</dd>
   </div>
 );
@@ -197,7 +197,7 @@ export const AdminUserDetailPage: React.FC = () => {
 
   if (loading && !data) {
     return (
-      <div className="py-24 text-center text-gray-400">
+      <div className="py-24 text-center text-gray-400 dark:text-gray-500">
         <Loader2 className="w-7 h-7 animate-spin inline-block" />
       </div>
     );
@@ -206,7 +206,7 @@ export const AdminUserDetailPage: React.FC = () => {
   if (error || !data) {
     return (
       <div className="space-y-4">
-        <Link to="/admin/users" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-gray-100">
+        <Link to="/admin/users" className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
           <ArrowLeft className="w-4 h-4" /> Back to users
         </Link>
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl p-5 text-sm text-red-700 dark:text-red-300 flex items-center gap-2">
@@ -234,7 +234,7 @@ export const AdminUserDetailPage: React.FC = () => {
           <div className="flex items-start gap-4 min-w-0">
             {/* Only the avatar overlaps the banner; the name sits below it. */}
             {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="" className="-mt-10 w-20 h-20 shrink-0 rounded-2xl object-cover ring-4 ring-white dark:ring-[#0C1322] bg-white" />
+              <img src={profile.avatar_url} alt="" className="-mt-10 w-20 h-20 shrink-0 rounded-2xl object-cover ring-4 ring-white dark:ring-[#0C1322] bg-white dark:bg-[#0C1322]" />
             ) : (
               <div className="-mt-10 w-20 h-20 shrink-0 rounded-2xl bg-[#0E1C2F] text-white text-2xl font-black flex items-center justify-center ring-4 ring-white dark:ring-[#0C1322]">
                 {initials}
@@ -307,7 +307,7 @@ export const AdminUserDetailPage: React.FC = () => {
           { label: 'Open tickets', value: stats.tickets_open, icon: Headset },
         ].map((s) => (
           <div key={s.label} className="p-4 rounded-2xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs">
-            <s.icon className="w-4 h-4 text-[#168BFF]" />
+            <s.icon className="w-4 h-4 text-[#168BFF] dark:text-blue-300" />
             <p className="mt-2 text-base font-black text-gray-900 dark:text-gray-100 truncate">{s.value}</p>
             <p className="text-[11px] text-gray-500 dark:text-gray-400">{s.label}</p>
           </div>
@@ -319,17 +319,17 @@ export const AdminUserDetailPage: React.FC = () => {
           {/* Account & profile */}
           <Card title="Account & profile" icon={FileText}>
             <dl className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
-              <Field label="Email" value={<span className="inline-flex items-center gap-1"><Mail className="w-3 h-3 text-gray-400" /> {user.email}</span>} />
+              <Field label="Email" value={<span className="inline-flex items-center gap-1"><Mail className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {user.email}</span>} />
               <Field label="Email verified" value={user.email_verified_at ? dateTime(user.email_verified_at) : 'Not verified'} />
-              <Field label="Phone" value={user.phone || profile?.phone ? <span className="inline-flex items-center gap-1"><Phone className="w-3 h-3 text-gray-400" /> {user.phone || profile?.phone}</span> : '—'} />
-              <Field label="Country" value={profile?.country_code ? <span className="inline-flex items-center gap-1"><Globe className="w-3 h-3 text-gray-400" /> {profile.country_code}</span> : '—'} />
-              <Field label="City" value={profile?.city ? <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3 text-gray-400" /> {profile.city}</span> : '—'} />
+              <Field label="Phone" value={user.phone || profile?.phone ? <span className="inline-flex items-center gap-1"><Phone className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {user.phone || profile?.phone}</span> : '—'} />
+              <Field label="Country" value={profile?.country_code ? <span className="inline-flex items-center gap-1"><Globe className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {profile.country_code}</span> : '—'} />
+              <Field label="City" value={profile?.city ? <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {profile.city}</span> : '—'} />
               <Field label="Language" value={profile?.language?.toUpperCase()} />
-              <Field label="Joined" value={<span className="inline-flex items-center gap-1"><CalendarDays className="w-3 h-3 text-gray-400" /> {dateTime(user.created_at)}</span>} />
+              <Field label="Joined" value={<span className="inline-flex items-center gap-1"><CalendarDays className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {dateTime(user.created_at)}</span>} />
               <Field label="Referral code" value={user.referral_code ? <span className="font-mono">{user.referral_code}</span> : '—'} />
               <Field
                 label="Referred by"
-                value={user.referrer ? <Link to={`/admin/users/${user.referrer.id}`} className="text-[#168BFF] hover:underline">{user.referrer.name}</Link> : '—'}
+                value={user.referrer ? <Link to={`/admin/users/${user.referrer.id}`} className="text-[#168BFF] dark:text-blue-300 hover:underline">{user.referrer.name}</Link> : '—'}
               />
               {user.role === 'contributor' && (
                 <>
@@ -384,20 +384,20 @@ export const AdminUserDetailPage: React.FC = () => {
                 {docsState === 'denied' || !canReviewKyc ? (
                   <p className="text-xs text-gray-500 dark:text-gray-400">You don't have permission to view KYC documents.</p>
                 ) : docsState === 'loading' ? (
-                  <div className="py-6 text-center text-gray-400">
+                  <div className="py-6 text-center text-gray-400 dark:text-gray-500">
                     <Loader2 className="w-5 h-5 animate-spin inline-block" />
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {docs.map((d) => (
                       <figure key={d.side} className="space-y-1.5">
-                        <figcaption className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{SIDE_LABELS[d.side]}</figcaption>
+                        <figcaption className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{SIDE_LABELS[d.side]}</figcaption>
                         {d.isPdf ? (
                           <a
                             href={d.url}
                             target="_blank"
                             rel="noreferrer"
-                            className="h-44 flex flex-col items-center justify-center gap-2 rounded-2xl border border-gray-200 dark:border-white/10 text-xs font-bold text-[#168BFF] hover:bg-gray-50 dark:hover:bg-white/5"
+                            className="h-44 flex flex-col items-center justify-center gap-2 rounded-2xl border border-gray-200 dark:border-white/10 text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:bg-gray-50 dark:hover:bg-white/5"
                           >
                             <FileText className="w-7 h-7" /> Open PDF
                           </a>
@@ -450,14 +450,14 @@ export const AdminUserDetailPage: React.FC = () => {
           </Card>
 
           {/* Withdrawals */}
-          <Card title="Recent withdrawals" icon={ArrowUpRight} action={<Link to="/admin/withdrawals" className="text-[11px] font-bold text-[#168BFF] hover:underline">All withdrawals</Link>}>
+          <Card title="Recent withdrawals" icon={ArrowUpRight} action={<Link to="/admin/withdrawals" className="text-[11px] font-bold text-[#168BFF] dark:text-blue-300 hover:underline">All withdrawals</Link>}>
             {withdrawals.length === 0 ? (
               <p className="text-xs text-gray-500 dark:text-gray-400">No withdrawal requests.</p>
             ) : (
               <div className="overflow-x-auto -mx-5">
                 <table className="w-full text-xs min-w-[480px]">
                   <thead>
-                    <tr className="text-left text-[10px] uppercase tracking-wider text-gray-400 border-b border-gray-100 dark:border-white/10">
+                    <tr className="text-left text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                       <th className="py-2 px-5 font-bold">Amount</th>
                       <th className="py-2 px-5 font-bold">Method</th>
                       <th className="py-2 px-5 font-bold">Status</th>
@@ -470,7 +470,7 @@ export const AdminUserDetailPage: React.FC = () => {
                         <td className="py-2.5 px-5 font-bold text-gray-900 dark:text-gray-100">{money(w.amount_cents, w.currency)}</td>
                         <td className="py-2.5 px-5 text-gray-600 dark:text-gray-400 capitalize">{w.payout_method?.replace(/_/g, ' ')}</td>
                         <td className="py-2.5 px-5 capitalize text-gray-700 dark:text-gray-300">{w.status.replace(/_/g, ' ')}</td>
-                        <td className="py-2.5 px-5 text-right text-gray-500">{dateTime(w.created_at)}</td>
+                        <td className="py-2.5 px-5 text-right text-gray-500 dark:text-gray-400">{dateTime(w.created_at)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -490,7 +490,7 @@ export const AdminUserDetailPage: React.FC = () => {
                 <p className="text-[11px] text-gray-500 dark:text-gray-400">Effective permissions (role + overrides). Only Super Admin can change them.</p>
                 <div className="flex flex-wrap gap-1.5">
                   {permissions.effective.length === 0 ? (
-                    <span className="text-xs text-gray-500">None</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">None</span>
                   ) : (
                     permissions.effective.map((p) => (
                       <span
@@ -506,7 +506,7 @@ export const AdminUserDetailPage: React.FC = () => {
                     ))
                   )}
                   {permissions.denies.map((p) => (
-                    <span key={p} className="text-[10px] font-mono px-2 py-1 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-600 line-through">
+                    <span key={p} className="text-[10px] font-mono px-2 py-1 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 line-through">
                       {p}
                     </span>
                   ))}
@@ -516,7 +516,7 @@ export const AdminUserDetailPage: React.FC = () => {
           </Card>
 
           {/* Tickets */}
-          <Card title="Support tickets" icon={Headset} action={<Link to="/admin/support" className="text-[11px] font-bold text-[#168BFF] hover:underline">Support desk</Link>}>
+          <Card title="Support tickets" icon={Headset} action={<Link to="/admin/support" className="text-[11px] font-bold text-[#168BFF] dark:text-blue-300 hover:underline">Support desk</Link>}>
             {tickets.length === 0 ? (
               <p className="text-xs text-gray-500 dark:text-gray-400">No tickets.</p>
             ) : (
@@ -525,7 +525,7 @@ export const AdminUserDetailPage: React.FC = () => {
                   <li key={t.uuid} className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{t.subject}</p>
-                      <p className="text-[10px] text-gray-400"><span className="font-mono">{t.reference}</span> · {formatTicketTime(t.updated_at)}</p>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500"><span className="font-mono">{t.reference}</span> · {formatTicketTime(t.updated_at)}</p>
                     </div>
                     <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold border ${TICKET_STATUS_STYLES[t.status]}`}>
                       {TICKET_STATUS_LABELS[t.status]}
@@ -537,7 +537,7 @@ export const AdminUserDetailPage: React.FC = () => {
           </Card>
 
           {/* Activity */}
-          <Card title="Recent activity" icon={ScrollText} action={<Link to="/admin/audit" className="text-[11px] font-bold text-[#168BFF] hover:underline">Audit log</Link>}>
+          <Card title="Recent activity" icon={ScrollText} action={<Link to="/admin/audit" className="text-[11px] font-bold text-[#168BFF] dark:text-blue-300 hover:underline">Audit log</Link>}>
             {audit.length === 0 ? (
               <p className="text-xs text-gray-500 dark:text-gray-400">No recorded activity.</p>
             ) : (

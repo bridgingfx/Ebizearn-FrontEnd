@@ -125,7 +125,7 @@ export const AdminReferralsPage: React.FC = () => {
                     <th className="px-5 py-3 font-bold text-right">Reversed</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-gray-50 dark:divide-white/5">
                   {levelRows.map((r) => (
                     <tr key={r.level} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                       <td className="px-5 py-3.5 font-bold text-gray-900 dark:text-gray-100">Level {r.level}</td>
@@ -158,7 +158,7 @@ export const AdminReferralsPage: React.FC = () => {
                     <th className="px-5 py-3 font-bold">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-gray-50 dark:divide-white/5">
                   {recent.map((r) => (
                     <tr key={r.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                       <td className="px-5 py-3.5 font-semibold text-gray-900 dark:text-gray-100">{r.referrer?.name ?? `#${r.id}`}</td>

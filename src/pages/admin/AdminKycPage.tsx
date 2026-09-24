@@ -179,7 +179,7 @@ export const AdminKycPage: React.FC = () => {
             ))}
           </div>
           <div className="relative w-full lg:w-72">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={search}
@@ -193,7 +193,7 @@ export const AdminKycPage: React.FC = () => {
         {error ? (
           <div className="p-8 text-center text-sm text-red-600 dark:text-red-400 font-semibold">{error}</div>
         ) : loading && rows.length === 0 ? (
-          <div className="p-12 text-center text-gray-400">
+          <div className="p-12 text-center text-gray-400 dark:text-gray-500">
             <Loader2 className="w-6 h-6 animate-spin inline-block" />
           </div>
         ) : rows.length === 0 ? (
@@ -212,7 +212,7 @@ export const AdminKycPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-4">Document</th>
                   <th className="py-3 px-4">Files</th>
@@ -289,7 +289,7 @@ export const AdminKycPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="p-2 rounded-xl text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 shrink-0"
+                className="p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -297,7 +297,7 @@ export const AdminKycPage: React.FC = () => {
 
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               {docsLoading && (
-                <div className="text-center text-gray-400 py-8">
+                <div className="text-center text-gray-400 dark:text-gray-500 py-8">
                   <Loader2 className="w-6 h-6 animate-spin inline-block" />
                 </div>
               )}
@@ -306,13 +306,13 @@ export const AdminKycPage: React.FC = () => {
               )}
               {docs.map((d) => (
                 <div key={d.side} className="space-y-1.5">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">{SIDE_LABELS[d.side]}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{SIDE_LABELS[d.side]}</p>
                   {d.isPdf ? (
                     <a
                       href={d.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-2 p-4 rounded-xl border border-gray-200 dark:border-white/10 text-xs font-bold text-[#168BFF] hover:bg-gray-50 dark:hover:bg-white/5"
+                      className="flex items-center gap-2 p-4 rounded-xl border border-gray-200 dark:border-white/10 text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:bg-gray-50 dark:hover:bg-white/5"
                     >
                       <FileText className="w-5 h-5" /> Open PDF in a new tab
                     </a>

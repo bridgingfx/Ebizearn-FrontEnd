@@ -170,7 +170,7 @@ export const AdminPayoutsPage: React.FC = () => {
 
       {loadError && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700 dark:text-red-300">Could not load payout queue</p>
             <p className="text-red-600 dark:text-red-400 mt-1">{loadError}</p>
@@ -226,7 +226,7 @@ export const AdminPayoutsPage: React.FC = () => {
                     </span>
                     <span className="text-[11px] text-gray-400 dark:text-gray-500">{new Date(p.created_at).toLocaleString()}</span>
                     {p.user?.profile?.kyc_status === 'verified' && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                         <ShieldCheck className="w-3 h-3" /> KYC verified
                       </span>
                     )}

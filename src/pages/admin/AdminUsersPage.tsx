@@ -94,7 +94,7 @@ export const AdminUsersPage: React.FC = () => {
         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Users & KYC</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Every user on the platform, served live. Review identity documents in the{' '}
-          <Link to="/admin/kyc" className="text-[#168BFF] font-bold hover:underline">KYC Review</Link> queue.
+          <Link to="/admin/kyc" className="text-[#168BFF] dark:text-blue-300 font-bold hover:underline">KYC Review</Link> queue.
         </p>
       </div>
 
@@ -138,7 +138,7 @@ export const AdminUsersPage: React.FC = () => {
 
       {error && !loading && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700 dark:text-red-300">Could not load users</p>
             <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
@@ -177,7 +177,7 @@ export const AdminUsersPage: React.FC = () => {
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
+                  <tr key={u.id} className="border-b border-gray-50 dark:border-white/5 last:border-0 hover:bg-gray-50/60 dark:hover:bg-white/5">
                     <td className="py-3 px-4">
                       <Link to={`/admin/users/${u.id}`} className="font-bold text-gray-900 dark:text-gray-100 hover:text-[#168BFF] hover:underline">
                         {u.name}

@@ -164,7 +164,7 @@ export const AdminPermissionsPage: React.FC = () => {
       )}
 
       {loading ? (
-        <div className="py-16 text-center text-gray-400">
+        <div className="py-16 text-center text-gray-400 dark:text-gray-500">
           <Loader2 className="w-6 h-6 animate-spin inline-block" />
         </div>
       ) : (
@@ -224,11 +224,11 @@ export const AdminPermissionsPage: React.FC = () => {
                 return (
                   <div key={group}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">{PERMISSION_GROUP_LABELS[group]}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{PERMISSION_GROUP_LABELS[group]}</p>
                       <button
                         type="button"
                         onClick={() => setGroup(perms, !allOn)}
-                        className="text-[11px] font-bold text-[#168BFF] hover:underline"
+                        className="text-[11px] font-bold text-[#168BFF] dark:text-blue-300 hover:underline"
                       >
                         {allOn ? 'Turn all off' : 'Turn all on'}
                       </button>
@@ -251,7 +251,7 @@ export const AdminPermissionsPage: React.FC = () => {
                           >
                             <span className="min-w-0">
                               <span className="block text-xs font-bold text-gray-900 dark:text-gray-100">{p.label}</span>
-                              <span className="block text-[10px] font-mono text-gray-400">{p.name}</span>
+                              <span className="block text-[10px] font-mono text-gray-400 dark:text-gray-500">{p.name}</span>
                             </span>
                             <span
                               className={`relative w-10 h-6 rounded-full shrink-0 transition-colors ${
@@ -259,7 +259,7 @@ export const AdminPermissionsPage: React.FC = () => {
                               }`}
                             >
                               <span
-                                className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${on ? 'left-[18px]' : 'left-0.5'}`}
+                                className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all${on ? 'left-[18px]' : 'left-0.5'}`}
                               />
                             </span>
                           </button>
@@ -278,7 +278,7 @@ export const AdminPermissionsPage: React.FC = () => {
                     {msg.ok ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />} {msg.text}
                   </p>
                 ) : dirty ? (
-                  <p className="text-xs font-semibold text-amber-600">Unsaved changes</p>
+                  <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">Unsaved changes</p>
                 ) : null}
               </div>
               <div className="flex gap-2">
@@ -325,7 +325,7 @@ export const AdminPermissionsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setPicked(null)}
-                    className="p-2 rounded-xl text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10"
+                    className="p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -334,14 +334,14 @@ export const AdminPermissionsPage: React.FC = () => {
               </div>
             ) : (
               <div className="relative max-w-md">
-                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search a user by name or email…"
                   className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF]"
                 />
-                {searching && <Loader2 className="w-4 h-4 animate-spin text-gray-400 absolute right-3 top-3" />}
+                {searching && <Loader2 className="w-4 h-4 animate-spin text-gray-400 dark:text-gray-500 absolute right-3 top-3" />}
                 {results.length > 0 && (
                   <ul className="mt-2 rounded-2xl border border-gray-200 dark:border-white/10 divide-y divide-gray-100 dark:divide-white/10 overflow-hidden">
                     {results.map((u) => (

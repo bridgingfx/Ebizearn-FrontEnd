@@ -163,7 +163,7 @@ export const ReferralCommissionSettings: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="py-14 text-center text-gray-400">
+        <div className="py-14 text-center text-gray-400 dark:text-gray-500">
           <Loader2 className="w-6 h-6 animate-spin inline-block" />
         </div>
       ) : error ? (
@@ -175,7 +175,7 @@ export const ReferralCommissionSettings: React.FC = () => {
         <>
           {!canEdit && (
             <div className="mx-6 mt-5 p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 flex items-start gap-2.5">
-              <KeyRound className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+              <KeyRound className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
               <p className="text-[12px] text-amber-800 dark:text-amber-200">
                 Only Super Admin can change commissions. Super Admin can give you access under{' '}
                 <b>Roles &amp; Permissions → “Change referral commissions”</b>.
@@ -205,7 +205,7 @@ export const ReferralCommissionSettings: React.FC = () => {
                       </span>
                       <div>
                         <p className="text-sm font-black text-gray-900 dark:text-gray-100">{copy.title}</p>
-                        <p className="text-[10px] text-gray-400">{copy.chain}</p>
+                        <p className="text-[10px] text-gray-400 dark:text-gray-500">{copy.chain}</p>
                       </div>
                     </div>
                     <button
@@ -219,7 +219,7 @@ export const ReferralCommissionSettings: React.FC = () => {
                         d.enabled ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-white/20'
                       }`}
                     >
-                      <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${d.enabled ? 'left-[18px]' : 'left-0.5'}`} />
+                      <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all${d.enabled ? 'left-[18px]' : 'left-0.5'}`} />
                     </button>
                   </div>
 
@@ -250,7 +250,7 @@ export const ReferralCommissionSettings: React.FC = () => {
                         err && dirty ? 'border-red-400' : 'border-gray-200 dark:border-white/10 focus-within:border-[#168BFF]'
                       }`}
                     >
-                      {d.mode === 'flat' && <span className="text-lg font-black text-gray-400">$</span>}
+                      {d.mode === 'flat' && <span className="text-lg font-black text-gray-400 dark:text-gray-500">$</span>}
                       <input
                         type="number"
                         inputMode="decimal"
@@ -263,9 +263,9 @@ export const ReferralCommissionSettings: React.FC = () => {
                         aria-label={`Level ${d.level} ${d.mode === 'flat' ? 'amount in dollars' : 'percentage'}`}
                         className="w-full bg-transparent py-2.5 px-1.5 text-2xl font-black text-gray-900 dark:text-gray-100 tabular-nums focus:outline-none disabled:cursor-not-allowed"
                       />
-                      {d.mode === 'percent' && <span className="text-lg font-black text-gray-400">%</span>}
+                      {d.mode === 'percent' && <span className="text-lg font-black text-gray-400 dark:text-gray-500">%</span>}
                     </div>
-                    {err && dirty && <p className="text-[11px] font-semibold text-red-600 mt-1">{err}</p>}
+                    {err && dirty && <p className="text-[11px] font-semibold text-red-600 dark:text-red-400 mt-1">{err}</p>}
                   </div>
 
                   <p className="mt-3 text-[11px] text-gray-500 dark:text-gray-400 leading-snug">{preview(d)}</p>
@@ -325,7 +325,7 @@ export const ReferralCommissionSettings: React.FC = () => {
               </div>
             ) : (
               user?.role === 'superadmin' && (
-                <Link to="/admin/permissions" className="text-xs font-bold text-[#168BFF] hover:underline">
+                <Link to="/admin/permissions" className="text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:underline">
                   Manage access
                 </Link>
               )

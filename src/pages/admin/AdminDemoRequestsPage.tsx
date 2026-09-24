@@ -90,7 +90,7 @@ export const AdminDemoRequestsPage: React.FC = () => {
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
                     <span className="inline-flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5" />
-                      <a href={`mailto:${r.email}`} className="text-[#168BFF] font-semibold hover:underline">
+                      <a href={`mailto:${r.email}`} className="text-[#168BFF] dark:text-blue-300 font-semibold hover:underline">
                         {r.email}
                       </a>
                     </span>

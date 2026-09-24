@@ -76,7 +76,7 @@ export const AdminAuditLogsPage: React.FC = () => {
 
       {error && !loading && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700 dark:text-red-300">Could not load audit logs</p>
             <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
@@ -115,10 +115,10 @@ export const AdminAuditLogsPage: React.FC = () => {
               </thead>
               <tbody>
                 {filtered.map((l) => (
-                  <tr key={l.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
+                  <tr key={l.id} className="border-b border-gray-50 dark:border-white/5 last:border-0 hover:bg-gray-50/60 dark:hover:bg-white/5">
                     <td className="py-3 px-4">
                       <span className="block text-xs font-bold text-gray-900 dark:text-gray-100">{humanizeAction(l.action)}</span>
-                      <span className="block text-[10px] font-mono text-gray-400">{l.action}</span>
+                      <span className="block text-[10px] font-mono text-gray-400 dark:text-gray-500">{l.action}</span>
                     </td>
                     <td className="py-3 px-4 text-xs">
                       {(() => {
@@ -126,7 +126,7 @@ export const AdminAuditLogsPage: React.FC = () => {
                         return page.path ? (
                           <Link
                             to={page.path}
-                            className="inline-flex px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] font-bold text-[11px] hover:underline"
+                            className="inline-flex px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] dark:text-blue-300 font-bold text-[11px] hover:underline"
                           >
                             {page.label}
                           </Link>
@@ -139,11 +139,11 @@ export const AdminAuditLogsPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">
                       <span className="block font-semibold text-gray-900 dark:text-gray-100">
-                        {humanizeModel(auditModel(l))} <span className="font-mono text-gray-400">#{l.entity_id}</span>
+                        {humanizeModel(auditModel(l))} <span className="font-mono text-gray-400 dark:text-gray-500">#{l.entity_id}</span>
                       </span>
                       {l.entity_name &&
                         (auditEntityLink(l)?.startsWith('/admin/users/') ? (
-                          <Link to={auditEntityLink(l)!} className="text-[11px] text-[#168BFF] hover:underline">
+                          <Link to={auditEntityLink(l)!} className="text-[11px] text-[#168BFF] dark:text-blue-300 hover:underline">
                             {l.entity_name}
                           </Link>
                         ) : (

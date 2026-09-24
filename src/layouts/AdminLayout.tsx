@@ -104,7 +104,7 @@ export const AdminLayout: React.FC = () => {
     .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#F4F6F8] flex flex-col md:flex-row font-sans text-left">
+    <div className="min-h-screen bg-[#F4F6F8] dark:bg-[#0B0F19] flex flex-col md:flex-row font-sans text-left">
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 bg-[#0E1C2F] text-white flex-col sticky top-0 h-screen p-6 shrink-0 z-30">
         <Link to="/" className="flex items-center gap-3 pb-6 mb-6 border-b border-white/10">

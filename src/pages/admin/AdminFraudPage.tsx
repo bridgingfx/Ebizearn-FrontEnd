@@ -85,7 +85,7 @@ export const AdminFraudPage: React.FC = () => {
 
       {error && !loading && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700 dark:text-red-300">Could not load fraud alerts</p>
             <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
@@ -141,7 +141,7 @@ export const AdminFraudPage: React.FC = () => {
               {a.user_id != null && (
                 <Link
                   to={`/admin/users?search=${a.user_id}`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-xs font-bold text-gray-700 dark:text-gray-300 transition-colors shrink-0"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-xs font-bold text-gray-700 dark:text-gray-300 transition-colors shrink-0"
                 >
                   View user <ArrowRight className="w-3.5 h-3.5" />
                 </Link>

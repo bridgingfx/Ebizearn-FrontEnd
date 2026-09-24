@@ -79,7 +79,7 @@ export const AdminBusinessesPage: React.FC = () => {
 
       {error && !loading && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700 dark:text-red-300">Could not load business accounts</p>
             <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
@@ -103,7 +103,7 @@ export const AdminBusinessesPage: React.FC = () => {
           {users.map((u) => (
             <div key={u.id} className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-5">
               <div className="flex items-start justify-between gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600">
+                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <span

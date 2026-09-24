@@ -87,7 +87,7 @@ export const AdminTasksPage: React.FC = () => {
 
       {error && !loading && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700 dark:text-red-300">Could not load tasks</p>
             <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
@@ -125,7 +125,7 @@ export const AdminTasksPage: React.FC = () => {
               </thead>
               <tbody>
                 {filtered.map((t) => (
-                  <tr key={t.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
+                  <tr key={t.id} className="border-b border-gray-50 dark:border-white/5 last:border-0 hover:bg-gray-50/60 dark:hover:bg-white/5">
                     <td className="py-3 px-4 font-bold text-gray-900 dark:text-gray-100">
                       <button
                         type="button"

@@ -62,7 +62,7 @@ export const AdminOverviewPage: React.FC = () => {
   if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-500/10 border-2 border-red-200 dark:border-red-500/30 rounded-[1.5rem] p-6 flex items-start gap-3">
-        <AlertCircle className="w-6 h-6 text-red-500 mt-0.5 shrink-0" />
+        <AlertCircle className="w-6 h-6 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
         <div className="text-sm">
           <p className="font-bold text-red-700 dark:text-red-300">Could not load admin dashboard</p>
           <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>

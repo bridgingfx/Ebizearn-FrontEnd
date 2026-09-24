@@ -195,7 +195,7 @@ export const AdminSupportPage: React.FC = () => {
             })}
           </div>
           <div className="relative w-full lg:w-72">
-            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={search}
@@ -209,7 +209,7 @@ export const AdminSupportPage: React.FC = () => {
         {error ? (
           <div className="p-8 text-center text-sm text-red-600 dark:text-red-400 font-semibold">{error}</div>
         ) : loading && tickets.length === 0 ? (
-          <div className="p-12 text-center text-gray-400">
+          <div className="p-12 text-center text-gray-400 dark:text-gray-500">
             <Loader2 className="w-6 h-6 animate-spin inline-block" />
           </div>
         ) : tickets.length === 0 ? (
@@ -228,7 +228,7 @@ export const AdminSupportPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                <tr className="bg-gray-50 dark:bg-white/5 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   <th className="py-3 px-4">Ticket</th>
                   <th className="py-3 px-4">From</th>
                   <th className="py-3 px-4">Category</th>
@@ -248,7 +248,7 @@ export const AdminSupportPage: React.FC = () => {
                     }`}
                   >
                     <td className="py-3 px-4 max-w-xs">
-                      <span className="font-mono text-[10px] text-gray-400 block">{t.reference}</span>
+                      <span className="font-mono text-[10px] text-gray-400 dark:text-gray-500 block">{t.reference}</span>
                       <span className="font-bold text-gray-900 dark:text-gray-100 block truncate">{t.subject}</span>
                       {t.description && (
                         <span className="text-[11px] text-gray-500 dark:text-gray-400 block truncate">{t.description}</span>
@@ -258,7 +258,7 @@ export const AdminSupportPage: React.FC = () => {
                       <span className="font-semibold text-gray-900 dark:text-gray-100 block">{t.user?.name ?? '—'}</span>
                       <span className="text-[11px] text-gray-500 dark:text-gray-400 block">{t.user?.email}</span>
                       {t.user?.role && (
-                        <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400">{t.user.role}</span>
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500">{t.user.role}</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{TICKET_CATEGORY_LABELS[t.category] ?? t.category}</td>
@@ -321,14 +321,14 @@ export const AdminSupportPage: React.FC = () => {
                     {TICKET_CATEGORY_LABELS[selected.category] ?? selected.category}
                   </p>
                   {selected.assigned_agent && (
-                    <p className="text-[10px] text-gray-400">Assigned to {selected.assigned_agent.name}</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500">Assigned to {selected.assigned_agent.name}</p>
                   )}
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSelected(null)}
-                className="p-2 rounded-xl text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 shrink-0"
+                className="p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -336,7 +336,7 @@ export const AdminSupportPage: React.FC = () => {
 
             <div className="px-5 py-3 border-b border-gray-100 dark:border-white/10 grid grid-cols-2 gap-3">
               <label className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Status</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Status</span>
                 <select
                   value={selected.status}
                   disabled={busy}
@@ -351,7 +351,7 @@ export const AdminSupportPage: React.FC = () => {
                 </select>
               </label>
               <label className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Priority</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Priority</span>
                 <select
                   value={selected.priority}
                   disabled={busy}

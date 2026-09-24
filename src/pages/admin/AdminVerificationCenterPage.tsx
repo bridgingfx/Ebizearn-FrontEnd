@@ -160,7 +160,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowSopGuide(!showSopGuide)}
-            className="px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 dark:bg-blue-500/15 text-[#168BFF] text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 dark:bg-blue-500/15 text-[#168BFF] dark:text-blue-300 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Info className="w-3.5 h-3.5" />
             <span>{showSopGuide ? 'Hide SOP Rules' : 'Verification SOP Rules'}</span>
@@ -176,7 +176,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
         <div className="bg-white dark:bg-[#0C1322] rounded-2xl p-5 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Active Queue</span>
-            <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+            <ShieldCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
           </div>
           <div className="text-2xl font-black text-purple-700">{queue.length}</div>
           <div className="text-[10px] text-gray-400 dark:text-gray-500">Submissions awaiting a human decision</div>
@@ -185,7 +185,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
       {loadError && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl p-4 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
           <div className="text-sm">
             <p className="font-bold text-red-700 dark:text-red-300">Could not load verification queue</p>
             <p className="text-red-600 dark:text-red-400 mt-1">{loadError}</p>
@@ -205,7 +205,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
         <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 border border-blue-200 dark:border-blue-500/30 shadow-sm space-y-4 animate-in fade-in duration-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-gray-100">
-              <ShieldCheck className="w-5 h-5 text-[#168BFF]" />
+              <ShieldCheck className="w-5 h-5 text-[#168BFF] dark:text-blue-300" />
               <span>Standard Operating Procedure (SOP): How Verification Works</span>
             </div>
             <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">Algorithm Version: Heuristic Pre-Check (Simulated)</span>
@@ -223,7 +223,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">
                   Confidence ≥ 90%
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-[#16B364] font-bold text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-[#16B364] dark:text-emerald-300 font-bold text-[10px]">
                   Auto-Approve
                 </span>
               </div>
@@ -265,7 +265,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
       {queue.length === 0 ? (
         <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-12 text-center border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-3">
-          <CheckCircle2 className="w-12 h-12 text-[#16B364] mx-auto" />
+          <CheckCircle2 className="w-12 h-12 text-[#16B364] dark:text-emerald-300 mx-auto" />
           <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Verification queue is clear</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">Nothing is waiting for review right now.</p>
         </div>
@@ -313,7 +313,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 <div>
                   <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">{currentSubmission.contributorName}</h4>
                   <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                    <span className="text-[#16B364] font-semibold">{currentSubmission.contributorLevel}</span>
+                    <span className="text-[#16B364] dark:text-emerald-300 font-semibold">{currentSubmission.contributorLevel}</span>
                     <span>•</span>
                     <span>{currentSubmission.location}</span>
                   </div>
@@ -321,7 +321,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
               </div>
 
               <div className="text-right">
-                <span className="text-base font-black text-[#16B364]">{currentSubmission.reward}</span>
+                <span className="text-base font-black text-[#16B364] dark:text-emerald-300">{currentSubmission.reward}</span>
                 <span className="text-[10px] text-gray-400 dark:text-gray-500 block font-mono">Submission #{currentSubmission.id}</span>
               </div>
             </div>
@@ -345,7 +345,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                     href={currentSubmission.postUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs font-bold text-[#168BFF] hover:underline flex items-center gap-1"
+                    className="text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:underline flex items-center gap-1"
                   >
                     <span>Open Live Post</span>
                     <ExternalLink className="w-3 h-3" />
@@ -392,14 +392,14 @@ export const AdminVerificationCenterPage: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-gray-900 dark:text-gray-100 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-[#168BFF]" />
+                  <Sparkles className="w-4 h-4 text-[#168BFF] dark:text-blue-300" />
                   AI Vision Evaluation
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-300">
                     Simulated check — heuristic only
                   </span>
-                  <span className="text-xs font-black text-[#16B364] px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-500/30">
+                  <span className="text-xs font-black text-[#16B364] dark:text-emerald-300 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-200 dark:border-emerald-500/30">
                     {currentSubmission.ai.confidence}% Confidence
                   </span>
                 </div>
@@ -418,22 +418,22 @@ export const AdminVerificationCenterPage: React.FC = () => {
               </div>
               <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
                 <span className="text-[11px] text-gray-500 dark:text-gray-400">Timestamp Match</span>
-                <span className="font-black text-emerald-600">{currentSubmission.ai.timestampMatch}%</span>
+                <span className="font-black text-emerald-600 dark:text-emerald-400">{currentSubmission.ai.timestampMatch}%</span>
               </div>
               <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
                 <span className="text-[11px] text-gray-500 dark:text-gray-400">Duplicate Hash Risk</span>
-                <span className="font-black text-emerald-600">{currentSubmission.ai.duplicateRisk}% (Low)</span>
+                <span className="font-black text-emerald-600 dark:text-emerald-400">{currentSubmission.ai.duplicateRisk}% (Low)</span>
               </div>
               <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
                 <span className="text-[11px] text-gray-500 dark:text-gray-400">Policy Compliance</span>
-                <span className="font-black text-blue-600">{currentSubmission.ai.policyMatch}%</span>
+                <span className="font-black text-blue-600 dark:text-blue-400">{currentSubmission.ai.policyMatch}%</span>
               </div>
             </div>
 
             {/* Presets & Decision Notes */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-                Decision Compliance Log / Reason <span className="text-red-500">*</span>
+                Decision Compliance Log / Reason <span className="text-red-500 dark:text-red-300">*</span>
               </label>
 
               {/* Quick Reason Presets */}
@@ -445,7 +445,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
                       key={i}
                       type="button"
                       onClick={() => setDecisionNotes(r)}
-                      className="text-[10px] px-2.5 py-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-gray-700 dark:text-gray-300 rounded-lg transition-colors truncate max-w-full cursor-pointer"
+                      className="text-[10px] px-2.5 py-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-gray-700 dark:text-gray-300 rounded-lg transition-colors truncate max-w-full cursor-pointer"
                     >
                       {r.split(':')[0]}
                     </button>

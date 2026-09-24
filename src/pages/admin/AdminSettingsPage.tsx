@@ -127,7 +127,7 @@ export const AdminSettingsPage: React.FC = () => {
   if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+        <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-300 mt-0.5 shrink-0" />
         <div className="text-sm">
           <p className="font-bold text-red-700 dark:text-red-300">Could not load settings</p>
           <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
@@ -160,7 +160,7 @@ export const AdminSettingsPage: React.FC = () => {
       {/* Withdrawal threshold */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
         <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-1">
-          <ShieldAlert className="w-4 h-4 text-[#168BFF]" /> Withdrawal Threshold
+          <ShieldAlert className="w-4 h-4 text-[#168BFF] dark:text-blue-300" /> Withdrawal Threshold
         </h3>
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
           Minimum balance a contributor must hold before they can request a withdrawal. Default ${DEFAULT_THRESHOLD}.
@@ -188,7 +188,7 @@ export const AdminSettingsPage: React.FC = () => {
       {/* System settings */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
         <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4">
-          <Settings className="w-4 h-4 text-[#168BFF]" /> System Settings
+          <Settings className="w-4 h-4 text-[#168BFF] dark:text-blue-300" /> System Settings
         </h3>
         {settings.length === 0 ? (
           <EmptyState icon={Settings} title="No system settings" description="No system settings have been defined on the backend yet." />
@@ -223,7 +223,7 @@ export const AdminSettingsPage: React.FC = () => {
       {/* Feature flags */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
         <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4">
-          <Sliders className="w-4 h-4 text-[#168BFF]" /> Feature Flags
+          <Sliders className="w-4 h-4 text-[#168BFF] dark:text-blue-300" /> Feature Flags
         </h3>
         {flags.length === 0 ? (
           <EmptyState icon={ToggleLeft} title="No feature flags" description="No feature flags are defined on the backend yet." />

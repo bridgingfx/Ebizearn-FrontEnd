@@ -14,7 +14,7 @@ export const AdminAnalyticsPage: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-black text-[#101828] dark:text-gray-100">
             Platform Macro Analytics
           </h1>
-          <p className="text-xs sm:text-sm text-[#475467] mt-0.5">
+          <p className="text-xs sm:text-sm text-[#475467] dark:text-gray-300 mt-0.5">
             Network financial performance, take-rate revenues, geographic demographics, and disbursal volumes.
           </p>
         </div>

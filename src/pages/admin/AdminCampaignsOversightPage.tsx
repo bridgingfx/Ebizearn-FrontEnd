@@ -124,7 +124,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                   <th className="px-5 py-3 font-bold text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-white/5">
                 {campaigns.map((c) => {
                   const progress =
                     c.target_contributors_count > 0

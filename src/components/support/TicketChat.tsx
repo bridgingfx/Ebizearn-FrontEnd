@@ -167,7 +167,7 @@ export const TicketChat: React.FC<TicketChatProps> = ({
       {/* Conversation */}
       <div ref={scrollRef} className="chat-wallpaper flex-1 min-h-0 overflow-y-auto px-3 sm:px-5 py-4">
         {loading && messages.length === 0 && (
-          <div className="flex justify-center py-10 text-gray-400">
+          <div className="flex justify-center py-10 text-gray-400 dark:text-gray-500">
             <Loader2 className="w-6 h-6 animate-spin" />
           </div>
         )}
@@ -310,7 +310,7 @@ export const TicketChat: React.FC<TicketChatProps> = ({
               onPaste={onPaste}
               maxLength={5000}
               placeholder={internal ? 'Write an internal note…' : 'Message…'}
-              className="flex-1 min-w-0 resize-none bg-transparent px-1.5 py-2 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none"
+              className="flex-1 min-w-0 resize-none bg-transparent px-1.5 py-2 text-[13px] text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none"
             />
             <button
               type="button"
@@ -323,7 +323,7 @@ export const TicketChat: React.FC<TicketChatProps> = ({
             <button
               type="submit"
               disabled={!canSend}
-              className="h-9 px-3 shrink-0 rounded-full text-[13px] font-bold text-[#168BFF] disabled:text-gray-300 dark:disabled:text-gray-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 disabled:hover:bg-transparent flex items-center gap-1"
+              className="h-9 px-3 shrink-0 rounded-full text-[13px] font-bold text-[#168BFF] dark:text-blue-300 disabled:text-gray-300 dark:disabled:text-gray-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 disabled:hover:bg-transparent flex items-center gap-1"
             >
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : internal ? 'Add note' : 'Send'}
             </button>
@@ -360,7 +360,7 @@ const ChatImage: React.FC<{ attachment: SupportAttachment; load: () => Promise<s
 
   if (failed) {
     return (
-      <div className="w-40 h-28 rounded-2xl bg-gray-100 dark:bg-white/10 flex items-center justify-center text-[11px] text-gray-500">
+      <div className="w-40 h-28 rounded-2xl bg-gray-100 dark:bg-white/10 flex items-center justify-center text-[11px] text-gray-500 dark:text-gray-400">
         Image unavailable
       </div>
     );
@@ -438,10 +438,10 @@ const PendingFile: React.FC<{ file: File; onRemove: () => void }> = ({ file, onR
         <img src={url} alt={file.name} className="w-16 h-16 rounded-xl object-cover border border-gray-200 dark:border-white/10" />
       ) : (
         <div className="w-40 h-16 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-2.5 flex items-center gap-2">
-          <FileText className="w-5 h-5 text-[#168BFF] shrink-0" />
+          <FileText className="w-5 h-5 text-[#168BFF] dark:text-blue-300 shrink-0" />
           <span className="min-w-0">
             <span className="block text-[11px] font-semibold text-gray-900 dark:text-gray-100 truncate">{file.name}</span>
-            <span className="block text-[10px] text-gray-500">{formatSize(file.size)}</span>
+            <span className="block text-[10px] text-gray-500 dark:text-gray-400">{formatSize(file.size)}</span>
           </span>
         </div>
       )}

@@ -92,7 +92,7 @@ export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () =>
 
   if (loading) {
     return (
-      <div className="py-8 text-center text-gray-400">
+      <div className="py-8 text-center text-gray-400 dark:text-gray-500">
         <Loader2 className="w-5 h-5 animate-spin inline-block" />
       </div>
     );
@@ -121,7 +121,7 @@ export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () =>
 
       {groups.map(([group, perms]) => (
         <div key={group} className="space-y-1.5">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{PERMISSION_GROUP_LABELS[group]}</p>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{PERMISSION_GROUP_LABELS[group]}</p>
           <div className="divide-y divide-gray-100 dark:divide-white/10 rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
             {perms.map((p) => {
               const mode = modes[p.name] ?? 'inherit';
@@ -140,7 +140,7 @@ export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () =>
                     </span>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">{p.label}</p>
-                      <p className="text-[10px] font-mono text-gray-400">{p.name}</p>
+                      <p className="text-[10px] font-mono text-gray-400 dark:text-gray-500">{p.name}</p>
                     </div>
                   </div>
                   <div className="inline-flex rounded-xl bg-gray-100 dark:bg-white/10 p-0.5 text-[11px] font-bold shrink-0 self-start @lg:self-auto">

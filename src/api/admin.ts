@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { AuditLog, FeatureFlag, FraudEvent, TaskSubmission, User, WithdrawalRequest } from '../types';
+import type { AdminUserDetail, AuditLog, FeatureFlag, FraudEvent, TaskSubmission, User, WithdrawalRequest } from '../types';
 
 export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
@@ -23,6 +23,8 @@ export const adminApi = {
   auditLogs: () => api.get('/admin/audit-logs').then((r) => r.data as { success: boolean; message?: string; data: AuditLog[]; meta?: unknown }),
   users: (params?: { role?: string; search?: string }) =>
     api.get('/admin/users', { params }).then((r) => r.data as { success: boolean; message?: string; data: User[]; meta?: unknown }),
+  userDetail: (userId: number | string) =>
+    api.get(`/admin/users/${userId}`).then((r) => r.data as { success: boolean; message?: string; data: AdminUserDetail }),
   updateUserStatus: (userId: number | string, status: 'active' | 'suspended' | 'pending_verification') =>
     api.patch(`/admin/users/${userId}/status`, { status }).then((r) => r.data as { success: boolean; message?: string; data: User }),
   health: () => api.get('/admin/health').then((r) => r.data),

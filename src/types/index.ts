@@ -29,6 +29,56 @@ export interface User {
   profile?: Profile;
   wallet?: Wallet;
   business?: Business;
+  /** Effective permission names (login + /auth/me only). Undefined = unknown. */
+  permissions?: string[];
+}
+
+export type PermissionGroup = 'staff' | 'contributor' | 'business' | 'account' | 'other';
+
+export interface PermissionDef {
+  name: string;
+  label: string;
+  group: PermissionGroup;
+}
+
+export interface RolePermissions {
+  name: 'admin' | 'moderator' | 'contributor' | 'business';
+  label: string;
+  users_count: number;
+  permissions: string[];
+}
+
+export interface UserPermissionOverrides {
+  user: Pick<User, 'id' | 'name' | 'email' | 'role'>;
+  editable: boolean;
+  role_permissions: string[];
+  grants: string[];
+  denies: string[];
+  effective: string[];
+  permissions: PermissionDef[];
+}
+
+/** GET /admin/users/:id */
+export interface AdminUserDetail {
+  user: User & { referrer?: { id: number; name: string; email: string } | null };
+  stats: {
+    submissions: Record<string, number>;
+    submissions_total: number;
+    referrals: number;
+    tickets_open: number;
+  };
+  withdrawals: {
+    id: number;
+    amount_cents: number;
+    currency: string;
+    payout_method: string;
+    status: string;
+    created_at: string;
+    processed_at: string | null;
+  }[];
+  tickets: Pick<SupportTicket, 'id' | 'uuid' | 'reference' | 'subject' | 'category' | 'priority' | 'status' | 'created_at' | 'updated_at'>[];
+  audit: AuditLog[];
+  permissions: { role: string[]; grants: string[]; denies: string[]; effective: string[] };
 }
 
 export interface Profile {
@@ -67,10 +117,19 @@ export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
 export type TicketPriority = 'low' | 'normal' | 'high' | 'urgent';
 export type TicketCategory = 'payout' | 'dispute' | 'social' | 'bug' | 'account' | 'kyc' | 'business' | 'general';
 
+export interface SupportAttachment {
+  index: number;
+  name: string;
+  mime: string;
+  size: number;
+  is_image: boolean;
+}
+
 export interface SupportTicketMessage {
   id: number;
   message: string;
   is_internal_note: boolean;
+  attachments: SupportAttachment[];
   from_staff: boolean;
   sender_name: string;
   created_at: string;
@@ -289,6 +348,10 @@ export interface AuditLog {
   ip_address?: string;
   created_at: string;
   actor?: User;
+  /** Short model name, e.g. "User" (from the fully-qualified entity_type). */
+  entity_model?: string;
+  /** Human label for the entity (user name, ticket ref, campaign title). */
+  entity_name?: string | null;
 }
 
 /** Referral row from GET /contributor/referrals (real API). Backend shape is

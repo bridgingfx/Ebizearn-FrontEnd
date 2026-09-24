@@ -3,6 +3,8 @@ import { ScrollText, Search, Loader2, AlertCircle, Eye } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { AuditLog } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
+import { Link } from 'react-router-dom';
+import { auditEntityLink, auditModel, auditPage, humanizeAction, humanizeModel } from '../../utils/auditLabels';
 
 /**
  * Audit logs. Rendered only from GET /admin/audit-logs — no demo records, no
@@ -43,6 +45,8 @@ export const AdminAuditLogsPage: React.FC = () => {
       (l) =>
         (l.action || '').toLowerCase().includes(q) ||
         (l.entity_type || '').toLowerCase().includes(q) ||
+        (l.entity_name || '').toLowerCase().includes(q) ||
+        auditPage(l).label.toLowerCase().includes(q) ||
         (l.actor?.name || '').toLowerCase().includes(q),
     );
   }, [logs, search]);
@@ -102,7 +106,8 @@ export const AdminAuditLogsPage: React.FC = () => {
               <thead>
                 <tr className="text-left text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-white/10">
                   <th className="py-3 px-4 font-bold">Action</th>
-                  <th className="py-3 px-4 font-bold">Entity</th>
+                  <th className="py-3 px-4 font-bold">Page</th>
+                  <th className="py-3 px-4 font-bold">Record</th>
                   <th className="py-3 px-4 font-bold">Actor</th>
                   <th className="py-3 px-4 font-bold">When</th>
                   <th className="py-3 px-4 font-bold text-right">Detail</th>
@@ -111,9 +116,39 @@ export const AdminAuditLogsPage: React.FC = () => {
               <tbody>
                 {filtered.map((l) => (
                   <tr key={l.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
-                    <td className="py-3 px-4 font-bold text-gray-900 dark:text-gray-100 font-mono text-xs">{l.action}</td>
+                    <td className="py-3 px-4">
+                      <span className="block text-xs font-bold text-gray-900 dark:text-gray-100">{humanizeAction(l.action)}</span>
+                      <span className="block text-[10px] font-mono text-gray-400">{l.action}</span>
+                    </td>
+                    <td className="py-3 px-4 text-xs">
+                      {(() => {
+                        const page = auditPage(l);
+                        return page.path ? (
+                          <Link
+                            to={page.path}
+                            className="inline-flex px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] font-bold text-[11px] hover:underline"
+                          >
+                            {page.label}
+                          </Link>
+                        ) : (
+                          <span className="inline-flex px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 font-bold text-[11px]">
+                            {page.label}
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">
-                      {l.entity_type} #{l.entity_id}
+                      <span className="block font-semibold text-gray-900 dark:text-gray-100">
+                        {humanizeModel(auditModel(l))} <span className="font-mono text-gray-400">#{l.entity_id}</span>
+                      </span>
+                      {l.entity_name &&
+                        (auditEntityLink(l)?.startsWith('/admin/users/') ? (
+                          <Link to={auditEntityLink(l)!} className="text-[11px] text-[#168BFF] hover:underline">
+                            {l.entity_name}
+                          </Link>
+                        ) : (
+                          <span className="text-[11px]">{l.entity_name}</span>
+                        ))}
                     </td>
                     <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400">{l.actor?.name || 'System'}</td>
                     <td className="py-3 px-4 text-xs text-gray-500 dark:text-gray-400">{new Date(l.created_at).toLocaleString()}</td>
@@ -143,7 +178,8 @@ export const AdminAuditLogsPage: React.FC = () => {
               <div>
                 <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100 font-mono">{selected.action}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {selected.entity_type} #{selected.entity_id} · {new Date(selected.created_at).toLocaleString()}
+                  {auditPage(selected).label} · {humanizeModel(auditModel(selected))} #{selected.entity_id}
+                  {selected.entity_name ? ` (${selected.entity_name})` : ''} · {new Date(selected.created_at).toLocaleString()}
                 </p>
               </div>
               <button

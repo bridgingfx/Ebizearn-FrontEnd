@@ -313,3 +313,31 @@
     transform: translateX(430%) skewX(-18deg);
   }
 }
+
+/* =========================================================================
+   Support ticket chat — branded doodle wallpaper (public/chat/*.svg)
+   ========================================================================= */
+.chat-wallpaper {
+  background-color: #f3f6fb;
+  background-image: url('/chat/wallpaper-light.svg');
+  background-size: 260px 260px;
+}
+.dark .chat-wallpaper {
+  background-color: #0b1220;
+  background-image: url('/chat/wallpaper-dark.svg');
+}
+
+/* Scrollable without a visible scrollbar (admin sidebar). */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* The floating live-chat launcher hides while a ticket chat / drawer is
+   open so it never covers the composer's Send button. */
+body.chat-widget-hidden .chat-widget-root {
+  display: none;
+}

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- eBizEarn chat wallpaper: tasks, rewards and social doodles (tileable) -->
+  <g stroke="#0D2342" stroke-opacity="0.075" stroke-width="2">
+    <!-- coin with $ -->
+    <circle cx="40" cy="42" r="16"/>
+    <circle cx="40" cy="42" r="11"/>
+    <path d="M44 36.5c-1-1.5-2.6-2-4.2-2-2.3 0-4 1.2-4 3 0 4.2 8.3 2.3 8.3 6.5 0 1.9-1.8 3.2-4.3 3.2-1.8 0-3.5-.7-4.5-2.2M40 32v2.5M40 49v2.5"/>
+    <!-- verified shield -->
+    <path d="M128 22l16 6v11c0 10-7 17-16 20-9-3-16-10-16-20V28z"/>
+    <path d="M121 40l5 5 9-10"/>
+    <!-- heart (like) -->
+    <path d="M226 52c-11-7-18-13-18-21 0-5 4-9 9-9 4 0 7 2 9 5 2-3 5-5 9-5 5 0 9 4 9 9 0 8-7 14-18 21z"/>
+    <!-- play button (video task) -->
+    <rect x="276" y="22" width="36" height="26" rx="8"/>
+    <path d="M290 29v12l10-6z"/>
+    <!-- camera (story task) -->
+    <rect x="22" y="126" width="38" height="28" rx="7"/>
+    <path d="M33 126l3-6h10l3 6"/>
+    <circle cx="41" cy="140" r="7"/>
+    <!-- chat bubble -->
+    <path d="M110 118h36a8 8 0 0 1 8 8v16a8 8 0 0 1-8 8h-22l-10 8v-8h-4a8 8 0 0 1-8-8v-16a8 8 0 0 1 8-8z"/>
+    <path d="M114 133h28M114 141h18"/>
+    <!-- wallet -->
+    <rect x="204" y="120" width="42" height="30" rx="7"/>
+    <path d="M204 130h42M236 138h4"/>
+    <!-- star -->
+    <path d="M292 116l4.5 9.2 10.1 1.5-7.3 7.1 1.7 10-9-4.7-9 4.7 1.7-10-7.3-7.1 10.1-1.5z"/>
+    <!-- gift (referral reward) -->
+    <rect x="24" y="222" width="34" height="26" rx="4"/>
+    <path d="M22 214h38v8H22zM41 214v34M41 214c-3-6-12-7-12-2s9 2 12 2c3 0 12 3 12-2s-9-4-12 2"/>
+    <!-- checklist (task) -->
+    <rect x="112" y="208" width="34" height="42" rx="6"/>
+    <path d="M119 220l3 3 5-5M131 221h9M119 233l3 3 5-5M131 234h9M119 243h21"/>
+    <!-- globe (global tasks) -->
+    <circle cx="225" cy="229" r="17"/>
+    <path d="M208 229h34M225 212c-6 5-8 11-8 17s2 12 8 17c6-5 8-11 8-17s-2-12-8-17z"/>
+    <!-- trending arrow (earnings) -->
+    <path d="M278 250l12-14 9 8 15-18M304 226h10v10"/>
+  </g>
+  <g fill="#168BFF" fill-opacity="0.09">
+    <circle cx="86" cy="86" r="3"/>
+    <circle cx="178" cy="92" r="2.5"/>
+    <circle cx="262" cy="182" r="3"/>
+    <circle cx="78" cy="188" r="2.5"/>
+    <circle cx="176" cy="280" r="3"/>
+    <circle cx="300" cy="296" r="2.5"/>
+    <circle cx="14" cy="290" r="2"/>
+  </g>
+</svg>

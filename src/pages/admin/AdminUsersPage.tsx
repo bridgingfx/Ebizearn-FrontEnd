@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Users, Search, ShieldAlert, Ban, CheckCircle2, AlertCircle, Loader2, Eye } from 'lucide-react';
+import { Users, Search, Ban, CheckCircle2, AlertCircle, Loader2, Eye } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { User } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -21,7 +21,7 @@ export const AdminUsersPage: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [actionId, setActionId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [selected, setSelected] = useState<User | null>(null);
+
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 400);
@@ -59,7 +59,6 @@ export const AdminUsersPage: React.FC = () => {
       const res = await adminApi.updateUserStatus(u.id, status);
       if (res.success && res.data) {
         setUsers((prev) => prev.map((p) => (p.id === u.id ? { ...p, status: res.data.status } : p)));
-        setSelected((s) => (s && s.id === u.id ? { ...s, status: res.data.status } : s));
       } else {
         setActionError(res.message || 'Could not update user status.');
       }
@@ -180,7 +179,9 @@ export const AdminUsersPage: React.FC = () => {
                 {users.map((u) => (
                   <tr key={u.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
                     <td className="py-3 px-4">
-                      <p className="font-bold text-gray-900 dark:text-gray-100">{u.name}</p>
+                      <Link to={`/admin/users/${u.id}`} className="font-bold text-gray-900 dark:text-gray-100 hover:text-[#168BFF] hover:underline">
+                        {u.name}
+                      </Link>
                       <p className="text-[11px] text-gray-400 dark:text-gray-500">{u.email}</p>
                     </td>
                     <td className="py-3 px-4">
@@ -203,14 +204,13 @@ export const AdminUsersPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setSelected(u)}
-                          title="View details"
-                          className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 dark:bg-blue-500/10 transition-colors"
+                        <Link
+                          to={`/admin/users/${u.id}`}
+                          title="View full profile"
+                          className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
                         >
                           <Eye className="w-4 h-4" />
-                        </button>
+                        </Link>
                         {u.status === 'suspended' ? (
                           <button
                             type="button"
@@ -238,74 +238,6 @@ export const AdminUsersPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-        </div>
-      )}
-
-      {/* Detail modal — real data only */}
-      {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setSelected(null)} />
-          <div className="relative bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100">{selected.name}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{selected.email}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                className="px-3 py-1.5 rounded-lg text-xs font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10"
-              >
-                Close
-              </button>
-            </div>
-            <dl className="text-sm space-y-2.5">
-              {[
-                ['Role', selected.role],
-                ['Status', selected.status],
-                ['KYC status', selected.profile?.kyc_status ? String(selected.profile.kyc_status).replace(/_/g, ' ') : '—'],
-                ['Contributor level', selected.profile?.contributor_level || '—'],
-                [
-                  'Balance',
-                  selected.wallet
-                    ? `${selected.wallet.currency || 'USD'} ${((selected.wallet.available_balance_cents || 0) / 100).toFixed(2)}`
-                    : '—',
-                ],
-                ['Joined', selected.created_at ? new Date(selected.created_at).toLocaleString() : '—'],
-              ].map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-4 border-b border-gray-50 pb-2">
-                  <dt className="text-gray-500 dark:text-gray-400">{k}</dt>
-                  <dd className="font-bold text-gray-900 dark:text-gray-100 capitalize">{v}</dd>
-                </div>
-              ))}
-            </dl>
-            {selected.status !== 'suspended' ? (
-              <button
-                type="button"
-                disabled={actionId === selected.id}
-                onClick={() => void handleStatus(selected, 'suspended')}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 dark:bg-red-500/15 disabled:opacity-50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 text-xs font-bold rounded-xl transition-colors"
-              >
-                <Ban className="w-4 h-4" /> Suspend account
-              </button>
-            ) : (
-              <button
-                type="button"
-                disabled={actionId === selected.id}
-                onClick={() => void handleStatus(selected, 'active')}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-emerald-50 dark:bg-emerald-500/15 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 dark:bg-emerald-500/15 disabled:opacity-50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold rounded-xl transition-colors"
-              >
-                <CheckCircle2 className="w-4 h-4" /> Reactivate account
-              </button>
-            )}
-            <div className="mt-4 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 rounded-xl p-3.5 flex items-start gap-2">
-              <ShieldAlert className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-              <p className="text-[11px] text-amber-800 dark:text-amber-200">
-                Approve or reject this user's identity documents in the{' '}
-                <Link to="/admin/kyc" className="font-bold underline">KYC Review</Link> queue.
-              </p>
-            </div>
           </div>
         </div>
       )}

@@ -226,7 +226,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         completeSession,
         logout,
-        updateUser: updateAndPersistUser,
+        // Profile/KYC responses don't carry `permissions`; keep the current set.
+        updateUser: (next: User) =>
+          updateAndPersistUser(next.permissions ? next : { ...next, permissions: user?.permissions }),
         refreshMe,
         updateWalletBalance,
         creditWallet,

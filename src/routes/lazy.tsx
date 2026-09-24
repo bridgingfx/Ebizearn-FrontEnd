@@ -207,6 +207,12 @@ export const LazyAdminSupportPage = React.lazy(() =>
 export const LazyAdminKycPage = React.lazy(() =>
   named(import('../pages/admin/AdminKycPage'), 'AdminKycPage'),
 );
+export const LazyAdminUserDetailPage = React.lazy(() =>
+  named(import('../pages/admin/AdminUserDetailPage'), 'AdminUserDetailPage'),
+);
+export const LazyAdminPermissionsPage = React.lazy(() =>
+  named(import('../pages/admin/AdminPermissionsPage'), 'AdminPermissionsPage'),
+);
 export const LazyAdminAnalyticsPage = React.lazy(() =>
   named(import('../pages/admin/AdminAnalyticsPage'), 'AdminAnalyticsPage'),
 );

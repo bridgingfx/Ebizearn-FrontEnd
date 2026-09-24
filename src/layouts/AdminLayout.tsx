@@ -13,6 +13,7 @@ import {
   BarChart3,
   ShieldAlert,
   ShieldCheck,
+  KeyRound,
   Headset,
   Activity,
   Settings,
@@ -34,53 +35,54 @@ export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const navItems = [
+  // `perm`: the API permission the page needs — hidden when the signed-in
+  // staff account lacks it (Super Admin sees everything). `superOnly` pages
+  // are Super Admin tools.
+  type NavItem = { name: string; path: string; icon: React.ElementType; exact?: boolean; perm?: string; superOnly?: boolean };
+  const canSee = (item: NavItem) => {
+    if (user?.role === 'superadmin') return true;
+    if (item.superOnly) return false;
+    if (!item.perm || !user?.permissions) return true;
+    return user.permissions.includes(item.perm);
+  };
+
+  const allNavItems: NavItem[] = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
-    { name: 'Users & KYC', path: '/admin/users', icon: Users },
-    { name: 'KYC Review', path: '/admin/kyc', icon: ShieldCheck },
-    { name: 'Businesses', path: '/admin/businesses', icon: Building2 },
-    { name: 'Verification', path: '/admin/verification', icon: FileCheck },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone },
-    { name: 'Tasks', path: '/admin/tasks', icon: ClipboardList },
-    { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight },
+    { name: 'Users & KYC', path: '/admin/users', icon: Users, perm: 'manage_users' },
+    { name: 'KYC Review', path: '/admin/kyc', icon: ShieldCheck, perm: 'review_kyc' },
+    { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
+    { name: 'Verification', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_task_templates' },
+    { name: 'Tasks', path: '/admin/tasks', icon: ClipboardList, perm: 'manage_task_templates' },
+    { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight, perm: 'process_payouts' },
     { name: 'Wallets', path: '/admin/wallets', icon: Wallet },
-    { name: 'Referrals', path: '/admin/referrals', icon: Gift },
-    { name: 'Demo Requests', path: '/admin/demo-requests', icon: Mail },
-    { name: 'Reports', path: '/admin/reports', icon: BarChart3 },
-    { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert },
-    { name: 'Support', path: '/admin/support', icon: Headset },
-    { name: 'Analytics', path: '/admin/analytics', icon: Activity },
+    { name: 'Referrals', path: '/admin/referrals', icon: Gift, perm: 'view_reports' },
+    { name: 'Demo Requests', path: '/admin/demo-requests', icon: Mail, perm: 'view_reports' },
+    { name: 'Reports', path: '/admin/reports', icon: BarChart3, perm: 'view_reports' },
+    { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert, perm: 'review_submissions' },
+    { name: 'Support', path: '/admin/support', icon: Headset, perm: 'handle_disputes' },
+    { name: 'Analytics', path: '/admin/analytics', icon: Activity, perm: 'view_reports' },
     { name: 'System Health', path: '/admin/health', icon: Activity },
-    { name: 'Settings', path: '/admin/settings', icon: Settings },
-    { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText },
+    { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, superOnly: true },
+    { name: 'Settings', path: '/admin/settings', icon: Settings, perm: 'manage_settings' },
+    { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText, perm: 'view_reports' },
   ];
+  const navItems = allNavItems.filter(canSee);
 
   const [logoutOpen, setLogoutOpen] = React.useState(false);
   const [moreOpen, setMoreOpen] = React.useState(false);
 
-  // Mobile bottom tab bar: 5 primary destinations + "More" sheet (17 sidebar
-  // items don't fit a tab bar). Mirrors BusinessLayout's glass bottom-bar style.
-  const mobileTabs = [
+  // Mobile bottom tab bar: 5 primary destinations + "More" sheet (the rest
+  // of the sidebar). Mirrors BusinessLayout's glass bottom-bar style.
+  const mobileTabs: NavItem[] = [
     { name: 'Home', path: '/admin', icon: LayoutDashboard, exact: true },
-    { name: 'Users', path: '/admin/users', icon: Users },
-    { name: 'Businesses', path: '/admin/businesses', icon: Building2 },
-    { name: 'Verify', path: '/admin/verification', icon: FileCheck },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone },
-  ];
-  const moreItems = [
-    { name: 'Tasks', path: '/admin/tasks', icon: ClipboardList },
-    { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight },
-    { name: 'Wallets', path: '/admin/wallets', icon: Wallet },
-    { name: 'Referrals', path: '/admin/referrals', icon: Gift },
-    { name: 'Demo Requests', path: '/admin/demo-requests', icon: Mail },
-    { name: 'Reports', path: '/admin/reports', icon: BarChart3 },
-    { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert },
-    { name: 'Support', path: '/admin/support', icon: Headset },
-    { name: 'Analytics', path: '/admin/analytics', icon: Activity },
-    { name: 'System Health', path: '/admin/health', icon: Activity },
-    { name: 'Settings', path: '/admin/settings', icon: Settings },
-    { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText },
-  ];
+    { name: 'Users', path: '/admin/users', icon: Users, perm: 'manage_users' },
+    { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
+    { name: 'Verify', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_task_templates' },
+  ].filter(canSee);
+  const tabPaths = new Set(mobileTabs.map((t) => t.path));
+  const moreItems = navItems.filter((item) => !item.exact && !tabPaths.has(item.path));
   const tabActive = (tab: { path: string; exact?: boolean }) =>
     tab.exact ? location.pathname === tab.path : location.pathname.startsWith(tab.path);
   const moreActive = moreItems.some((item) => location.pathname.startsWith(item.path));
@@ -109,7 +111,9 @@ export const AdminLayout: React.FC = () => {
           <EBizLogo variant="dark" size="sm" subtitleText="Command Center" />
         </Link>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto pr-1 text-xs">
+        {/* Scrolls naturally (wheel / touch) with no visible scrollbar; the
+            soft fade at the edges hints there is more above / below. */}
+        <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto overscroll-contain no-scrollbar text-xs -mx-1 px-1 py-2 [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-20px),transparent)]">
           {navItems.map((item) => {
             const isActive = item.exact
               ? location.pathname === item.path

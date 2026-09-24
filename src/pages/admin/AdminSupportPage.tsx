@@ -1,9 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Headset, Search, Loader2, X, Send, Lock, AlertCircle, RefreshCw } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Headset, Search, Loader2, X, RefreshCw } from 'lucide-react';
 import { staffSupportApi, getApiError, type StaffTicketCounts } from '../../api';
 import type { SupportTicket, TicketPriority, TicketStatus } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PageHeader } from '../../components/common/ui';
+import { TicketChat } from '../../components/support/TicketChat';
+import { useHideChatWidget } from '../../utils/useHideChatWidget';
 import {
   TICKET_CATEGORY_LABELS,
   TICKET_PRIORITY_LABELS,
@@ -48,10 +51,18 @@ export const AdminSupportPage: React.FC = () => {
 
   const [selected, setSelected] = useState<SupportTicket | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [reply, setReply] = useState('');
-  const [internal, setInternal] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [sending, setSending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // Keep the floating chat launcher from covering the drawer's composer.
+  useHideChatWidget(!!selected);
+
+  const selectedUuid = selected?.uuid;
+  const fetchAttachment = useCallback(
+    (messageId: number, index: number) => staffSupportApi.attachment(selectedUuid ?? '', messageId, index),
+    [selectedUuid]
+  );
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 400);
@@ -87,8 +98,6 @@ export const AdminSupportPage: React.FC = () => {
 
   const openTicket = async (t: SupportTicket) => {
     setSelected(t);
-    setReply('');
-    setInternal(false);
     setActionError(null);
     setDetailLoading(true);
     try {
@@ -101,24 +110,23 @@ export const AdminSupportPage: React.FC = () => {
     }
   };
 
-  const sendReply = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selected || !reply.trim()) return;
-    setBusy(true);
+  const sendReply = async (text: string, files: File[], internal: boolean): Promise<boolean> => {
+    if (!selected) return false;
+    setSending(true);
     setActionError(null);
     try {
-      const res = await staffSupportApi.reply(selected.uuid, reply.trim(), internal);
+      const res = await staffSupportApi.reply(selected.uuid, text, internal, files);
       if (res.success) {
         applyUpdated(res.data);
-        setReply('');
-        setInternal(false);
-      } else {
-        setActionError(res.message || 'Could not send the reply.');
+        return true;
       }
+      setActionError(res.message || 'Could not send the reply.');
+      return false;
     } catch (err) {
       setActionError(getApiError(err, 'Could not send the reply.'));
+      return false;
     } finally {
-      setBusy(false);
+      setSending(false);
     }
   };
 
@@ -277,16 +285,32 @@ export const AdminSupportPage: React.FC = () => {
             className="w-full max-w-xl h-full bg-white dark:bg-[#0C1322] shadow-2xl flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-5 border-b border-gray-100 dark:border-white/10 flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <span className="font-mono text-[11px] text-gray-400">{selected.reference}</span>
-                <h2 className="text-base font-black text-gray-900 dark:text-gray-100 break-words">{selected.subject}</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  {selected.user?.name} · {selected.user?.email} · {TICKET_CATEGORY_LABELS[selected.category] ?? selected.category}
-                </p>
-                {selected.assigned_agent && (
-                  <p className="text-[11px] text-gray-400 mt-0.5">Assigned to {selected.assigned_agent.name}</p>
-                )}
+            <div className="px-5 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#F9CE34] via-[#EE2A7B] to-[#6228D7] shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-[#07182F] text-white font-bold text-sm flex items-center justify-center ring-2 ring-white dark:ring-[#0C1322]">
+                    {(selected.user?.name || '?').trim()[0]?.toUpperCase()}
+                  </div>
+                </div>
+                <div className="min-w-0">
+                  {selected.user ? (
+                    <Link
+                      to={`/admin/users/${selected.user.id}`}
+                      className="text-sm font-black text-gray-900 dark:text-gray-100 hover:underline block truncate"
+                    >
+                      {selected.user.name}
+                    </Link>
+                  ) : (
+                    <span className="text-sm font-black text-gray-900 dark:text-gray-100 block">Unknown user</span>
+                  )}
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                    <span className="font-mono">{selected.reference}</span> · {selected.subject} ·{' '}
+                    {TICKET_CATEGORY_LABELS[selected.category] ?? selected.category}
+                  </p>
+                  {selected.assigned_agent && (
+                    <p className="text-[10px] text-gray-400">Assigned to {selected.assigned_agent.name}</p>
+                  )}
+                </div>
               </div>
               <button
                 type="button"
@@ -330,63 +354,18 @@ export const AdminSupportPage: React.FC = () => {
               </label>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-5 space-y-3">
-              {detailLoading && !selected.messages && (
-                <div className="text-center text-gray-400 py-6">
-                  <Loader2 className="w-5 h-5 animate-spin inline-block" />
-                </div>
-              )}
-              {(selected.messages ?? []).map((m) => (
-                <div key={m.id} className={`flex ${m.from_staff ? 'justify-end' : 'justify-start'}`}>
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                      m.is_internal_note
-                        ? 'bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-900 dark:text-amber-100'
-                        : m.from_staff
-                        ? 'bg-[#168BFF] text-white'
-                        : 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-gray-100'
-                    }`}
-                  >
-                    <p className="text-[10px] font-bold opacity-75 mb-0.5 flex items-center gap-1">
-                      {m.is_internal_note && <Lock className="w-3 h-3" />}
-                      {m.sender_name}
-                      {m.is_internal_note ? ' · internal note' : ''} · {formatTicketTime(m.created_at)}
-                    </p>
-                    <p className="text-xs whitespace-pre-wrap break-words">{m.message}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <form onSubmit={sendReply} className="p-5 border-t border-gray-100 dark:border-white/10 space-y-2">
-              <textarea
-                rows={3}
-                value={reply}
-                onChange={(e) => setReply(e.target.value)}
-                placeholder={internal ? 'Internal note (only staff can see this)…' : 'Reply to the user…'}
-                maxLength={5000}
-                className={fieldClass}
-              />
-              <div className="flex items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-400 cursor-pointer">
-                  <input type="checkbox" checked={internal} onChange={(e) => setInternal(e.target.checked)} />
-                  Internal note
-                </label>
-                <button
-                  type="submit"
-                  disabled={busy || !reply.trim()}
-                  className="px-4 py-2 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] disabled:opacity-60 text-white text-xs font-bold flex items-center gap-1.5"
-                >
-                  {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                  {internal ? 'Add note' : 'Send reply'}
-                </button>
-              </div>
-              {actionError && (
-                <p className="text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1.5">
-                  <AlertCircle className="w-4 h-4" /> {actionError}
-                </p>
-              )}
-            </form>
+            <TicketChat
+              key={selected.uuid}
+              messages={selected.messages ?? []}
+              viewer="staff"
+              counterpartName={selected.user?.name ?? 'User'}
+              loading={detailLoading}
+              sending={sending}
+              error={actionError}
+              allowInternal
+              fetchAttachment={fetchAttachment}
+              onSend={sendReply}
+            />
           </div>
         </div>
       )}

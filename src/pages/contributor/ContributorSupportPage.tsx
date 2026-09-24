@@ -11,9 +11,12 @@ import {
   FileText,
   LifeBuoy,
   Loader2,
+  Paperclip,
   X,
 } from 'lucide-react';
 import { supportApi, getApiError } from '../../api';
+import { TicketChat } from '../../components/support/TicketChat';
+import { useHideChatWidget } from '../../utils/useHideChatWidget';
 import type { SupportTicket, TicketCategory } from '../../types';
 import {
   TICKET_CATEGORY_LABELS,
@@ -43,11 +46,21 @@ export const ContributorSupportPage: React.FC = () => {
   const [ticketSubmitted, setTicketSubmitted] = useState(false);
 
   // Ticket detail / conversation
+  const [ticketFiles, setTicketFiles] = useState<File[]>([]);
+
   const [openTicket, setOpenTicket] = useState<SupportTicket | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [reply, setReply] = useState('');
   const [replying, setReplying] = useState(false);
   const [replyError, setReplyError] = useState<string | null>(null);
+
+  // Keep the floating chat launcher from covering the Send button.
+  useHideChatWidget(!!openTicket || showNewTicketModal);
+
+  const openUuid = openTicket?.uuid;
+  const fetchAttachment = useCallback(
+    (messageId: number, index: number) => supportApi.attachment(openUuid ?? '', messageId, index),
+    [openUuid]
+  );
 
   const faqs = [
     {
@@ -107,6 +120,7 @@ export const ContributorSupportPage: React.FC = () => {
         subject: ticketSubject.trim(),
         category: ticketCategory,
         message: ticketDescription.trim(),
+        attachments: ticketFiles,
       });
       if (!res.success) {
         setCreateError(res.message || 'Could not submit your ticket.');
@@ -119,6 +133,7 @@ export const ContributorSupportPage: React.FC = () => {
         setShowNewTicketModal(false);
         setTicketSubject('');
         setTicketDescription('');
+        setTicketFiles([]);
       }, 1200);
     } catch (err) {
       setCreateError(getApiError(err, 'Could not submit your ticket.'));
@@ -129,7 +144,6 @@ export const ContributorSupportPage: React.FC = () => {
 
   const openDetail = async (t: SupportTicket) => {
     setOpenTicket(t);
-    setReply('');
     setReplyError(null);
     setDetailLoading(true);
     try {
@@ -142,22 +156,22 @@ export const ContributorSupportPage: React.FC = () => {
     }
   };
 
-  const handleReply = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!openTicket || !reply.trim()) return;
+  const handleReply = async (text: string, files: File[]): Promise<boolean> => {
+    if (!openTicket) return false;
     setReplying(true);
     setReplyError(null);
     try {
-      const res = await supportApi.reply(openTicket.uuid, reply.trim());
+      const res = await supportApi.reply(openTicket.uuid, text, files);
       if (res.success) {
         setOpenTicket(res.data);
         setTickets((prev) => prev.map((t) => (t.uuid === res.data.uuid ? { ...t, ...res.data } : t)));
-        setReply('');
-      } else {
-        setReplyError(res.message || 'Could not send your reply.');
+        return true;
       }
+      setReplyError(res.message || 'Could not send your reply.');
+      return false;
     } catch (err) {
       setReplyError(getApiError(err, 'Could not send your reply.'));
+      return false;
     } finally {
       setReplying(false);
     }
@@ -450,6 +464,30 @@ export const ContributorSupportPage: React.FC = () => {
                   />
                 </div>
 
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-700 dark:text-gray-300">
+                    Screenshots or files <span className="font-normal text-gray-400">(optional, up to 5 · 10MB each)</span>
+                  </label>
+                  <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-dashed border-gray-200 dark:border-white/15 hover:border-[#168BFF] text-xs font-semibold text-gray-500 dark:text-gray-400 cursor-pointer transition-colors">
+                    <Paperclip className="w-4 h-4" />
+                    {ticketFiles.length ? `${ticketFiles.length} file(s) attached — click to change` : 'Attach images, PDF or documents'}
+                    <input
+                      type="file"
+                      multiple
+                      hidden
+                      accept="image/jpeg,image/png,image/webp,image/gif,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip"
+                      onChange={(e) => setTicketFiles(Array.from(e.target.files ?? []).slice(0, 5))}
+                    />
+                  </label>
+                  {ticketFiles.length > 0 && (
+                    <ul className="text-[11px] text-gray-500 dark:text-gray-400 space-y-0.5">
+                      {ticketFiles.map((f) => (
+                        <li key={f.name} className="truncate">• {f.name}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
                 {createError && (
                   <p className="text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1.5">
                     <AlertCircle className="w-4 h-4" /> {createError}
@@ -484,19 +522,26 @@ export const ContributorSupportPage: React.FC = () => {
          ========================================================================= */}
       {openTicket && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-[#0C1322] rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-gray-100 dark:border-white/10 relative">
-            <div className="p-6 border-b border-gray-100 dark:border-white/10 flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400">{openTicket.reference}</span>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${TICKET_STATUS_STYLES[openTicket.status]}`}>
-                    {TICKET_STATUS_LABELS[openTicket.status]}
-                  </span>
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl max-w-2xl w-full h-[88vh] flex flex-col shadow-2xl border border-gray-100 dark:border-white/10 relative overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-[2px] rounded-full bg-gradient-to-tr from-[#F9CE34] via-[#EE2A7B] to-[#6228D7] shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-[#07182F] text-white flex items-center justify-center ring-2 ring-white dark:ring-[#0C1322]">
+                    <LifeBuoy className="w-5 h-5" />
+                  </div>
                 </div>
-                <h2 className="text-base font-black text-gray-900 dark:text-gray-100 mt-1 break-words">{openTicket.subject}</h2>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                  {TICKET_CATEGORY_LABELS[openTicket.category] ?? openTicket.category} · opened {formatTicketTime(openTicket.created_at)}
-                </p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-gray-900 dark:text-gray-100">eBizEarn Support</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${TICKET_STATUS_STYLES[openTicket.status]}`}>
+                      {TICKET_STATUS_LABELS[openTicket.status]}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                    <span className="font-mono">{openTicket.reference}</span> · {openTicket.subject} ·{' '}
+                    {TICKET_CATEGORY_LABELS[openTicket.category] ?? openTicket.category}
+                  </p>
+                </div>
               </div>
               <button
                 type="button"
@@ -507,57 +552,18 @@ export const ContributorSupportPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-3">
-              {detailLoading && !openTicket.messages && (
-                <div className="text-center text-gray-400 py-6">
-                  <Loader2 className="w-5 h-5 animate-spin inline-block" />
-                </div>
-              )}
-              {(openTicket.messages ?? []).map((m) => (
-                <div key={m.id} className={`flex ${m.from_staff ? 'justify-start' : 'justify-end'}`}>
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                      m.from_staff
-                        ? 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-gray-100'
-                        : 'bg-[#168BFF] text-white'
-                    }`}
-                  >
-                    <p className="text-[10px] font-bold opacity-75 mb-0.5">
-                      {m.from_staff ? m.sender_name : 'You'} · {formatTicketTime(m.created_at)}
-                    </p>
-                    <p className="text-xs whitespace-pre-wrap break-words">{m.message}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {openTicket.status === 'closed' ? (
-              <p className="p-5 border-t border-gray-100 dark:border-white/10 text-xs text-gray-500 dark:text-gray-400 text-center">
-                This ticket is closed. Open a new ticket if you need more help.
-              </p>
-            ) : (
-              <form onSubmit={handleReply} className="p-5 border-t border-gray-100 dark:border-white/10 space-y-2">
-                <div className="flex items-end gap-2">
-                  <textarea
-                    rows={2}
-                    value={reply}
-                    onChange={(e) => setReply(e.target.value)}
-                    placeholder="Write a reply…"
-                    maxLength={5000}
-                    className={`${fieldClass} flex-1`}
-                  />
-                  <button
-                    type="submit"
-                    disabled={replying || !reply.trim()}
-                    className="px-4 py-2.5 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] disabled:opacity-60 text-white text-xs font-bold flex items-center gap-1.5 shrink-0"
-                  >
-                    {replying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                    Send
-                  </button>
-                </div>
-                {replyError && <p className="text-xs font-semibold text-red-600 dark:text-red-400">{replyError}</p>}
-              </form>
-            )}
+            <TicketChat
+              key={openTicket.uuid}
+              messages={openTicket.messages ?? []}
+              viewer="user"
+              counterpartName="eBizEarn Support"
+              loading={detailLoading}
+              sending={replying}
+              error={replyError}
+              closedNote={openTicket.status === 'closed' ? 'This ticket is closed. Open a new ticket if you need more help.' : null}
+              fetchAttachment={fetchAttachment}
+              onSend={(text, files) => handleReply(text, files)}
+            />
           </div>
         </div>
       )}

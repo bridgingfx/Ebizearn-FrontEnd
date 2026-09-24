@@ -483,7 +483,7 @@ Here are key actions you can take right now:
       {/* =========================================================================
           FLOATING LAUNCHER BUTTON: RIGHT SIDE (fixed bottom-5 right-5 z-50)
          ========================================================================= */}
-      <div className="fixed bottom-5 right-5 z-50 font-sans select-none">
+      <div className="chat-widget-root fixed bottom-5 right-5 z-50 font-sans select-none">
         {!isOpen && (
           <button
             type="button"

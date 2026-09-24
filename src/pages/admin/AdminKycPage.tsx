@@ -4,6 +4,8 @@ import { staffKycApi, getApiError } from '../../api';
 import type { KycDocumentSide, KycDocumentType, KycStatus, KycSubmission } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PageHeader } from '../../components/common/ui';
+import { useHideChatWidget } from '../../utils/useHideChatWidget';
+import { Link } from 'react-router-dom';
 
 type Filter = 'pending' | 'verified' | 'rejected' | 'all';
 
@@ -52,6 +54,8 @@ export const AdminKycPage: React.FC = () => {
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  useHideChatWidget(!!selected);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 400);
@@ -261,7 +265,12 @@ export const AdminKycPage: React.FC = () => {
           >
             <div className="p-5 border-b border-gray-100 dark:border-white/10 flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="text-base font-black text-gray-900 dark:text-gray-100">{selected.user?.name}</h2>
+                <Link
+                  to={`/admin/users/${selected.user_id}`}
+                  className="text-base font-black text-gray-900 dark:text-gray-100 hover:underline"
+                >
+                  {selected.user?.name}
+                </Link>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {selected.user?.email} · {selected.kyc_document_type ? DOC_LABELS[selected.kyc_document_type] : 'Document'}
                   {selected.country_code ? ` · ${selected.country_code}` : ''}

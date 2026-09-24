@@ -18,6 +18,7 @@ import { tasksApi, getApiError } from '../../api';
 import { mapTaskForUi, money } from '../../utils/apiMappers';
 import type { UiTask, TaskSubmission } from '../../types';
 import { PlatformPreview } from '../../components/task/PlatformPreview';
+import { TaskAssetActions } from '../../components/task/TaskAssetActions';
 import { VerificationTimeline } from '../../components/task/VerificationTimeline';
 import { humanizeRetention, initials, proofRequirementLabels } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -206,6 +207,9 @@ export const TaskDetailPage: React.FC = () => {
         {/* LEFT — platform preview + task facts */}
         <div className="space-y-5">
           <PlatformPreview task={task} />
+
+          {/* Download creative → copy caption → open platform → post → submit proof */}
+          <TaskAssetActions task={task} />
 
           <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 p-5 sm:p-6 space-y-4">
             <div className="flex items-start gap-3">

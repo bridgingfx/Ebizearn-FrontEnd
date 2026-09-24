@@ -13,7 +13,31 @@ const detectPlatform = (value = '') => {
   if (text.includes('trustpilot')) return 'Trustpilot';
   if (text.includes('review') || text.includes('google')) return 'Google Reviews';
   if (text.includes('linkedin')) return 'LinkedIn';
+  if (text.includes('twitter') || /(^|[\s(])x([\s),.]|$)/.test(text)) return 'X';
   return 'Instagram';
+};
+
+/**
+ * Creative image URL for a task. The API has no dedicated creative field yet,
+ * so this probes every plausible key — the moment the backend (or a business
+ * upload flow) provides one, the task detail "Download image" button lights up
+ * automatically. Returns undefined when nothing is attached (never fabricated).
+ */
+const resolveCreativeUrl = (task: Task): string | undefined => {
+  const campaign = task.campaign as (Campaign & Record<string, unknown>) | undefined;
+  const rawTask = task as Task & Record<string, unknown>;
+  const candidates = [
+    campaign?.creative_url,
+    campaign?.image_url,
+    campaign?.media_url,
+    campaign?.flyer_url,
+    campaign?.banner_url,
+    rawTask?.creative_url,
+    rawTask?.image_url,
+    rawTask?.media_url,
+  ];
+  const found = candidates.find((v) => typeof v === 'string' && v.trim().length > 0);
+  return typeof found === 'string' ? found : undefined;
 };
 
 const formatDate = (value?: string) => {
@@ -24,7 +48,10 @@ const formatDate = (value?: string) => {
 
 export const mapTaskForUi = (task: Task): UiTask => {
   const categoryName = task.category?.name || task.category?.icon || task.campaign?.category?.name || 'Social Media';
-  const platform = detectPlatform(`${task.title} ${categoryName} ${task.campaign?.title || ''}`);
+  // Prefer the platform the business picked in the campaign wizard (persisted
+  // on the campaign row); fall back to text detection for older campaigns.
+  const platform =
+    task.campaign?.platform?.trim() || detectPlatform(`${task.title} ${categoryName} ${task.campaign?.title || ''}`);
   const campaign = task.campaign;
 
   return {
@@ -35,7 +62,7 @@ export const mapTaskForUi = (task: Task): UiTask => {
     badgeColor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30',
     country: campaign?.target_countries_json?.join(', ') || 'Global',
     retentionHours: campaign?.retention_hours || 24,
-    flyerUrl: undefined,
+    flyerUrl: resolveCreativeUrl(task),
     postCopy: campaign?.instructions_markdown || campaign?.description || task.title,
     hashtags: undefined,
     targetUrl: campaign?.business?.website || undefined,
@@ -45,7 +72,7 @@ export const mapTaskForUi = (task: Task): UiTask => {
 
 export const mapCampaignForUi = (campaign: Campaign) => {
   const firstTask = campaign.tasks?.[0];
-  const platform = detectPlatform(`${campaign.title} ${campaign.category?.name || ''} ${firstTask?.title || ''}`);
+  const platform = campaign.platform?.trim() || detectPlatform(`${campaign.title} ${campaign.category?.name || ''} ${firstTask?.title || ''}`);
   const spentCents = Math.max(0, campaign.total_budget_cents - campaign.remaining_budget_cents);
   const statusMap: Record<string, string> = {
     active: 'Live',

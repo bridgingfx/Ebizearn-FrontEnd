@@ -33,6 +33,36 @@ export interface User {
   permissions?: string[];
 }
 
+/** One referral commission level (GET /admin/referral-rules). */
+export interface ReferralRule {
+  level: number;
+  reward_mode: 'flat' | 'percent';
+  reward_cents: number;
+  /** Basis points: 1000 = 10%. */
+  percent_bps: number;
+  percent?: number;
+  is_enabled: boolean;
+  from_database?: boolean;
+  description: string;
+}
+
+export interface ReferralRuleInput {
+  level: number;
+  reward_mode: 'flat' | 'percent';
+  reward_cents?: number;
+  percent_bps?: number;
+  is_enabled: boolean;
+}
+
+export interface ReferralRulesResponse {
+  program_enabled: boolean;
+  levels: number;
+  qualification: { require_email_verified: boolean; require_first_task_approved: boolean };
+  /** Keyed by level number ("1", "2", …). */
+  rules: Record<string, ReferralRule>;
+  can_edit: boolean;
+}
+
 export type PermissionGroup = 'staff' | 'contributor' | 'business' | 'account' | 'other';
 
 export interface PermissionDef {

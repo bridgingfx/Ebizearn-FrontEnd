@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Gift, Users, Wallet, Hourglass, Undo2 } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ReferralCommissionSettings } from '../../components/admin/ReferralCommissionSettings';
 import { PageHeader, StatCard, StatusBadge, LoadingBlock, ErrorBlock, Card, CardHeader, fmtMoney } from '../../components/common/ui';
 
 interface ReferralOverview {
@@ -101,6 +102,8 @@ export const AdminReferralsPage: React.FC = () => {
         <StatCard label="Pending qualification" value={fmtMoney(totals.pending_cents)} icon={Hourglass} accent="amber" hint="Not earnings until qualified" />
         <StatCard label="Reversed" value={fmtMoney(totals.reversed_cents)} icon={Undo2} accent="red" hint="Fraud / ineligible reversals" />
       </div>
+
+      <ReferralCommissionSettings />
 
       {empty ? (
         <EmptyState

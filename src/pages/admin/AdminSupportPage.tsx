@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Headset, Search, Loader2, X, RefreshCw } from 'lucide-react';
+import { Headset, Search, Loader2, X, RefreshCw, Eye } from 'lucide-react';
 import { staffSupportApi, getApiError, type StaffTicketCounts } from '../../api';
 import type { SupportTicket, TicketPriority, TicketStatus } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -234,7 +234,8 @@ export const AdminSupportPage: React.FC = () => {
                   <th className="py-3 px-4">Category</th>
                   <th className="py-3 px-4">Priority</th>
                   <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Updated</th>
+                  <th className="py-3 px-4">Updated</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-white/10">
@@ -267,8 +268,20 @@ export const AdminSupportPage: React.FC = () => {
                         {TICKET_STATUS_LABELS[t.status]}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    <td className="py-3 px-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {formatTicketTime(t.updated_at)}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void openTicket(t);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#07182F] hover:bg-[#168BFF] text-white text-[11px] font-bold transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> View
+                      </button>
                     </td>
                   </tr>
                 ))}

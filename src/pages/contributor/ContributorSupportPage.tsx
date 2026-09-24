@@ -12,6 +12,7 @@ import {
   LifeBuoy,
   Loader2,
   Paperclip,
+  Eye,
   X,
 } from 'lucide-react';
 import { supportApi, getApiError } from '../../api';
@@ -287,20 +288,21 @@ export const ContributorSupportPage: React.FC = () => {
                 <th className="py-3.5 px-5">Subject</th>
                 <th className="py-3.5 px-5">Category</th>
                 <th className="py-3.5 px-5">Status</th>
-                <th className="py-3.5 px-5 text-right">Updated</th>
+                <th className="py-3.5 px-5">Updated</th>
+                <th className="py-3.5 px-5 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-white/10 text-xs">
               {loading && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-gray-400">
+                  <td colSpan={6} className="py-10 text-center text-gray-400">
                     <Loader2 className="w-5 h-5 animate-spin inline-block" />
                   </td>
                 </tr>
               )}
               {!loading && loadError && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-red-600 dark:text-red-400 font-semibold">
+                  <td colSpan={6} className="py-8 text-center text-red-600 dark:text-red-400 font-semibold">
                     {loadError}{' '}
                     <button type="button" onClick={() => void load()} className="underline">
                       Retry
@@ -310,7 +312,7 @@ export const ContributorSupportPage: React.FC = () => {
               )}
               {!loading && !loadError && visibleTickets.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={6} className="py-10 text-center text-gray-500 dark:text-gray-400">
                     {tickets.length === 0 ? 'You have not opened any tickets yet.' : 'No tickets match this filter.'}
                   </td>
                 </tr>
@@ -337,7 +339,19 @@ export const ContributorSupportPage: React.FC = () => {
                         {TICKET_STATUS_LABELS[t.status]}
                       </span>
                     </td>
-                    <td className="py-4 px-5 text-right text-gray-500 dark:text-gray-400 font-mono">{formatTicketTime(t.updated_at)}</td>
+                    <td className="py-4 px-5 text-gray-500 dark:text-gray-400 font-mono">{formatTicketTime(t.updated_at)}</td>
+                    <td className="py-4 px-5 text-right">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void openDetail(t);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#168BFF]/10 hover:bg-[#168BFF] text-[#168BFF] hover:text-white text-[11px] font-bold transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> View
+                      </button>
+                    </td>
                   </tr>
                 ))}
             </tbody>

@@ -17,7 +17,17 @@ export interface KycSubmitPayload {
   selfie?: File | null;
 }
 
+export interface ChangePasswordPayload {
+  current_password: string;
+  password: string;
+  password_confirmation: string;
+}
+
 export const profileApi = {
+  /** Change password; other devices are signed out, this session stays. */
+  updatePassword: (payload: ChangePasswordPayload) =>
+    api.put<ApiResponse<null>>('/profile/password', payload).then((r) => r.data),
+
   update: (payload: ProfileUpdatePayload) =>
     api.put<ApiResponse<{ user: User }>>('/profile', payload).then((r) => r.data),
 

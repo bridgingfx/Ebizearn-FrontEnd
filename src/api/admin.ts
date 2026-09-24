@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { AdminUserDetail, AuditLog, FeatureFlag, FraudEvent, TaskSubmission, User, WithdrawalRequest } from '../types';
+import type { AdminUserDetail, ReferralRule, ReferralRuleInput, ReferralRulesResponse, AuditLog, FeatureFlag, FraudEvent, TaskSubmission, User, WithdrawalRequest } from '../types';
 
 export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
@@ -45,6 +45,14 @@ export const adminApi = {
   // Phase 11: platform-wide referral overview (read-only aggregate).
   referralOverview: () =>
     api.get('/admin/referrals/overview').then((r) => r.data),
+  // Referral commissions per level (L1/L2/L3). Editing needs
+  // manage_referral_rules (Super Admin, or an admin they grant it to).
+  referralRules: () =>
+    api.get('/admin/referral-rules').then((r) => r.data as { success: boolean; message?: string; data: ReferralRulesResponse }),
+  updateReferralRules: (levels: ReferralRuleInput[]) =>
+    api
+      .patch('/admin/referral-rules', { levels })
+      .then((r) => r.data as { success: boolean; message?: string; data: { rules: ReferralRule[] } }),
   // Demo requests inbox (GET /admin/demo-requests, paginated latest-first).
   demoRequests: (params?: { per_page?: number; page?: number }) =>
     api.get('/admin/demo-requests', { params }).then((r) => r.data as {

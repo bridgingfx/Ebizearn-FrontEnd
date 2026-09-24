@@ -31,6 +31,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { AvatarUploadControl } from '../../components/common/AvatarUploadControl';
+import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 import { profileApi, getApiError } from '../../api';
 import { COUNTRY_OPTIONS } from '../../config/geoLocations';
 import type { KycDocumentType } from '../../types';
@@ -670,6 +671,8 @@ export const ContributorProfilePage: React.FC = () => {
             <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Security & Notifications</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Manage two-factor authentication, passwords, and task drop notifications.</p>
           </div>
+
+          <ChangePasswordCard />
 
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">

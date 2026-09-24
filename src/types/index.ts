@@ -12,8 +12,6 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   referral_code?: string;
-  /** Account phone in E.164 ("+971501234567"); null until collected. */
-  phone?: string | null;
   /**
    * Email-verification timestamp. `null` = explicitly unverified (Laravel
    * sends `email_verified_at: null`) → show the verification gate.

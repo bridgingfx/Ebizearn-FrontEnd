@@ -73,6 +73,7 @@ import {
   LazyAdminUsersPage,
   LazyAdminCampaignsOversightPage,
   LazyAdminSupportPage,
+  LazyAdminKycPage,
   LazyAdminAnalyticsPage,
   LazyAdminSystemHealthPage,
   LazyAdminSettingsPage,
@@ -227,6 +228,7 @@ export const App: React.FC = () => {
             <Route path="tasks" element={<LazyAdminTasksPage />} />
             <Route path="fraud" element={<LazyAdminFraudPage />} />
             <Route path="support" element={<LazyAdminSupportPage />} />
+            <Route path="kyc" element={<LazyAdminKycPage />} />
             <Route path="analytics" element={<LazyAdminAnalyticsPage />} />
             <Route path="health" element={<LazyAdminSystemHealthPage />} />
             <Route path="settings" element={<LazyAdminSettingsPage />} />

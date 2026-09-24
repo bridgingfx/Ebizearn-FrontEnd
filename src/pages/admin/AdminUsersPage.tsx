@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Users, Search, ShieldAlert, Ban, CheckCircle2, AlertCircle, Loader2, Eye } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { User } from '../../types';
@@ -8,8 +8,8 @@ import { EmptyState } from '../../components/common/EmptyState';
 /**
  * User directory. Everything comes from GET /admin/users (search + role
  * filters are server-side). Suspend/reactivate calls PATCH /admin/users/:id/status.
- * No invented KYC queues, no fake IPs, no "verified vault" claims. KYC approval
- * actions do not exist in the backend — this page notes that honestly.
+ * No fake IPs, no "verified vault" claims. KYC approval lives in the
+ * dedicated review queue (AdminKycPage, /staff/kyc).
  */
 export const AdminUsersPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -94,8 +94,8 @@ export const AdminUsersPage: React.FC = () => {
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Users & KYC</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Every user on the platform, served live. KYC approval actions need backend support that is not
-          available yet — this page only suspends or reactivates accounts.
+          Every user on the platform, served live. Review identity documents in the{' '}
+          <Link to="/admin/kyc" className="text-[#168BFF] font-bold hover:underline">KYC Review</Link> queue.
         </p>
       </div>
 
@@ -302,8 +302,8 @@ export const AdminUsersPage: React.FC = () => {
             <div className="mt-4 bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 rounded-xl p-3.5 flex items-start gap-2">
               <ShieldAlert className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
               <p className="text-[11px] text-amber-800 dark:text-amber-200">
-                KYC document review actions need backend support that is not available yet. Only the KYC
-                status reported by the user profile is shown here.
+                Approve or reject this user's identity documents in the{' '}
+                <Link to="/admin/kyc" className="font-bold underline">KYC Review</Link> queue.
               </p>
             </div>
           </div>

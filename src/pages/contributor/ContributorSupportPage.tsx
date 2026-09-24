@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  HelpCircle,
   MessageSquare,
   Plus,
   Search,
@@ -8,26 +7,47 @@ import {
   CheckCircle2,
   AlertCircle,
   ChevronDown,
-  ChevronRight,
   Send,
   FileText,
   LifeBuoy,
+  Loader2,
   X,
 } from 'lucide-react';
-import { usePlatform } from '../../context/PlatformDataContext';
+import { supportApi, getApiError } from '../../api';
+import type { SupportTicket, TicketCategory } from '../../types';
+import {
+  TICKET_CATEGORY_LABELS,
+  TICKET_STATUS_LABELS,
+  TICKET_STATUS_STYLES,
+  formatTicketTime,
+} from '../../utils/supportTickets';
+
+const fieldClass =
+  'w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]';
 
 export const ContributorSupportPage: React.FC = () => {
-  const { tickets, createSupportTicket } = usePlatform();
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'resolved'>('all');
   const [showNewTicketModal, setShowNewTicketModal] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   // New Ticket Form State
   const [ticketSubject, setTicketSubject] = useState('');
-  const [ticketCategory, setTicketCategory] = useState('payout');
+  const [ticketCategory, setTicketCategory] = useState<TicketCategory>('payout');
   const [ticketDescription, setTicketDescription] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [ticketSubmitted, setTicketSubmitted] = useState(false);
+
+  // Ticket detail / conversation
+  const [openTicket, setOpenTicket] = useState<SupportTicket | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [reply, setReply] = useState('');
+  const [replying, setReplying] = useState(false);
+  const [replyError, setReplyError] = useState<string | null>(null);
 
   const faqs = [
     {
@@ -48,30 +68,106 @@ export const ContributorSupportPage: React.FC = () => {
     },
   ];
 
-  const handleCreateTicket = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!ticketSubject) return;
+  const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const res = await supportApi.list();
+      setTickets(res.success ? res.data || [] : []);
+      if (!res.success) setLoadError(res.message || 'Could not load your tickets.');
+    } catch (e) {
+      setLoadError(getApiError(e, 'Could not load your tickets.'));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    createSupportTicket({
-      subject: ticketSubject,
-      category: ticketCategory === 'payout' ? 'Payout Inquiry' : ticketCategory === 'dispute' ? 'Verification Dispute' : 'General Support',
-      priority: 'Normal',
-      description: ticketDescription || 'Issue submitted by contributor.',
-      source: 'contributor_portal',
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const visibleTickets = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return tickets.filter((t) => {
+      if (statusFilter === 'open' && !(t.status === 'open' || t.status === 'in_progress')) return false;
+      if (statusFilter === 'resolved' && !(t.status === 'resolved' || t.status === 'closed')) return false;
+      if (!q) return true;
+      return t.subject.toLowerCase().includes(q) || t.reference.toLowerCase().includes(q);
     });
+  }, [tickets, searchQuery, statusFilter]);
 
-    setTicketSubmitted(true);
-    setTimeout(() => {
-      setTicketSubmitted(false);
-      setShowNewTicketModal(false);
-      setTicketSubject('');
-      setTicketDescription('');
-    }, 1200);
+  const handleCreateTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ticketSubject.trim() || !ticketDescription.trim()) return;
+
+    setCreating(true);
+    setCreateError(null);
+    try {
+      const res = await supportApi.create({
+        subject: ticketSubject.trim(),
+        category: ticketCategory,
+        message: ticketDescription.trim(),
+      });
+      if (!res.success) {
+        setCreateError(res.message || 'Could not submit your ticket.');
+        return;
+      }
+      setTickets((prev) => [res.data, ...prev]);
+      setTicketSubmitted(true);
+      setTimeout(() => {
+        setTicketSubmitted(false);
+        setShowNewTicketModal(false);
+        setTicketSubject('');
+        setTicketDescription('');
+      }, 1200);
+    } catch (err) {
+      setCreateError(getApiError(err, 'Could not submit your ticket.'));
+    } finally {
+      setCreating(false);
+    }
   };
+
+  const openDetail = async (t: SupportTicket) => {
+    setOpenTicket(t);
+    setReply('');
+    setReplyError(null);
+    setDetailLoading(true);
+    try {
+      const res = await supportApi.show(t.uuid);
+      if (res.success) setOpenTicket(res.data);
+    } catch (err) {
+      setReplyError(getApiError(err, 'Could not load this ticket.'));
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const handleReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!openTicket || !reply.trim()) return;
+    setReplying(true);
+    setReplyError(null);
+    try {
+      const res = await supportApi.reply(openTicket.uuid, reply.trim());
+      if (res.success) {
+        setOpenTicket(res.data);
+        setTickets((prev) => prev.map((t) => (t.uuid === res.data.uuid ? { ...t, ...res.data } : t)));
+        setReply('');
+      } else {
+        setReplyError(res.message || 'Could not send your reply.');
+      }
+    } catch (err) {
+      setReplyError(getApiError(err, 'Could not send your reply.'));
+    } finally {
+      setReplying(false);
+    }
+  };
+
+  const openCount = tickets.filter((t) => t.status === 'open' || t.status === 'in_progress').length;
 
   return (
     <div className="space-y-6 text-left font-sans max-w-6xl mx-auto">
-      
+
       {/* =========================================================================
           1. HEADER & ACTION
          ========================================================================= */}
@@ -87,7 +183,10 @@ export const ContributorSupportPage: React.FC = () => {
 
         <button
           type="button"
-          onClick={() => setShowNewTicketModal(true)}
+          onClick={() => {
+            setCreateError(null);
+            setShowNewTicketModal(true);
+          }}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] text-white text-xs font-bold shadow-md shadow-blue-500/20 transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
@@ -115,9 +214,7 @@ export const ContributorSupportPage: React.FC = () => {
           </div>
           <div>
             <span className="text-xs text-gray-500 dark:text-gray-400 font-medium block">In Progress / Open</span>
-            <span className="text-2xl font-black text-gray-900 dark:text-gray-100 mt-0.5 block">
-              {tickets.filter((t) => t.status !== 'Resolved').length}
-            </span>
+            <span className="text-2xl font-black text-gray-900 dark:text-gray-100 mt-0.5 block">{openCount}</span>
           </div>
         </div>
 
@@ -151,13 +248,13 @@ export const ContributorSupportPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            {['all', 'open', 'resolved'].map((filter) => (
+            {(['all', 'open', 'resolved'] as const).map((filter) => (
               <button
                 key={filter}
                 type="button"
-                onClick={() => setSelectedCategory(filter)}
+                onClick={() => setStatusFilter(filter)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors ${
-                  selectedCategory === filter
+                  statusFilter === filter
                     ? 'bg-[#07182F] text-white shadow-xs'
                     : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
                 }`}
@@ -168,36 +265,67 @@ export const ContributorSupportPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="glass rounded-2xl overflow-x-auto">
+        <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/75 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              <tr className="bg-gray-50/75 dark:bg-white/5 border-b border-gray-100 dark:border-white/10 text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                 <th className="py-3.5 px-5">Ticket ID</th>
                 <th className="py-3.5 px-5">Subject</th>
                 <th className="py-3.5 px-5">Category</th>
                 <th className="py-3.5 px-5">Status</th>
-                <th className="py-3.5 px-5">Priority</th>
                 <th className="py-3.5 px-5 text-right">Updated</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-white/10 text-xs">
-              {tickets.map((t) => (
-                <tr key={t.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="py-4 px-5 font-mono font-bold text-gray-900 dark:text-gray-100">{t.id}</td>
-                  <td className="py-4 px-5">
-                    <span className="font-bold text-gray-900 dark:text-gray-100 block">{t.subject}</span>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500">{t.repliesCount ?? 1} responses</span>
+              {loading && (
+                <tr>
+                  <td colSpan={5} className="py-10 text-center text-gray-400">
+                    <Loader2 className="w-5 h-5 animate-spin inline-block" />
                   </td>
-                  <td className="py-4 px-5 text-gray-600 dark:text-gray-400 font-medium">{t.category}</td>
-                  <td className="py-4 px-5">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${t.statusColor}`}>
-                      {t.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-5 font-semibold text-gray-700 dark:text-gray-300">{t.priority}</td>
-                  <td className="py-4 px-5 text-right text-gray-500 dark:text-gray-400 font-mono">{t.updatedAt || t.time || 'Just now'}</td>
                 </tr>
-              ))}
+              )}
+              {!loading && loadError && (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-red-600 dark:text-red-400 font-semibold">
+                    {loadError}{' '}
+                    <button type="button" onClick={() => void load()} className="underline">
+                      Retry
+                    </button>
+                  </td>
+                </tr>
+              )}
+              {!loading && !loadError && visibleTickets.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="py-10 text-center text-gray-500 dark:text-gray-400">
+                    {tickets.length === 0 ? 'You have not opened any tickets yet.' : 'No tickets match this filter.'}
+                  </td>
+                </tr>
+              )}
+              {!loading &&
+                visibleTickets.map((t) => (
+                  <tr
+                    key={t.uuid}
+                    onClick={() => void openDetail(t)}
+                    className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  >
+                    <td className="py-4 px-5 font-mono font-bold text-gray-900 dark:text-gray-100">{t.reference}</td>
+                    <td className="py-4 px-5">
+                      <span className="font-bold text-gray-900 dark:text-gray-100 block">{t.subject}</span>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                        {t.messages_count ?? 1} {t.messages_count === 1 ? 'message' : 'messages'}
+                      </span>
+                    </td>
+                    <td className="py-4 px-5 text-gray-600 dark:text-gray-400 font-medium">
+                      {TICKET_CATEGORY_LABELS[t.category] ?? t.category}
+                    </td>
+                    <td className="py-4 px-5">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${TICKET_STATUS_STYLES[t.status]}`}>
+                        {TICKET_STATUS_LABELS[t.status]}
+                      </span>
+                    </td>
+                    <td className="py-4 px-5 text-right text-gray-500 dark:text-gray-400 font-mono">{formatTicketTime(t.updated_at)}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -263,7 +391,7 @@ export const ContributorSupportPage: React.FC = () => {
               </div>
               <div>
                 <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Open Support Ticket</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Dedicated assistance for verified contributors</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Our support team replies right here in your helpdesk.</p>
               </div>
             </div>
 
@@ -281,13 +409,16 @@ export const ContributorSupportPage: React.FC = () => {
                   <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Category</label>
                   <select
                     value={ticketCategory}
-                    onChange={(e) => setTicketCategory(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]"
+                    onChange={(e) => setTicketCategory(e.target.value as TicketCategory)}
+                    className={fieldClass}
                   >
                     <option value="payout">Payout Inquiry & Withdrawal Status</option>
                     <option value="dispute">OCR Task Proof Verification Dispute</option>
+                    <option value="kyc">Identity / KYC Verification</option>
                     <option value="social">Connected Social Account Issue</option>
+                    <option value="account">Account & Login</option>
                     <option value="bug">Platform Bug or Technical Error</option>
+                    <option value="general">Something else</option>
                   </select>
                 </div>
 
@@ -298,7 +429,9 @@ export const ContributorSupportPage: React.FC = () => {
                     placeholder="E.g. Task #4928 proof verification rejected unfairly"
                     value={ticketSubject}
                     onChange={(e) => setTicketSubject(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]"
+                    className={fieldClass}
+                    minLength={3}
+                    maxLength={191}
                     required
                   />
                 </div>
@@ -310,10 +443,18 @@ export const ContributorSupportPage: React.FC = () => {
                     placeholder="Explain what happened, include task IDs or transaction references..."
                     value={ticketDescription}
                     onChange={(e) => setTicketDescription(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs font-medium text-gray-900 dark:text-gray-100 focus:bg-white dark:focus:bg-[#0C1322] focus:outline-none focus:border-[#168BFF]"
+                    className={fieldClass}
+                    minLength={5}
+                    maxLength={5000}
                     required
                   />
                 </div>
+
+                {createError && (
+                  <p className="text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4" /> {createError}
+                  </p>
+                )}
 
                 <div className="pt-2 flex justify-end gap-2">
                   <button
@@ -325,10 +466,11 @@ export const ContributorSupportPage: React.FC = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-1.5"
+                    disabled={creating}
+                    className="px-5 py-2 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] disabled:opacity-60 text-white text-xs font-bold shadow-md shadow-blue-500/20 flex items-center gap-1.5"
                   >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Submit Ticket</span>
+                    {creating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    <span>{creating ? 'Submitting…' : 'Submit Ticket'}</span>
                   </button>
                 </div>
               </form>
@@ -337,6 +479,88 @@ export const ContributorSupportPage: React.FC = () => {
         </div>
       )}
 
+      {/* =========================================================================
+          MODAL: TICKET CONVERSATION
+         ========================================================================= */}
+      {openTicket && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-gray-100 dark:border-white/10 relative">
+            <div className="p-6 border-b border-gray-100 dark:border-white/10 flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-mono text-xs font-bold text-gray-500 dark:text-gray-400">{openTicket.reference}</span>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${TICKET_STATUS_STYLES[openTicket.status]}`}>
+                    {TICKET_STATUS_LABELS[openTicket.status]}
+                  </span>
+                </div>
+                <h2 className="text-base font-black text-gray-900 dark:text-gray-100 mt-1 break-words">{openTicket.subject}</h2>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  {TICKET_CATEGORY_LABELS[openTicket.category] ?? openTicket.category} · opened {formatTicketTime(openTicket.created_at)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpenTicket(null)}
+                className="p-2 rounded-xl text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-3">
+              {detailLoading && !openTicket.messages && (
+                <div className="text-center text-gray-400 py-6">
+                  <Loader2 className="w-5 h-5 animate-spin inline-block" />
+                </div>
+              )}
+              {(openTicket.messages ?? []).map((m) => (
+                <div key={m.id} className={`flex ${m.from_staff ? 'justify-start' : 'justify-end'}`}>
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                      m.from_staff
+                        ? 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-gray-100'
+                        : 'bg-[#168BFF] text-white'
+                    }`}
+                  >
+                    <p className="text-[10px] font-bold opacity-75 mb-0.5">
+                      {m.from_staff ? m.sender_name : 'You'} · {formatTicketTime(m.created_at)}
+                    </p>
+                    <p className="text-xs whitespace-pre-wrap break-words">{m.message}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {openTicket.status === 'closed' ? (
+              <p className="p-5 border-t border-gray-100 dark:border-white/10 text-xs text-gray-500 dark:text-gray-400 text-center">
+                This ticket is closed. Open a new ticket if you need more help.
+              </p>
+            ) : (
+              <form onSubmit={handleReply} className="p-5 border-t border-gray-100 dark:border-white/10 space-y-2">
+                <div className="flex items-end gap-2">
+                  <textarea
+                    rows={2}
+                    value={reply}
+                    onChange={(e) => setReply(e.target.value)}
+                    placeholder="Write a reply…"
+                    maxLength={5000}
+                    className={`${fieldClass} flex-1`}
+                  />
+                  <button
+                    type="submit"
+                    disabled={replying || !reply.trim()}
+                    className="px-4 py-2.5 rounded-xl bg-[#168BFF] hover:bg-[#1277dc] disabled:opacity-60 text-white text-xs font-bold flex items-center gap-1.5 shrink-0"
+                  >
+                    {replying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                    Send
+                  </button>
+                </div>
+                {replyError && <p className="text-xs font-semibold text-red-600 dark:text-red-400">{replyError}</p>}
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

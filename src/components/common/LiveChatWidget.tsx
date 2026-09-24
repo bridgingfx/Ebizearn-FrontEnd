@@ -23,6 +23,17 @@ import {
 } from 'lucide-react';
 import { usePlatform, type PlatformSupportTicket } from '../../context/PlatformDataContext';
 import { useAuth } from '../../context/AuthContext';
+import { supportApi, getApiError } from '../../api';
+import type { TicketCategory } from '../../types';
+
+/** Widget category labels -> API ticket categories. */
+const WIDGET_CATEGORY_MAP: Record<string, TicketCategory> = {
+  'Task Verification Dispute': 'dispute',
+  'Payout Inquiry': 'payout',
+  'KYC Verification': 'kyc',
+  'Business Campaign Escrow': 'business',
+  'Account & General': 'account',
+};
 
 interface ChatMessage {
   id: string;
@@ -364,12 +375,76 @@ Here are key actions you can take right now:
     }, 800);
   };
 
+  const pushTicketConfirmation = (createdTicket: PlatformSupportTicket, trackUrl: string) => {
+    const confirmationMsg: ChatMessage = {
+      id: `ticket_confirm_${Date.now()}`,
+      sender: 'system',
+      text: `✅ **Support Ticket Created Successfully!**\n\nYour ticket **#${createdTicket.id}** is now in our support team's queue.\n\n- **Category:** ${createdTicket.category}\n- **Priority:** ${createdTicket.priority}\n- **Typical first response:** within 2 hours for general inquiries\n\nTrack replies anytime in [My Support Center](${trackUrl}).`,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      ticketCard: createdTicket,
+      actionLinks: [
+        { label: 'Track in Support Center', url: trackUrl },
+        { label: 'Return to Browse Tasks', url: '/tasks' },
+      ],
+    };
+    setMessages((prev) => [...prev, confirmationMsg]);
+  };
+
   // Submit Support Ticket from Inline Chat Widget
-  const handleSubmitTicket = (e: React.FormEvent) => {
+  const handleSubmitTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!ticketSubject.trim() || !ticketDescription.trim()) return;
 
     setIsSubmittingTicket(true);
+
+    // Signed-in contributors / businesses: real ticket via the API so the
+    // support desk (admin → Support) sees it.
+    if (user && (user.role === 'contributor' || user.role === 'business')) {
+      try {
+        const res = await supportApi.create({
+          subject: ticketSubject.trim(),
+          category: WIDGET_CATEGORY_MAP[ticketCategory] ?? 'general',
+          priority: ticketPriority === 'Normal' ? 'normal' : 'high',
+          message: ticketDescription.trim(),
+        });
+        if (!res.success) throw new Error(res.message);
+        setShowTicketModal(false);
+        setTicketSubject('');
+        setTicketDescription('');
+        pushTicketConfirmation(
+          {
+            id: res.data.reference,
+            subject: res.data.subject,
+            category: ticketCategory,
+            priority: ticketPriority,
+            status: 'Open',
+            statusColor: '',
+            userName: user.name,
+            userEmail: user.email,
+            createdAt: 'Just now',
+            updatedAt: 'Just now',
+            description: res.data.description ?? ticketDescription,
+            assignedAgent: 'eBizEarn Support Desk',
+            repliesCount: 1,
+            source: user.role === 'business' ? 'business_portal' : 'contributor_portal',
+          },
+          user.role === 'business' ? '/business/support' : '/app/support'
+        );
+      } catch (err) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `ticket_error_${Date.now()}`,
+            sender: 'system',
+            text: `⚠️ ${getApiError(err, 'We could not submit your ticket. Please try again or email support@ebizearn.com.')}`,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          },
+        ]);
+      } finally {
+        setIsSubmittingTicket(false);
+      }
+      return;
+    }
 
     setTimeout(() => {
       const createdTicket = createSupportTicket({

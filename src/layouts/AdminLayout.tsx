@@ -12,6 +12,7 @@ import {
   Gift,
   BarChart3,
   ShieldAlert,
+  ShieldCheck,
   Headset,
   Activity,
   Settings,
@@ -36,6 +37,7 @@ export const AdminLayout: React.FC = () => {
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
     { name: 'Users & KYC', path: '/admin/users', icon: Users },
+    { name: 'KYC Review', path: '/admin/kyc', icon: ShieldCheck },
     { name: 'Businesses', path: '/admin/businesses', icon: Building2 },
     { name: 'Verification', path: '/admin/verification', icon: FileCheck },
     { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone },

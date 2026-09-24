@@ -12,6 +12,8 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   referral_code?: string;
+  /** Account phone in E.164 ("+971501234567"); null until collected. */
+  phone?: string | null;
   /**
    * Email-verification timestamp. `null` = explicitly unverified (Laravel
    * sends `email_verified_at: null`) → show the verification gate.
@@ -39,10 +41,54 @@ export interface Profile {
   completed_tasks_count: number;
   approval_rate: number;
   interests_json?: string[];
-  kyc_status?: 'unverified' | 'pending' | 'verified' | 'rejected';
-  kyc_document_type?: 'emirates_id' | 'passport' | 'national_id';
-  kyc_submitted_at?: string;
-  kyc_verified_at?: string;
+  kyc_status?: KycStatus;
+  kyc_document_type?: KycDocumentType | null;
+  kyc_submitted_at?: string | null;
+  kyc_verified_at?: string | null;
+  kyc_rejection_reason?: string | null;
+  /** Which document sides are on file; paths themselves never leave the API. */
+  kyc_documents?: KycDocumentSide[];
+}
+
+export type KycStatus = 'unverified' | 'pending' | 'verified' | 'rejected';
+export type KycDocumentType = 'emirates_id' | 'passport' | 'national_id';
+export type KycDocumentSide = 'front' | 'back' | 'selfie';
+
+/** A row of the staff KYC queue (GET /staff/kyc): a profile with its user. */
+export interface KycSubmission extends Profile {
+  user: Pick<User, 'id' | 'uuid' | 'name' | 'email' | 'role' | 'status' | 'created_at'>;
+}
+
+export type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
+export type TicketPriority = 'low' | 'normal' | 'high' | 'urgent';
+export type TicketCategory = 'payout' | 'dispute' | 'social' | 'bug' | 'account' | 'kyc' | 'business' | 'general';
+
+export interface SupportTicketMessage {
+  id: number;
+  message: string;
+  is_internal_note: boolean;
+  from_staff: boolean;
+  sender_name: string;
+  created_at: string;
+}
+
+export interface SupportTicket {
+  id: number;
+  uuid: string;
+  reference: string;
+  subject: string;
+  category: TicketCategory;
+  priority: TicketPriority;
+  status: TicketStatus;
+  description: string | null;
+  messages_count: number | null;
+  assigned_agent: { id: number; name: string } | null;
+  created_at: string;
+  updated_at: string;
+  /** Staff views only. */
+  user?: { id: number; name: string; email: string; role: UserRole } | null;
+  /** Detail views only. */
+  messages?: SupportTicketMessage[];
 }
 
 export interface Business {

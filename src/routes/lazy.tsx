@@ -198,6 +198,9 @@ export const LazyAdminCampaignsOversightPage = React.lazy(() =>
 export const LazyAdminSupportPage = React.lazy(() =>
   named(import('../pages/admin/AdminSupportPage'), 'AdminSupportPage'),
 );
+export const LazyAdminKycPage = React.lazy(() =>
+  named(import('../pages/admin/AdminKycPage'), 'AdminKycPage'),
+);
 export const LazyAdminAnalyticsPage = React.lazy(() =>
   named(import('../pages/admin/AdminAnalyticsPage'), 'AdminAnalyticsPage'),
 );

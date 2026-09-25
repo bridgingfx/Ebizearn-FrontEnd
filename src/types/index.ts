@@ -301,6 +301,13 @@ export interface TaskSubmission {
   user?: User;
   files?: SubmissionFile[];
   aiResult?: AiVerificationResult;
+  /** Two-step review: the campaign business's recommendation (staff confirm the final decision). */
+  business_decision?: 'approved' | 'rejected' | null;
+  business_reason?: string | null;
+  business_reviewed_at?: string | null;
+  business_reviewer?: { id: number; name: string } | null;
+  reviewer?: { id: number; name: string } | null;
+  review_reason_code?: string | null;
 }
 
 export interface SubmissionFile {

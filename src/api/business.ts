@@ -28,4 +28,9 @@ export const businessApi = {
   updateCampaignStatus: (id: number | string, status: 'active' | 'paused' | 'cancelled') =>
     api.patch(`/business/campaigns/${id}/status`, { status }).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
   submissions: () => api.get('/business/submissions').then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),
+  /** First-step review of a proof on the business's own campaign; staff confirm and release payment. */
+  reviewSubmission: (id: number | string, decision: 'approve' | 'reject', reason?: string) =>
+    api
+      .post('/business/submissions/' + id + '/decision', { decision, reason })
+      .then((r) => r.data as { success: boolean; message: string; data: TaskSubmission }),
 };

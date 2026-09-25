@@ -3,11 +3,11 @@ import type { AdminUserDetail, ReferralRule, ReferralRuleInput, ReferralRulesRes
 
 export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
-  verificationQueue: (params?: { status?: string; search?: string }) =>
+  verificationQueue: (params?: { status?: string; search?: string; business_decision?: 'approved' | 'rejected' | 'none' }) =>
     api.get('/admin/verification-queue', { params }).then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),
   submissionDetail: (submissionId: number | string) =>
     api.get(`/admin/submissions/${submissionId}`).then((r) => r.data as { success: boolean; data: TaskSubmission }),
-  recordDecision: (submissionId: number | string, payload: { decision: string; notes?: string }) =>
+  recordDecision: (submissionId: number | string, payload: { decision: string; reason_code: string; notes?: string }) =>
     api.post(`/admin/submissions/${submissionId}/decision`, payload).then((r) => r.data),
   fraudAlerts: () => api.get('/admin/fraud-alerts').then((r) => r.data as { success: boolean; message?: string; data: FraudEvent[]; meta?: unknown }),
   payouts: (params?: { status?: string }) =>

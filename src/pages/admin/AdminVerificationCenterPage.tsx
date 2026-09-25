@@ -50,6 +50,26 @@ const mapSubmissionForReview = (submission: TaskSubmission) => {
   };
 };
 
+type BusinessFilter = 'all' | 'approved' | 'rejected' | 'none';
+
+const BUSINESS_FILTERS: { id: BusinessFilter; label: string }[] = [
+  { id: 'all', label: 'All pending' },
+  { id: 'approved', label: 'Business approved' },
+  { id: 'rejected', label: 'Business rejected' },
+  { id: 'none', label: 'Not reviewed by business' },
+];
+
+/** Rejection reason codes accepted by the API (VerificationService::REASON_CODES). */
+const REJECT_REASONS = [
+  { code: 'missing_requirements', label: 'Missing task requirements' },
+  { code: 'wrong_url', label: 'Wrong or broken link' },
+  { code: 'duplicate_proof', label: 'Duplicate proof' },
+  { code: 'fake_submission', label: 'Fake / edited proof' },
+  { code: 'multiple_accounts', label: 'Multiple accounts' },
+  { code: 'policy_violation', label: 'Policy violation' },
+  { code: 'other', label: 'Other (see note)' },
+];
+
 export const AdminVerificationCenterPage: React.FC = () => {
   const [realQueue, setRealQueue] = useState<ReturnType<typeof mapSubmissionForReview>[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -63,11 +83,17 @@ export const AdminVerificationCenterPage: React.FC = () => {
   const [decisionError, setDecisionError] = useState<string | null>(null);
   const [showSopGuide, setShowSopGuide] = useState(false);
 
-  const reloadQueue = async () => {
+  const [bizFilter, setBizFilter] = useState<BusinessFilter>('all');
+  const [rejectCode, setRejectCode] = useState(REJECT_REASONS[0].code);
+
+  const reloadQueue = async (business = bizFilter) => {
     setLoading(true);
     setLoadError(null);
     try {
-      const res = await adminApi.verificationQueue({ status: 'under_review' });
+      const res = await adminApi.verificationQueue({
+        status: 'under_review',
+        business_decision: business === 'all' ? undefined : business,
+      });
       if (res.success) {
         const mapped = res.data.map(mapSubmissionForReview);
         setRealQueue(mapped);
@@ -86,13 +112,14 @@ export const AdminVerificationCenterPage: React.FC = () => {
     let alive = true;
     void (async () => {
       if (!alive) return;
-      await reloadQueue();
+      setSelectedSubmissionId(null);
+      await reloadQueue(bizFilter);
     })();
     return () => {
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [bizFilter]);
 
   // Queue comes from the real API only — no demo fallback.
   const queue = realQueue;
@@ -118,6 +145,8 @@ export const AdminVerificationCenterPage: React.FC = () => {
     try {
       const res = await adminApi.recordDecision(currentSubmission.id, {
         decision: action,
+        // The API requires a reason code from its catalog for every decision.
+        reason_code: action === 'approved' ? 'verified' : action === 'action_required' ? 'needs_better_proof' : rejectCode,
         notes: decisionNotes,
       });
       if (res.success) {
@@ -263,6 +292,22 @@ export const AdminVerificationCenterPage: React.FC = () => {
         </div>
       )}
 
+      {/* Filter by the business's first-step decision */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        {BUSINESS_FILTERS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            onClick={() => setBizFilter(f.id)}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
+              bizFilter === f.id ? 'bg-[#07182F] dark:bg-[#168BFF] text-white' : 'bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/15'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       {queue.length === 0 ? (
         <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-12 text-center border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-3">
           <CheckCircle2 className="w-12 h-12 text-[#16B364] dark:text-emerald-300 mx-auto" />
@@ -291,6 +336,12 @@ export const AdminVerificationCenterPage: React.FC = () => {
                     >
                       <UserAvatar src={sub.contributorAvatar} name={sub.contributorName} size="xs" />
                       <span className="truncate max-w-[120px]">{sub.contributorName}</span>
+                      {sub.business_decision && (
+                        <span
+                          title={`Business ${sub.business_decision}`}
+                          className={`w-2 h-2 rounded-full ${sub.business_decision === 'approved' ? 'bg-emerald-400' : 'bg-rose-400'}`}
+                        />
+                      )}
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700 dark:text-gray-300'}`}>
                         {sub.reward}
                       </span>
@@ -335,6 +386,36 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 <span>Submitted: <strong>{currentSubmission.submittedAt}</strong></span>
               </div>
             </div>
+
+            {/* Business's first-step decision */}
+            {currentSubmission.business_decision ? (
+              <div
+                className={`p-3.5 rounded-2xl border text-xs ${
+                  currentSubmission.business_decision === 'approved'
+                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-200'
+                    : 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/30 text-rose-800 dark:text-rose-200'
+                }`}
+              >
+                <p className="font-bold flex items-center gap-1.5">
+                  {currentSubmission.business_decision === 'approved' ? <CheckCircle2 className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+                  Business {currentSubmission.business_decision} this proof
+                </p>
+                <p className="mt-0.5 opacity-90">
+                  {currentSubmission.business_reviewer?.name ?? 'Business'} ·{' '}
+                  {currentSubmission.business_reviewed_at ? new Date(currentSubmission.business_reviewed_at).toLocaleString() : ''}
+                </p>
+                {currentSubmission.business_reason && <p className="mt-1.5">Reason: “{currentSubmission.business_reason}”</p>}
+                <p className="mt-1.5 opacity-80">
+                  {currentSubmission.business_decision === 'approved'
+                    ? 'Approving below confirms it and releases the reward to the contributor’s wallet.'
+                    : 'Confirm the rejection below, or approve if the proof is actually valid.'}
+                </p>
+              </div>
+            ) : (
+              <div className="p-3 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 text-[11px] text-gray-500 dark:text-gray-400">
+                The business hasn’t reviewed this proof yet. You can still decide it now.
+              </div>
+            )}
 
             {/* Proof Screenshot Display */}
             <div className="space-y-2">
@@ -460,6 +541,19 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 className="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                 placeholder="Required audit log note explaining approval or rejection reason..."
               />
+
+              <label className="block">
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-semibold block uppercase mb-1">If rejecting, the main reason</span>
+                <select
+                  value={rejectCode}
+                  onChange={(e) => setRejectCode(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF] text-gray-800 dark:text-gray-200"
+                >
+                  {REJECT_REASONS.map((r) => (
+                    <option key={r.code} value={r.code}>{r.label}</option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             {/* Decision Status Animation */}

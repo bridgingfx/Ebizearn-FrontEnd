@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { AlertCircle, CheckCircle2, Info, X } from 'lucide-react';
-import { subscribeToasts, dismissToast, type ToastItem } from '../../utils/toast';
+import { AlertTriangle, CheckCircle2, Info, X } from 'lucide-react';
+import { subscribeToasts, dismissToast, pauseToast, resumeToast, type ToastItem } from '../../utils/toast';
 
-const STYLES: Record<ToastItem['kind'], { icon: React.ElementType; ring: string; iconColor: string }> = {
-  error: { icon: AlertCircle, ring: 'border-red-200 dark:border-red-500/30', iconColor: 'text-red-500' },
-  success: { icon: CheckCircle2, ring: 'border-emerald-200 dark:border-emerald-500/30', iconColor: 'text-emerald-500' },
-  info: { icon: Info, ring: 'border-blue-200 dark:border-blue-500/30', iconColor: 'text-[#168BFF]' },
+const STYLES: Record<ToastItem['kind'], { icon: React.ElementType; title: string; badge: string; bar: string }> = {
+  success: {
+    icon: CheckCircle2,
+    title: 'Success',
+    badge: 'bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-500/30',
+    bar: 'bg-gradient-to-r from-emerald-400 to-emerald-600',
+  },
+  error: {
+    icon: AlertTriangle,
+    title: 'Something went wrong',
+    badge: 'bg-gradient-to-br from-rose-400 to-red-600 shadow-red-500/30',
+    bar: 'bg-gradient-to-r from-rose-400 to-red-600',
+  },
+  info: {
+    icon: Info,
+    title: 'Heads up',
+    badge: 'bg-gradient-to-br from-[#168BFF] to-[#7257FF] shadow-blue-500/30',
+    bar: 'bg-gradient-to-r from-[#168BFF] to-[#7257FF]',
+  },
 };
 
 /**
- * Top-center toast stack. Mount once (App). Call `toast.error(...)` etc.
- * from anywhere — see utils/toast.ts.
+ * Toast stack: top-right on desktop, top-center on phones. Mount once (App).
+ * Call `toast.success(...)` etc. from anywhere — see utils/toast.ts.
  */
 export const Toaster: React.FC = () => {
   const [items, setItems] = useState<ToastItem[]>([]);
@@ -18,8 +33,8 @@ export const Toaster: React.FC = () => {
 
   return (
     <div
-      aria-live="assertive"
-      className="pointer-events-none fixed inset-x-0 top-3 sm:top-5 z-[1000] flex flex-col items-center gap-2 px-3"
+      aria-live="polite"
+      className="pointer-events-none fixed top-3 inset-x-3 sm:top-5 sm:right-5 sm:left-auto z-[1000] flex flex-col items-center sm:items-end gap-2.5"
     >
       {items.map((t) => {
         const s = STYLES[t.kind];
@@ -28,21 +43,35 @@ export const Toaster: React.FC = () => {
           <div
             key={t.id}
             role={t.kind === 'error' ? 'alert' : 'status'}
-            className={`toast-in pointer-events-auto w-full max-w-md flex items-start gap-3 rounded-2xl border bg-white/95 dark:bg-[#0C1322]/95 backdrop-blur-xl px-4 py-3 shadow-[0_12px_40px_rgba(7,24,47,0.18)] ${s.ring}`}
+            onMouseEnter={() => pauseToast(t.id)}
+            onMouseLeave={() => resumeToast(t.id)}
+            className="toast-in pointer-events-auto relative w-full sm:w-[380px] overflow-hidden rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-[#0C1322]/95 backdrop-blur-xl shadow-[0_18px_50px_-12px_rgba(7,24,47,0.35)]"
           >
-            <Icon className={`w-5 h-5 shrink-0 mt-0.5 ${s.iconColor}`} />
-            <div className="min-w-0 flex-1">
-              {t.title && <p className="text-sm font-bold text-slate-900 dark:text-gray-100">{t.title}</p>}
-              <p className="text-sm text-slate-600 dark:text-gray-300 leading-snug break-words">{t.message}</p>
+            <div className="flex items-start gap-3 p-3.5 pr-3">
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white shadow-lg ${s.badge}`}>
+                <Icon className="w-[18px] h-[18px]" />
+              </span>
+              <div className="min-w-0 flex-1 pt-0.5">
+                <p className="text-[13px] font-bold text-slate-900 dark:text-gray-100 leading-tight">{t.title ?? s.title}</p>
+                <p className="mt-0.5 text-[13px] text-slate-600 dark:text-gray-300 leading-snug break-words">{t.message}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => dismissToast(t.id)}
+                aria-label="Dismiss notification"
+                className="shrink-0 p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/10"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => dismissToast(t.id)}
-              aria-label="Dismiss"
-              className="shrink-0 -mr-1 p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/10"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            {/* Time left */}
+            <div className="absolute inset-x-0 bottom-0 h-[3px] bg-slate-100 dark:bg-white/5">
+              <div
+                key={`${t.id}-${t.createdAt}`}
+                className={`toast-progress h-full origin-left ${s.bar}`}
+                style={{ animationDuration: `${t.duration}ms`, animationPlayState: t.paused ? 'paused' : 'running' }}
+              />
+            </div>
           </div>
         );
       })}

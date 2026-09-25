@@ -21,17 +21,11 @@ import {
   Trash2,
   Plus,
 } from 'lucide-react';
-import {
-  InstagramLogo,
-  TikTokLogo,
-  YouTubeLogo,
-  FacebookLogo,
-  XTwitterLogo,
-} from '../../components/common/PlatformIcons';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { AvatarUploadControl } from '../../components/common/AvatarUploadControl';
 import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
+import { SocialChannelsCard } from '../../components/account/SocialChannelsCard';
 import { profileApi, getApiError } from '../../api';
 import { COUNTRY_OPTIONS } from '../../config/geoLocations';
 import type { KycDocumentType } from '../../types';
@@ -124,54 +118,6 @@ export const ContributorProfilePage: React.FC = () => {
     }
   };
 
-  // Social Connections State — no accounts connected by default; connects are not persisted yet.
-  const [socials] = useState([
-    {
-      id: 'instagram',
-      name: 'Instagram',
-      handle: 'Not Connected',
-      followers: '—',
-      verified: false,
-      icon: InstagramLogo,
-      badgeColor: 'bg-pink-50 text-pink-700 border-pink-200',
-    },
-    {
-      id: 'tiktok',
-      name: 'TikTok',
-      handle: 'Not Connected',
-      followers: '—',
-      verified: false,
-      icon: TikTokLogo,
-      badgeColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
-    },
-    {
-      id: 'youtube',
-      name: 'YouTube',
-      handle: 'Not Connected',
-      followers: '—',
-      verified: false,
-      icon: YouTubeLogo,
-      badgeColor: 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30',
-    },
-    {
-      id: 'facebook',
-      name: 'Facebook',
-      handle: 'Not Connected',
-      followers: '—',
-      verified: false,
-      icon: FacebookLogo,
-      badgeColor: 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/30',
-    },
-    {
-      id: 'twitter',
-      name: 'X (Twitter)',
-      handle: 'Not Connected',
-      followers: '—',
-      verified: false,
-      icon: XTwitterLogo,
-      badgeColor: 'bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-white/10',
-    },
-  ]);
 
   /** Saves through PUT /profile; email is the login identity and stays read-only. */
   const handleSave = async (e: React.FormEvent) => {
@@ -539,80 +485,7 @@ export const ContributorProfilePage: React.FC = () => {
       )}
 
       {/* TAB 2: CONNECTED SOCIAL ACCOUNTS */}
-      {activeTab === 'socials' && (
-        <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] dark:border-white/10 shadow-xs space-y-6">
-          <div className="pb-4 border-b border-gray-100 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Verified Social Media Channels</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                Social account linking ships with a future update — once live, the handle you use to complete tasks is recorded at submission time.
-              </p>
-            </div>
-            <span className="text-xs font-bold text-[#168BFF] bg-blue-50 dark:bg-blue-500/10 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-500/25 self-start sm:self-auto">
-              No Channels Connected
-            </span>
-          </div>
-
-          <div className="space-y-3.5">
-            {socials.map((platform) => {
-              const Icon = platform.icon;
-              return (
-                <div
-                  key={platform.id}
-                  className="p-4 rounded-2xl bg-gray-50/80 border border-gray-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 shadow-xs flex items-center justify-center shrink-0">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-black text-gray-900 dark:text-gray-100">{platform.name}</span>
-                        {platform.verified ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-[#16B364] border border-emerald-200 dark:border-emerald-500/30 text-[10px] font-bold">
-                            <CheckCircle2 className="w-3 h-3" />
-                            Verified
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 text-[10px] font-bold">
-                            <AlertCircle className="w-3 h-3" />
-                            Action Required
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
-                        {platform.handle} • {platform.followers} followers
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
-                    {platform.verified ? (
-                      <button
-                        type="button"
-                        disabled
-                        title="Re-verification opens when handle linking is live"
-                        className="px-3.5 py-1.5 rounded-xl bg-gray-100 dark:bg-white/10 border border-gray-200 dark:border-white/10 text-xs font-bold text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                      >
-                        Re-Verify Handle
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        disabled
-                        title="Social account linking is not available yet"
-                        className="px-4 py-1.5 rounded-xl bg-gray-200 text-xs font-bold text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                      >
-                        Connect Channel
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {activeTab === 'socials' && <SocialChannelsCard />}
 
       {/* TAB 3: PAYOUT METHODS */}
       {activeTab === 'payouts' && (

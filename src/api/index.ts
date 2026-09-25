@@ -13,3 +13,5 @@ export { businessApi } from './business';
 export { adminApi } from './admin';
 export { emailApi } from './email';
 export type { EmailProvider, EmailProviderInput, EmailTemplate, EmailTemplateInput, EmailLog, EmailDriver, EmailStatus, EmailCampaign, EmailCampaignInput, CampaignAudience } from './email';
+export { socialChannelsApi, staffSocialChannelsApi } from './socialChannels';
+export type { SocialChannel, SocialPlatform, SocialChannelStatus } from './socialChannels';

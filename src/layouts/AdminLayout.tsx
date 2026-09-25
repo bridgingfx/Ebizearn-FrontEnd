@@ -21,6 +21,7 @@ import {
   LogOut,
   Mail,
   MailCheck,
+  AtSign,
   MoreHorizontal,
   X,
 } from 'lucide-react';
@@ -51,6 +52,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
     { name: 'Users & KYC', path: '/admin/users', icon: Users, perm: 'manage_users' },
     { name: 'KYC Review', path: '/admin/kyc', icon: ShieldCheck, perm: 'review_kyc' },
+    { name: 'Social Channels', path: '/admin/social-channels', icon: AtSign, perm: 'review_kyc' },
     { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
     { name: 'Verification', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
     { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_task_templates' },

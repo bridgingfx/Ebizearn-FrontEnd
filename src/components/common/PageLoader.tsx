@@ -69,5 +69,13 @@ export const DeferredPageLoader: React.FC<{ delayMs?: number }> = ({ delayMs = 2
   }, [delayMs]);
 
   if (!visible) return null;
-  return <PageLoader />;
+  // A slim top progress bar instead of the full-screen blurred overlay: the
+  // overlay popping in and out between routes read as the whole page
+  // flashing (most visibly on login ⇄ register).
+  return (
+    <div role="status" aria-label="Loading page" className="fixed inset-x-0 top-0 z-[200] h-[3px] overflow-hidden bg-transparent">
+      <div className="h-full w-1/3 rounded-full bg-gradient-to-r from-[#168BFF] to-[#7257FF] animate-[route-bar_1s_ease-in-out_infinite]" />
+      <style>{`@keyframes route-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }`}</style>
+    </div>
+  );
 };

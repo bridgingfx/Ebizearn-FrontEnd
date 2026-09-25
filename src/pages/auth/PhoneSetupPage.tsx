@@ -43,7 +43,7 @@ export const PhoneSetupPage: React.FC = () => {
   if (!token || !user) {
     return (
       <AuthSplitLayout
-        image="/images/auth/contributor-login.jpg"
+        image="/images/auth/contributor-login.webp"
         imageAlt="Account setup"
         badge={<AuthBadge icon={<PhoneCall className="w-3.5 h-3.5" />} label="Almost done" />}
         headline="One more step"
@@ -110,7 +110,7 @@ export const PhoneSetupPage: React.FC = () => {
 
   return (
     <AuthSplitLayout
-      image="/images/auth/contributor-login.jpg"
+      image="/images/auth/contributor-login.webp"
       imageAlt="Finishing account setup"
       badge={<AuthBadge icon={<PhoneCall className="w-3.5 h-3.5" />} label="Almost done" />}
       headline={

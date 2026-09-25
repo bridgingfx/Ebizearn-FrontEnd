@@ -154,8 +154,8 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <label htmlFor={id} className="block text-sm font-bold text-slate-800 dark:text-gray-200">
+      <div className="flex items-center justify-between mb-1">
+        <label htmlFor={id} className="block text-[13px] font-semibold text-slate-700 dark:text-gray-300">
           {label}
         </label>
       </div>
@@ -172,7 +172,7 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
             aria-label={`Country code, currently ${selected ? `${selected.name} ${selected.dial}` : value.dialCode}`}
             className={`${authInputClass} !w-auto !px-3 flex items-center gap-1.5 font-semibold whitespace-nowrap cursor-pointer`}
           >
-            <span aria-hidden="true" className="text-xl leading-none">
+            <span aria-hidden="true" className="text-lg leading-none">
               {selected ? flagForIso(selected.iso) : ''}
             </span>
             <span className="text-[15px]">{value.dialCode}</span>
@@ -260,10 +260,10 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
       </div>
 
       {hint && !error && (
-        <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">{hint}</p>
+        <p className="mt-1 text-[11px] text-slate-500 dark:text-gray-400">{hint}</p>
       )}
       {error && (
-        <p className="mt-1.5 text-xs font-semibold text-red-600 flex items-center gap-1" role="alert">
+        <p className="mt-1 text-[11px] font-semibold text-red-600 dark:text-red-400 flex items-center gap-1" role="alert">
           <AlertCircle className="w-3.5 h-5 shrink-0" /> {error}
         </p>
       )}

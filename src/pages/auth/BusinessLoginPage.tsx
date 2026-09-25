@@ -77,7 +77,7 @@ export const BusinessLoginPage: React.FC = () => {
 
   return (
     <AuthSplitLayout
-      image="/images/auth/business-login.jpg"
+      image="/images/auth/business-login.webp"
       imageAlt="Business team launching a verified marketing campaign"
       badge={<PortalBanner label="Business portal" />}
       headline={
@@ -94,15 +94,13 @@ export const BusinessLoginPage: React.FC = () => {
         { icon: HandCoins, title: 'Pay for results', text: 'Only approved, authentic work is charged.' },
       ]}
     >
-      <div className="mb-5 lg:mb-4">
-        <h2 className="text-[1.75rem] font-bold tracking-tight text-slate-900 dark:text-gray-100">Business sign in</h2>
-        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Access your campaign command center</p>
+      <div className="mb-5 lg:mb-4 text-center">
+        <h2 className="text-[26px] leading-tight font-extrabold tracking-[-0.02em] text-[#07182F] dark:text-gray-100">Business <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#168BFF] to-[#7257FF]">sign in</span></h2>
+        <p className="mt-1.5 text-sm text-slate-500 dark:text-gray-400">Access your campaign command center</p>
       </div>
 
       {error && (
-        <div className="mb-5">
-          <AuthError message={error} />
-        </div>
+        <AuthError message={error} />
       )}
 
       <AuthMethodDivider label="Continue with email" className="mb-5" />
@@ -127,7 +125,7 @@ export const BusinessLoginPage: React.FC = () => {
           label="Password"
           error={passwordError}
           action={
-            <Link to="/forgot-password" className="text-sm font-bold text-[#168BFF] hover:underline min-h-[44px] inline-flex items-center">
+            <Link to="/forgot-password" className="text-[13px] font-semibold text-[#168BFF] hover:underline">
               Forgot password?
             </Link>
           }
@@ -158,7 +156,7 @@ export const BusinessLoginPage: React.FC = () => {
         <SocialLoginButtons portal="business" mode="login" />
       </div>
 
-      <p className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400">
+      <p className="mt-5 text-center text-sm text-slate-500 dark:text-gray-400">
         New to eBiz Earn for business?{' '}
         <Link to="/business/register" className="text-[#168BFF] font-bold hover:underline">
           Create a business account

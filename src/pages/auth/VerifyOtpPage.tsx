@@ -209,7 +209,7 @@ export const VerifyOtpPage: React.FC = () => {
   if (!email) {
     return (
       <AuthSplitLayout
-        image="/images/auth/contributor-login.jpg"
+        image="/images/auth/contributor-login.webp"
         imageAlt="Email verification"
         badge={<AuthBadge icon={<MailCheck className="w-3.5 h-3.5" />} label="Email verification" />}
         headline="Verify your email"
@@ -234,7 +234,7 @@ export const VerifyOtpPage: React.FC = () => {
 
   return (
     <AuthSplitLayout
-      image={isBusiness ? '/images/auth/business-login.jpg' : '/images/auth/contributor-login.jpg'}
+      image={isBusiness ? '/images/auth/business-login.webp' : '/images/auth/contributor-login.webp'}
       imageAlt="Verifying a new account"
       badge={<AuthBadge icon={<ShieldCheck className="w-3.5 h-3.5" />} label="Email verification" />}
       headline={

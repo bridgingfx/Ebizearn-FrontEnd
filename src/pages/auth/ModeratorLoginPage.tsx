@@ -69,7 +69,7 @@ export const ModeratorLoginPage: React.FC = () => {
 
   return (
     <AuthSplitLayout
-      image="/images/auth/moderator-login.jpg"
+      image="/images/auth/moderator-login.webp"
       imageAlt="Moderator reviewing verification tasks to keep the marketplace fair"
       badge={<PortalBanner label="Moderator access" />}
       headline={
@@ -86,15 +86,13 @@ export const ModeratorLoginPage: React.FC = () => {
         { icon: BadgeCheck, title: 'Quality first', text: 'Protect contributors and businesses alike.' },
       ]}
     >
-      <div className="mb-5 lg:mb-4">
-        <h2 className="text-[1.75rem] font-bold tracking-tight text-slate-900 dark:text-gray-100">Moderator sign in</h2>
-        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Internal operations access — all sign-in attempts are logged</p>
+      <div className="mb-5 lg:mb-4 text-center">
+        <h2 className="text-[26px] leading-tight font-extrabold tracking-[-0.02em] text-[#07182F] dark:text-gray-100">Moderator <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#168BFF] to-[#7257FF]">sign in</span></h2>
+        <p className="mt-1.5 text-sm text-slate-500 dark:text-gray-400">Internal operations access — all sign-in attempts are logged</p>
       </div>
 
       {error && (
-        <div className="mb-5">
-          <AuthError message={error} />
-        </div>
+        <AuthError message={error} />
       )}
 
       <AuthMethodDivider label="Continue with email" className="mb-5" />
@@ -119,7 +117,7 @@ export const ModeratorLoginPage: React.FC = () => {
           label="Password"
           error={passwordError}
           action={
-            <Link to="/forgot-password" className="text-sm font-bold text-[#168BFF] hover:underline min-h-[44px] inline-flex items-center">
+            <Link to="/forgot-password" className="text-[13px] font-semibold text-[#168BFF] hover:underline">
               Forgot password?
             </Link>
           }

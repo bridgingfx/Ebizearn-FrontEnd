@@ -1,4 +1,4 @@
-export { api, getApiError, TOKEN_KEY } from './client';
+export { api, getApiError, getApiFieldErrors, TOKEN_KEY } from './client';
 export type { ApiResponse } from './client';
 export { authApi, getOtpError } from './auth';
 export type { RegisterPayload, AuthSession, LoginPortal, OtpErrorCode, OtpFailure } from './auth';

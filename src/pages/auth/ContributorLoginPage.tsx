@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
   Banknote,
-  CheckCircle2,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -21,6 +20,7 @@ import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
 import { navigateAfterLogin } from '../../components/auth/EmailVerification';
 import { prefetchWhenIdle, preloadContributorApp } from '../../routes/prefetch';
+import { toast } from '../../utils/toast';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -39,6 +39,7 @@ export const ContributorLoginPage: React.FC = () => {
 
   useEffect(() => {
     if (notice) {
+      toast.success(notice);
       window.history.replaceState({}, document.title);
     }
     // Runs once — clears the one-time navigation state after reading it.
@@ -89,7 +90,7 @@ export const ContributorLoginPage: React.FC = () => {
 
   return (
     <AuthSplitLayout
-      image="/images/auth/contributor-login.jpg"
+      image="/images/auth/contributor-login.webp"
       imageAlt="Contributor completing tasks on a phone and earning rewards"
       badge={<PortalBanner label="Contributor portal" />}
       headline={
@@ -105,30 +106,14 @@ export const ContributorLoginPage: React.FC = () => {
         { icon: Sparkles, title: 'Free forever', text: 'No fees, no deposits, no upgrades.' },
       ]}
     >
-      <div className="mb-5 lg:mb-4">
-        <h2 className="text-[1.75rem] font-bold tracking-tight text-slate-900 dark:text-gray-100">Welcome back</h2>
-        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Sign in to your contributor account</p>
+      <div className="mb-5 text-center">
+        <h2 className="text-[26px] leading-tight font-extrabold tracking-[-0.02em] text-[#07182F] dark:text-gray-100">Welcome <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#168BFF] to-[#7257FF]">back</span></h2>
+        <p className="mt-1.5 text-sm text-slate-500 dark:text-gray-400">Sign in to your contributor account.</p>
       </div>
 
-      {error && (
-        <div className="mb-5">
-          <AuthError message={error} />
-        </div>
-      )}
+      {error && <AuthError message={error} />}
 
-      {notice && (
-        <div
-          className="mb-5 p-4 bg-emerald-50 border-2 border-emerald-200 text-emerald-800 text-sm font-medium rounded-2xl flex items-start gap-2.5"
-          role="status"
-        >
-          <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />
-          <span>{notice}</span>
-        </div>
-      )}
-
-      <AuthMethodDivider label="Continue with email" className="mb-5" />
-
-      <form onSubmit={handleLogin} className="space-y-4 lg:space-y-3.5" noValidate>
+      <form onSubmit={handleLogin} className="space-y-3.5" noValidate>
         <AuthField id="email" label="Email address" error={emailError}>
           <input
             id="email"
@@ -148,7 +133,7 @@ export const ContributorLoginPage: React.FC = () => {
           label="Password"
           error={passwordError}
           action={
-            <Link to="/forgot-password" className="text-sm font-bold text-[#168BFF] hover:underline min-h-[44px] inline-flex items-center">
+            <Link to="/forgot-password" className="text-[13px] font-semibold text-[#168BFF] hover:underline">
               Forgot password?
             </Link>
           }
@@ -165,21 +150,15 @@ export const ContributorLoginPage: React.FC = () => {
 
         <AuthSubmitButton loading={submitting} loadingLabel="Signing you in…">
           <span>Sign in</span>
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-4 h-4" />
         </AuthSubmitButton>
       </form>
 
-      <div className="mt-5 lg:mt-4 flex items-center gap-4">
-        <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
-        <span className="flex-1 h-px bg-slate-200" />
-      </div>
+      <AuthMethodDivider label="or" className="my-4" />
 
-      <div className="mt-5 lg:mt-4">
-        <SocialLoginButtons portal="contributor" mode="login" />
-      </div>
+      <SocialLoginButtons portal="contributor" mode="login" />
 
-      <p className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400">
+      <p className="mt-5 text-center text-sm text-slate-500 dark:text-gray-400">
         New to eBiz Earn?{' '}
         <Link to="/contributor/register" className="text-[#168BFF] font-bold hover:underline">
           Create a free account

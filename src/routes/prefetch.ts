@@ -12,6 +12,26 @@ export const preloadContributorApp = () => import('../layouts/ContributorLayout'
 export const preloadBusinessApp = () => import('../layouts/BusinessLayout').catch(() => {});
 export const preloadAdminApp = () => import('../layouts/AdminLayout').catch(() => {});
 
+const AUTH_ART = ['/images/auth/contributor-login.webp', '/images/auth/business-login.webp', '/images/auth/moderator-login.webp'];
+
+/**
+ * Warm the other sign-in / sign-up pages (one shared `auth` chunk) and the
+ * artwork photos, so login ⇄ register is instant with no image pop.
+ */
+export const preloadAuthPages = () => {
+  AUTH_ART.forEach((src) => {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = src;
+  });
+  return Promise.all([
+    import('../pages/auth/ContributorLoginPage'),
+    import('../pages/auth/ContributorSignupPage'),
+    import('../pages/auth/BusinessLoginPage'),
+    import('../pages/auth/BusinessSignupPage'),
+  ]).catch(() => {});
+};
+
 /** Run `prefetch` once the browser is idle (or after 1.5s if idle callbacks are unavailable). */
 export const prefetchWhenIdle = (prefetch: () => unknown): void => {
   if (typeof window === 'undefined') return;

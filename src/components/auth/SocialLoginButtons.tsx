@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { toast } from '../../utils/toast';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import type { LoginPortal } from '../../api';
@@ -14,6 +15,10 @@ import { setPendingPhoneRole } from '../../utils/pendingAuth';
 /* ------------------------------------------------------------------ */
 
 const loadedScripts = new Map<string, Promise<void>>();
+
+/** GIS must be initialize()d once per page; the callback forwards here. */
+let initializedClientId: string | null = null;
+let activeCredentialHandler: ((response: GsiCredentialResponse) => void) | null = null;
 
 function loadScript(src: string): Promise<void> {
   if (!loadedScripts.has(src)) {
@@ -72,6 +77,7 @@ interface GsiButtonConfiguration {
   shape?: 'rectangular' | 'pill' | 'circle' | 'square';
   logo_alignment?: 'left' | 'center';
   width?: number;
+  locale?: string;
   click_listener?: () => void;
 }
 
@@ -110,10 +116,15 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   const { socialLogin } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string | null>(null);
   const [signingIn, setSigningIn] = useState(false);
+  /** True once Google's button iframe has painted — until then a
+   *  same-size placeholder shows, so nothing flashes or jumps. */
+  const [gisReady, setGisReady] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const lastWidthRef = useRef(0);
+  const setMessage = (m: string | null) => {
+    if (m) toast.error(m);
+  };
 
   const clientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined)?.trim();
 
@@ -166,6 +177,11 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     }
   }, []);
 
+  /* Route the (once-registered) GIS callback to this instance's handler. */
+  useEffect(() => {
+    activeCredentialHandler = handleCredential;
+  }, [handleCredential]);
+
   /* Render (and re-render on theme/mode/width change) the GIS button. */
   useEffect(() => {
     if (!clientId) return;
@@ -173,6 +189,13 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     if (!container) return;
     let cancelled = false;
     let resizeTimer: number | undefined;
+    let revealTimer: number | undefined;
+
+    const measure = () => Math.min(400, Math.max(200, Math.floor(container.clientWidth) || 320));
+    // Record the width we'll render at BEFORE the async script load, so the
+    // ResizeObserver's initial callback doesn't see 0 and render a second
+    // time (that double render was the visible Google-button flash).
+    lastWidthRef.current = measure();
 
     const render = async () => {
       try {
@@ -181,23 +204,31 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         const google = (window as unknown as { google?: GoogleGsiSdk }).google;
         if (!google?.accounts?.id) throw new Error('Google SDK unavailable');
 
-        google.accounts.id.initialize({
-          client_id: clientId,
-          callback: (response: GsiCredentialResponse) => handleCredential(response),
-          // Popup UX: compact "Choose an account" chooser, never a new tab.
-          // (ux_mode has no effect on One Tap — this is why we use the
-          // rendered button instead of accounts.id.prompt().)
-          ux_mode: 'popup',
-          auto_select: false,
-          cancel_on_tap_outside: true,
-          context: mode === 'register' ? 'signup' : 'signin',
-          // Browser-native chooser dialog on Chrome (desktop M125+, Android
-          // M128+): no popup window involved, so it cannot be popup-blocked.
-          use_fedcm_for_button: true,
-        });
+        // initialize() once per page load; the callback forwards to whichever
+        // button instance is mounted (GIS warns on repeated initialize).
+        if (initializedClientId !== clientId) {
+          google.accounts.id.initialize({
+            client_id: clientId,
+            callback: (response: GsiCredentialResponse) => activeCredentialHandler?.(response),
+            // Popup UX: compact "Choose an account" chooser, never a new tab.
+            // (ux_mode has no effect on One Tap — this is why we use the
+            // rendered button instead of accounts.id.prompt().)
+            ux_mode: 'popup',
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            context: mode === 'register' ? 'signup' : 'signin',
+            // Browser-native chooser dialog on Chrome (desktop M125+, Android
+            // M128+): no popup window involved, so it cannot be popup-blocked.
+            use_fedcm_for_button: true,
+          });
+          initializedClientId = clientId;
+        }
 
-        const width = Math.min(400, Math.max(200, Math.floor(container.clientWidth) || 320));
+        const width = measure();
         lastWidthRef.current = width;
+        // Placeholder covers the swap on re-render (theme / width change).
+        setGisReady(false);
+        window.clearTimeout(revealTimer);
         // renderButton appends; clear first so re-renders don't duplicate.
         container.innerHTML = '';
         google.accounts.id.renderButton(container, {
@@ -208,13 +239,19 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           shape: 'pill',
           logo_alignment: 'left',
           width,
-          click_listener: () => setMessage(null),
+          // Match the site language instead of the browser's (otherwise the
+          // button can render in e.g. Arabic on an English page).
+          locale: 'en',
         });
+
+        // Reveal once Google's iframe has loaded (fallback after 1.5s).
+        const iframe = container.querySelector('iframe');
+        const reveal = () => !cancelled && setGisReady(true);
+        if (iframe) iframe.addEventListener('load', () => window.setTimeout(reveal, 60), { once: true });
+        revealTimer = window.setTimeout(reveal, 1500);
       } catch {
         if (!cancelled) {
-          setMessage(
-            'Google sign-in could not be loaded. Please check your connection or use email sign-in.'
-          );
+          setMessage('Google sign-in could not be loaded. Please check your connection or use email sign-in.');
         }
       }
     };
@@ -228,8 +265,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
         if (cancelled || !containerRef.current) return;
-        const w = Math.floor(containerRef.current.clientWidth);
-        if (Math.abs(w - lastWidthRef.current) > 8) void render();
+        if (Math.abs(measure() - lastWidthRef.current) > 8) void render();
       }, 250);
     });
     observer.observe(container);
@@ -237,72 +273,67 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     return () => {
       cancelled = true;
       window.clearTimeout(resizeTimer);
+      window.clearTimeout(revealTimer);
       observer.disconnect();
       container.innerHTML = '';
     };
-  }, [clientId, theme, mode, handleCredential]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientId, theme, mode]);
 
   const verb = mode === 'register' ? 'Sign up' : 'Continue';
+
+  /** Same look/size as Google's pill button (44px). */
+  const placeholder = (
+    <span
+      className={`w-full h-11 rounded-full border flex items-center justify-center gap-2.5 ${
+        theme === 'dark' ? 'bg-[#202124] border-[#202124] text-white' : 'bg-white border-[#dadce0] text-[#3c4043]'
+      }`}
+    >
+      <GoogleLogo className="w-[18px] h-[18px] shrink-0" />
+      <span className="text-[14px] font-medium whitespace-nowrap">{verb} with Google</span>
+    </span>
+  );
 
   /* Fail-closed placeholder when no client ID is configured (dev only). */
   if (!clientId) {
     return (
-      <div>
-        <button
-          type="button"
-          onClick={() =>
-            setMessage(
-              'Google sign-in is not enabled for this environment yet. Please continue with your email and password.'
-            )
-          }
-          className="w-full min-h-[52px] px-4 rounded-2xl bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 dark:active:bg-white/10 transition-all flex items-center justify-center gap-2.5"
-          aria-label={`${verb} with Google`}
-        >
-          <GoogleLogo className="w-5 h-5 shrink-0" />
-          <span className="text-[15px] font-semibold whitespace-nowrap text-slate-700 dark:text-gray-300">
-            {verb} with Google
-          </span>
-        </button>
-        {message && (
-          <div
-            className="mt-3 p-3.5 bg-amber-50 border-2 border-amber-200 text-amber-800 text-sm rounded-2xl flex items-start gap-2.5"
-            role="status"
-          >
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <span>{message}</span>
-          </div>
-        )}
-      </div>
+      <button
+        type="button"
+        onClick={() =>
+          setMessage('Google sign-in is not enabled for this environment yet. Please continue with your email and password.')
+        }
+        className="w-full rounded-full hover:brightness-[0.98] transition"
+        aria-label={`${verb} with Google`}
+      >
+        {placeholder}
+      </button>
     );
   }
 
   return (
     <div>
-      {/* GIS renders the official single-line Google button here (full width,
-          pill, themed for light/dark). Clicking it opens the compact
-          "Choose an account" chooser — never a new tab. */}
-      <div
-        ref={containerRef}
-        className="w-full min-h-[52px] flex items-center justify-center"
-        role="group"
-        aria-label={`${verb} with Google`}
-      />
-      {signingIn && (
+      {/* Fixed 44px slot: a Google-styled placeholder shows until the real
+          GIS button iframe has painted, then the two crossfade — no blank
+          gap, no layout jump, no double render. Clicking the real button
+          opens the compact "Choose an account" chooser — never a new tab. */}
+      <div className="relative w-full h-11" role="group" aria-label={`${verb} with Google`}>
+        {/* Google caps its button at 400px — size the placeholder the same
+            so the crossfade is seamless. */}
         <div
-          className="mt-3 flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-gray-400"
-          role="status"
+          aria-hidden="true"
+          className={`absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] transition-opacity duration-200 ${gisReady ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
+          {placeholder}
+        </div>
+        <div
+          ref={containerRef}
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${gisReady ? 'opacity-100' : 'opacity-0'}`}
+        />
+      </div>
+      {signingIn && (
+        <div className="mt-2 flex items-center justify-center gap-2 text-[13px] text-slate-500 dark:text-gray-400" role="status">
           <Loader2 className="w-4 h-4 animate-spin" />
           <span>Signing you in…</span>
-        </div>
-      )}
-      {message && (
-        <div
-          className="mt-3 p-3.5 bg-amber-50 border-2 border-amber-200 text-amber-800 text-sm rounded-2xl flex items-start gap-2.5"
-          role="status"
-        >
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <span>{message}</span>
         </div>
       )}
     </div>

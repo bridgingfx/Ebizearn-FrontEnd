@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
-import { authApi, getApiError } from '../../api';
+import { authApi, getApiError, getApiFieldErrors } from '../../api';
 import {
   AuthSplitLayout,
   AuthBadge,
@@ -32,10 +32,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
 
 const COUNTRIES = [
-  { code: 'AE', name: 'United Arab Emirates' },
+  { code: 'AE', name: 'UAE' },
   { code: 'SA', name: 'Saudi Arabia' },
-  { code: 'US', name: 'United States' },
-  { code: 'GB', name: 'United Kingdom' },
+  { code: 'US', name: 'USA' },
+  { code: 'GB', name: 'UK' },
   { code: 'IN', name: 'India' },
   { code: 'PK', name: 'Pakistan' },
   { code: 'BD', name: 'Bangladesh' },
@@ -106,13 +106,22 @@ export const ContributorSignupPage: React.FC = () => {
       navigate('/verify-otp', { replace: true });
     } catch (err) {
       setSubmitting(false);
+      // Put server-side field errors (e.g. "email already taken") under the
+      // right input, and show the summary as a toast.
+      const apiFields = getApiFieldErrors(err);
+      const mapped: Record<string, string> = {};
+      Object.entries(apiFields).forEach(([k, v]) => {
+        const key = k.startsWith('phone') ? 'phone' : k === 'referral_code' ? 'referral' : k;
+        if (!mapped[key]) mapped[key] = v;
+      });
+      setFieldErrors(mapped);
       setError(getApiError(err, 'Could not create your account. Please check the form and try again.'));
     }
   };
 
   return (
     <AuthSplitLayout
-      image="/images/auth/contributor-login.jpg"
+      image="/images/auth/contributor-login.webp"
       imageAlt="New contributor starting to earn from verified tasks"
       badge={
         <AuthBadge icon={<BadgeCheck className="w-3.5 h-3.5" />} label="Contributor registration" />
@@ -131,28 +140,20 @@ export const ContributorSignupPage: React.FC = () => {
         { icon: Sparkles, title: 'Free forever', text: 'No fees, no deposits, no upgrades.' },
       ]}
     >
-      <div className="mb-4 lg:mb-3 p-3 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex items-start gap-3">
-        <CheckCircle2 className="w-5 h-5 text-[#16B364] shrink-0 mt-0.5" />
-        <div>
-          <p className="text-sm font-extrabold text-emerald-900">100% free to join & earn</p>
-          <p className="text-sm text-emerald-700 leading-snug">No registration fees, no upgrade plans, no deposit. Ever.</p>
-        </div>
+      <div className="mb-5 short:mb-2 flex flex-col items-center text-center">
+        <span className="short:hidden inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/25 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+          <CheckCircle2 className="w-3.5 h-3.5" /> 100% free — no fees, no deposits, ever
+        </span>
+        <h2 className="mt-3 short:mt-0 text-[26px] short:text-[23px] leading-tight font-extrabold tracking-[-0.02em] text-[#07182F] dark:text-gray-100">
+          Create your{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#168BFF] to-[#7257FF]">free account</span>
+        </h2>
+        <p className="mt-1.5 text-sm text-slate-500 dark:text-gray-400 short:hidden">Start earning from verified digital tasks today.</p>
       </div>
 
-      <div className="mb-4 lg:mb-3">
-        <h2 className="text-[1.75rem] font-bold tracking-tight text-slate-900 dark:text-gray-100">Create your free account</h2>
-        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Start earning from verified digital tasks today</p>
-      </div>
+      {error && <AuthError message={error} />}
 
-      {error && (
-        <div className="mb-5">
-          <AuthError message={error} />
-        </div>
-      )}
-
-      <AuthMethodDivider label="Sign up with your email" className="mb-5" />
-
-      <form onSubmit={handleSignup} className="space-y-4 lg:space-y-3" noValidate>
+      <form onSubmit={handleSignup} className="space-y-3 short:space-y-2" noValidate>
         <AuthField id="name" label="Full name" error={fieldErrors.name}>
           <input
             id="name"
@@ -182,7 +183,7 @@ export const ContributorSignupPage: React.FC = () => {
           id="password"
           label="Password"
           error={fieldErrors.password}
-          hint="At least 10 characters with uppercase, lowercase, number, and symbol."
+          hint={password ? undefined : '10+ characters with uppercase, lowercase, number and symbol.'}
         >
           <PasswordInput
             id="password"
@@ -194,19 +195,6 @@ export const ContributorSignupPage: React.FC = () => {
             large
             showStrength
           />
-        </AuthField>
-
-        <AuthField id="country" label="Country">
-          <select
-            id="country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className={`${authInputClass} min-h-[52px]`}
-          >
-            {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.code}>{c.name}</option>
-            ))}
-          </select>
         </AuthField>
 
         <PhoneField
@@ -224,45 +212,50 @@ export const ContributorSignupPage: React.FC = () => {
             }
           }}
           error={fieldErrors.phone || undefined}
-          hint="Required for account security and payout alerts."
         />
 
-        <AuthField id="referral" label="Referral code" hint="Optional">
-          <div className="relative">
-            <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-4 top-[18px]" />
-            <input
-              id="referral"
-              type="text"
-              value={referralCode}
-              onChange={(e) => setReferralCode(e.target.value)}
-              placeholder="Optional"
-              autoComplete="off"
-              className={`${authInputClass} pl-11 uppercase`}
-            />
-          </div>
-        </AuthField>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <AuthField id="country" label="Country">
+            <select id="country" value={country} onChange={(e) => setCountry(e.target.value)} className={authInputClass}>
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>{c.name}</option>
+              ))}
+            </select>
+          </AuthField>
+
+          <AuthField id="referral" label="Referral code (optional)" error={fieldErrors.referral}>
+            <div className="relative">
+              <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                id="referral"
+                type="text"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
+                placeholder="e.g. AB12CD34"
+                autoComplete="off"
+                className={`${authInputClass} pl-10 uppercase placeholder:normal-case`}
+              />
+            </div>
+          </AuthField>
+        </div>
 
         <AuthSubmitButton loading={submitting} loadingLabel="Creating your account…">
           <span>Create free account</span>
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-4 h-4" />
         </AuthSubmitButton>
 
-        <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed text-center">
-          By creating an account you agree to our Terms of Service and Privacy Policy.
+        <p className="text-[11px] text-slate-400 dark:text-gray-500 leading-relaxed text-center">
+          By creating an account you agree to our{' '}
+          <Link to="/terms" className="underline hover:text-slate-600">Terms</Link> and{' '}
+          <Link to="/privacy" className="underline hover:text-slate-600">Privacy Policy</Link>.
         </p>
       </form>
 
-      <div className="mt-5 lg:mt-4 flex items-center gap-4">
-        <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
-        <span className="flex-1 h-px bg-slate-200" />
-      </div>
+      <AuthMethodDivider label="or" className="my-4 short:my-2.5" />
 
-      <div className="mt-5 lg:mt-4">
-        <SocialLoginButtons portal="contributor" mode="register" />
-      </div>
+      <SocialLoginButtons portal="contributor" mode="register" />
 
-      <p className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400">
+      <p className="mt-4 short:mt-2.5 text-center text-sm text-slate-500 dark:text-gray-400">
         Already have an account?{' '}
         <Link to="/login" className="text-[#168BFF] font-bold hover:underline">
           Sign in

@@ -30,6 +30,11 @@ export default defineConfig({
           if (id.includes('/src/pages/business') || id.includes('/src/layouts/BusinessLayout')) {
             return 'business-app';
           }
+          // All sign-in / sign-up pages share one chunk, so switching between
+          // them never shows the route loader.
+          if (id.includes('/src/pages/auth/') || id.includes('/src/components/auth/')) {
+            return 'auth';
+          }
           if (id.includes('/src/pages/public/BlogIndexPage') || id.includes('/src/pages/public/BlogPostPage')) {
             return 'blog';
           }

@@ -7,6 +7,7 @@ import { CookieConsent } from './components/common/CookieConsent';
 import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
 import { DeferredPageLoader } from './components/common/PageLoader';
+import { Toaster } from './components/common/Toast';
 
 // Layouts — the public shell stays in the main bundle (first paint);
 // role shells are lazy so their code ships with their portal chunk.
@@ -251,6 +252,8 @@ export const App: React.FC = () => {
         <LiveChatWidget />
         {/* Global Cookie Consent Notice (bottom; one-time until answered) */}
         <CookieConsent />
+        {/* Global toast stack (top-center) — errors / confirmations. */}
+        <Toaster />
       </BrowserRouter>
       </PlatformDataProvider>
     </AuthProvider>

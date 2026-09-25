@@ -8,7 +8,7 @@ import {
   Landmark,
   ScanSearch,
 } from 'lucide-react';
-import { authApi, getApiError } from '../../api';
+import { authApi, getApiError, getApiFieldErrors } from '../../api';
 import {
   AuthSplitLayout,
   AuthBadge,
@@ -42,6 +42,7 @@ export const BusinessSignupPage: React.FC = () => {
   const [referralCode, setReferralCode] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showReferral, setShowReferral] = useState(!!referralCode);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -96,13 +97,21 @@ export const BusinessSignupPage: React.FC = () => {
       navigate('/verify-otp', { replace: true });
     } catch (err) {
       setSubmitting(false);
+      const apiFields = getApiFieldErrors(err);
+      const mapped: Record<string, string> = {};
+      Object.entries(apiFields).forEach(([k, v]) => {
+        const key = k.startsWith('phone') ? 'phone' : k === 'company_name' ? 'companyName' : k;
+        if (!mapped[key]) mapped[key] = v;
+      });
+      if (mapped.website || mapped.referral_code) setShowReferral(true);
+      setFieldErrors((prev) => ({ ...prev, ...mapped }));
       setError(getApiError(err, 'Could not create your business account. Please check the form and try again.'));
     }
   };
 
   return (
     <AuthSplitLayout
-      image="/images/auth/business-login.jpg"
+      image="/images/auth/business-login.webp"
       imageAlt="Business team launching a verified marketing campaign"
       badge={
         <AuthBadge icon={<Building2 className="w-3.5 h-3.5" />} label="Business registration" />
@@ -123,33 +132,41 @@ export const BusinessSignupPage: React.FC = () => {
         { icon: HandCoins, title: 'Pay for results', text: 'Only approved, authentic work is charged.' },
       ]}
     >
-      <div className="mb-4 lg:mb-3">
-        <h2 className="text-[1.75rem] font-bold tracking-tight text-slate-900 dark:text-gray-100">Create business account</h2>
-        <p className="mt-1.5 text-base text-slate-500 dark:text-gray-400">Set up your campaign workspace</p>
+      <div className="mb-5 short:mb-3 text-center">
+        <h2 className="text-[26px] leading-tight font-extrabold tracking-[-0.02em] text-[#07182F] dark:text-gray-100">
+          Create{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#168BFF] to-[#7257FF]">business account</span>
+        </h2>
+        <p className="mt-1.5 text-sm text-slate-500 dark:text-gray-400 short:hidden">Set up your campaign workspace.</p>
       </div>
 
       {error && (
-        <div className="mb-5">
-          <AuthError message={error} />
-        </div>
+        <AuthError message={error} />
       )}
 
-      <AuthMethodDivider label="Sign up with your email" className="mb-5" />
+      <form onSubmit={handleSignup} className="space-y-3 short:space-y-2.5" noValidate>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <AuthField id="companyName" label="Company / brand name" error={fieldErrors.companyName}>
+            <input
+              id="companyName"
+              type="text"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="e.g. Acme Growth Labs"
+              autoComplete="organization"
+              className={authInputClass}
+            />
+          </AuthField>
+          <AuthField id="industry" label="Industry">
+            <select id="industry" value={industry} onChange={(e) => setIndustry(e.target.value)} className={authInputClass}>
+              {INDUSTRIES.map((i) => (
+                <option key={i} value={i}>{i}</option>
+              ))}
+            </select>
+          </AuthField>
+        </div>
 
-      <form onSubmit={handleSignup} className="space-y-4 lg:space-y-3" noValidate>
-        <AuthField id="companyName" label="Company / brand name" error={fieldErrors.companyName}>
-          <input
-            id="companyName"
-            type="text"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="e.g. Acme Growth Labs"
-            autoComplete="organization"
-            className={authInputClass}
-          />
-        </AuthField>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <AuthField id="name" label="Contact name" error={fieldErrors.name}>
             <input
               id="name"
@@ -161,28 +178,19 @@ export const BusinessSignupPage: React.FC = () => {
               className={authInputClass}
             />
           </AuthField>
-
-          <AuthField id="industry" label="Industry">
-            <select id="industry" value={industry} onChange={(e) => setIndustry(e.target.value)} className={authInputClass}>
-              {INDUSTRIES.map((i) => (
-                <option key={i} value={i}>{i}</option>
-              ))}
-            </select>
+          <AuthField id="email" label="Work email" error={fieldErrors.email}>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="alex@company.com"
+              autoComplete="email"
+              inputMode="email"
+              className={authInputClass}
+            />
           </AuthField>
         </div>
-
-        <AuthField id="email" label="Work email" error={fieldErrors.email}>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="alex@company.com"
-            autoComplete="email"
-            inputMode="email"
-            className={authInputClass}
-          />
-        </AuthField>
 
         <PhoneField
           id="phone"
@@ -199,27 +207,15 @@ export const BusinessSignupPage: React.FC = () => {
             }
           }}
           error={fieldErrors.phone || undefined}
-          hint="Required for account security and payout notifications."
         />
 
-        <AuthField id="website" label="Website URL" hint="Optional">
-          <input
-            id="website"
-            type="url"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-            placeholder="https://acme.com"
-            autoComplete="url"
-            inputMode="url"
-            className={authInputClass}
-          />
-        </AuthField>
+
 
         <AuthField
           id="password"
           label="Password"
           error={fieldErrors.password}
-          hint="At least 10 characters with uppercase, lowercase, number, and symbol."
+          hint={password ? undefined : '10+ characters with uppercase, lowercase, number and symbol.'}
         >
           <PasswordInput
             id="password"
@@ -233,47 +229,67 @@ export const BusinessSignupPage: React.FC = () => {
           />
         </AuthField>
 
-        <AuthField id="referral" label="Referral code" hint="Optional">
-          <div className="relative">
-            <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-4 top-[18px]" />
-            <input
-              id="referral"
-              type="text"
-              value={referralCode}
-              onChange={(e) => setReferralCode(e.target.value)}
-              placeholder="Optional"
-              autoComplete="off"
-              className={`${authInputClass} pl-11 uppercase`}
-            />
+        {showReferral ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <AuthField id="website" label="Website (optional)">
+              <input
+                id="website"
+                type="url"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                placeholder="https://acme.com"
+                autoComplete="url"
+                inputMode="url"
+                className={authInputClass}
+              />
+            </AuthField>
+            <AuthField id="referral" label="Referral code (optional)" error={fieldErrors.referral_code}>
+              <div className="relative">
+                <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  id="referral"
+                  type="text"
+                  value={referralCode}
+                  onChange={(e) => setReferralCode(e.target.value)}
+                  placeholder="e.g. AB12CD34"
+                  autoComplete="off"
+                  className={`${authInputClass} pl-10 uppercase`}
+                />
+              </div>
+            </AuthField>
           </div>
-        </AuthField>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowReferral(true)}
+            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#168BFF] hover:underline"
+          >
+            <Gift className="w-3.5 h-3.5" /> Add website or referral code
+          </button>
+        )}
 
         <AuthSubmitButton loading={submitting} loadingLabel="Setting up your workspace…" className="bg-[#07182F] hover:bg-[#0D2342] shadow-lg shadow-slate-900/25">
           <span>Create business account</span>
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-4 h-4" />
         </AuthSubmitButton>
 
-        <p className="text-xs text-slate-400 dark:text-gray-500 leading-relaxed text-center">
-          By creating an account you agree to our Terms of Service and Privacy Policy.
+        <p className="text-[11px] text-slate-400 dark:text-gray-500 leading-relaxed text-center">
+          By creating an account you agree to our{' '}
+          <Link to="/terms" className="underline hover:text-slate-600">Terms</Link> and{' '}
+          <Link to="/privacy" className="underline hover:text-slate-600">Privacy Policy</Link>.
         </p>
       </form>
 
-      <div className="mt-5 lg:mt-4 flex items-center gap-4">
-        <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
-        <span className="flex-1 h-px bg-slate-200" />
-      </div>
+      <AuthMethodDivider label="or" className="my-4 short:my-3" />
 
-      <div className="mt-5 lg:mt-4">
-        <SocialLoginButtons portal="business" mode="register" />
-      </div>
+      <SocialLoginButtons portal="business" mode="register" />
 
-      <div className="mt-5 lg:mt-4 text-center text-base text-slate-500 dark:text-gray-400 space-y-1">
+      <div className="mt-4 short:mt-3 text-center text-sm text-slate-500 dark:text-gray-400 space-y-0.5">
         <p>
           Already have a business account?{' '}
           <Link to="/business/login" className="text-[#168BFF] font-bold hover:underline">Business sign in</Link>
         </p>
-        <p>
+        <p className="text-[13px] short:hidden">
           Want to earn as a contributor?{' '}
           <Link to="/contributor/register" className="font-semibold text-slate-600 dark:text-gray-400 hover:underline">Register as contributor</Link>
         </p>

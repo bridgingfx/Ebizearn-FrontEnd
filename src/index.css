@@ -382,3 +382,13 @@ body.chat-widget-hidden .chat-widget-root {
   .toast-progress { animation: none; }
   .auth-art-img { transition: none; }
 }
+
+/* Dark console login: keep Chrome's saved-password autofill dark, not white. */
+.console-login input:-webkit-autofill,
+.console-login input:-webkit-autofill:hover,
+.console-login input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #121519 inset !important;
+  -webkit-text-fill-color: #f1f5f9 !important;
+  caret-color: #f1f5f9;
+  transition: background-color 9999s ease-out;
+}

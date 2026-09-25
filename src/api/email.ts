@@ -33,9 +33,11 @@ export interface EmailTemplate {
   text_body: string;
   variables: string[];
   is_enabled: boolean;
+  /** Created by Super Admin (can be deleted); built-in templates are tied to platform events. */
+  is_custom?: boolean;
 }
 
-export type EmailTemplateInput = Pick<EmailTemplate, 'subject' | 'html_body' | 'text_body' | 'is_enabled'>;
+export type EmailTemplateInput = Pick<EmailTemplate, 'subject' | 'html_body' | 'text_body' | 'is_enabled'> & { name?: string };
 
 export interface EmailLog {
   id: number;
@@ -70,6 +72,8 @@ export interface EmailCampaign {
   button_label: string | null;
   button_url: string | null;
   audience: CampaignAudience;
+  /** A custom email template used as the design instead of the standard layout. */
+  template_key: string | null;
   status: 'draft' | 'sending' | 'sent' | 'cancelled';
   total_recipients: number;
   sent_count: number;
@@ -80,7 +84,7 @@ export interface EmailCampaign {
   created_at: string;
 }
 
-export type EmailCampaignInput = Pick<EmailCampaign, 'name' | 'subject' | 'heading' | 'body' | 'button_label' | 'button_url' | 'audience'>;
+export type EmailCampaignInput = Pick<EmailCampaign, 'name' | 'subject' | 'heading' | 'body' | 'button_label' | 'button_url' | 'audience' | 'template_key'>;
 
 const unwrap = <T>(p: Promise<{ data: ApiResponse<T> }>) => p.then((r) => r.data);
 
@@ -99,6 +103,17 @@ export const emailApi = {
   updateTemplate: (key: string, input: EmailTemplateInput) =>
     unwrap(api.put<ApiResponse<EmailTemplate>>(`/admin/email/templates/${key}`, input)),
   resetTemplate: (key: string) => unwrap(api.post<ApiResponse<EmailTemplate>>(`/admin/email/templates/${key}/reset`)),
+  createTemplate: (input: { name: string; subject: string }) => unwrap(api.post<ApiResponse<EmailTemplate>>('/admin/email/templates', input)),
+  deleteTemplate: (key: string) => unwrap(api.delete<ApiResponse<null>>(`/admin/email/templates/${key}`)),
+  /** Sends the template (or the unsaved draft) with sample values. */
+  testTemplate: (key: string, input: { to: string; subject?: string; html_body?: string; text_body?: string }) =>
+    unwrap(api.post<ApiResponse<null>>(`/admin/email/templates/${key}/test`, input)),
+  /** Upload a logo / picture for templates; returns its public URL. */
+  uploadAsset: (file: File) => {
+    const form = new FormData();
+    form.append('image', file);
+    return unwrap(api.post<ApiResponse<{ url: string; path: string }>>('/admin/email/assets', form, { headers: { 'Content-Type': 'multipart/form-data' } }));
+  },
 
   logs: () => unwrap(api.get<ApiResponse<EmailLog[]>>('/admin/email/logs')),
 

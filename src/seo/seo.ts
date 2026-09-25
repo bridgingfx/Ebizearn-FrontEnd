@@ -248,6 +248,16 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
     description: 'Verify your email address to activate your eBizEarn account.',
     noindex: true,
   },
+  '/verify-otp': {
+    title: 'Verify Your Email | eBizEarn',
+    description: 'Enter the 6-digit code we emailed you to activate your eBizEarn account.',
+    noindex: true,
+  },
+  '/setup-phone': {
+    title: 'Add Your Phone Number | eBizEarn',
+    description: 'Add your mobile number to finish setting up your eBizEarn account.',
+    noindex: true,
+  },
   '/onboarding': {
     title: 'Complete Your Profile | eBizEarn',
     description: 'Finish setting up your eBizEarn profile to start receiving tasks.',

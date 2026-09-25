@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
   Banknote,
+  Building2,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -164,6 +165,20 @@ export const ContributorLoginPage: React.FC = () => {
           Create a free account
         </Link>
       </p>
+
+      <Link
+        to="/business/login"
+        className="group mt-4 short:mt-3 flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.03] px-4 py-3 hover:border-[#07182F]/30 hover:bg-white dark:hover:bg-white/[0.06] transition-all"
+      >
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#07182F] text-white">
+          <Building2 className="w-4 h-4" />
+        </span>
+        <span className="min-w-0 flex-1 text-left">
+          <span className="block text-sm font-bold text-slate-900 dark:text-gray-100">Business login</span>
+          <span className="block text-xs text-slate-500 dark:text-gray-400">Run campaigns and review contributor proof</span>
+        </span>
+        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#07182F] dark:group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+      </Link>
     </AuthSplitLayout>
   );
 };

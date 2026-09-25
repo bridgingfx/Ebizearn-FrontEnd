@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Loader2, Megaphone, Pencil, Plus, Send, Square, Trash2, Users } from 'lucide-react';
 import { emailApi, getApiError } from '../../../api';
-import type { CampaignAudience, EmailCampaign, EmailCampaignInput } from '../../../api';
+import type { CampaignAudience, EmailCampaign, EmailCampaignInput, EmailTemplate } from '../../../api';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from '../../../utils/toast';
 
@@ -26,12 +26,39 @@ const emptyForm = (): EmailCampaignInput => ({
   button_label: '',
   button_url: '',
   audience: 'all',
+  template_key: null,
 });
 
 const inputClass =
   'w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0B111D] text-sm text-slate-900 dark:text-gray-100 placeholder:text-slate-400 focus:outline-none focus:border-[#168BFF] focus:ring-2 focus:ring-[#168BFF]/15';
 
 const fill = (s: string, name: string) => s.replace(/\{\{\s*user_name\s*\}\}/g, name).replace(/\{\{\s*app_name\s*\}\}/g, 'eBizEarn');
+
+/** Preview of a custom template chosen as the campaign design (sample values filled in). */
+const TemplatePreview: React.FC<{ template: EmailTemplate; subject: string; name: string }> = ({ template, subject, name }) => {
+  const origin = window.location.origin;
+  const values: Record<string, string> = {
+    user_name: name,
+    app_name: 'eBizEarn',
+    support_email: 'support@ebizearn.com',
+    logo_url: `${origin}/assets/email-logo.png`,
+    app_url: origin,
+    help_url: `${origin}/faq`,
+    terms_url: `${origin}/terms`,
+    privacy_url: `${origin}/privacy`,
+    login_url: `${origin}/login`,
+    year: String(new Date().getFullYear()),
+  };
+  const html = template.html_body.replace(/\{\{\s*([a-z_]+)\s*\}\}/g, (m, k: string) => values[k] ?? m);
+  return (
+    <div className="rounded-2xl bg-slate-100 dark:bg-black/30 p-4">
+      <p className="text-[11px] text-slate-500 dark:text-gray-400 mb-2 truncate">
+        <b>Subject:</b> {fill(subject, name) || '—'}
+      </p>
+      <iframe title="Campaign preview" srcDoc={html} sandbox="" className="w-full bg-white rounded-xl" style={{ height: 620, border: 0 }} />
+    </div>
+  );
+};
 
 /** Email preview that mirrors the layout the server sends. */
 const Preview: React.FC<{ form: EmailCampaignInput; name: string }> = ({ form, name }) => (
@@ -69,6 +96,14 @@ export const EmailCampaigns: React.FC = () => {
   const { user } = useAuth();
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([]);
   const [counts, setCounts] = useState<Record<CampaignAudience, number> | null>(null);
+  const [customTemplates, setCustomTemplates] = useState<EmailTemplate[]>([]);
+
+  useEffect(() => {
+    emailApi
+      .templates()
+      .then((res) => setCustomTemplates(res.data.filter((t) => t.is_custom)))
+      .catch(() => undefined);
+  }, []);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EmailCampaign | 'new' | null>(null);
   const [form, setForm] = useState<EmailCampaignInput>(emptyForm());
@@ -101,7 +136,7 @@ export const EmailCampaigns: React.FC = () => {
     setForm(
       c === 'new'
         ? emptyForm()
-        : { name: c.name, subject: c.subject, heading: c.heading ?? '', body: c.body, button_label: c.button_label ?? '', button_url: c.button_url ?? '', audience: c.audience },
+        : { name: c.name, subject: c.subject, heading: c.heading ?? '', body: c.body, button_label: c.button_label ?? '', button_url: c.button_url ?? '', audience: c.audience, template_key: c.template_key ?? null },
     );
   };
 
@@ -221,6 +256,7 @@ export const EmailCampaigns: React.FC = () => {
 
   if (editing) {
     const previewName = (user?.name ?? 'Sarah').split(' ')[0];
+    const chosenTemplate = form.template_key ? customTemplates.find((t) => t.event_key === form.template_key) ?? null : null;
     const isDraft = editing === 'new' || editing.status === 'draft';
     return (
       <div className="space-y-4">
@@ -255,6 +291,28 @@ export const EmailCampaigns: React.FC = () => {
               <input required value={form.subject} onChange={(e) => set('subject', e.target.value)} className={inputClass} placeholder="New paid tasks are live, {{ user_name }}" disabled={!isDraft} />
             </label>
             <label className="block">
+              <span className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Email design</span>
+              <select
+                value={form.template_key ?? ''}
+                onChange={(e) => set('template_key', e.target.value || null)}
+                className={inputClass}
+                disabled={!isDraft}
+              >
+                <option value="">Standard eBizEarn layout — write the message below</option>
+                {customTemplates.map((t) => (
+                  <option key={t.event_key} value={t.event_key}>Custom template: {t.name}</option>
+                ))}
+              </select>
+              <span className="block text-[11px] text-slate-400 mt-1">
+                {customTemplates.length === 0
+                  ? 'Create custom designs in the Templates tab (with your own images) to use them here.'
+                  : 'A custom template is sent as designed; an unsubscribe link is added automatically.'}
+              </span>
+            </label>
+
+            {!form.template_key && (
+            <>
+            <label className="block">
               <span className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Heading (optional)</span>
               <input value={form.heading ?? ''} onChange={(e) => set('heading', e.target.value)} className={inputClass} placeholder="Fresh campaigns just dropped" disabled={!isDraft} />
             </label>
@@ -280,6 +338,8 @@ export const EmailCampaigns: React.FC = () => {
                 <input type="url" value={form.button_url ?? ''} onChange={(e) => set('button_url', e.target.value)} className={inputClass} placeholder="https://ebizearn.com/contributor" disabled={!isDraft} />
               </label>
             </div>
+            </>
+            )}
 
             {isDraft && (
               <>
@@ -291,7 +351,7 @@ export const EmailCampaigns: React.FC = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-1">
-                  <button type="button" onClick={sendNow} disabled={saving || !form.name || !form.subject || !form.body} className="h-10 px-5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#168BFF] to-[#7257FF] hover:brightness-105 shadow-lg shadow-blue-500/20 disabled:opacity-50 inline-flex items-center gap-2">
+                  <button type="button" onClick={sendNow} disabled={saving || !form.name || !form.subject || (!form.template_key && !form.body)} className="h-10 px-5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#168BFF] to-[#7257FF] hover:brightness-105 shadow-lg shadow-blue-500/20 disabled:opacity-50 inline-flex items-center gap-2">
                     <Megaphone className="w-4 h-4" /> Send to {counts?.[form.audience] ?? 0} users
                   </button>
                   <button type="submit" disabled={saving} className="h-10 px-4 rounded-xl text-sm font-bold text-slate-700 dark:text-gray-200 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 disabled:opacity-50">
@@ -304,7 +364,7 @@ export const EmailCampaigns: React.FC = () => {
 
           <div className="xl:sticky xl:top-4">
             <p className="text-xs font-bold text-slate-500 dark:text-gray-400 mb-2">Preview</p>
-            <Preview form={form} name={previewName} />
+            {chosenTemplate ? <TemplatePreview template={chosenTemplate} subject={form.subject} name={previewName} /> : <Preview form={form} name={previewName} />}
           </div>
         </div>
       </div>

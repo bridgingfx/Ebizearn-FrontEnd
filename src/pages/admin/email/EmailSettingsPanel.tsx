@@ -4,6 +4,7 @@ import type { EmailLog } from '../../../api';
 import { DeliverySettings } from './DeliverySettings';
 import { EmailCampaigns } from './EmailCampaigns';
 import { PageHeader } from '../../../components/common/ui';
+import { LayoutTemplate, Megaphone, ScrollText, Server } from 'lucide-react';
 import { TemplateEditor } from './TemplateEditor';
 
 const STATUS_STYLES: Record<EmailLog['status'], string> = {
@@ -58,11 +59,11 @@ const EmailLogs: React.FC = () => {
 
 type EmailTab = 'delivery' | 'campaigns' | 'templates' | 'logs';
 
-const TABS: { id: EmailTab; label: string }[] = [
-  { id: 'delivery', label: 'Delivery' },
-  { id: 'campaigns', label: 'Campaigns' },
-  { id: 'templates', label: 'Templates' },
-  { id: 'logs', label: 'Delivery log' },
+const TABS: { id: EmailTab; label: string; icon: React.ElementType }[] = [
+  { id: 'delivery', label: 'Delivery', icon: Server },
+  { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
+  { id: 'templates', label: 'Templates', icon: LayoutTemplate },
+  { id: 'logs', label: 'Delivery log', icon: ScrollText },
 ];
 
 /** Super Admin → Email & Campaigns: sending provider, marketing campaigns, templates and delivery log. */
@@ -76,17 +77,22 @@ export const EmailSettingsPanel: React.FC = () => {
         subtitle="Choose how the platform sends email (Brevo, SMTP and more), send marketing campaigns and edit the emails users receive."
       />
 
-      <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer ${tab === t.id ? 'bg-[#07182F] dark:bg-[#168BFF] text-white' : 'bg-slate-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-white/15'}`}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="inline-flex max-w-full gap-1 p-1 rounded-2xl bg-white dark:bg-[#0C1322] border border-slate-200 dark:border-white/10 overflow-x-auto no-scrollbar">
+        {TABS.map((t) => {
+          const Icon = t.icon;
+          const on = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`h-9 px-4 rounded-xl text-[13px] font-semibold whitespace-nowrap inline-flex items-center gap-2 transition-colors ${on ? 'bg-[#07182F] dark:bg-[#168BFF] text-white shadow-sm' : 'text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-100 hover:bg-slate-50 dark:hover:bg-white/5'}`}
+            >
+              <Icon className="w-4 h-4" />
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {tab === 'delivery' && <DeliverySettings />}

@@ -48,6 +48,40 @@ export interface EmailLog {
   created_at: string;
 }
 
+/** What is sending email right now. */
+export interface EmailStatus {
+  source: 'admin' | 'env' | 'none';
+  provider_id: number | null;
+  name: string | null;
+  driver: EmailDriver | null;
+  from_email: string | null;
+  from_name: string | null;
+  env_brevo_key: boolean;
+}
+
+export type CampaignAudience = 'all' | 'contributors' | 'businesses';
+
+export interface EmailCampaign {
+  id: number;
+  name: string;
+  subject: string;
+  heading: string | null;
+  body: string;
+  button_label: string | null;
+  button_url: string | null;
+  audience: CampaignAudience;
+  status: 'draft' | 'sending' | 'sent' | 'cancelled';
+  total_recipients: number;
+  sent_count: number;
+  failed_count: number;
+  last_error: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+}
+
+export type EmailCampaignInput = Pick<EmailCampaign, 'name' | 'subject' | 'heading' | 'body' | 'button_label' | 'button_url' | 'audience'>;
+
 const unwrap = <T>(p: Promise<{ data: ApiResponse<T> }>) => p.then((r) => r.data);
 
 export const emailApi = {
@@ -67,4 +101,20 @@ export const emailApi = {
   resetTemplate: (key: string) => unwrap(api.post<ApiResponse<EmailTemplate>>(`/admin/email/templates/${key}/reset`)),
 
   logs: () => unwrap(api.get<ApiResponse<EmailLog[]>>('/admin/email/logs')),
+
+  status: () => unwrap(api.get<ApiResponse<EmailStatus>>('/admin/email/status')),
+  /** Save the chosen driver's settings and make it the active sender, in one step. */
+  apply: (input: Omit<EmailProviderInput, 'name'> & { name?: string }) =>
+    unwrap(api.post<ApiResponse<EmailProvider>>('/admin/email/apply', input)),
+
+  campaigns: () => unwrap(api.get<ApiResponse<EmailCampaign[]>>('/admin/email/campaigns')),
+  audienceCounts: () => unwrap(api.get<ApiResponse<Record<CampaignAudience, number>>>('/admin/email/campaigns/audiences')),
+  createCampaign: (input: EmailCampaignInput) => unwrap(api.post<ApiResponse<EmailCampaign>>('/admin/email/campaigns', input)),
+  updateCampaign: (id: number, input: EmailCampaignInput) =>
+    unwrap(api.put<ApiResponse<EmailCampaign>>(`/admin/email/campaigns/${id}`, input)),
+  deleteCampaign: (id: number) => unwrap(api.delete<ApiResponse<null>>(`/admin/email/campaigns/${id}`)),
+  testCampaign: (id: number, to: string) => unwrap(api.post<ApiResponse<null>>(`/admin/email/campaigns/${id}/test`, { to })),
+  /** Sends the next batch; call again until status is "sent". */
+  sendCampaignBatch: (id: number) => unwrap(api.post<ApiResponse<EmailCampaign>>(`/admin/email/campaigns/${id}/send`)),
+  cancelCampaign: (id: number) => unwrap(api.post<ApiResponse<EmailCampaign>>(`/admin/email/campaigns/${id}/cancel`)),
 };

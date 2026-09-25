@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { emailApi, getApiError } from '../../../api';
 import type { EmailLog } from '../../../api';
-import { ProviderManager } from './ProviderManager';
+import { DeliverySettings } from './DeliverySettings';
+import { EmailCampaigns } from './EmailCampaigns';
+import { PageHeader } from '../../../components/common/ui';
 import { TemplateEditor } from './TemplateEditor';
 
 const STATUS_STYLES: Record<EmailLog['status'], string> = {
@@ -54,39 +56,41 @@ const EmailLogs: React.FC = () => {
   );
 };
 
-type EmailTab = 'providers' | 'templates' | 'logs';
+type EmailTab = 'delivery' | 'campaigns' | 'templates' | 'logs';
 
 const TABS: { id: EmailTab; label: string }[] = [
-  { id: 'providers', label: 'Providers' },
+  { id: 'delivery', label: 'Delivery' },
+  { id: 'campaigns', label: 'Campaigns' },
   { id: 'templates', label: 'Templates' },
   { id: 'logs', label: 'Delivery log' },
 ];
 
-/** Super Admin → Email: providers, templates and delivery log, all backed by the Laravel API. */
+/** Super Admin → Email & Campaigns: sending provider, marketing campaigns, templates and delivery log. */
 export const EmailSettingsPanel: React.FC = () => {
-  const [tab, setTab] = useState<EmailTab>('providers');
+  const [tab, setTab] = useState<EmailTab>('delivery');
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">Transactional Email</h3>
-        <p className="text-xs text-gray-500 dark:text-gray-400">Configure the sending provider and the emails users receive.</p>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Email & Campaigns"
+        subtitle="Choose how the platform sends email (Brevo, SMTP and more), send marketing campaigns and edit the emails users receive."
+      />
 
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
         {TABS.map((t) => (
           <button
             key={t.id}
             type="button"
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold cursor-pointer ${tab === t.id ? 'bg-[#07182F] text-white' : 'bg-slate-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-slate-200'}`}
+            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer ${tab === t.id ? 'bg-[#07182F] dark:bg-[#168BFF] text-white' : 'bg-slate-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-slate-200 dark:hover:bg-white/15'}`}
           >
             {t.label}
           </button>
         ))}
       </div>
 
-      {tab === 'providers' && <ProviderManager />}
+      {tab === 'delivery' && <DeliverySettings />}
+      {tab === 'campaigns' && <EmailCampaigns />}
       {tab === 'templates' && <TemplateEditor />}
       {tab === 'logs' && <EmailLogs />}
     </div>

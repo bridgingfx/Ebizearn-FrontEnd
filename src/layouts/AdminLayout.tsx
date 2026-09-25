@@ -20,6 +20,7 @@ import {
   ScrollText,
   LogOut,
   Mail,
+  MailCheck,
   MoreHorizontal,
   X,
 } from 'lucide-react';
@@ -64,6 +65,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Analytics', path: '/admin/analytics', icon: Activity, perm: 'view_reports' },
     { name: 'System Health', path: '/admin/health', icon: Activity },
     { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, superOnly: true },
+    { name: 'Email & Campaigns', path: '/admin/email', icon: MailCheck, superOnly: true },
     { name: 'Settings', path: '/admin/settings', icon: Settings, perm: 'manage_settings' },
     { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText, perm: 'view_reports' },
   ];

@@ -1,3 +1,4 @@
+import { preloadAuthProviders } from '../utils/useAuthProviders';
 /**
  * Portal chunk prefetch helpers.
  *
@@ -19,6 +20,7 @@ const AUTH_ART = ['/images/auth/contributor-login.webp', '/images/auth/business-
  * artwork photos, so login ⇄ register is instant with no image pop.
  */
 export const preloadAuthPages = () => {
+  preloadAuthProviders();
   AUTH_ART.forEach((src) => {
     const img = new Image();
     img.decoding = 'async';

@@ -63,11 +63,14 @@ export const authApi = {
    * redirect; the backend verifies it and returns { user, token } exactly
    * like a password login. `provider` is `google` or `apple`.
    */
-  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal) =>
+  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal, extra?: { name?: string; email?: string }) =>
     api
       .post<ApiResponse<AuthSession>>(`/auth/social/${provider}`, {
         id_token: idToken,
         ...(portal ? { portal } : {}),
+        // Apple sends the name / email only on the very first sign-in.
+        ...(extra?.name ? { name: extra.name } : {}),
+        ...(extra?.email ? { email: extra.email } : {}),
       })
       .then((r) => r.data),
 

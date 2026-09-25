@@ -17,7 +17,6 @@ import {
   AuthError,
   AuthSubmitButton,
   authInputClass,
-  AuthMethodDivider,
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
@@ -251,9 +250,7 @@ export const ContributorSignupPage: React.FC = () => {
         </p>
       </form>
 
-      <AuthMethodDivider label="or" className="my-4 short:my-2.5" />
-
-      <SocialLoginButtons portal="contributor" mode="register" />
+      <SocialLoginButtons portal="contributor" mode="register" dividerLabel="or" dividerClassName="my-4 short:my-2.5" />
 
       <p className="mt-4 short:mt-2.5 text-center text-sm text-slate-500 dark:text-gray-400">
         Already have an account?{' '}

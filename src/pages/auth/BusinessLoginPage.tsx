@@ -14,7 +14,6 @@ import {
   AuthError,
   AuthSubmitButton,
   authInputClass,
-  AuthMethodDivider,
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
@@ -103,8 +102,6 @@ export const BusinessLoginPage: React.FC = () => {
         <AuthError message={error} />
       )}
 
-      <AuthMethodDivider label="Continue with email" className="mb-5" />
-
       <form onSubmit={handleLogin} className="space-y-4 lg:space-y-3.5" noValidate>
         <AuthField id="email" label="Work email" error={emailError}>
           <input
@@ -146,15 +143,7 @@ export const BusinessLoginPage: React.FC = () => {
         </AuthSubmitButton>
       </form>
 
-      <div className="mt-5 lg:mt-4 flex items-center gap-4">
-        <span className="flex-1 h-px bg-slate-200" />
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500">or</span>
-        <span className="flex-1 h-px bg-slate-200" />
-      </div>
-
-      <div className="mt-5 lg:mt-4">
-        <SocialLoginButtons portal="business" mode="login" />
-      </div>
+      <SocialLoginButtons portal="business" mode="login" dividerLabel="or" dividerClassName="my-5 lg:my-4" />
 
       <p className="mt-5 text-center text-sm text-slate-500 dark:text-gray-400">
         New to eBiz Earn for business?{' '}

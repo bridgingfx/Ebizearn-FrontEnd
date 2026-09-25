@@ -16,7 +16,7 @@ interface AuthContextType {
    * Social sign-in: POST the provider ID token to /auth/social/{provider}
    * and persist the returned Sanctum token exactly like a password login.
    */
-  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal) => Promise<UserRole | null>;
+  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal, extra?: { name?: string; email?: string }) => Promise<UserRole | null>;
   register: (payload: RegisterPayload) => Promise<{ ok: boolean; message?: string; role?: UserRole }>;
   /**
    * Persist a { user, token } pair exactly like a login (used by the OTP
@@ -85,11 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const socialLogin = async (
     provider: 'google' | 'apple',
     idToken: string,
-    portal?: LoginPortal
+    portal?: LoginPortal,
+    extra?: { name?: string; email?: string }
   ): Promise<UserRole | null> => {
     setIsLoading(true);
     try {
-      const res = await authApi.socialLogin(provider, idToken, portal);
+      const res = await authApi.socialLogin(provider, idToken, portal, extra);
       if (res.success && res.data.user) {
         updateAndPersistUser(res.data.user);
         setToken(res.data.token);

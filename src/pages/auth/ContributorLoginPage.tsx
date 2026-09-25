@@ -15,7 +15,6 @@ import {
   AuthError,
   AuthSubmitButton,
   authInputClass,
-  AuthMethodDivider,
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
@@ -155,9 +154,7 @@ export const ContributorLoginPage: React.FC = () => {
         </AuthSubmitButton>
       </form>
 
-      <AuthMethodDivider label="or" className="my-4" />
-
-      <SocialLoginButtons portal="contributor" mode="login" />
+      <SocialLoginButtons portal="contributor" mode="login" dividerLabel="or" dividerClassName="my-4" />
 
       <p className="mt-5 text-center text-sm text-slate-500 dark:text-gray-400">
         New to eBiz Earn?{' '}

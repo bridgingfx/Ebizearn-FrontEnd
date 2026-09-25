@@ -4,6 +4,8 @@ import { adminApi, getApiError } from '../../api';
 import type { FeatureFlag, SystemSetting } from '../../types';
 import { WITHDRAWAL_THRESHOLD_OPTIONS } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
+import { SocialSignInSettings } from '../../components/admin/SocialSignInSettings';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * Platform settings. Reads/writes real system settings (GET + PATCH
@@ -26,6 +28,8 @@ const toMap = (list: SystemSetting[]): Record<string, string> => {
 };
 
 export const AdminSettingsPage: React.FC = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'superadmin';
   const [settings, setSettings] = useState<SystemSetting[]>([]);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [flags, setFlags] = useState<FeatureFlag[]>([]);
@@ -156,6 +160,9 @@ export const AdminSettingsPage: React.FC = () => {
           {notice.text}
         </div>
       )}
+
+      {/* Google / Apple sign-in (Super Admin only) */}
+      {isSuperAdmin && <SocialSignInSettings />}
 
       {/* Withdrawal threshold */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">

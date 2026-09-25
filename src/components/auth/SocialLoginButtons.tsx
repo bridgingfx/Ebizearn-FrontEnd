@@ -6,9 +6,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import type { LoginPortal } from '../../api';
 import { authApi } from '../../api';
-import { GoogleLogo } from '../common/PlatformIcons';
+import { AppleLogo, GoogleLogo } from '../common/PlatformIcons';
 import { navigateAfterLogin } from './EmailVerification';
 import { setPendingPhoneRole } from '../../utils/pendingAuth';
+import { useAuthProviders } from '../../utils/useAuthProviders';
 
 /* ------------------------------------------------------------------ */
 /* Script loading                                                      */
@@ -30,22 +31,15 @@ function loadScript(src: string): Promise<void> {
         el.async = true;
         el.defer = true;
         el.onload = () => resolve();
-        el.onerror = () => reject(new Error(`Could not load ${src}`));
+        el.onerror = () => {
+          loadedScripts.delete(src);
+          reject(new Error(`Could not load ${src}`));
+        };
         document.head.appendChild(el);
       })
     );
   }
   return loadedScripts.get(src)!;
-}
-
-/* ------------------------------------------------------------------ */
-/* Component                                                           */
-/* ------------------------------------------------------------------ */
-
-interface SocialLoginButtonsProps {
-  portal?: LoginPortal;
-  /** Slight copy tweak for registration pages. */
-  mode?: 'login' | 'register';
 }
 
 /* ------------------------------------------------------------------ */
@@ -78,7 +72,6 @@ interface GsiButtonConfiguration {
   logo_alignment?: 'left' | 'center';
   width?: number;
   locale?: string;
-  click_listener?: () => void;
 }
 
 interface GoogleGsiSdk {
@@ -90,101 +83,106 @@ interface GoogleGsiSdk {
   };
 }
 
-/**
- * Official Google sign-in button (single social option).
- *
- * Flow: GIS rendered button (ux_mode 'popup') → compact "Choose an account"
- * chooser (browser-native FedCM dialog on Chrome, small popup window
- * elsewhere) → ID token → POST /api/v1/auth/social/google { id_token } →
- * Sanctum token stored exactly like a password login → redirect to the
- * role dashboard.
- *
- * The previous implementation called `google.accounts.id.prompt()` (One Tap)
- * on click. One Tap is unaffected by `ux_mode`, and when it cannot render
- * inline Google falls back to opening the chooser in a popup window — which
- * surfaces as a new tab on mobile Chrome. The rendered button with popup UX
- * is the standard flow and never leaves the page.
- *
- * Every failure mode (SDK not configured, script failed to load, backend
- * 4xx/5xx, network down) surfaces a clear inline message — the button never
- * crashes and never leaves the page in a dead state.
- */
-export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
-  portal,
-  mode = 'login',
-}) => {
+interface AppleSignInResponse {
+  authorization?: { id_token?: string };
+  user?: { email?: string; name?: { firstName?: string; lastName?: string } };
+}
+
+interface AppleIdSdk {
+  auth: {
+    init(opts: { clientId: string; scope: string; redirectURI: string; usePopup: boolean }): void;
+    signIn(): Promise<AppleSignInResponse>;
+  };
+}
+
+type Mode = 'login' | 'register';
+
+/* ------------------------------------------------------------------ */
+/* Shared: provider token → session → next page                        */
+/* ------------------------------------------------------------------ */
+
+function useSocialFinish(portal: LoginPortal | undefined, mode: Mode) {
   const { socialLogin } = useAuth();
-  const { theme } = useTheme();
   const navigate = useNavigate();
   const [signingIn, setSigningIn] = useState(false);
-  /** True once Google's button iframe has painted — until then a
-   *  same-size placeholder shows, so nothing flashes or jumps. */
-  const [gisReady, setGisReady] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lastWidthRef = useRef(0);
-  const setMessage = (m: string | null) => {
-    if (m) toast.error(m);
-  };
 
-  const clientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined)?.trim();
-
-  /* finish() via ref so the GIS callback never captures stale state. */
-  const finishRef = useRef<(idToken: string) => Promise<void>>(async () => {});
-  useEffect(() => {
-    finishRef.current = async (idToken: string) => {
+  const finish = useCallback(
+    async (provider: 'google' | 'apple', idToken: string, extra?: { name?: string; email?: string }) => {
       setSigningIn(true);
       try {
-        const role = await socialLogin('google', idToken, portal);
-        if (role) {
-          // Registration flow only: if the fresh Google account has no phone
-          // on file, show the ONE required phone step before continuing.
-          // (Google already verified the email — no email OTP here.)
-          if (mode === 'register') {
-            const me = await authApi.me().catch(() => null);
-            const latestUser = me?.data?.user;
-            // users.phone is the source of truth (E.164); profile.phone is a
-            // legacy mirror — check both so the gate never misfires.
-            const hasPhone = !!(latestUser?.phone || latestUser?.profile?.phone);
-            if (latestUser && !hasPhone) {
-              setPendingPhoneRole(role);
-              navigate('/setup-phone', { replace: true });
-              return;
-            }
-          }
-          // Same post-auth routing as password login: unverified accounts
-          // land on the email-verification gate, verified users on the dashboard.
-          await navigateAfterLogin(navigate, role);
-        } else {
-          setMessage('Sign-in did not complete. Please try again.');
+        const role = await socialLogin(provider, idToken, portal, extra);
+        if (!role) {
+          toast.error('Sign-in did not complete. Please try again.');
+          return;
         }
+        // Registration flow only: if the fresh account has no phone on file,
+        // show the ONE required phone step before continuing (the provider
+        // already verified the email — no email OTP here).
+        if (mode === 'register') {
+          const me = await authApi.me().catch(() => null);
+          const latestUser = me?.data?.user;
+          // users.phone is the source of truth (E.164); profile.phone is a
+          // legacy mirror — check both so the gate never misfires.
+          const hasPhone = !!(latestUser?.phone || latestUser?.profile?.phone);
+          if (latestUser && !hasPhone) {
+            setPendingPhoneRole(role);
+            navigate('/setup-phone', { replace: true });
+            return;
+          }
+        }
+        // Same post-auth routing as password login.
+        await navigateAfterLogin(navigate, role);
       } catch (err) {
-        setMessage(
-          err instanceof Error
-            ? err.message
-            : 'Social sign-in failed. Please try again or use email instead.'
-        );
+        toast.error(err instanceof Error ? err.message : 'Sign-in failed. Please try again or use email instead.');
       } finally {
         setSigningIn(false);
       }
-    };
-  }, [socialLogin, portal, navigate, mode]);
+    },
+    [socialLogin, portal, navigate, mode],
+  );
 
-  const handleCredential = useCallback((response: GsiCredentialResponse) => {
-    if (response?.credential) {
-      void finishRef.current(response.credential);
-    } else {
-      setMessage('Google did not return a sign-in token. Please try again.');
-    }
+  return { finish, signingIn };
+}
+
+/* ------------------------------------------------------------------ */
+/* Google                                                              */
+/* ------------------------------------------------------------------ */
+
+const GooglePlaceholder: React.FC<{ verb: string; dark: boolean }> = ({ verb, dark }) => (
+  <span
+    className={`w-full h-11 rounded-full border flex items-center justify-center gap-2.5 ${
+      dark ? 'bg-[#202124] border-[#202124] text-white' : 'bg-white border-[#dadce0] text-[#3c4043]'
+    }`}
+  >
+    <GoogleLogo className="w-[18px] h-[18px] shrink-0" />
+    <span className="text-[14px] font-medium whitespace-nowrap">{verb} with Google</span>
+  </span>
+);
+
+/**
+ * Official Google button (Google Identity Services, popup / FedCM chooser —
+ * never a new tab). A Google-styled placeholder holds the 44px slot until
+ * the real button has painted, so nothing flashes or jumps.
+ */
+const GoogleButton: React.FC<{ clientId: string; mode: Mode; onToken: (idToken: string) => void }> = ({ clientId, mode, onToken }) => {
+  const { theme } = useTheme();
+  const [gisReady, setGisReady] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastWidthRef = useRef(0);
+  const onTokenRef = useRef(onToken);
+  useEffect(() => {
+    onTokenRef.current = onToken;
+  }, [onToken]);
+
+  /* Route the (once-registered) GIS callback to this instance. */
+  useEffect(() => {
+    activeCredentialHandler = (response) => {
+      if (response?.credential) onTokenRef.current(response.credential);
+      else toast.error('Google did not return a sign-in token. Please try again.');
+    };
   }, []);
 
-  /* Route the (once-registered) GIS callback to this instance's handler. */
   useEffect(() => {
-    activeCredentialHandler = handleCredential;
-  }, [handleCredential]);
-
-  /* Render (and re-render on theme/mode/width change) the GIS button. */
-  useEffect(() => {
-    if (!clientId) return;
     const container = containerRef.current;
     if (!container) return;
     let cancelled = false;
@@ -192,9 +190,8 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     let revealTimer: number | undefined;
 
     const measure = () => Math.min(400, Math.max(200, Math.floor(container.clientWidth) || 320));
-    // Record the width we'll render at BEFORE the async script load, so the
-    // ResizeObserver's initial callback doesn't see 0 and render a second
-    // time (that double render was the visible Google-button flash).
+    // Record the width BEFORE the async script load so the ResizeObserver's
+    // first callback doesn't trigger a second render (that was the flash).
     lastWidthRef.current = measure();
 
     const render = async () => {
@@ -204,21 +201,14 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         const google = (window as unknown as { google?: GoogleGsiSdk }).google;
         if (!google?.accounts?.id) throw new Error('Google SDK unavailable');
 
-        // initialize() once per page load; the callback forwards to whichever
-        // button instance is mounted (GIS warns on repeated initialize).
         if (initializedClientId !== clientId) {
           google.accounts.id.initialize({
             client_id: clientId,
             callback: (response: GsiCredentialResponse) => activeCredentialHandler?.(response),
-            // Popup UX: compact "Choose an account" chooser, never a new tab.
-            // (ux_mode has no effect on One Tap — this is why we use the
-            // rendered button instead of accounts.id.prompt().)
             ux_mode: 'popup',
             auto_select: false,
             cancel_on_tap_outside: true,
             context: mode === 'register' ? 'signup' : 'signin',
-            // Browser-native chooser dialog on Chrome (desktop M125+, Android
-            // M128+): no popup window involved, so it cannot be popup-blocked.
             use_fedcm_for_button: true,
           });
           initializedClientId = clientId;
@@ -226,10 +216,8 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
         const width = measure();
         lastWidthRef.current = width;
-        // Placeholder covers the swap on re-render (theme / width change).
         setGisReady(false);
         window.clearTimeout(revealTimer);
-        // renderButton appends; clear first so re-renders don't duplicate.
         container.innerHTML = '';
         google.accounts.id.renderButton(container, {
           type: 'standard',
@@ -239,28 +227,20 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           shape: 'pill',
           logo_alignment: 'left',
           width,
-          // Match the site language instead of the browser's (otherwise the
-          // button can render in e.g. Arabic on an English page).
           locale: 'en',
         });
 
-        // Reveal once Google's iframe has loaded (fallback after 1.5s).
         const iframe = container.querySelector('iframe');
         const reveal = () => !cancelled && setGisReady(true);
         if (iframe) iframe.addEventListener('load', () => window.setTimeout(reveal, 60), { once: true });
         revealTimer = window.setTimeout(reveal, 1500);
       } catch {
-        if (!cancelled) {
-          setMessage('Google sign-in could not be loaded. Please check your connection or use email sign-in.');
-        }
+        if (!cancelled) toast.error('Google sign-in could not be loaded. Please check your connection or use email sign-in.');
       }
     };
 
     void render();
 
-    // Re-render only when the container width actually changes (orientation
-    // change etc.), debounced; the fixed pixel width we pass GIS means the
-    // render itself never triggers the observer.
     const observer = new ResizeObserver(() => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
@@ -277,58 +257,141 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       observer.disconnect();
       container.innerHTML = '';
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientId, theme, mode]);
 
   const verb = mode === 'register' ? 'Sign up' : 'Continue';
 
-  /** Same look/size as Google's pill button (44px). */
-  const placeholder = (
-    <span
-      className={`w-full h-11 rounded-full border flex items-center justify-center gap-2.5 ${
-        theme === 'dark' ? 'bg-[#202124] border-[#202124] text-white' : 'bg-white border-[#dadce0] text-[#3c4043]'
-      }`}
-    >
-      <GoogleLogo className="w-[18px] h-[18px] shrink-0" />
-      <span className="text-[14px] font-medium whitespace-nowrap">{verb} with Google</span>
-    </span>
-  );
-
-  /* Fail-closed placeholder when no client ID is configured (dev only). */
-  if (!clientId) {
-    return (
-      <button
-        type="button"
-        onClick={() =>
-          setMessage('Google sign-in is not enabled for this environment yet. Please continue with your email and password.')
-        }
-        className="w-full rounded-full hover:brightness-[0.98] transition"
-        aria-label={`${verb} with Google`}
+  return (
+    <div className="relative w-full h-11" role="group" aria-label={`${verb} with Google`}>
+      <div
+        aria-hidden="true"
+        className={`absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] transition-opacity duration-200 ${gisReady ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
       >
-        {placeholder}
-      </button>
-    );
-  }
+        <GooglePlaceholder verb={verb} dark={theme === 'dark'} />
+      </div>
+      <div ref={containerRef} className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${gisReady ? 'opacity-100' : 'opacity-0'}`} />
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Apple                                                               */
+/* ------------------------------------------------------------------ */
+
+const AppleButton: React.FC<{
+  clientId: string;
+  redirectUri: string;
+  mode: Mode;
+  busy: boolean;
+  onToken: (idToken: string, extra: { name?: string; email?: string }) => void;
+}> = ({ clientId, redirectUri, mode, busy, onToken }) => {
+  const [starting, setStarting] = useState(false);
+  const verb = mode === 'register' ? 'Sign up' : 'Continue';
+
+  const signIn = async () => {
+    if (starting || busy) return;
+    setStarting(true);
+    try {
+      await loadScript('https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js');
+      const apple = (window as unknown as { AppleID?: AppleIdSdk }).AppleID;
+      if (!apple?.auth) throw new Error('Apple SDK unavailable');
+      apple.auth.init({ clientId, scope: 'name email', redirectURI: redirectUri, usePopup: true });
+      const res = await apple.auth.signIn();
+      const idToken = res?.authorization?.id_token;
+      if (!idToken) throw new Error('Apple did not return a sign-in token.');
+      const name = [res.user?.name?.firstName, res.user?.name?.lastName].filter(Boolean).join(' ') || undefined;
+      onToken(idToken, { name, email: res.user?.email });
+    } catch (err) {
+      const code = (err as { error?: string })?.error;
+      if (code !== 'popup_closed_by_user' && code !== 'user_cancelled_authorize') {
+        toast.error(err instanceof Error ? err.message : 'Apple sign-in could not start. Please try again or use email sign-in.');
+      }
+    } finally {
+      setStarting(false);
+    }
+  };
 
   return (
-    <div>
-      {/* Fixed 44px slot: a Google-styled placeholder shows until the real
-          GIS button iframe has painted, then the two crossfade — no blank
-          gap, no layout jump, no double render. Clicking the real button
-          opens the compact "Choose an account" chooser — never a new tab. */}
-      <div className="relative w-full h-11" role="group" aria-label={`${verb} with Google`}>
-        {/* Google caps its button at 400px — size the placeholder the same
-            so the crossfade is seamless. */}
-        <div
-          aria-hidden="true"
-          className={`absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] transition-opacity duration-200 ${gisReady ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        >
-          {placeholder}
-        </div>
-        <div
-          ref={containerRef}
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${gisReady ? 'opacity-100' : 'opacity-0'}`}
-        />
+    <button
+      type="button"
+      onClick={signIn}
+      disabled={starting || busy}
+      className="mx-auto w-full max-w-[400px] h-11 rounded-full bg-black hover:bg-[#1a1a1a] text-white flex items-center justify-center gap-2.5 transition-colors disabled:opacity-70 dark:ring-1 dark:ring-white/20"
+    >
+      {starting ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <AppleLogo className="w-[18px] h-[18px]" />}
+      <span className="text-[14px] font-medium">{verb} with Apple</span>
+    </button>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Public component                                                    */
+/* ------------------------------------------------------------------ */
+
+interface SocialLoginButtonsProps {
+  portal?: LoginPortal;
+  /** Slight copy tweak for registration pages. */
+  mode?: Mode;
+  /** "OR" divider shown above the buttons — hidden together with them. */
+  dividerLabel?: string;
+  dividerClassName?: string;
+  className?: string;
+}
+
+/**
+ * Google / Apple sign-in, as switched on by Super Admin (Admin → Settings →
+ * Social sign-in). Providers that are off are not shown at all; with none
+ * on, nothing renders (not even the divider).
+ *
+ * Flow: provider SDK → ID token → POST /api/v1/auth/social/{provider}
+ * { id_token, portal } → Sanctum session → next page.
+ */
+export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
+  portal,
+  mode = 'login',
+  dividerLabel,
+  dividerClassName = 'my-4',
+  className = '',
+}) => {
+  const providers = useAuthProviders();
+  const { theme } = useTheme();
+  const { finish, signingIn } = useSocialFinish(portal, mode);
+
+  const google = providers?.google.enabled && providers.google.client_id ? providers.google.client_id : null;
+  const apple = providers?.apple.enabled && providers.apple.client_id ? providers.apple : null;
+
+  // Still unknown on a first-ever visit: keep one button slot reserved.
+  if (providers && !google && !apple) return null;
+
+  const divider = dividerLabel ? (
+    <div className={`flex items-center gap-4 ${dividerClassName}`} aria-hidden="true">
+      <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+      <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 whitespace-nowrap">{dividerLabel}</span>
+      <span className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+    </div>
+  ) : null;
+
+  return (
+    <div className={className}>
+      {divider}
+      <div className="space-y-2.5">
+        {!providers && (
+          <div className="relative w-full h-11 flex justify-center opacity-60">
+            <div className="w-full max-w-[400px]">
+              <GooglePlaceholder verb={mode === 'register' ? 'Sign up' : 'Continue'} dark={theme === 'dark'} />
+            </div>
+          </div>
+        )}
+        {google && <GoogleButton clientId={google} mode={mode} onToken={(t) => void finish('google', t)} />}
+        {apple && (
+          <AppleButton
+            clientId={apple.client_id!}
+            redirectUri={apple.redirect_uri ?? `${window.location.origin}/login`}
+            mode={mode}
+            busy={signingIn}
+            onToken={(t, extra) => void finish('apple', t, extra)}
+          />
+        )}
       </div>
       {signingIn && (
         <div className="mt-2 flex items-center justify-center gap-2 text-[13px] text-slate-500 dark:text-gray-400" role="status">

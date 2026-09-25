@@ -2,6 +2,7 @@ import React from 'react';
 import { Building, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 
 /**
  * Settings shows real identity from the auth session only. There is no
@@ -19,6 +20,9 @@ export const BusinessSettingsPage: React.FC = () => {
         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Business Settings</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Your company profile and integrations.</p>
       </div>
+
+      {/* Account password */}
+      <ChangePasswordCard />
 
       {/* Company profile — real data, read-only until backend supports updates */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6">

@@ -17,3 +17,5 @@ export { socialChannelsApi, staffSocialChannelsApi } from './socialChannels';
 export type { SocialChannel, SocialPlatform, SocialChannelStatus } from './socialChannels';
 export { authProvidersApi } from './authProviders';
 export type { AuthProvidersPublic, AuthProvidersAdmin, AuthProvidersInput } from './authProviders';
+export { depositsApi, staffDepositsApi, formatUsd } from './deposits';
+export type { DepositMethod, DepositMethodKey, DepositRequest, DepositStatus, WalletTxn, BusinessDepositsOverview } from './deposits';

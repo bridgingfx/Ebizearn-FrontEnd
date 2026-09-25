@@ -76,6 +76,7 @@ import {
   LazyAdminSupportPage,
   LazyAdminKycPage,
   LazyAdminSocialChannelsPage,
+  LazyAdminDepositsPage,
   LazyAdminUserDetailPage,
   LazyAdminPermissionsPage,
   LazyAdminAnalyticsPage,
@@ -226,6 +227,7 @@ export const App: React.FC = () => {
             <Route path="verification" element={<LazyAdminVerificationCenterPage />} />
             <Route path="payouts" element={<LazyAdminPayoutsPage />} />
             <Route path="withdrawals" element={<LazyAdminPayoutsPage />} />
+            <Route path="deposits" element={<LazyAdminDepositsPage />} />
             <Route path="wallets" element={<LazyAdminWalletsPage />} />
             <Route path="referrals" element={<LazyAdminReferralsPage />} />
             <Route path="demo-requests" element={<LazyAdminDemoRequestsPage />} />

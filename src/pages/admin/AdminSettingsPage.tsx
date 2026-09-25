@@ -5,6 +5,7 @@ import type { FeatureFlag, SystemSetting } from '../../types';
 import { WITHDRAWAL_THRESHOLD_OPTIONS } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { SocialSignInSettings } from '../../components/admin/SocialSignInSettings';
+import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 import { useAuth } from '../../context/AuthContext';
 
 /**
@@ -160,6 +161,9 @@ export const AdminSettingsPage: React.FC = () => {
           {notice.text}
         </div>
       )}
+
+      {/* Your own account password */}
+      <ChangePasswordCard />
 
       {/* Google / Apple sign-in (Super Admin only) */}
       {isSuperAdmin && <SocialSignInSettings />}

@@ -144,7 +144,7 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <h3 className="text-xl font-black text-gray-900 dark:text-gray-100">Message Received!</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-                  Thank you, <strong>{name}</strong>. Your ticket has been assigned reference <strong className="text-emerald-700 font-mono">#{ticketId || 'TKT-UAE-8921'}</strong>. A team member from the Dubai Operations Desk will reply to <strong>{email}</strong> shortly.
+                  Thank you, <strong>{name}</strong>. Your ticket has been assigned reference <strong className="text-emerald-700 font-mono">#{ticketId || 'TKT-GEO-8921'}</strong>. A team member from our Tbilisi support desk will reply to <strong>{email}</strong> shortly.
                 </p>
                 <div className="pt-3">
                   <button

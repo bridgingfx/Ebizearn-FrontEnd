@@ -19,7 +19,7 @@ export interface User {
    */
   email_verified_at?: string | null;
   /**
-   * E.164 account phone ("+971501234567"), serialized from users.phone.
+   * E.164 account phone ("+995501234567"), serialized from users.phone.
    * Source of truth for the post-Google-signup phone gate (profile.phone
    * is a legacy mirror).
    */

@@ -1,7 +1,7 @@
 export { api, getApiError, getApiFieldErrors, TOKEN_KEY } from './client';
 export type { ApiResponse } from './client';
 export { authApi, getOtpError } from './auth';
-export type { RegisterPayload, AuthSession, LoginPortal, OtpErrorCode, OtpFailure } from './auth';
+export type { RegisterPayload, AuthSession, LoginPortal, OtpErrorCode, OtpFailure, TermsAcceptance } from './auth';
 export { profileApi } from './profile';
 export type { ProfileUpdatePayload, KycSubmitPayload } from './profile';
 export { supportApi, staffSupportApi, staffKycApi } from './support';

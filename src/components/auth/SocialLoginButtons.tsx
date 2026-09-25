@@ -10,6 +10,8 @@ import { AppleLogo, GoogleLogo } from '../common/PlatformIcons';
 import { navigateAfterLogin } from './EmailVerification';
 import { setPendingPhoneRole } from '../../utils/pendingAuth';
 import { useAuthProviders } from '../../utils/useAuthProviders';
+import type { TermsAcceptance } from '../../api';
+import type { TermsConsent } from '../../utils/termsConsent';
 
 /* ------------------------------------------------------------------ */
 /* Script loading                                                      */
@@ -107,10 +109,17 @@ function useSocialFinish(portal: LoginPortal | undefined, mode: Mode) {
   const [signingIn, setSigningIn] = useState(false);
 
   const finish = useCallback(
-    async (provider: 'google' | 'apple', idToken: string, extra?: { name?: string; email?: string }) => {
+    async (provider: 'google' | 'apple', idToken: string, extra?: { name?: string; email?: string }, terms?: TermsConsent | null) => {
       setSigningIn(true);
       try {
-        const role = await socialLogin(provider, idToken, portal, extra);
+        // Register mode only: pass proof of Terms acceptance so the backend
+        // can record terms_accepted_at server-side. Plain sign-ins of an
+        // existing account don't send it.
+        const acceptance: TermsAcceptance | undefined =
+          mode === 'register' && terms
+            ? { terms_version: terms.version, terms_accepted_at: terms.acceptedAt }
+            : undefined;
+        const role = await socialLogin(provider, idToken, portal, extra, acceptance);
         if (!role) {
           toast.error('Sign-in did not complete. Please try again.');
           return;
@@ -336,6 +345,17 @@ interface SocialLoginButtonsProps {
   dividerLabel?: string;
   dividerClassName?: string;
   className?: string;
+  /**
+   * Terms gate (register pages only). When provided and `mode` is
+   * 'register', the provider buttons are covered by an intercept layer
+   * until consent is accepted — clicking it opens the consent modal via
+   * `onRequestConsent` instead of starting the provider flow. No
+   * account-creating action is possible without accepted consent.
+   */
+  termsGate?: {
+    consent: TermsConsent | null;
+    onRequestConsent: () => void;
+  };
 }
 
 /**
@@ -352,6 +372,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   dividerLabel,
   dividerClassName = 'my-4',
   className = '',
+  termsGate,
 }) => {
   const providers = useAuthProviders();
   const { theme } = useTheme();
@@ -362,6 +383,13 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
   // Still unknown on a first-ever visit: keep one button slot reserved.
   if (providers && !google && !apple) return null;
+
+  // Consent gate: on registration pages, no provider flow may start before
+  // the Terms consent is accepted. The intercept layer sits above the real
+  // buttons (including Google's cross-origin iframe, whose clicks we cannot
+  // capture) and routes the tap to the consent modal instead.
+  const gated = mode === 'register' && termsGate != null && termsGate.consent == null;
+  const consent = termsGate?.consent ?? null;
 
   const divider = dividerLabel ? (
     <div className={`flex items-center gap-4 ${dividerClassName}`} aria-hidden="true">
@@ -374,22 +402,33 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   return (
     <div className={className}>
       {divider}
-      <div className="space-y-2.5">
-        {!providers && (
-          <div className="relative w-full h-11 flex justify-center opacity-60">
-            <div className="w-full max-w-[400px]">
-              <GooglePlaceholder verb={mode === 'register' ? 'Sign up' : 'Continue'} dark={theme === 'dark'} />
+      <div className="relative space-y-2.5">
+        <div className={gated ? 'opacity-60 saturate-50 pointer-events-none select-none' : undefined} aria-hidden={gated}>
+          {!providers && (
+            <div className="relative w-full h-11 flex justify-center opacity-60">
+              <div className="w-full max-w-[400px]">
+                <GooglePlaceholder verb={mode === 'register' ? 'Sign up' : 'Continue'} dark={theme === 'dark'} />
+              </div>
             </div>
-          </div>
-        )}
-        {google && <GoogleButton clientId={google} mode={mode} onToken={(t) => void finish('google', t)} />}
-        {apple && (
-          <AppleButton
-            clientId={apple.client_id!}
-            redirectUri={apple.redirect_uri ?? `${window.location.origin}/login`}
-            mode={mode}
-            busy={signingIn}
-            onToken={(t, extra) => void finish('apple', t, extra)}
+          )}
+          {google && <GoogleButton clientId={google} mode={mode} onToken={(t) => void finish('google', t, undefined, consent)} />}
+          {apple && (
+            <AppleButton
+              clientId={apple.client_id!}
+              redirectUri={apple.redirect_uri ?? `${window.location.origin}/login`}
+              mode={mode}
+              busy={signingIn}
+              onToken={(t, extra) => void finish('apple', t, extra, consent)}
+            />
+          )}
+        </div>
+        {gated && (
+          <button
+            type="button"
+            onClick={() => termsGate?.onRequestConsent()}
+            aria-label="Review and accept the Terms of Service first, then continue with a provider"
+            title="Accept the Terms first"
+            className="absolute inset-0 w-full rounded-2xl cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#168BFF]/60"
           />
         )}
       </div>

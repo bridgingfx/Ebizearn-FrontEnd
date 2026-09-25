@@ -1,7 +1,7 @@
 import { COUNTRY_DIALS, type CountryDial } from './countryDialCodes';
 
 export interface PhoneValue {
-  /** E.g. "+971" */
+  /** E.g. "+995" */
   dialCode: string;
   /** National number as typed (may contain spaces/dashes). */
   number: string;
@@ -10,7 +10,7 @@ export interface PhoneValue {
 /** Digits-only national number. */
 export const phoneDigits = (number: string): string => number.replace(/\D/g, '');
 
-/** Full international number in E.164-ish form, e.g. "+971501234567". */
+/** Full international number in E.164-ish form, e.g. "+995501234567". */
 export const phoneToE164 = (value: PhoneValue): string =>
   `${value.dialCode}${phoneDigits(value.number)}`;
 

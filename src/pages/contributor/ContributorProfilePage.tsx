@@ -35,7 +35,7 @@ type ProfileTab = 'profile' | 'kyc' | 'socials' | 'payouts' | 'security';
 const RESIDENCE_COUNTRIES = COUNTRY_OPTIONS.filter((c) => c.code !== 'GLOBAL');
 
 const KYC_DOC_LABELS: Record<KycDocumentType, string> = {
-  emirates_id: 'Emirates ID',
+  emirates_id: 'National ID',
   passport: 'Passport',
   national_id: 'National ID card',
 };
@@ -281,7 +281,7 @@ export const ContributorProfilePage: React.FC = () => {
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+971 50 123 4567"
+                placeholder="+995 555 12 34 56"
                 className={inputClass}
               />
             </div>
@@ -309,7 +309,7 @@ export const ContributorProfilePage: React.FC = () => {
                 type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Dubai"
+                placeholder="e.g. Tbilisi"
                 maxLength={120}
                 className={inputClass}
               />

@@ -19,7 +19,7 @@ interface PhoneFieldProps {
   error?: string | null;
   hint?: string;
   /** When true (default), IP geolocation pre-selects the dial code once on
-   *  mount — non-blocking, +971 default kept until it resolves, never
+   *  mount — non-blocking, +995 default kept until it resolves, never
    *  overrides a manual user choice. */
   autoDetect?: boolean;
   autoFocus?: boolean;
@@ -27,7 +27,7 @@ interface PhoneFieldProps {
 
 /**
  * Phone field: searchable country-code picker (flag + name + dial code,
- * default +971, IP-based pre-select) next to a national-number input.
+ * default +995, IP-based pre-select) next to a national-number input.
  *
  * Keyboard: Tab to the picker → Enter/Space opens → type to search →
  * ArrowUp/ArrowDown moves → Enter picks → Escape closes. The listbox
@@ -53,7 +53,7 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
   const listRef = useRef<HTMLDivElement>(null);
   const selected = COUNTRY_DIALS.find((c) => c.dial === value.dialCode);
 
-  /* Non-blocking IP pre-select: +971 renders immediately; the picker updates
+  /* Non-blocking IP pre-select: +995 renders immediately; the picker updates
    * once the lookup resolves. Skipped entirely if the user already chose. */
   useEffect(() => {
     if (!autoDetect) return;

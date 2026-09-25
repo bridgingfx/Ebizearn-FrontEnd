@@ -123,7 +123,7 @@ export const CookiePolicyPage: React.FC = () => {
           >
             support@ebizearn.com
           </a>
-          . eBizEarn is operated by eBiz Network, based in Dubai, United Arab Emirates.
+          . eBizEarn is operated by eBiz Network, registered in Tbilisi, Georgia.
         </p>
       </LegalSection>
     </LegalShell>

@@ -19,7 +19,7 @@ export const post: BlogPost = {
       'Borrowed trust: a repost from a real person reads as a recommendation, not an ad. That framing is the entire value.',
       'Algorithmic signals: story interactions (taps, replies, link clicks) tell Instagram the content is engaging.',
       'Link traffic: with link stickers, a story repost is a direct path to a product page, booking form, or launch signup.',
-      'Geo relevance: local businesses specifically want reposts from accounts in their area — a Dubai café gains nothing from a repost seen only in another country.',
+      'Geo relevance: local businesses specifically want reposts from accounts in their area — a Tbilisi café gains nothing from a repost seen only in another country.',
     ]},
     { type: 'p', text: 'This is also why follower count is not the deciding factor. A hundred local, real followers who might actually visit the café beat ten thousand distant or fake ones. Businesses buying story tasks think in terms of relevance, not reach.' },
 

@@ -9,6 +9,8 @@ import {
   AuthError,
 } from '../../components/auth/AuthSplitLayout';
 import { PhoneField } from '../../components/auth/PhoneInput';
+import { TermsConsentCheckbox, TermsConsentModal } from '../../components/auth/TermsConsent';
+import { readStoredConsent, type TermsConsent } from '../../utils/termsConsent';
 import { phoneDigits, phoneToE164, validatePhone, type PhoneValue } from '../../utils/phone';
 import { DEFAULT_DIAL } from '../../utils/countryDialCodes';
 import { getPendingPhoneRole, clearPendingPhoneRole } from '../../utils/pendingAuth';
@@ -37,6 +39,16 @@ export const PhoneSetupPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [serviceDown, setServiceDown] = useState(false);
   const [saving, setSaving] = useState(false);
+  // Terms consent gates this account-completing step too: no account action
+  // without accepted consent. Picked up from the register page when the user
+  // already accepted there (same browser session).
+  const [consent, setConsent] = useState<TermsConsent | null>(() => readStoredConsent());
+  const [consentModalOpen, setConsentModalOpen] = useState(false);
+
+  const acceptConsent = (c: TermsConsent) => {
+    setConsent(c);
+    setConsentModalOpen(false);
+  };
 
   /* Must be signed in (Google flow completed). Otherwise bounce to login —
    * never render a dead form. */
@@ -76,6 +88,10 @@ export const PhoneSetupPage: React.FC = () => {
     e.preventDefault();
     setError(null);
     setServiceDown(false);
+    if (!consent) {
+      setError('Please review and accept the Terms of Service to finish setting up your account.');
+      return;
+    }
     const phoneErr = validatePhone(phone);
     setFieldError(phoneErr);
     if (phoneErr) return;
@@ -180,10 +196,18 @@ export const PhoneSetupPage: React.FC = () => {
           hint="We’ll only use this for account security and payout alerts."
         />
 
+        <TermsConsentCheckbox
+          consent={consent}
+          onAccept={acceptConsent}
+          onRevoke={() => setConsent(null)}
+          id="setup-phone-terms"
+        />
+
         <button
           type="submit"
-          disabled={saving}
-          className="w-full min-h-[54px] px-6 text-white font-extrabold text-base rounded-2xl bg-gradient-to-r from-[#168BFF] to-[#7257FF] hover:brightness-105 shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-wait"
+          disabled={saving || !consent}
+          title={!consent ? 'Review and accept the Terms of Service first' : undefined}
+          className="w-full min-h-[54px] px-6 text-white font-extrabold text-base rounded-2xl bg-gradient-to-r from-[#168BFF] to-[#7257FF] hover:brightness-105 shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:saturate-50 disabled:cursor-not-allowed"
         >
           {saving ? (
             <>
@@ -206,6 +230,10 @@ export const PhoneSetupPage: React.FC = () => {
           Skip for now
         </button>
       </form>
+
+      {consentModalOpen && (
+        <TermsConsentModal onAccept={acceptConsent} onClose={() => setConsentModalOpen(false)} />
+      )}
     </AuthSplitLayout>
   );
 };

@@ -175,7 +175,7 @@ const DepositRequests: React.FC = () => {
                       )}
                       <label className="flex-1">
                         <span className="block text-[11px] font-bold text-gray-500 mb-1">{active.mode === 'approve' ? 'Note (optional)' : 'Reason (shown to the business)'}</span>
-                        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder={active.mode === 'approve' ? 'e.g. Received on Emirates NBD' : 'e.g. Payment not received'} className={inputClass} />
+                        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder={active.mode === 'approve' ? 'e.g. Received via bank transfer' : 'e.g. Payment not received'} className={inputClass} />
                       </label>
                       <div className="flex items-end gap-2">
                         <button
@@ -216,12 +216,12 @@ const FIELDS: Record<DepositMethodKey, { key: string; label: string; placeholder
     { key: 'wallet_address', label: 'Wallet address', placeholder: 'T… or 0x…' },
   ],
   bank: [
-    { key: 'bank_name', label: 'Bank name', placeholder: 'Emirates NBD' },
+    { key: 'bank_name', label: 'Bank name', placeholder: 'Bank of Georgia' },
     { key: 'account_name', label: 'Account name', placeholder: 'eBiz Network FZ LLC' },
     { key: 'iban', label: 'IBAN', placeholder: 'AE07 0331 2345 6789 0123 456' },
     { key: 'account_number', label: 'Account number', placeholder: 'Optional if IBAN given' },
     { key: 'swift', label: 'SWIFT / BIC', placeholder: 'EBILAEAD' },
-    { key: 'country', label: 'Country', placeholder: 'United Arab Emirates' },
+    { key: 'country', label: 'Country', placeholder: 'Georgia' },
   ],
   email: [{ key: 'contact_email', label: 'Finance email', placeholder: 'finance@ebizearn.com' }],
 };

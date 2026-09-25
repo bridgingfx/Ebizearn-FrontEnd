@@ -136,7 +136,7 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
   '/about': {
     title: 'About eBizEarn — The Social Task Marketplace | eBizEarn',
     description:
-      'About eBizEarn: the social-media task marketplace connecting contributors who complete verified tasks with businesses running promotional campaigns. Based in the UAE, open worldwide.',
+      'About eBizEarn: the social-media task marketplace connecting contributors who complete verified tasks with businesses running promotional campaigns. Based in Georgia, open worldwide.',
   },
   '/faq': {
     title: 'FAQ — Tasks, Earnings & Payouts | eBizEarn',

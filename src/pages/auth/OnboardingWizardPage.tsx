@@ -25,7 +25,7 @@ const loadPrefs = (): Partial<OnboardingPrefs> => {
 export const OnboardingWizardPage: React.FC = () => {
   const saved = loadPrefs();
   const [step, setStep] = useState(1);
-  const [country, setCountry] = useState(saved.country || 'AE');
+  const [country, setCountry] = useState(saved.country || 'GE');
   const [language, setLanguage] = useState(saved.language || 'en');
   const [interests, setInterests] = useState<string[]>(saved.interests || []);
   const [bio, setBio] = useState(saved.bio || '');
@@ -115,7 +115,7 @@ export const OnboardingWizardPage: React.FC = () => {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { code: 'AE', name: 'United Arab Emirates', flag: '🇦🇪' },
+                { code: 'GE', name: 'Georgia', flag: '🇬🇪' },
                 { code: 'US', name: 'United States', flag: '🇺🇸' },
                 { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
                 { code: 'IN', name: 'India', flag: '🇮🇳' },

@@ -9,7 +9,7 @@ export const COUNTRY_OPTIONS: CountryOption[] = [
   { code: 'GLOBAL', label: 'Worldwide (Global Reach 🌐)', currency: 'USD', flag: '🌐' },
   { code: 'US', label: 'United States 🇺🇸', currency: 'USD', flag: '🇺🇸' },
   { code: 'GB', label: 'United Kingdom 🇬🇧', currency: 'GBP', flag: '🇬🇧' },
-  { code: 'AE', label: 'United Arab Emirates 🇦🇪', currency: 'AED', flag: '🇦🇪' },
+  { code: 'GE', label: 'Georgia 🇬🇪', currency: 'GEL', flag: '🇬🇪' },
   { code: 'SA', label: 'Saudi Arabia 🇸🇦', currency: 'SAR', flag: '🇸🇦' },
   { code: 'DE', label: 'Germany / Europe 🇩🇪', currency: 'EUR', flag: '🇩🇪' },
   { code: 'CA', label: 'Canada 🇨🇦', currency: 'CAD', flag: '🇨🇦' },
@@ -37,12 +37,11 @@ export const REGIONAL_REGIONS: Record<string, Record<string, string[]>> = {
     'West Midlands': ['Birmingham', 'Coventry'],
     'Nationwide UK': ['England, Scotland, Wales & NI'],
   },
-  AE: {
-    Dubai: ['Downtown Dubai', 'Dubai Marina', 'Business Bay', 'DIFC', 'Citywide Dubai'],
-    'Abu Dhabi': ['Corniche Area', 'Al Reem Island', 'Yas Island', 'Citywide Abu Dhabi'],
-    Sharjah: ['Al Majaz', 'Al Nahda', 'Muwailih Commercial', 'Citywide Sharjah'],
-    Ajman: ['Al Nuaimia', 'Ajman Corniche', 'Al Jurf', 'Citywide Ajman'],
-    'All UAE': ['UAE Nationwide (All Emirates)'],
+  GE: {
+    Tbilisi: ['Vake', 'Saburtalo', 'Old Town', 'Citywide Tbilisi'],
+    Batumi: ['City Centre', 'Citywide Batumi'],
+    Kutaisi: ['City Centre', 'Citywide Kutaisi'],
+    'Nationwide Georgia': ['Georgia Nationwide (All Regions)'],
   },
   SA: {
     Riyadh: ['Olaya / King Fahd', 'KAFD', 'Al Malqa', 'Citywide Riyadh'],

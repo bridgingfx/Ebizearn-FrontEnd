@@ -51,7 +51,7 @@ const STYLES: Record<BlogCategory, CategoryStyle> = {
     softBg: 'bg-amber-50/60 dark:bg-amber-500/10',
     gradient: 'from-[#241708] via-[#7A4A0B] to-[#F79009]',
   },
-  UAE: {
+  Georgia: {
     badge: 'bg-teal-50 text-[#0D9488] dark:bg-teal-500/10 dark:text-teal-300',
     softBg: 'bg-teal-50/60 dark:bg-teal-500/10',
     gradient: 'from-[#0A2027] via-[#0F4A52] to-[#0D9488]',

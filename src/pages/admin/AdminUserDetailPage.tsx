@@ -33,7 +33,7 @@ import { TICKET_STATUS_LABELS, TICKET_STATUS_STYLES, formatTicketTime } from '..
 import { auditPage, humanizeAction } from '../../utils/auditLabels';
 
 const DOC_LABELS: Record<KycDocumentType, string> = {
-  emirates_id: 'Emirates ID',
+  emirates_id: 'National ID',
   passport: 'Passport',
   national_id: 'National ID',
 };

@@ -233,7 +233,7 @@ export const HowItWorksPage: React.FC = () => {
           <div className="space-y-1.5">
             <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
               <span>Geo Target</span>
-              <span className="text-[#20C4E8]">UAE • USA • UK</span>
+              <span className="text-[#20C4E8]">Georgia • USA • UK</span>
             </div>
             <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
               <span>Channel</span>

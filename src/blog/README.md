@@ -42,7 +42,7 @@ export const post: BlogPost = {
 ## Allowed categories
 
 `'Getting Started'` · `'Instagram'` · `'TikTok'` · `'YouTube'` · `'Facebook'` ·
-`'Referrals'` · `'Payments & Withdrawals'` · `'Safety'` · `'UAE'`
+`'Referrals'` · `'Payments & Withdrawals'` · `'Safety'` · `'Georgia'`
 
 ## Field rules
 

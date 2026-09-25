@@ -19,6 +19,8 @@ import {
   authInputClass,
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
+import { TermsConsentCheckbox, TermsConsentModal } from '../../components/auth/TermsConsent';
+import { readStoredConsent, type TermsConsent } from '../../utils/termsConsent';
 import { PasswordInput } from './PasswordInput';
 import {
   PhoneField,
@@ -31,8 +33,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
 
 const COUNTRIES = [
-  { code: 'AE', name: 'UAE' },
-  { code: 'SA', name: 'Saudi Arabia' },
+  { code: 'GE', name: 'Georgia' },
   { code: 'US', name: 'USA' },
   { code: 'GB', name: 'UK' },
   { code: 'IN', name: 'India' },
@@ -40,6 +41,7 @@ const COUNTRIES = [
   { code: 'BD', name: 'Bangladesh' },
   { code: 'LK', name: 'Sri Lanka' },
   { code: 'PH', name: 'Philippines' },
+  { code: 'SA', name: 'Saudi Arabia' },
 ];
 
 export const ContributorSignupPage: React.FC = () => {
@@ -48,13 +50,22 @@ export const ContributorSignupPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [country, setCountry] = useState('AE');
+  const [country, setCountry] = useState('GE');
   const [phone, setPhone] = useState<PhoneValue>({ dialCode: DEFAULT_DIAL, number: '' });
   const [referralCode, setReferralCode] = useState(refCodeFromUrl);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Terms consent: accepted only through the modal's "I agree and
+  // acknowledge" button. The Sign Up button stays disabled until accepted.
+  const [consent, setConsent] = useState<TermsConsent | null>(() => readStoredConsent());
+  const [consentModalOpen, setConsentModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const acceptConsent = (c: TermsConsent) => {
+    setConsent(c);
+    setConsentModalOpen(false);
+  };
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -72,6 +83,12 @@ export const ContributorSignupPage: React.FC = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    // Defense in depth: the submit button is disabled without consent, but
+    // never let the request out without proof of acceptance.
+    if (!consent) {
+      setError('Please review and accept the Terms of Service to create your account.');
+      return;
+    }
     if (!validate()) return;
     setSubmitting(true);
 
@@ -88,6 +105,8 @@ export const ContributorSignupPage: React.FC = () => {
         referral_code: referralCode.trim() || undefined,
         phone_country_code: phone.dialCode,
         phone_number: phoneDigits(phone.number),
+        terms_version: consent.version,
+        terms_accepted_at: consent.acceptedAt,
       });
 
       if (!res.success || !res.data?.user) {
@@ -238,19 +257,34 @@ export const ContributorSignupPage: React.FC = () => {
           </AuthField>
         </div>
 
-        <AuthSubmitButton loading={submitting} loadingLabel="Creating your account…">
+        <TermsConsentCheckbox
+          consent={consent}
+          onAccept={acceptConsent}
+          onRevoke={() => setConsent(null)}
+        />
+
+        <AuthSubmitButton
+          loading={submitting}
+          loadingLabel="Creating your account…"
+          disabled={!consent}
+          disabledLabel="Review and accept the Terms of Service first"
+        >
           <span>Create free account</span>
           <ArrowRight className="w-4 h-4" />
         </AuthSubmitButton>
-
-        <p className="text-[11px] text-slate-400 dark:text-gray-500 leading-relaxed text-center">
-          By creating an account you agree to our{' '}
-          <Link to="/terms" className="underline hover:text-slate-600">Terms</Link> and{' '}
-          <Link to="/privacy" className="underline hover:text-slate-600">Privacy Policy</Link>.
-        </p>
       </form>
 
-      <SocialLoginButtons portal="contributor" mode="register" dividerLabel="or" dividerClassName="my-4 short:my-2.5" />
+      <SocialLoginButtons
+        portal="contributor"
+        mode="register"
+        dividerLabel="or"
+        dividerClassName="my-4 short:my-2.5"
+        termsGate={{ consent, onRequestConsent: () => setConsentModalOpen(true) }}
+      />
+
+      {consentModalOpen && (
+        <TermsConsentModal onAccept={acceptConsent} onClose={() => setConsentModalOpen(false)} />
+      )}
 
       <p className="mt-4 short:mt-2.5 text-center text-sm text-slate-500 dark:text-gray-400">
         Already have an account?{' '}

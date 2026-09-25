@@ -10,7 +10,7 @@ interface Region {
 }
 
 const REGIONS: Region[] = [
-  { code: 'AE', name: 'United Arab Emirates', currency: 'AED', flag: ['#00732F', '#FFFFFF', '#000000', '#FF0000'] },
+  { code: 'GE', name: 'Georgia', currency: 'GEL', flag: ['#FFFFFF', '#FF0000', '#FFFFFF', '#FF0000'] },
   { code: 'SA', name: 'Saudi Arabia', currency: 'SAR', flag: ['#006C35', '#006C35', '#006C35', '#FFFFFF'] },
   { code: 'US', name: 'United States', currency: 'USD', flag: ['#3C3B6E', '#FFFFFF', '#B22234', '#3C3B6E'] },
   { code: 'GB', name: 'United Kingdom', currency: 'GBP', flag: ['#012169', '#FFFFFF', '#C8102E', '#012169'] },
@@ -46,15 +46,15 @@ interface RegionSelectorProps {
 }
 
 /**
- * Clean flag-style region & currency selector: UAE flag mark + "AED" + "UAE"
+ * Clean flag-style region & currency selector: Georgia flag mark + "GEL" + "Georgia"
  * chip with a polished dropdown. Display preference persisted locally.
  */
 export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark', className = '' }) => {
   const [code, setCode] = useState<string>(() => {
     try {
-      return localStorage.getItem(STORAGE_KEY) || 'AE';
+      return localStorage.getItem(STORAGE_KEY) || 'GE';
     } catch {
-      return 'AE';
+      return 'GE';
     }
   });
   const [open, setOpen] = useState(false);
@@ -98,7 +98,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         </span>
         <span className={`h-3.5 w-px ${dark ? 'bg-white/20' : 'bg-slate-200'}`} />
         <span className={`text-[11px] font-bold ${dark ? 'text-slate-300' : 'text-slate-500 dark:text-gray-400'}`}>
-          {current.code === 'AE' ? 'UAE' : current.name.split(' ')[0]}
+          {current.name.split(' ')[0]}
         </span>
         <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''} ${dark ? 'text-slate-400 dark:text-gray-500' : 'text-slate-400 dark:text-gray-500'}`} />
       </button>

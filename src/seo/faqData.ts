@@ -80,7 +80,7 @@ export const faqPageFaqs: FaqItem[] = [
   },
   {
     q: 'Which countries are supported?',
-    a: 'eBizEarn supports contributors in the UAE and worldwide. Campaign availability varies by region — check the open task marketplace for tasks available in your country.',
+    a: 'eBizEarn supports contributors in Georgia and worldwide. Campaign availability varies by region — check the open task marketplace for tasks available in your country.',
   },
   {
     q: 'How does verification work?',

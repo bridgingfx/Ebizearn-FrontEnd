@@ -50,7 +50,7 @@ export const AboutPage: React.FC = () => {
   ];
 
   const milestones = [
-    { year: '2024', title: 'Founded in Dubai, UAE', desc: 'eBizEarn started with a simple idea: brands should pay real people for real engagement — and earning online should be free and transparent.' },
+    { year: '2024', title: 'Founded in Tbilisi, Georgia', desc: 'eBizEarn started with a simple idea: brands should pay real people for real engagement — and earning online should be free and transparent.' },
     { year: '2025', title: 'Proof Verification Pipeline', desc: 'Built our verification workflow combining automated screenshot checks with human review, so brands only pay for genuine work.' },
     { year: '2025', title: 'Multi-Rail Payouts', desc: 'Added payouts via PayPal, Wise, direct bank transfer, and digital currency, with a $50.00 minimum cashout and zero withdrawal fees.' },
     { year: '2026', title: 'Open Marketplace', desc: 'eBizEarn opens its task marketplace: contributors join free, pick real tasks on the social apps they already use, and earn.' },

@@ -273,6 +273,9 @@ interface AuthSubmitButtonProps {
   loadingLabel: string;
   children: React.ReactNode;
   className?: string;
+  /** Extra disable reason (e.g. Terms consent not accepted). */
+  disabled?: boolean;
+  disabledLabel?: string;
 }
 
 export const AuthSubmitButton: React.FC<AuthSubmitButtonProps> = ({
@@ -280,11 +283,14 @@ export const AuthSubmitButton: React.FC<AuthSubmitButtonProps> = ({
   loadingLabel,
   children,
   className = 'bg-gradient-to-r from-[#168BFF] to-[#7257FF] hover:brightness-105 shadow-lg shadow-blue-500/25',
+  disabled = false,
+  disabledLabel,
 }) => (
   <button
     type="submit"
-    disabled={loading}
-    className={`w-full h-11 px-6 text-white font-bold text-[15px] rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-wait ${className}`}
+    disabled={loading || disabled}
+    title={disabled && !loading && disabledLabel ? disabledLabel : undefined}
+    className={`w-full h-11 px-6 text-white font-bold text-[15px] rounded-xl transition-all flex items-center justify-center gap-2 ${disabled && !loading ? 'disabled:opacity-40 disabled:saturate-50 disabled:cursor-not-allowed' : 'disabled:opacity-60 disabled:cursor-wait'} ${className}`}
   >
     {loading ? (
       <>

@@ -66,7 +66,7 @@ When an enterprise runs a campaign targeting specific global regions, countries,
   {
     keywords: ['trustpilot', 'google review', 'google map', 'review', 'rating', 'star'],
     reply: `⭐ **Trustpilot & Google Maps Review Tasks:**
-Verified businesses in the UAE pay real consumers to test their services and leave genuine feedback:
+Verified businesses in Georgia pay real consumers to test their services and leave genuine feedback:
 - **How to Earn:** Open the sponsor's direct link on Trustpilot or Google Maps, write an honest 4 to 5-star review based on campaign guidelines, and publish it.
 - **Reward:** **$8.00 to $18.00 USD** per verified review.
 - **Proof Requirement:** Submit the live review URL and a screenshot of your published review showing your name and date.
@@ -79,14 +79,14 @@ Verified businesses in the UAE pay real consumers to test their services and lea
     ],
   },
   {
-    keywords: ['payout', 'withdraw', 'cashout', 'wps', 'bank', 'currency', 'aed', 'money', 'payment gateway'],
+    keywords: ['payout', 'withdraw', 'cashout', 'wire', 'bank', 'currency', 'gel', 'usd', 'money', 'payment gateway'],
     reply: `💳 **USD Rewards & Global Payout Rails:**
 - **Currency:** All earnings and platform balances are 100% in **US Dollars (USD)**.
 - **Minimum Withdrawal:** Strictly **$50.00** with 0 account fees.
 - **Supported Payout Rails:**
-  1. **CBUAE Wages Protection System (WPS):** Direct payroll settlement to any UAE IBAN.
-  2. **Emirates NBD & FAB Instant Wire:** Real-time host-to-host settlement.
-  3. **Checkout.com UAE & Stripe:** Instant card & mobile wallet payouts.
+  1. **Direct Bank Transfer:** Settlement to your bank account (Georgian IBAN supported).
+  2. **Instant Bank Wire:** Real-time bank-to-bank settlement.
+  3. **Checkout.com & Stripe:** Card & mobile wallet payouts.
   4. **Circle USDC Rail:** High-speed blockchain treasury settlement.
 
 👉 Do this now: [Open Your Contributor Wallet](/app/wallet) to check your balance and request an instant payout!`,
@@ -103,7 +103,7 @@ Per eBiz Security Specification:
 - **How it works:**
   1. **T+0 (Immediate):** Upon AI & moderator approval, your reward enters your **Pending Retention Balance**.
   2. **T+24h (Re-check):** Automated crawler verifies the post or review is still live.
-  3. **T+72h (Final Release):** Once the 72-hour retention cycle completes, funds automatically move into your **Available Balance** ready for immediate CBUAE WPS bank transfer.
+  3. **T+72h (Final Release):** Once the 72-hour retention cycle completes, funds automatically move into your **Available Balance** ready for immediate bank transfer.
 
 👉 Check your balances: [View Dual-Balance Breakdown](/app/wallet) or read our [Trust & Safety Standards](/trust-safety).`,
     actionLinks: [
@@ -112,24 +112,24 @@ Per eBiz Security Specification:
     ],
   },
   {
-    keywords: ['kyc', 'emirates id', 'passport', 'tier 3', 'identity', 'verification', 'aml'],
-    reply: `🆔 **Emirates ID (Tier 3) KYC Verification:**
-In compliance with Central Bank of the UAE (CBUAE) anti-money laundering regulations:
+    keywords: ['kyc', 'national id', 'passport', 'tier 3', 'identity', 'verification', 'aml'],
+    reply: `🆔 **National ID (Tier 3) KYC Verification:**
+In line with Georgian anti-money laundering regulations:
 - **Threshold:** KYC is mandatory for cumulative withdrawals exceeding **$50.00**.
-- **Documents Accepted:** Emirates ID (Front & Back) or UAE Residence Visa.
+- **Documents Accepted:** Georgian National ID (front & back) or passport.
 - **Automated AI Scan:** Our Vision AI checks optical holograms, EXIF authenticity, and matches legal names in under 60 seconds.
-- **Privacy:** All documents are encrypted with AES-256 and stored strictly in UAE data centers.
+- **Privacy:** All documents are encrypted with AES-256 and stored encrypted in secure data centers.
 
-👉 Do this now: [Complete Your Emirates ID KYC](/app/wallet) to unlock unlimited withdrawals!`,
+👉 Do this now: [Complete Your National ID KYC](/app/wallet) to unlock unlimited withdrawals!`,
     actionLinks: [
-      { label: 'Verify Emirates ID Now', url: '/app/wallet' },
+      { label: 'Verify National ID Now', url: '/app/wallet' },
     ],
   },
   {
     keywords: ['campaign', 'business', 'sponsor', 'brand', 'create campaign', 'promote', 'advertise'],
     reply: `🏢 **For Businesses & Enterprise Advertisers:**
 Grow your brand across local and global communities with 100% verified human engagement:
-- **Cascading Targeting:** Country (Worldwide, US, UK, UAE, KSA, EU, etc.) 🌐 → State / Province → City / District → Channel (WhatsApp, LinkedIn, Google Maps, Trustpilot).
+- **Cascading Targeting:** Country (Worldwide, US, UK, Georgia, EU, etc.) 🌐 → State / Province → City / District → Channel (WhatsApp, LinkedIn, Google Maps, Trustpilot).
 - **Escrow Protection:** Your budget is safely locked in automated escrow. Funds are ONLY released after verified proof.
 - **Zero Admin Burden:** eBiz AI Vision OCR and our compliance moderation team verify all contributor screenshots—you never have to review thousands of submissions manually!
 
@@ -335,7 +335,7 @@ If you wish to speak to a human officer or file an official dispute, you can [�
       } else {
         replyText = `Thank you for reaching out regarding: "${query}".
 
-Our AI operations system and Dubai HQ verification desk 🇦🇪 have analyzed your request. On **eBiz Networking**, all tasks and payouts are governed by CBUAE escrow protocols with strict geo-targeting and anti-deletion holds.
+Our AI operations system and Tbilisi verification desk 🇬🇪 have analyzed your request. On **eBiz Networking**, all tasks and payouts are governed by escrow protocols with strict geo-targeting and anti-deletion holds.
 
 Here are key actions you can take right now:
 - **Earn Money in USD:** [Browse Verified Tasks](/tasks)
@@ -465,7 +465,7 @@ Here are key actions you can take right now:
       const confirmationMsg: ChatMessage = {
         id: `ticket_confirm_${Date.now()}`,
         sender: 'system',
-        text: `✅ **Support Ticket Created Successfully!**\n\nYour official ticket **#${createdTicket.id}** has been registered directly into our Dubai Operations moderation queue.\n\n- **Category:** ${createdTicket.category}\n- **Priority:** ${createdTicket.priority}\n- **Assigned Team:** ${createdTicket.assignedAgent}\n- **Typical first response:** within 2 hours for general inquiries\n\nYou can track updates on your ticket anytime in [My Support Center](/app/support) or from the [Contact Page](/contact).`,
+        text: `✅ **Support Ticket Created Successfully!**\n\nYour official ticket **#${createdTicket.id}** has been registered directly into our Tbilisi Operations moderation queue.\n\n- **Category:** ${createdTicket.category}\n- **Priority:** ${createdTicket.priority}\n- **Assigned Team:** ${createdTicket.assignedAgent}\n- **Typical first response:** within 2 hours for general inquiries\n\nYou can track updates on your ticket anytime in [My Support Center](/app/support) or from the [Contact Page](/contact).`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         ticketCard: createdTicket,
         actionLinks: [
@@ -502,7 +502,7 @@ Here are key actions you can take right now:
                 <span>eBiz AI Support</span>
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
                 <span className="text-[10px] bg-emerald-800/90 text-emerald-100 px-1.5 py-0.2 rounded font-mono font-bold">
-                  🇦🇪 UAE
+                  🇬🇪 Georgia
                 </span>
               </div>
               <div className="text-[11px] text-emerald-100/90 font-medium">Instant AI Answers & Live Desk</div>
@@ -583,11 +583,11 @@ Here are key actions you can take right now:
               </div>
             </div>
 
-            {/* CBUAE & Escrow Compliance Strip */}
+            {/* Escrow Compliance Strip */}
             <div className="bg-emerald-50/90 border-b border-emerald-100/80 px-3.5 py-1.5 text-[11px] text-emerald-900 flex items-center justify-between">
               <div className="flex items-center gap-1.5 truncate">
                 <Building2 className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
-                <span className="truncate font-semibold">CBUAE WPS & Escrow Guaranteed</span>
+                <span className="truncate font-semibold">Escrow Guaranteed</span>
               </div>
               <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase shrink-0">
                 T+72h Anti-Fraud
@@ -688,7 +688,7 @@ Here are key actions you can take right now:
 
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-[10px] text-slate-500 dark:text-gray-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-emerald-600" /> Assigned to Dubai HQ Desk
+                      <Clock className="w-3 h-3 text-emerald-600" /> Assigned to Tbilisi Desk
                     </span>
 
                     <button
@@ -888,7 +888,7 @@ Here are key actions you can take right now:
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3 text-emerald-600" /> Automated answers • human review via ticket
                 </span>
-                <span className="font-mono text-[10px] text-slate-400 dark:text-gray-500">eBiz Desk v5.3 • Dubai 🇦🇪</span>
+                <span className="font-mono text-[10px] text-slate-400 dark:text-gray-500">eBiz Desk v5.3 • Tbilisi 🇬🇪</span>
               </div>
             </div>
           </div>

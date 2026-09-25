@@ -77,7 +77,7 @@ export interface PlatformCampaign {
   created: string;
   region: string;
   country?: string;
-  emirateState?: string;
+  regionState?: string;
   cityArea?: string;
   targetChannelType?: string;
   targetChannelName?: string;
@@ -105,7 +105,7 @@ export interface PlatformTask {
   slots_taken: number;
   region: string;
   country?: string;
-  emirateState?: string;
+  regionState?: string;
   cityArea?: string;
   targetChannelType?: 'whatsapp_group' | 'facebook_group' | 'linkedin_group' | 'review' | 'social_general' | string;
   targetChannelName?: string;
@@ -135,7 +135,7 @@ export interface AiEngineOption {
 export interface PaymentGatewayOption {
   id: string;
   name: string;
-  type: 'fiat_bank' | 'cards' | 'wps' | 'crypto';
+  type: 'fiat_bank' | 'cards' | 'bank_wire' | 'crypto';
   currency: string;
   status: 'active' | 'standby' | 'disabled';
   feePercent: number;
@@ -186,13 +186,13 @@ export interface PlatformSupportTicket {
 
 export interface GlobalSettings {
   takeRatePercent: number;
-  minCashoutAED: number;
+  minCashoutUSD: number;
   currency: string;
   currencySymbol: string;
   region: string;
   autoApprovalThreshold: number;
   visionOcrEnabled: boolean;
-  kycRequiredThresholdAED: number;
+  kycRequiredThresholdUSD: number;
   aiProviders: {
     activeEngine: string;
     engines: AiEngineOption[];
@@ -201,11 +201,11 @@ export interface GlobalSettings {
   smsProviders: SmsProviderOption[];
   socialApis: SocialApiOption[];
   paymentGateways: {
-    uaeCentralBankIban: boolean;
+    localBankIban: boolean;
     wpsSalarySystem: boolean;
-    stripeAed: boolean;
-    paypalAed: boolean;
-    wiseAed: boolean;
+    stripeUsd: boolean;
+    paypalUsd: boolean;
+    wiseUsd: boolean;
     usdcCrypto: boolean;
   };
   securityShield: {
@@ -234,7 +234,7 @@ interface PlatformDataContextType {
   rejectSubmission: (submissionId: number, notes?: string) => void;
   requestResubmission: (submissionId: number, notes?: string) => void;
   requestWithdrawal: (data: {
-    amountAED: number;
+    amountUSD: number;
     method: string;
     accountDetails: string;
   }) => PlatformPayout;
@@ -243,11 +243,11 @@ interface PlatformDataContextType {
     title: string;
     objective: string;
     platform: string;
-    rewardAED: number;
+    rewardUSD: number;
     targetContributors: number;
     instructions: string;
     country: string;
-    emirateState?: string;
+    regionState?: string;
     cityArea?: string;
     targetChannelType?: string;
     targetChannelName?: string;
@@ -257,12 +257,12 @@ interface PlatformDataContextType {
     title: string;
     platform: string;
     brand: string;
-    rewardAED: number;
+    rewardUSD: number;
     targetContributors: number;
     instructions: string;
     region?: string;
     country?: string;
-    emirateState?: string;
+    regionState?: string;
     cityArea?: string;
     targetChannelType?: string;
     targetChannelName?: string;
@@ -276,7 +276,7 @@ interface PlatformDataContextType {
   setActiveAiEngine: (engineId: string) => void;
   addAiEngine: (engine: { name: string; provider: string; latencyMs: number; precision: string }) => void;
   removeAiEngine: (engineId: string) => void;
-  addPaymentGateway: (gateway: { name: string; type: 'fiat_bank' | 'cards' | 'wps' | 'crypto'; currency: string; feePercent: number; settlementMode: 'instant' | 't+1' | 'batch'; apiKeyMasked?: string }) => void;
+  addPaymentGateway: (gateway: { name: string; type: 'fiat_bank' | 'cards' | 'bank_wire' | 'crypto'; currency: string; feePercent: number; settlementMode: 'instant' | 't+1' | 'batch'; apiKeyMasked?: string }) => void;
   removePaymentGateway: (id: string) => void;
   togglePaymentGateway: (id: string) => void;
   addSmsProvider: (provider: { name: string; channel: 'sms' | 'whatsapp' | 'otp'; senderId: string }) => void;
@@ -317,16 +317,16 @@ const INITIAL_CAMPAIGNS: PlatformCampaign[] = [
     created: 'Apr 18, 2026',
     region: 'Worldwide (Global Reach 🌐)',
     country: 'GLOBAL',
-    emirateState: 'Worldwide (All Regions)',
+    regionState: 'Worldwide (All Regions)',
     cityArea: 'Global Remote',
     targetChannelType: 'whatsapp_group',
     targetChannelName: 'Global Creator & Business Network 🌐',
     retentionHours: 72,
   },
   {
-    id: 'CP-DXB-902',
-    brand: 'DIFC TechVentures & Fintech Hub',
-    title: 'Dubai Business Bay & DIFC Professional LinkedIn Group Discussion',
+    id: 'CP-TBS-902',
+    brand: 'Tbilisi TechVentures & Fintech Hub',
+    title: 'Tbilisi Business District Professional LinkedIn Group Discussion',
     category: 'social',
     platform: 'LinkedIn',
     iconName: 'LinkedIn',
@@ -339,19 +339,19 @@ const INITIAL_CAMPAIGNS: PlatformCampaign[] = [
     rewardCents: 1950,
     slotsTotal: 200,
     slotsTaken: 65,
-    compliance: 'Dubai Verified',
+    compliance: 'Tbilisi Verified',
     created: 'Apr 18, 2026',
-    region: 'Dubai, UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'Dubai',
-    cityArea: 'Business Bay / DIFC',
+    region: 'Tbilisi, Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'Tbilisi',
+    cityArea: 'Vake / Saburtalo',
     targetChannelType: 'linkedin_group',
-    targetChannelName: 'Dubai Professionals Network',
+    targetChannelName: 'Tbilisi Professionals Network',
     retentionHours: 72,
   },
   {
     id: 'CP-TRUST-771',
-    brand: 'PayFlow Global Technologies (UAE)',
+    brand: 'PayFlow Global Technologies (Georgia)',
     title: 'Verified 5-Star Trustpilot Reputation & Security Feedback',
     category: 'review',
     platform: 'Trustpilot',
@@ -365,16 +365,16 @@ const INITIAL_CAMPAIGNS: PlatformCampaign[] = [
     rewardCents: 1500,
     slotsTotal: 200,
     slotsTaken: 142,
-    compliance: 'Approved & CBUAE Compliant',
+    compliance: 'Approved & Compliant',
     created: 'Apr 17, 2026',
-    region: 'UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE Nationwide',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia Nationwide',
   },
   {
     id: 'CP-GOOG-882',
-    brand: 'Dubai Tech Hub Coworking',
+    brand: 'Tbilisi Tech Hub Coworking',
     title: 'Google Maps 5-Star Local Guide Review with Facility Photos',
     category: 'review',
     platform: 'Google Reviews',
@@ -390,10 +390,10 @@ const INITIAL_CAMPAIGNS: PlatformCampaign[] = [
     slotsTaken: 98,
     compliance: 'Approved & Passed',
     created: 'Apr 16, 2026',
-    region: 'Dubai, UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'Dubai',
-    cityArea: 'Dubai Internet City',
+    region: 'Tbilisi, Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'Tbilisi',
+    cityArea: 'Tbilisi',
   },
   {
     id: 'CP-AURA-891',
@@ -413,10 +413,10 @@ const INITIAL_CAMPAIGNS: PlatformCampaign[] = [
     slotsTaken: 480,
     compliance: 'Approved & Passed',
     created: 'Apr 12, 2026',
-    region: 'UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE Nationwide',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia Nationwide',
   },
   {
     id: 'CP-TIK-302',
@@ -436,14 +436,14 @@ const INITIAL_CAMPAIGNS: PlatformCampaign[] = [
     slotsTaken: 245,
     compliance: 'Approved & Passed',
     created: 'Apr 15, 2026',
-    region: 'UAE / GCC 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE / GCC',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia',
   },
   {
     id: 'CP-YT-119',
-    brand: 'CloudScale Dubai',
+    brand: 'CloudScale Tbilisi',
     title: 'Developer Cloud Platform Constructive Comments & Subscriptions',
     category: 'social',
     platform: 'YouTube',
@@ -459,10 +459,10 @@ const INITIAL_CAMPAIGNS: PlatformCampaign[] = [
     slotsTaken: 150,
     compliance: 'Approved & Passed',
     created: 'Apr 16, 2026',
-    region: 'UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE Nationwide',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia Nationwide',
   },
 ];
 
@@ -475,16 +475,16 @@ const INITIAL_TASKS: PlatformTask[] = [
     categoryName: 'Trustpilot Review',
     platform: 'Trustpilot',
     iconName: 'Trustpilot',
-    description: 'Leave an authentic, detailed 5-star customer experience review on Trustpilot mentioning fast UAE onboarding and security.',
+    description: 'Leave an authentic, detailed 5-star customer experience review on Trustpilot mentioning fast Georgian onboarding and security.',
     reward_cents: 1500,
     estimated_minutes: 3,
     difficulty: 'easy',
     slots_total: 200,
     slots_taken: 142,
-    region: 'UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE Nationwide',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia Nationwide',
     isTrending: true,
     badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-300',
     status: 'available',
@@ -492,7 +492,7 @@ const INITIAL_TASKS: PlatformTask[] = [
   {
     id: 2,
     campaignId: 'CP-GOOG-882',
-    title: 'Post Google Maps Local Guide Review with Photos for Dubai Tech Hub',
+    title: 'Post Google Maps Local Guide Review with Photos for Tbilisi Tech Hub',
     category: 'review',
     categoryName: 'Google Reviews',
     platform: 'Google Reviews',
@@ -503,10 +503,10 @@ const INITIAL_TASKS: PlatformTask[] = [
     difficulty: 'easy',
     slots_total: 150,
     slots_taken: 98,
-    region: 'Dubai, UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'Dubai',
-    cityArea: 'Dubai Internet City',
+    region: 'Tbilisi, Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'Tbilisi',
+    cityArea: 'Tbilisi',
     isTrending: true,
     badgeColor: 'bg-blue-50 text-blue-800 border-blue-300',
     status: 'available',
@@ -525,10 +525,10 @@ const INITIAL_TASKS: PlatformTask[] = [
     difficulty: 'easy',
     slots_total: 500,
     slots_taken: 480,
-    region: 'UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE Nationwide',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia Nationwide',
     isTrending: true,
     badgeColor: 'bg-pink-50 text-pink-700 border-pink-200',
     status: 'available',
@@ -547,10 +547,10 @@ const INITIAL_TASKS: PlatformTask[] = [
     difficulty: 'medium',
     slots_total: 300,
     slots_taken: 245,
-    region: 'UAE / GCC 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE / GCC',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia',
     isTrending: true,
     badgeColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
     status: 'available',
@@ -569,10 +569,10 @@ const INITIAL_TASKS: PlatformTask[] = [
     difficulty: 'easy',
     slots_total: 250,
     slots_taken: 150,
-    region: 'UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'All Emirates',
-    cityArea: 'UAE Nationwide',
+    region: 'Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'All Regions',
+    cityArea: 'Georgia Nationwide',
     isTrending: false,
     badgeColor: 'bg-red-50 text-red-700 border-red-200',
     status: 'available',
@@ -593,7 +593,7 @@ const INITIAL_TASKS: PlatformTask[] = [
     slots_taken: 42,
     region: 'Worldwide (Global Reach 🌐)',
     country: 'GLOBAL',
-    emirateState: 'Worldwide (All Regions)',
+    regionState: 'Worldwide (All Regions)',
     cityArea: 'Global Remote',
     targetChannelType: 'whatsapp_group',
     targetChannelName: 'Global Creator & Business Network 🌐',
@@ -604,24 +604,24 @@ const INITIAL_TASKS: PlatformTask[] = [
   },
   {
     id: 7,
-    campaignId: 'CP-DXB-902',
-    title: 'Publish in Dubai Business Bay & DIFC Professional LinkedIn Group',
+    campaignId: 'CP-TBS-902',
+    title: 'Publish in Tbilisi Business District Professional LinkedIn Group',
     category: 'social',
-    categoryName: 'Dubai B2B Network',
+    categoryName: 'Tbilisi B2B Network',
     platform: 'LinkedIn',
     iconName: 'LinkedIn',
-    description: 'Publish corporate article summary in a verified Dubai or UAE-focused LinkedIn professional group. Proof must show group title and active discussion.',
+    description: 'Publish corporate article summary in a verified Tbilisi or Georgia-focused LinkedIn professional group. Proof must show group title and active discussion.',
     reward_cents: 1950,
     estimated_minutes: 5,
     difficulty: 'medium',
     slots_total: 200,
     slots_taken: 65,
-    region: 'Dubai, UAE 🇦🇪',
-    country: 'AE',
-    emirateState: 'Dubai',
-    cityArea: 'Business Bay / DIFC',
+    region: 'Tbilisi, Georgia 🇬🇪',
+    country: 'GE',
+    regionState: 'Tbilisi',
+    cityArea: 'Vake / Saburtalo',
     targetChannelType: 'linkedin_group',
-    targetChannelName: 'Dubai Professionals & Tech Leaders Hub',
+    targetChannelName: 'Tbilisi Professionals & Tech Leaders Hub',
     retentionHours: 72,
     isTrending: true,
     badgeColor: 'bg-blue-50 text-blue-800 border-blue-300',
@@ -636,15 +636,15 @@ const INITIAL_SUBMISSIONS: PlatformSubmission[] = [
     contributorName: 'Sarah Jenkins',
     contributorHandle: '@sarah_creatives',
     contributorAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
-    contributorLevel: 'Tier 3 (Emirates ID Verified)',
+    contributorLevel: 'Tier 3 (National ID Verified)',
     taskTitle: 'Write Verified 5-Star Trustpilot Review for Enterprise FinTech App',
-    campaignName: 'PayFlow Global Technologies (UAE)',
+    campaignName: 'PayFlow Global Technologies (Georgia)',
     reward: 'USD 15.00',
     rewardCents: 1500,
     submittedAt: '8 mins ago',
     screenshotUrl: '/assets/demo/task-creative.jpg',
     postUrl: 'https://trustpilot.com/review/payflow.ae/c/908234',
-    location: 'Dubai, UAE',
+    location: 'Tbilisi, Georgia',
     timestamp: '2026-09-18 01:12:12 UTC',
     note: 'Published 5-star review on Trustpilot verified profile with required details.',
     status: 'under_review',
@@ -653,7 +653,7 @@ const INITIAL_SUBMISSIONS: PlatformSubmission[] = [
     retentionDeadline: '72h remaining (Anti-deletion hold)',
     sha256ProofHash: 'sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
     targetGroupVerified: true,
-    matchedLocation: 'Dubai, UAE 🇦🇪',
+    matchedLocation: 'Tbilisi, Georgia 🇬🇪',
     ai: {
       confidence: 96,
       quality: 98,
@@ -664,24 +664,24 @@ const INITIAL_SUBMISSIONS: PlatformSubmission[] = [
       contentMatch: 97,
       policyMatch: 100,
       suggestedDecision: 'APPROVE',
-      summary: 'Trustpilot review text matched against sponsor guidelines. Authenticity index 96.8%. Valid device clock & UAE IP.',
+      summary: 'Trustpilot review text matched against sponsor guidelines. Authenticity index 96.8%. Valid device clock & Georgian IP.',
     },
   },
   {
     id: 102,
     taskId: 2,
     contributorName: 'Rashid Al-Maktoum',
-    contributorHandle: '@rashid_uae',
+    contributorHandle: '@giorgi_ge',
     contributorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120',
-    contributorLevel: 'Tier 3 (Emirates ID Verified)',
-    taskTitle: 'Post Google Maps Local Guide Review with Photos for Dubai Tech Hub',
-    campaignName: 'Dubai Tech Hub Coworking',
+    contributorLevel: 'Tier 3 (National ID Verified)',
+    taskTitle: 'Post Google Maps Local Guide Review with Photos for Tbilisi Tech Hub',
+    campaignName: 'Tbilisi Tech Hub Coworking',
     reward: 'USD 18.00',
     rewardCents: 1800,
     submittedAt: '24 mins ago',
     screenshotUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800',
     postUrl: 'https://maps.google.com/?cid=189234819234',
-    location: 'Dubai Internet City, UAE',
+    location: 'Tbilisi, Georgia',
     timestamp: '2026-09-18 00:54:00 UTC',
     note: 'Local Guide Level 6 review published with 3 workspace photos.',
     status: 'under_review',
@@ -690,7 +690,7 @@ const INITIAL_SUBMISSIONS: PlatformSubmission[] = [
     retentionDeadline: '72h remaining',
     sha256ProofHash: 'sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
     targetGroupVerified: true,
-    matchedLocation: 'Dubai Internet City, UAE 🇦🇪',
+    matchedLocation: 'Tbilisi, Georgia 🇬🇪',
     ai: {
       confidence: 94,
       quality: 92,
@@ -701,7 +701,7 @@ const INITIAL_SUBMISSIONS: PlatformSubmission[] = [
       contentMatch: 95,
       policyMatch: 100,
       suggestedDecision: 'APPROVE',
-      summary: 'Google Maps review confirmed with authentic EXIF geodata matching Dubai Internet City coordinates.',
+      summary: 'Google Maps review confirmed with authentic EXIF geodata matching Tbilisi coordinates.',
     },
   },
   {
@@ -752,12 +752,12 @@ const INITIAL_PAYOUTS: PlatformPayout[] = [
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
     amount: 'USD 80.00',
     amountCents: 8000,
-    method: 'UAE Local Bank Wire (Emirates NBD)',
+    method: 'Local Bank Wire (Bank of Georgia)',
     accountDetails: 'IBAN: AE48033123456789012345',
     requestedAt: '15 mins ago',
     status: 'requested',
     riskScore: 2,
-    kycTier: 'Emirates ID Verified (Tier 3)',
+    kycTier: 'National ID Verified (Tier 3)',
     kycStatus: 'verified',
     ledgerHash: 'sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
   },
@@ -768,12 +768,12 @@ const INITIAL_PAYOUTS: PlatformPayout[] = [
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120',
     amount: 'USD 60.00',
     amountCents: 6000,
-    method: 'WPS UAE Salary Direct (FAB Bank)',
+    method: 'Direct Salary Transfer (TBC Bank)',
     accountDetails: 'IBAN: AE21024987654321098765',
     requestedAt: '1 hour ago',
     status: 'processing',
     riskScore: 3,
-    kycTier: 'Emirates ID Verified (Tier 3)',
+    kycTier: 'National ID Verified (Tier 3)',
     kycStatus: 'verified',
     ledgerHash: 'sha256:9b71d224bd62f3785d96d46ad3ea3d73319bfbc2890caadae2dff72519673ca7',
   },
@@ -781,13 +781,13 @@ const INITIAL_PAYOUTS: PlatformPayout[] = [
 
 const INITIAL_SETTINGS: GlobalSettings = {
   takeRatePercent: 15.0,
-  minCashoutAED: 20.0,
+  minCashoutUSD: 20.0,
   currency: 'USD',
   currencySymbol: 'USD',
-  region: 'UAE',
+  region: 'Georgia',
   autoApprovalThreshold: 90,
   visionOcrEnabled: true,
-  kycRequiredThresholdAED: 50.0,
+  kycRequiredThresholdUSD: 50.0,
   aiProviders: {
     activeEngine: 'gemini_2_flash',
     engines: [
@@ -821,7 +821,7 @@ const INITIAL_SETTINGS: GlobalSettings = {
       {
         id: 'ebiz_yolo_ocr',
         name: 'eBiz Custom Vision Microservice',
-        provider: 'eBiz PyTorch Cluster (Dubai DC)',
+        provider: 'eBiz PyTorch Cluster (Tbilisi DC)',
         status: 'Active (Primary)',
         latencyMs: 48,
         precision: '99.6%',
@@ -831,38 +831,38 @@ const INITIAL_SETTINGS: GlobalSettings = {
   },
   paymentGatewaysList: [
     {
-      id: 'cbuae_wps',
-      name: 'CBUAE Wages Protection System (WPS)',
-      type: 'wps',
+      id: 'bank_settlement_rail',
+      name: 'Direct Bank Settlement Rail',
+      type: 'bank_wire',
       currency: 'USD',
       feePercent: 0.5,
       settlementMode: 'instant',
       status: 'active',
-      apiKeyMasked: 'wps_uae_live_••••••••812a',
+      apiKeyMasked: 'bank_live_••••••••812a',
     },
     {
-      id: 'enbd_direct_api',
-      name: 'Emirates NBD Host-to-Host Corporate Wire',
+      id: 'bog_direct_api',
+      name: 'Bank of Georgia Host-to-Host Corporate Wire',
       type: 'fiat_bank',
       currency: 'USD',
       feePercent: 0.0,
       settlementMode: 'instant',
       status: 'active',
-      apiKeyMasked: 'enbd_h2h_sec_••••••••4190',
+      apiKeyMasked: 'bog_h2h_sec_••••••••4190',
     },
     {
-      id: 'fab_wps_gateway',
-      name: 'First Abu Dhabi Bank (FAB) WPS Rail',
-      type: 'wps',
+      id: 'tbc_bank_gateway',
+      name: 'TBC Bank Instant Rail',
+      type: 'bank_wire',
       currency: 'USD',
       feePercent: 0.4,
       settlementMode: 'instant',
       status: 'active',
-      apiKeyMasked: 'fab_wps_corp_••••••••6631',
+      apiKeyMasked: 'tbc_bank_corp_••••••••6631',
     },
     {
-      id: 'checkout_com_uae',
-      name: 'Checkout.com UAE (Cards, Apple Pay, Samsung Pay)',
+      id: 'checkout_com',
+      name: 'Checkout.com (Cards, Apple Pay, Google Pay)',
       type: 'cards',
       currency: 'USD',
       feePercent: 2.1,
@@ -871,8 +871,8 @@ const INITIAL_SETTINGS: GlobalSettings = {
       apiKeyMasked: 'sk_live_chk_••••••••9012',
     },
     {
-      id: 'stripe_connect_ae',
-      name: 'Stripe UAE Connect & Automated Payouts',
+      id: 'stripe_connect',
+      name: 'Stripe Connect & Automated Payouts',
       type: 'cards',
       currency: 'USD',
       feePercent: 2.9,
@@ -893,25 +893,25 @@ const INITIAL_SETTINGS: GlobalSettings = {
   ],
   smsProviders: [
     {
-      id: 'etisalat_bulk_sms',
-      name: 'e& (Etisalat UAE) SMS Gateway',
+      id: 'magticom_bulk_sms',
+      name: 'MagtiCom SMS Gateway',
       channel: 'sms',
       status: 'active',
-      senderId: 'eBizUAE',
+      senderId: 'eBizGEO',
     },
     {
-      id: 'du_telecom_sms',
-      name: 'du Enterprise Broadcast Rail',
+      id: 'geocell_bulk_sms',
+      name: 'Geocell Enterprise Broadcast Rail',
       channel: 'sms',
       status: 'active',
-      senderId: 'eBizAE',
+      senderId: 'eBizGE',
     },
     {
       id: 'whatsapp_cloud_api',
       name: 'Meta WhatsApp Business Cloud API',
       channel: 'whatsapp',
       status: 'active',
-      senderId: '+971501234567',
+      senderId: '+995501234567',
     },
     {
       id: 'twilio_verify_mfa',
@@ -959,11 +959,11 @@ const INITIAL_SETTINGS: GlobalSettings = {
     },
   ],
   paymentGateways: {
-    uaeCentralBankIban: true,
+    localBankIban: true,
     wpsSalarySystem: true,
-    stripeAed: true,
-    paypalAed: true,
-    wiseAed: true,
+    stripeUsd: true,
+    paypalUsd: true,
+    wiseUsd: true,
     usdcCrypto: true,
   },
   securityShield: {
@@ -996,7 +996,7 @@ const INITIAL_SUPPORT_TICKETS: PlatformSupportTicket[] = [
     proofImg: 'Flyer posted in Global WhatsApp group (14,200 members). Verified active.',
   },
   {
-    id: 'TKT-UAE-8842',
+    id: 'TKT-GEO-8842',
     subject: 'Bank transfer ledger clearing timeframe for USD 120.00',
     category: 'Payout Inquiry',
     priority: 'Normal',
@@ -1006,18 +1006,18 @@ const INITIAL_SUPPORT_TICKETS: PlatformSupportTicket[] = [
     userEmail: 'david.p@example.ae',
     createdAt: '1 day ago',
     updatedAt: '4 hours ago',
-    description: 'Inquiry regarding transaction clearing to Emirates NBD account via CBUAE WPS.',
+    description: 'Inquiry regarding transaction clearing to Bank of Georgia account via bank transfer.',
     assignedAgent: 'Finance Automation Desk',
     repliesCount: 3,
     source: 'contributor_portal',
     type: 'Payout Delay',
     amount: 'USD 120.00',
     time: '2 hours ago',
-    proofImg: 'CBUAE WPS batch dispatched, clearing confirmed by Emirates NBD.',
+    proofImg: 'Bank Transfer batch dispatched, clearing confirmed by Bank of Georgia.',
   },
   {
-    id: 'TKT-UAE-8120',
-    subject: 'Emirates ID (Tier 3) biometric rescan approval confirmation',
+    id: 'TKT-GEO-8120',
+    subject: 'National ID (Tier 3) biometric rescan approval confirmation',
     category: 'KYC Verification',
     priority: 'Low',
     status: 'Resolved',
@@ -1026,14 +1026,14 @@ const INITIAL_SUPPORT_TICKETS: PlatformSupportTicket[] = [
     userEmail: 'alex.m@example.ae',
     createdAt: '3 days ago',
     updatedAt: '1 day ago',
-    description: 'Front and back of Emirates ID uploaded for withdrawals > USD 50.',
+    description: 'Front and back of National ID uploaded for withdrawals > USD 50.',
     assignedAgent: 'Compliance Team',
     repliesCount: 1,
     source: 'contributor_portal',
     type: 'KYC Verification',
     amount: 'USD 65.00',
     time: '1 day ago',
-    proofImg: 'Emirates ID optical security strips verified. Tier 3 unlocked.',
+    proofImg: 'National ID security features verified. Tier 3 unlocked.',
   },
 ];
 
@@ -1123,7 +1123,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       contributorHandle: user?.email ? `@${user.email.split('@')[0]}` : '@sarah_creatives',
       contributorAvatar:
         user?.profile?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
-      contributorLevel: user?.profile?.kyc_status === 'verified' ? 'Tier 3 (Emirates ID Verified)' : 'Tier 2 (KYC Pending)',
+      contributorLevel: user?.profile?.kyc_status === 'verified' ? 'Tier 3 (National ID Verified)' : 'Tier 2 (KYC Pending)',
       taskTitle: associatedTask.title,
       campaignName: associatedTask.categoryName,
       reward: `USD ${(associatedTask.reward_cents / 100).toFixed(2)}`,
@@ -1131,16 +1131,16 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       submittedAt: 'Just now',
       screenshotUrl: data.screenshotUrl || '/assets/demo/task-creative.jpg',
       postUrl: data.proofUrl || 'https://trustpilot.com/review/payflow.ae',
-      location: `${associatedTask.cityArea || associatedTask.emirateState || 'Dubai'}, UAE`,
+      location: `${associatedTask.cityArea || associatedTask.regionState || 'Tbilisi'}, Georgia`,
       timestamp: new Date().toISOString(),
-      note: data.note || 'Completed per instructions. Verified live in UAE.',
+      note: data.note || 'Completed per instructions. Verified live in Georgia.',
       status: 'under_review',
       canonicalObjectId: mockObjectId,
       retentionStage: 't0_verified',
       retentionDeadline: `${associatedTask.retentionHours || 72}h remaining (Anti-deletion hold)`,
       sha256ProofHash: mockHash,
       targetGroupVerified: true,
-      matchedLocation: `${associatedTask.cityArea || associatedTask.emirateState || 'Dubai'}, UAE 🇦🇪`,
+      matchedLocation: `${associatedTask.cityArea || associatedTask.regionState || 'Tbilisi'}, Georgia 🇬🇪`,
       targetGroupName: data.targetGroupName || associatedTask.targetChannelName,
       ai: {
         confidence: 97,
@@ -1153,8 +1153,8 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
         policyMatch: 100,
         suggestedDecision: 'APPROVE',
         summary: data.targetGroupName
-          ? `Verified community group [${data.targetGroupName}] matching regional campaign requirements in ${associatedTask.emirateState || 'UAE'}. Zero duplicates found.`
-          : 'eBiz AI Computer Vision verified proof against sponsor guidelines and verified UAE IP timestamp. Placed in priority moderation queue.',
+          ? `Verified community group [${data.targetGroupName}] matching regional campaign requirements in ${associatedTask.regionState || 'Georgia'}. Zero duplicates found.`
+          : 'eBiz AI Computer Vision verified proof against sponsor guidelines and verified Georgian IP timestamp. Placed in priority moderation queue.',
       },
     };
 
@@ -1212,11 +1212,11 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   // Contributor Action: Request Withdrawal (Enforces KYC Gate & Cryptographic Hash)
   const requestWithdrawal = (data: {
-    amountAED: number;
+    amountUSD: number;
     method: string;
     accountDetails: string;
   }): PlatformPayout => {
-    const amountCents = Math.round(data.amountAED * 100);
+    const amountCents = Math.round(data.amountUSD * 100);
     const newPayoutId = Date.now();
     const mockHash = `sha256:${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
 
@@ -1226,14 +1226,14 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       email: user?.email || 'sarah@ebizearn.com',
       avatar:
         user?.profile?.avatar_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120',
-      amount: `USD ${data.amountAED.toFixed(2)}`,
+      amount: `USD ${data.amountUSD.toFixed(2)}`,
       amountCents,
       method: data.method,
       accountDetails: data.accountDetails,
       requestedAt: 'Just now',
       status: 'requested',
       riskScore: 2,
-      kycTier: user?.profile?.kyc_status === 'verified' ? 'Emirates ID Verified (Tier 3)' : 'Pending KYC Review',
+      kycTier: user?.profile?.kyc_status === 'verified' ? 'National ID Verified (Tier 3)' : 'Pending KYC Review',
       kycStatus: (user?.profile?.kyc_status as any) === 'verified' ? 'verified' : 'pending',
       ledgerHash: mockHash,
     };
@@ -1270,18 +1270,18 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
     title: string;
     objective: string;
     platform: string;
-    rewardAED: number;
+    rewardUSD: number;
     targetContributors: number;
     instructions: string;
     country: string;
-    emirateState?: string;
+    regionState?: string;
     cityArea?: string;
     targetChannelType?: string;
     targetChannelName?: string;
     retentionHours?: number;
   }): PlatformCampaign => {
     const campaignId = `CP-${Date.now().toString().slice(-6)}`;
-    const rewardCents = Math.round(data.rewardAED * 100);
+    const rewardCents = Math.round(data.rewardUSD * 100);
     const subtotalCents = rewardCents * data.targetContributors;
     const feeCents = Math.round(subtotalCents * (globalSettings.takeRatePercent / 100));
     const totalBudgetCents = subtotalCents + feeCents;
@@ -1298,16 +1298,16 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       totalBudgetCents,
       spent: 'USD 0.00',
       spentCents: 0,
-      reward: `USD ${data.rewardAED.toFixed(2)}`,
+      reward: `USD ${data.rewardUSD.toFixed(2)}`,
       rewardCents,
       slotsTotal: data.targetContributors,
       slotsTaken: 0,
-      compliance: 'Approved & CBUAE Compliant',
+      compliance: 'Approved & Compliant',
       created: 'Just now',
-      region: `${data.emirateState ? data.emirateState + ', ' : ''}${data.country || 'UAE 🇦🇪'}`,
+      region: `${data.regionState ? data.regionState + ', ' : ''}${data.country || 'Georgia 🇬🇪'}`,
       country: data.country || 'AE',
-      emirateState: data.emirateState || 'All Emirates',
-      cityArea: data.cityArea || 'UAE Nationwide',
+      regionState: data.regionState || 'All Regions',
+      cityArea: data.cityArea || 'Georgia Nationwide',
       targetChannelType: data.targetChannelType,
       targetChannelName: data.targetChannelName,
       retentionHours: data.retentionHours || 72,
@@ -1321,7 +1321,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       campaignId: newCampaign.id,
       title: newCampaign.title,
       category: newCampaign.category,
-      categoryName: data.targetChannelType ? `${data.emirateState || 'UAE'} Community Broadcast` : `${newCampaign.platform} Task`,
+      categoryName: data.targetChannelType ? `${data.regionState || 'Georgia'} Community Broadcast` : `${newCampaign.platform} Task`,
       platform: newCampaign.platform,
       iconName: newCampaign.platform,
       description: data.instructions || 'Complete verified action and upload proof screenshot.',
@@ -1332,7 +1332,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       slots_taken: 0,
       region: newCampaign.region,
       country: newCampaign.country,
-      emirateState: newCampaign.emirateState,
+      regionState: newCampaign.regionState,
       cityArea: newCampaign.cityArea,
       targetChannelType: newCampaign.targetChannelType,
       targetChannelName: newCampaign.targetChannelName,
@@ -1352,12 +1352,12 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
     title: string;
     platform: string;
     brand: string;
-    rewardAED: number;
+    rewardUSD: number;
     targetContributors: number;
     instructions: string;
     region?: string;
     country?: string;
-    emirateState?: string;
+    regionState?: string;
     cityArea?: string;
     targetChannelType?: string;
     targetChannelName?: string;
@@ -1367,7 +1367,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
     targetUrl?: string;
   }): PlatformCampaign => {
     const campaignId = `CP-ADM-${Date.now().toString().slice(-5)}`;
-    const rewardCents = Math.round(data.rewardAED * 100);
+    const rewardCents = Math.round(data.rewardUSD * 100);
     const subtotalCents = rewardCents * data.targetContributors;
     const totalBudgetCents = subtotalCents;
 
@@ -1383,15 +1383,15 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       totalBudgetCents,
       spent: 'USD 0.00',
       spentCents: 0,
-      reward: `USD ${data.rewardAED.toFixed(2)}`,
+      reward: `USD ${data.rewardUSD.toFixed(2)}`,
       rewardCents,
       slotsTotal: data.targetContributors,
       slotsTaken: 0,
-      compliance: 'Admin Direct & CBUAE Verified',
+      compliance: 'Admin Direct & Verified',
       created: 'Just now',
-      region: data.region || (data.country === 'GLOBAL' ? 'Worldwide 🌐' : `${data.cityArea ? data.cityArea + ', ' : ''}${data.emirateState || 'All Regions'}, ${data.country || 'Global'}`),
+      region: data.region || (data.country === 'GLOBAL' ? 'Worldwide 🌐' : `${data.cityArea ? data.cityArea + ', ' : ''}${data.regionState || 'All Regions'}, ${data.country || 'Global'}`),
       country: data.country || 'GLOBAL',
-      emirateState: data.emirateState || 'Worldwide (All Regions)',
+      regionState: data.regionState || 'Worldwide (All Regions)',
       cityArea: data.cityArea || 'Global Remote',
       targetChannelType: data.targetChannelType,
       targetChannelName: data.targetChannelName,
@@ -1420,7 +1420,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       slots_taken: 0,
       region: newCampaign.region,
       country: newCampaign.country,
-      emirateState: newCampaign.emirateState,
+      regionState: newCampaign.regionState,
       cityArea: newCampaign.cityArea,
       targetChannelType: newCampaign.targetChannelType,
       targetChannelName: newCampaign.targetChannelName,
@@ -1517,7 +1517,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Super Admin Action: Payment Gateways CRUD
   const addPaymentGateway = (gateway: {
     name: string;
-    type: 'fiat_bank' | 'cards' | 'wps' | 'crypto';
+    type: 'fiat_bank' | 'cards' | 'bank_wire' | 'crypto';
     currency: string;
     feePercent: number;
     settlementMode: 'instant' | 't+1' | 'batch';
@@ -1590,7 +1590,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
           ? {
               ...p,
               kycStatus: decision === 'approved' ? 'verified' : 'pending',
-              kycTier: decision === 'approved' ? 'Emirates ID Verified (Tier 3)' : 'KYC Rejected',
+              kycTier: decision === 'approved' ? 'National ID Verified (Tier 3)' : 'KYC Rejected',
             }
           : p
       )
@@ -1607,7 +1607,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
     userEmail?: string;
     source?: 'web_chat' | 'contributor_portal' | 'business_portal' | 'contact_form';
   }): PlatformSupportTicket => {
-    const newId = `TKT-UAE-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newId = `TKT-GEO-${Math.floor(1000 + Math.random() * 9000)}`;
     const newTicket: PlatformSupportTicket = {
       id: newId,
       subject: data.subject,
@@ -1620,7 +1620,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       createdAt: 'Just now',
       updatedAt: 'Just now',
       description: data.description,
-      assignedAgent: 'Dubai HQ Support Desk',
+      assignedAgent: 'Tbilisi Support Desk',
       repliesCount: 1,
       source: data.source || 'web_chat',
       type: data.category,

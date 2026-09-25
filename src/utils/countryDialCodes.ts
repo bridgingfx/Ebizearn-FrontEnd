@@ -121,5 +121,5 @@ export const findCountryDialByIso = (iso: string): CountryDial | undefined =>
 export const findCountryDialByDial = (dial: string): CountryDial | undefined =>
   COUNTRY_DIALS.find((c) => c.dial === dial);
 
-/** Default pre-select: +971 (UAE). */
-export const DEFAULT_DIAL = '+971';
+/** Default pre-select: +995 (Georgia). */
+export const DEFAULT_DIAL = '+995';

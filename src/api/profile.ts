@@ -3,7 +3,7 @@ import type { KycDocumentType, User } from '../types';
 
 export interface ProfileUpdatePayload {
   name?: string;
-  /** E.164, e.g. "+971501234567" — spaces/dashes are accepted. */
+  /** E.164, e.g. "+995501234567" — spaces/dashes are accepted. */
   phone?: string;
   country_code?: string;
   city?: string | null;

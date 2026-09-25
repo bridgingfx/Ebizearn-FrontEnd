@@ -32,7 +32,7 @@ export type BlogCategory =
   | 'Referrals'
   | 'Payments & Withdrawals'
   | 'Safety'
-  | 'UAE';
+  | 'Georgia';
 
 export interface BlogPost {
   /** kebab-case, unique across all posts — used in /blog/:slug and canonicals. */

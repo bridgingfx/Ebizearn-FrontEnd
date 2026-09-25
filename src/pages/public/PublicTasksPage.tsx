@@ -69,7 +69,7 @@ export const PublicTasksPage: React.FC = () => {
     { id: 'global', name: 'Global Remote' },
     { id: 'us', name: 'United States' },
     { id: 'uk', name: 'United Kingdom' },
-    { id: 'uae', name: 'UAE' },
+    { id: 'georgia', name: 'Georgia' },
     { id: 'saudi', name: 'Saudi Arabia' },
     { id: 'europe', name: 'Europe' },
     { id: 'asia', name: 'Asia-Pacific' },
@@ -149,22 +149,22 @@ export const PublicTasksPage: React.FC = () => {
 
     const matchesRegion =
       selectedRegion === 'all' ||
-      (selectedRegion === 'global' && (!task.country || task.country.toLowerCase().includes('global') || task.region.toLowerCase().includes('global') || task.emirateState?.toLowerCase().includes('world'))) ||
+      (selectedRegion === 'global' && (!task.country || task.country.toLowerCase().includes('global') || task.region.toLowerCase().includes('global') || task.regionState?.toLowerCase().includes('world'))) ||
       (selectedRegion === 'us' && ((task.country && task.country.includes('US')) || task.region.toLowerCase().includes('united states') || task.region.toLowerCase().includes('new york') || task.region.toLowerCase().includes('california'))) ||
       (selectedRegion === 'uk' && ((task.country && task.country.includes('GB')) || task.region.toLowerCase().includes('united kingdom') || task.region.toLowerCase().includes('london'))) ||
-      (selectedRegion === 'uae' && ((task.country && task.country.includes('AE')) || task.region.toLowerCase().includes('uae') || task.region.toLowerCase().includes('dubai') || task.region.toLowerCase().includes('ajman'))) ||
+      (selectedRegion === 'georgia' && ((task.country && task.country.includes('GE')) || task.region.toLowerCase().includes('georgia') || task.region.toLowerCase().includes('tbilisi'))) ||
       (selectedRegion === 'saudi' && ((task.country && task.country.includes('SA')) || task.region.toLowerCase().includes('saudi') || task.region.toLowerCase().includes('riyadh'))) ||
       (selectedRegion === 'europe' && (task.region.toLowerCase().includes('germany') || task.region.toLowerCase().includes('europe') || task.region.toLowerCase().includes('berlin'))) ||
       (selectedRegion === 'asia' && (task.region.toLowerCase().includes('singapore') || task.region.toLowerCase().includes('india') || task.region.toLowerCase().includes('asia'))) ||
       task.region.toLowerCase().includes(selectedRegion.toLowerCase()) ||
-      (task.emirateState && task.emirateState.toLowerCase().includes(selectedRegion.toLowerCase()));
+      (task.regionState && task.regionState.toLowerCase().includes(selectedRegion.toLowerCase()));
 
     const matchesSearch =
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       task.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       task.platform.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (task.cityArea && task.cityArea.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (task.emirateState && task.emirateState.toLowerCase().includes(searchQuery.toLowerCase()));
+      (task.regionState && task.regionState.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesDifficulty = selectedDifficulty === 'all' || task.difficulty === selectedDifficulty;
     
@@ -373,9 +373,9 @@ export const PublicTasksPage: React.FC = () => {
                         <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border uppercase ${task.badgeColor}`}>
                           {task.platform}
                         </span>
-                        {task.emirateState && task.emirateState !== 'All Emirates' && task.emirateState !== 'Worldwide' ? (
+                        {task.regionState && task.regionState !== 'All Regions' && task.regionState !== 'Worldwide' ? (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30">
-                            📍 {task.cityArea ? `${task.cityArea}, ` : ''}{task.emirateState}
+                            📍 {task.cityArea ? `${task.cityArea}, ` : ''}{task.regionState}
                           </span>
                         ) : (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30">

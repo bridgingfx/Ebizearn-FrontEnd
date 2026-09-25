@@ -16,7 +16,10 @@ export const Footer: React.FC = () => {
               <EBizLogo variant="dark" size="md" subtitleText="ebizearn.com" />
             </Link>
             <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed pt-2">
-              The premier digital task & reputation marketplace connecting real contributors with verified enterprise campaigns in the UAE and worldwide.
+              The premier digital task & reputation marketplace connecting real contributors with verified enterprise campaigns in Georgia and worldwide.
+            </p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-500 leading-relaxed">
+              Office 102 - Global link Business centre, 37 Platon Ioseliani St, Tbilisi, Georgia
             </p>
           </div>
 
@@ -99,6 +102,15 @@ export const Footer: React.FC = () => {
               </form>
             )}
           </div>
+        </div>
+
+        {/* Compact legal disclaimer */}
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4">
+          <p className="text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
+            <span className="font-bold text-gray-300 dark:text-gray-400">Please note:</span> participating in eBizEarn tasks is not employment; earnings vary and are not guaranteed, and task rewards are released only after verification. We process your personal data as described in the consent you accepted at signup — see our{' '}
+            <Link to="/terms" className="underline hover:text-white transition-colors">Terms of Service</Link> and{' '}
+            <Link to="/privacy" className="underline hover:text-white transition-colors">Privacy Policy</Link>. eBizEarn is governed by the laws of Georgia.
+          </p>
         </div>
 
         {/* Bottom Bar matching reference */}

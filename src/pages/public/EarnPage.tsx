@@ -91,7 +91,7 @@ export const EarnPage: React.FC = () => {
       badge: 'Easiest Entry',
       color: 'from-blue-600 to-indigo-600',
       icon: FacebookLogo,
-      actionExample: 'Post real estate event notice into UAE Expat Entrepreneurs group',
+      actionExample: 'Post real estate event notice into Tbilisi Entrepreneurs group',
       payout: '$0.50',
     },
     whatsapp: {

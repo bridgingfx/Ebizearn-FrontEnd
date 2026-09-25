@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 type Filter = 'pending' | 'verified' | 'rejected' | 'all';
 
 const DOC_LABELS: Record<KycDocumentType, string> = {
-  emirates_id: 'Emirates ID',
+  emirates_id: 'National ID',
   passport: 'Passport',
   national_id: 'National ID',
 };

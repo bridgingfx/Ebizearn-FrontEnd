@@ -1,6 +1,17 @@
 import { api, type ApiResponse } from './client';
 import type { User } from '../types';
 
+/**
+ * Proof of Terms acceptance captured at signup. The backend records its own
+ * server-side `terms_accepted_at` timestamp + IP on top of this.
+ */
+export interface TermsAcceptance {
+  /** Terms version the user accepted, e.g. "1.0" (see src/legal/terms.ts). */
+  terms_version: string;
+  /** Client-side ISO timestamp of the modal acceptance. */
+  terms_accepted_at: string;
+}
+
 export interface RegisterPayload {
   name: string;
   email: string;
@@ -11,11 +22,14 @@ export interface RegisterPayload {
   company_name?: string;
   /**
    * Phone contract (matches the backend register validation): the dial code
-   * (e.g. "+971") and the digits-only national number (4–15 digits).
+   * (e.g. "+995") and the digits-only national number (4–15 digits).
    * The backend normalizes these to a single E.164 value. Required at signup.
    */
   phone_country_code: string;
   phone_number: string;
+  /** Proof of Terms acceptance — required: no account without consent. */
+  terms_version: string;
+  terms_accepted_at: string;
 }
 
 /**
@@ -62,8 +76,12 @@ export const authApi = {
    * The frontend obtains the ID token via the provider's JS SDK / OAuth
    * redirect; the backend verifies it and returns { user, token } exactly
    * like a password login. `provider` is `google` or `apple`.
+   *
+   * `terms` is required when this call CREATES an account (register mode) —
+   * the backend records terms_accepted_at server-side. Omitted for plain
+   * sign-in of an existing account.
    */
-  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal, extra?: { name?: string; email?: string }) =>
+  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal, extra?: { name?: string; email?: string }, terms?: TermsAcceptance) =>
     api
       .post<ApiResponse<AuthSession>>(`/auth/social/${provider}`, {
         id_token: idToken,
@@ -71,6 +89,7 @@ export const authApi = {
         // Apple sends the name / email only on the very first sign-in.
         ...(extra?.name ? { name: extra.name } : {}),
         ...(extra?.email ? { email: extra.email } : {}),
+        ...(terms ? { terms_version: terms.terms_version, terms_accepted_at: terms.terms_accepted_at } : {}),
       })
       .then((r) => r.data),
 

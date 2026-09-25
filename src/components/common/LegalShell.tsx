@@ -63,7 +63,7 @@ export const LegalShell: React.FC<LegalShellProps> = ({
           <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-gray-300">
               <Gavel className="w-3 h-3 text-[#20C4E8]" />
-              Governed by UAE law
+              Governed by Georgian law
             </span>
             <span className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-gray-300">
               Last updated: {updated}

@@ -71,7 +71,7 @@ export const ForBusinessesPage: React.FC = () => {
   const comparisonRows = [
     {
       feature: 'Audience Authenticity',
-      eBiz: '100% Real, Emirates ID & KYC-verified individuals',
+      eBiz: '100% Real, National ID & KYC-verified individuals',
       agencies: 'Individual influencers (unpredictable audience)',
       botFarms: 'Fake bot clusters (high ban risk & zero conversion)',
     },
@@ -122,7 +122,7 @@ export const ForBusinessesPage: React.FC = () => {
                 <Building2 className="w-3.5 h-3.5" />
                 <span>Enterprise Brand Protection & Social Distribution</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#16B364]" />
-                <span className="text-white font-mono">UAE 🇦🇪 • GCC • Global</span>
+                <span className="text-white font-mono">Georgia 🇬🇪 • Global</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
@@ -218,8 +218,8 @@ export const ForBusinessesPage: React.FC = () => {
                 {/* Simulated Campaign Card */}
                 <div className="bg-[#040F1E] rounded-2xl p-4 border border-white/10 space-y-3 font-mono text-xs">
                   <div className="flex justify-between items-center text-gray-400 dark:text-gray-500 text-[10px]">
-                    <span>SPONSOR: ROYAL_CRESCENT_UAE</span>
-                    <span className="text-[#20C4E8]">ESCROW: 🇦🇪 $12,750.00</span>
+                    <span>SPONSOR: TBILISI_PARTNERS</span>
+                    <span className="text-[#20C4E8]">ESCROW: 🇬🇪 $12,750.00</span>
                   </div>
 
                   <div className="text-white font-bold text-sm flex items-center gap-2">
@@ -256,7 +256,7 @@ export const ForBusinessesPage: React.FC = () => {
 
                 <div className="p-3 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between text-xs">
                   <span className="text-gray-300">Target Geographies:</span>
-                  <span className="font-bold text-white">Dubai, Abu Dhabi, GCC, UK</span>
+                  <span className="font-bold text-white">Tbilisi, Georgia, UK</span>
                 </div>
 
                 <Link
@@ -313,7 +313,7 @@ export const ForBusinessesPage: React.FC = () => {
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
-              UAE USD Budget Simulator
+              USD Budget Simulator
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
               Interactive Campaign Cost & Turnaround Calculator
@@ -415,7 +415,7 @@ export const ForBusinessesPage: React.FC = () => {
                 <span className="font-bold text-white">USD {contributorBudget.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs">
-                <span className="text-gray-300">UAE Central Bank Escrow & AI Vision Moderation Fee (15%)</span>
+                <span className="text-gray-300">Escrow & AI Vision Moderation Fee (15%)</span>
                 <span className="font-bold text-white">USD {platformFee.toFixed(2)}</span>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
@@ -551,7 +551,7 @@ export const ForBusinessesPage: React.FC = () => {
             Ready to Protect & Elevate Your Brand?
           </h2>
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
-            Create your corporate account in 2 minutes. Fund via UAE Central Bank WPS, local bank wire, or credit card, and mobilize thousands of verified contributors.
+            Create your corporate account in 2 minutes. Fund via bank transfer, local bank wire, or credit card, and mobilize thousands of verified contributors.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

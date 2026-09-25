@@ -114,8 +114,8 @@ export const DisclaimerPage: React.FC = () => {
 
       <LegalSection n="8" title="Jurisdictional Availability">
         <p>
-          eBizEarn is operated from Dubai, United Arab Emirates, and is intended primarily for users in
-          the UAE and other regions where our services are available. It is your responsibility to ensure
+          eBizEarn is operated from Tbilisi, Georgia, and is intended for users in
+          Georgia and other regions where our services are available. It is your responsibility to ensure
           that using the platform complies with the laws of your jurisdiction.
         </p>
       </LegalSection>
@@ -129,7 +129,7 @@ export const DisclaimerPage: React.FC = () => {
           >
             support@ebizearn.com
           </a>
-          . eBizEarn is operated by eBiz Network, based in Dubai, United Arab Emirates.
+          . eBizEarn is operated by eBiz Network, registered in Tbilisi, Georgia.
         </p>
       </LegalSection>
     </LegalShell>

@@ -80,7 +80,7 @@ export const ContributorProfilePage: React.FC = () => {
 
   // KYC form state
   const kycStatus = profile?.kyc_status ?? 'unverified';
-  const [kycDocType, setKycDocType] = useState<KycDocumentType>('emirates_id');
+  const [kycDocType, setKycDocType] = useState<KycDocumentType>('national_id');
   const [kycFront, setKycFront] = useState<File | null>(null);
   const [kycBack, setKycBack] = useState<File | null>(null);
   const [kycSelfie, setKycSelfie] = useState<File | null>(null);
@@ -412,7 +412,9 @@ export const ContributorProfilePage: React.FC = () => {
                   onChange={(e) => setKycDocType(e.target.value as KycDocumentType)}
                   className={inputClass}
                 >
-                  {(Object.keys(KYC_DOC_LABELS) as KycDocumentType[]).map((key) => (
+                  {/* Only backend-accepted values are offered; 'emirates_id' is kept
+                      in KYC_DOC_LABELS for display of historical rows only. */}
+                  {(['national_id', 'passport'] as KycDocumentType[]).map((key) => (
                     <option key={key} value={key}>
                       {KYC_DOC_LABELS[key]}
                     </option>

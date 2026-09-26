@@ -27,12 +27,10 @@ import { AvatarUploadControl } from '../../components/common/AvatarUploadControl
 import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 import { SocialChannelsCard } from '../../components/account/SocialChannelsCard';
 import { profileApi, getApiError } from '../../api';
-import { COUNTRY_OPTIONS } from '../../config/geoLocations';
+import { CountrySelect } from '../../components/auth/CountrySelect';
 import type { KycDocumentType } from '../../types';
 
 type ProfileTab = 'profile' | 'kyc' | 'socials' | 'payouts' | 'security';
-
-const RESIDENCE_COUNTRIES = COUNTRY_OPTIONS.filter((c) => c.code !== 'GLOBAL');
 
 const KYC_DOC_LABELS: Record<KycDocumentType, string> = {
   emirates_id: 'National ID',
@@ -288,19 +286,7 @@ export const ContributorProfilePage: React.FC = () => {
 
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Country of Residence</label>
-              <select value={country} onChange={(e) => setCountry(e.target.value)} className={inputClass}>
-                <option value="" disabled>
-                  Select your country
-                </option>
-                {RESIDENCE_COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.label}
-                  </option>
-                ))}
-                {country && !RESIDENCE_COUNTRIES.some((c) => c.code === country) && (
-                  <option value={country}>{country}</option>
-                )}
-              </select>
+              <CountrySelect id="residence-country" value={country} onChange={setCountry} />
             </div>
 
             <div className="space-y-1.5 sm:col-span-2">

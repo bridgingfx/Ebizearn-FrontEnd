@@ -278,7 +278,15 @@ const GoogleButton: React.FC<{ clientId: string; mode: Mode; onToken: (idToken: 
       >
         <GooglePlaceholder verb={verb} dark={theme === 'dark'} />
       </div>
-      <div ref={containerRef} className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${gisReady ? 'opacity-100' : 'opacity-0'}`} />
+      {/* color-scheme: light — in dark theme the page is color-scheme: dark, and a
+          browser paints a cross-scheme iframe with an opaque white background
+          (the white strip behind the button). Matching Google's light iframe
+          keeps it transparent. */}
+      <div
+        ref={containerRef}
+        style={{ colorScheme: 'light' }}
+        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${gisReady ? 'opacity-100' : 'opacity-0'}`}
+      />
     </div>
   );
 };

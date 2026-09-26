@@ -3,10 +3,11 @@ import { AlertCircle, Check, ChevronDown, Search } from 'lucide-react';
 import {
   COUNTRY_DIALS,
   DEFAULT_DIAL,
+  findCountryDialByDial,
   findCountryDialByIso,
-  flagForIso,
   type CountryDial,
 } from '../../utils/countryDialCodes';
+import { CountryFlag } from '../common/CountryFlag';
 import { detectCountryIso } from '../../utils/detectCountry';
 import type { PhoneValue } from '../../utils/phone';
 import { authInputClass } from './AuthSplitLayout';
@@ -51,7 +52,9 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
   const rootRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const selected = COUNTRY_DIALS.find((c) => c.dial === value.dialCode);
+  const [pickedIso, setPickedIso] = useState<string | null>(null);
+  const picked = pickedIso ? findCountryDialByIso(pickedIso) : undefined;
+  const selected = picked && picked.dial === value.dialCode ? picked : findCountryDialByDial(value.dialCode);
 
   /* Non-blocking IP pre-select: +971 renders immediately; the picker updates
    * once the lookup resolves. Skipped entirely if the user already chose. */
@@ -62,6 +65,7 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
       if (cancelled || userTouchedRef.current || !iso) return;
       const match = findCountryDialByIso(iso);
       if (match && match.dial !== DEFAULT_DIAL) {
+        setPickedIso(match.iso);
         onChange({ dialCode: match.dial, number: valueRef.current.number });
       }
     });
@@ -116,6 +120,7 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
 
   const pick = (c: CountryDial) => {
     userTouchedRef.current = true;
+    setPickedIso(c.iso);
     onChange({ ...valueRef.current, dialCode: c.dial });
     setOpen(false);
     setQuery('');
@@ -172,9 +177,7 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
             aria-label={`Country code, currently ${selected ? `${selected.name} ${selected.dial}` : value.dialCode}`}
             className={`${authInputClass} !w-auto !px-3 flex items-center gap-1.5 font-semibold whitespace-nowrap cursor-pointer`}
           >
-            <span aria-hidden="true" className="text-lg leading-none">
-              {selected ? flagForIso(selected.iso) : ''}
-            </span>
+            {selected && <CountryFlag iso={selected.iso} className="w-[22px] h-4" />}
             <span className="text-[15px]">{value.dialCode}</span>
             <ChevronDown
               className={`w-4 h-4 text-slate-400 dark:text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`}
@@ -215,7 +218,7 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
                   </p>
                 )}
                 {filtered.map((c, i) => {
-                  const isSelected = c.dial === value.dialCode;
+                  const isSelected = c.iso === selected?.iso;
                   const isActive = i === activeIndex;
                   return (
                     <div
@@ -230,9 +233,7 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
                         isActive ? 'bg-[#168BFF]/10 dark:bg-[#168BFF]/15' : ''
                       } ${isSelected ? 'font-bold text-slate-900 dark:text-gray-100' : 'text-slate-700 dark:text-gray-300'}`}
                     >
-                      <span aria-hidden="true" className="text-xl leading-none w-7 text-center">
-                        {flagForIso(c.iso)}
-                      </span>
+                      <CountryFlag iso={c.iso} className="w-6 h-[18px]" />
                       <span className="flex-1 truncate">{c.name}</span>
                       <span className="text-slate-500 dark:text-gray-400 font-semibold">{c.dial}</span>
                       {isSelected && <Check className="w-4 h-4 text-[#168BFF] shrink-0" />}

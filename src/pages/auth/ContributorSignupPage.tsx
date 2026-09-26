@@ -24,23 +24,12 @@ import {
   PhoneField,
 } from '../../components/auth/PhoneInput';
 import { phoneDigits, validatePhone, type PhoneValue } from '../../utils/phone';
-import { DEFAULT_DIAL } from '../../utils/countryDialCodes';
+import { DEFAULT_DIAL, findCountryDialByDial } from '../../utils/countryDialCodes';
+import { CountrySelect } from '../../components/auth/CountrySelect';
 import { setPendingOtpEmail } from '../../utils/pendingAuth';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
-
-const COUNTRIES = [
-  { code: 'AE', name: 'UAE' },
-  { code: 'SA', name: 'Saudi Arabia' },
-  { code: 'US', name: 'USA' },
-  { code: 'GB', name: 'UK' },
-  { code: 'IN', name: 'India' },
-  { code: 'PK', name: 'Pakistan' },
-  { code: 'BD', name: 'Bangladesh' },
-  { code: 'LK', name: 'Sri Lanka' },
-  { code: 'PH', name: 'Philippines' },
-];
 
 export const ContributorSignupPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -49,6 +38,8 @@ export const ContributorSignupPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('AE');
+  /** Once the user picks a country, the phone code no longer changes it. */
+  const [countryTouched, setCountryTouched] = useState(false);
   const [phone, setPhone] = useState<PhoneValue>({ dialCode: DEFAULT_DIAL, number: '' });
   const [referralCode, setReferralCode] = useState(refCodeFromUrl);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -202,6 +193,10 @@ export const ContributorSignupPage: React.FC = () => {
           value={phone}
           onChange={(v) => {
             setPhone(v);
+            if (!countryTouched) {
+              const match = findCountryDialByDial(v.dialCode);
+              if (match) setCountry(match.iso);
+            }
             if (fieldErrors.phone) {
               const next = { ...fieldErrors };
               const err = validatePhone(v);
@@ -215,11 +210,14 @@ export const ContributorSignupPage: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <AuthField id="country" label="Country">
-            <select id="country" value={country} onChange={(e) => setCountry(e.target.value)} className={authInputClass}>
-              {COUNTRIES.map((c) => (
-                <option key={c.code} value={c.code}>{c.name}</option>
-              ))}
-            </select>
+            <CountrySelect
+              id="country"
+              value={country}
+              onChange={(iso) => {
+                setCountry(iso);
+                setCountryTouched(true);
+              }}
+            />
           </AuthField>
 
           <AuthField id="referral" label="Referral code (optional)" error={fieldErrors.referral}>

@@ -395,9 +395,15 @@ body.chat-widget-hidden .chat-widget-root {
 
 /* ── Google Translate engine chrome suppression ──────────────────────────
    Our GTranslate component drives translation via the hidden combo element.
-   Google's injected banner / balloon / tooltip frames must never be visible,
-   and the `body { top: ... }` offset Google applies for its banner must be
-   neutralised. */
+   The current element.js builds its top toolbar as `body > div.skiptranslate`
+   (a wrapper div with NO other class, containing the toolbar iframe) — the
+   legacy `.goog-te-banner-frame` class no longer exists in Google's markup
+   (verified against the live widget JS), which is why class-only suppression
+   failed. Suppress it structurally instead. Google's show/hide toggle uses
+   inline non-!important styles, which this !important rule always beats.
+   A MutationObserver in GTranslate.tsx re-hides it as a second layer. */
+body > div.skiptranslate,
+body > iframe.skiptranslate,
 .goog-te-banner-frame,
 .goog-te-balloon-frame,
 #goog-gt-tt,

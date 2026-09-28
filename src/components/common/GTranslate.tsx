@@ -119,12 +119,46 @@ export function getGTranslateLangCode(): string {
   return _activeLang.code;
 }
 
+/**
+ * Bulletproof Google toolbar suppression. element.js shows its top toolbar by
+ * (a) un-hiding a `body > div.skiptranslate` wrapper and (b) pushing the page
+ * down via `body.style.top = "40px"`. The CSS in index.css already hides the
+ * wrapper, but this observer guarantees it STAYS hidden no matter how Google
+ * toggles it (inline styles, re-insertion, future markup tweaks): it re-hides
+ * the wrapper and neutralises the 40px page push on every relevant mutation.
+ * Translation itself is unaffected — the toolbar is purely informational UI
+ * ("Translated to: X" / "Show original"); our dropdown handles switching
+ * back to English.
+ */
+function suppressGoogleChrome(): void {
+  const kill = (): void => {
+    document.querySelectorAll('body > div.skiptranslate').forEach((el) => {
+      const node = el as HTMLElement;
+      if (node.id === ENGINE_CONTAINER_ID) return; // never hide our engine
+      if (node.style.display !== 'none') node.style.display = 'none';
+    });
+    const top = document.body.style.top;
+    if (top && top !== '0px') document.body.style.top = '0px';
+  };
+  kill(); // banner may already exist (auto-translate on load via cookie)
+  const obs = new MutationObserver(kill);
+  obs.observe(document.body, {
+    childList: true,
+    attributes: true,
+    attributeFilter: ['style'],
+    subtree: false,
+  });
+}
+
 // ── Google Translate engine (injected once) ───────────────────────────────────
 let gtInjected = false;
 
 function injectGoogleTranslate(): void {
   if (gtInjected || typeof window === 'undefined') return;
   gtInjected = true;
+
+  // Start the toolbar suppression before Google's script even loads
+  suppressGoogleChrome();
 
   // Set the cookie BEFORE the script loads so Google auto-translates on init
   const savedCode = loadSavedCode();

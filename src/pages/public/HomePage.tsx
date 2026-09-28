@@ -62,14 +62,15 @@ import {
   TelegramLogo,
 } from '../../components/common/PlatformIcons';
 import { RequestDemoModal } from '../../components/common/RequestDemoModal';
-import { homeFaqs } from '../../seo/faqData';
 import { BlogStrip } from '../../blog/components/BlogStrip';
+import { useRegion } from '../../context/RegionContext';
 
 export const HomePage: React.FC = () => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [demoModalOpen, setDemoModalOpen] = useState(false);
   const [selectedSocialTab, setSelectedSocialTab] = useState<'all' | 'instagram' | 'tiktok' | 'youtube' | 'facebook'>('all');
   const [calculatorHours, setCalculatorHours] = useState<number>(1);
+  const { t } = useRegion();
   const toggleFaq = (idx: number) => {
     setActiveFaq(activeFaq === idx ? null : idx);
   };
@@ -79,74 +80,74 @@ export const HomePage: React.FC = () => {
   const socialFormats = [
     {
       platform: 'Instagram',
-      title: 'Story Reposts & Link Stickers',
-      reward: '$0.40 - $1.50',
-      time: '2 mins',
-      slots: 'Limited slots available',
-      desc: 'Share verified promotional creative to your personal story with official brand sticker and campaign tags.',
+      title: t('home.how.card1Title'),
+      reward: t('home.how.card1Reward'),
+      time: t('home.how.card1Time'),
+      slots: t('home.how.card1Slots'),
+      desc: t('home.how.card1Desc'),
       icon: InstagramLogo,
       badgeColor: 'bg-pink-50 text-pink-700 border-pink-200',
-      tag: 'Most Popular',
+      tag: t('home.how.card1Tag'),
       accentColor: 'from-pink-500 to-rose-500',
     },
     {
       platform: 'TikTok',
-      title: 'Duets, Sounds & Video Reviews',
-      reward: '$2.00 - $8.50',
-      time: '5 mins',
-      slots: 'New tasks go live daily',
-      desc: 'Record a quick 15-second authentic reaction duet or use sponsored sound clips to boost brand visibility.',
+      title: t('home.how.card2Title'),
+      reward: t('home.how.card2Reward'),
+      time: t('home.how.card2Time'),
+      slots: t('home.how.card2Slots'),
+      desc: t('home.how.card2Desc'),
       icon: TikTokLogo,
       badgeColor: 'bg-cyan-50 text-cyan-800 border-cyan-200',
-      tag: 'High Earning',
+      tag: t('home.how.card2Tag'),
       accentColor: 'from-[#20C4E8] to-[#168BFF]',
     },
     {
       platform: 'YouTube',
-      title: 'Feedback, Likes & Community Votes',
-      reward: '$1.00 - $3.50',
-      time: '4 mins',
-      slots: 'Limited slots available',
-      desc: 'Watch pre-release video trailers or product demos, leave thoughtful constructive feedback, and subscribe.',
+      title: t('home.how.card3Title'),
+      reward: t('home.how.card3Reward'),
+      time: t('home.how.card3Time'),
+      slots: t('home.how.card3Slots'),
+      desc: t('home.how.card3Desc'),
       icon: YouTubeLogo,
       badgeColor: 'bg-red-50 text-red-700 border-red-200',
-      tag: 'Quick & Easy',
+      tag: t('home.how.card3Tag'),
       accentColor: 'from-red-500 to-orange-500',
     },
     {
       platform: 'Facebook',
-      title: 'Niche Group & Community Shares',
-      reward: '$0.35 - $1.00',
-      time: '2 mins',
-      slots: 'New tasks go live daily',
-      desc: 'Share verified brand campaigns and announcements into relevant discussion communities and local groups.',
+      title: t('home.how.card4Title'),
+      reward: t('home.how.card4Reward'),
+      time: t('home.how.card4Time'),
+      slots: t('home.how.card4Slots'),
+      desc: t('home.how.card4Desc'),
       icon: FacebookLogo,
       badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
-      tag: 'High Volume',
+      tag: t('home.how.card4Tag'),
       accentColor: 'from-blue-600 to-indigo-600',
     },
     {
       platform: 'WhatsApp',
-      title: 'Status Updates & Broadcast Posts',
-      reward: '$0.45 - $1.20',
-      time: '1 min',
-      slots: 'Limited slots available',
-      desc: 'Publish verified business promotions to your WhatsApp Status for 24 hours and submit view screenshot.',
+      title: t('home.how.card5Title'),
+      reward: t('home.how.card5Reward'),
+      time: t('home.how.card5Time'),
+      slots: t('home.how.card5Slots'),
+      desc: t('home.how.card5Desc'),
       icon: WhatsAppLogo,
       badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      tag: 'Fastest Completion',
+      tag: t('home.how.card5Tag'),
       accentColor: 'from-emerald-500 to-teal-500',
     },
     {
       platform: 'App Testing',
-      title: 'Pre-Release Testing & Store Ratings',
-      reward: '$1.80 - $5.00',
-      time: '5 mins',
-      slots: 'New tasks go live daily',
-      desc: 'Download newly launched iOS or Android apps, test core navigation flows, and leave genuine user ratings.',
+      title: t('home.how.card6Title'),
+      reward: t('home.how.card6Reward'),
+      time: t('home.how.card6Time'),
+      slots: t('home.how.card6Slots'),
+      desc: t('home.how.card6Desc'),
       icon: Smartphone,
       badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
-      tag: 'Top Rated',
+      tag: t('home.how.card6Tag'),
       accentColor: 'from-purple-600 to-indigo-600',
     },
   ];
@@ -156,7 +157,13 @@ export const HomePage: React.FC = () => {
     return item.platform.toLowerCase() === selectedSocialTab.toLowerCase();
   });
 
-  const faqs = homeFaqs;
+  const faqs = [
+    { q: t('home.faq.q1'), a: t('home.faq.a1') },
+    { q: t('home.faq.q2'), a: t('home.faq.a2') },
+    { q: t('home.faq.q3'), a: t('home.faq.a3') },
+    { q: t('home.faq.q4'), a: t('home.faq.a4') },
+    { q: t('home.faq.q5'), a: t('home.faq.a5') },
+  ];
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] text-[#101828] dark:text-gray-100 font-sans text-left">
@@ -182,19 +189,20 @@ export const HomePage: React.FC = () => {
               {/* Subtle Pill Tag */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-gray-300 backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse" />
-                <span>Verified Social Micro-Earning Platform</span>
+                <span>{t('home.hero.pill')}</span>
               </div>
 
               {/* Bold Headline matching mockup */}
               <h1 className="text-3xl sm:text-4xl lg:text-[42px] xl:text-[48px] font-black text-white tracking-tight leading-[1.12]">
-                Turn Daily Social Media <br />
-                Time Into <span className="text-[#38BDF8]">Verified</span> <br className="hidden sm:inline" />
-                Cash Income.
+                {t('home.hero.title1')} <br />
+                <span className="text-[#38BDF8]">{t('home.hero.titleAccent')}</span>{' '}
+                <br className="hidden sm:inline" />
+                {t('home.hero.title2')}
               </h1>
 
               {/* Subheadline: Large, Readable, Generous Spacing */}
               <p className="text-base lg:text-[1.05rem] text-gray-300 leading-relaxed max-w-xl font-normal mx-auto lg:mx-0">
-                eBizEarn connects forward-thinking brands with verified mobile contributors worldwide. Complete simple tasks on Instagram, TikTok, YouTube, and WhatsApp — get verified in seconds, and cash out starting from $50.00.
+                {t('home.hero.sub')}
               </p>
 
               {/* Action Buttons: High-Contrast Neon Green Primary CTA + Minimal Outline Secondary CTA */}
@@ -203,7 +211,7 @@ export const HomePage: React.FC = () => {
                   to="/contributor/register"
                   className="bg-[#22C55E] hover:bg-[#16a34a] text-[#07182F] font-black text-sm sm:text-base px-7 py-3.5 rounded-xl shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center gap-2.5 group"
                 >
-                  <span>Get Started & Earn Free</span>
+                  <span>{t('home.hero.cta1')}</span>
                   <ArrowRight className="w-5 h-5 text-[#07182F] group-hover:translate-x-0.5 transition-transform" />
                 </Link>
 
@@ -211,7 +219,7 @@ export const HomePage: React.FC = () => {
                   to="/tasks"
                   className="bg-white/5 hover:bg-white/10 text-white font-bold text-sm sm:text-base px-6 py-3.5 rounded-xl border border-white/20 hover:border-white/40 backdrop-blur-md hover:-translate-y-0.5 transition-all flex items-center gap-2"
                 >
-                  <span>View Tasks</span>
+                  <span>{t('home.hero.cta2')}</span>
                 </Link>
               </div>
 
@@ -226,17 +234,17 @@ export const HomePage: React.FC = () => {
               {/* Floating Reaction Emojis around phone */}
               <div className="absolute top-1 right-10 sm:right-16 z-30 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-pink-100 flex items-center gap-1.5 text-[11px] font-bold animate-float-slow">
                 <span className="text-base">❤️</span>
-                <span className="text-pink-600 font-extrabold">+1 Like</span>
+                <span className="text-pink-600 font-extrabold">{t('home.hero.like')}</span>
               </div>
 
               <div className="absolute bottom-20 right-0 sm:right-6 z-30 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-orange-100 flex items-center gap-1.5 text-[11px] font-bold animate-float">
                 <span className="text-base">🔥</span>
-                <span className="text-orange-600 font-extrabold">Hot Task</span>
+                <span className="text-orange-600 font-extrabold">{t('home.hero.hotTask')}</span>
               </div>
 
               <div className="absolute -top-1 left-16 sm:left-24 z-30 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-blue-100 flex items-center gap-1.5 text-[11px] font-bold animate-float-delayed">
                 <span className="text-base">👍</span>
-                <span className="text-blue-600 font-extrabold">Verified</span>
+                <span className="text-blue-600 font-extrabold">{t('home.hero.verified')}</span>
               </div>
 
               {/* FLOATING NOTIFICATION BUBBLE 1: Top-Left (+$50.00 Verified Cash) */}
@@ -245,8 +253,8 @@ export const HomePage: React.FC = () => {
                   <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Instant Payout</div>
-                  <div className="text-xs font-black text-emerald-600">+$50.00 Verified Cash</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('home.hero.instantPayout')}</div>
+                  <div className="text-xs font-black text-emerald-600">{t('home.hero.instantPayoutValue')}</div>
                 </div>
               </div>
 
@@ -256,8 +264,8 @@ export const HomePage: React.FC = () => {
                   <Camera className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">New Task</div>
-                  <div className="text-xs font-black text-gray-900 dark:text-gray-100">Upload Review Photo</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('home.hero.newTask')}</div>
+                  <div className="text-xs font-black text-gray-900 dark:text-gray-100">{t('home.hero.newTaskValue')}</div>
                 </div>
               </div>
 
@@ -267,8 +275,8 @@ export const HomePage: React.FC = () => {
                   <Play className="w-4 h-4 text-white fill-white ml-0.5" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Sponsored Campaign</div>
-                  <div className="text-xs font-black text-gray-900 dark:text-gray-100">Review: TikTok Video</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('home.hero.sponsored')}</div>
+                  <div className="text-xs font-black text-gray-900 dark:text-gray-100">{t('home.hero.sponsoredValue')}</div>
                 </div>
               </div>
 
@@ -278,8 +286,8 @@ export const HomePage: React.FC = () => {
                   <DollarSign className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Today's Balance</div>
-                  <div className="text-xs font-black text-emerald-600">$38.90 Total</div>
+                  <div className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">{t('home.hero.balance')}</div>
+                  <div className="text-xs font-black text-emerald-600">{t('home.hero.balanceValue')}</div>
                 </div>
               </div>
 
@@ -319,10 +327,10 @@ export const HomePage: React.FC = () => {
                       </div>
                       <div>
                         <div className="text-xs font-bold text-white flex items-center gap-1">
-                          <span>Alex M.</span>
+                          <span>{t('home.hero.userName')}</span>
                           <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E]" />
                         </div>
-                        <div className="text-[10px] text-emerald-300 font-medium">Verified Contributor</div>
+                        <div className="text-[10px] text-emerald-300 font-medium">{t('home.hero.userRole')}</div>
                       </div>
                     </div>
                     <div className="w-7 h-7 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white/80">
@@ -333,9 +341,9 @@ export const HomePage: React.FC = () => {
                   {/* Wallet Balance Widget */}
                   <div className="bg-black/30 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 shadow-lg space-y-2 mt-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-gray-300 font-medium uppercase tracking-wider">Available Balance</span>
+                      <span className="text-[10px] text-gray-300 font-medium uppercase tracking-wider">{t('home.hero.availableBalance')}</span>
                       <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
-                        +$5.00 Today
+                        {t('home.hero.todayGain')}
                       </span>
                     </div>
                     <div className="text-2xl font-black text-white tracking-tight">
@@ -343,10 +351,10 @@ export const HomePage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 pt-0.5">
                       <div className="flex-1 bg-[#22C55E] text-[#07182F] font-black text-[10px] py-1.5 rounded-lg text-center shadow-md">
-                        Instant Cashout
+                        {t('home.hero.instantCashout')}
                       </div>
                       <div className="flex-1 bg-white/10 text-white font-bold text-[10px] py-1.5 rounded-lg text-center border border-white/10">
-                        History
+                        {t('home.hero.history')}
                       </div>
                     </div>
                   </div>
@@ -358,15 +366,15 @@ export const HomePage: React.FC = () => {
                         <div className="w-6 h-6 rounded-lg bg-black/40 flex items-center justify-center">
                           <TikTokLogo className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span className="text-[11px] font-bold text-white">TikTok Sound Promo</span>
+                        <span className="text-[11px] font-bold text-white">{t('home.hero.task1Title')}</span>
                       </div>
-                      <span className="text-xs font-black text-emerald-400">+$3.50</span>
+                      <span className="text-xs font-black text-emerald-400">{t('home.hero.task1Reward')}</span>
                     </div>
 
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-[9px] text-gray-300">
-                        <span>AI Proof Scanner</span>
-                        <span className="text-emerald-400 font-bold">100% Match</span>
+                        <span>{t('home.hero.aiScanner')}</span>
+                        <span className="text-emerald-400 font-bold">{t('home.hero.aiMatch')}</span>
                       </div>
                       <div className="w-full h-1.5 bg-black/30 rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-[#20C4E8] to-[#22C55E] rounded-full w-full" />
@@ -376,7 +384,7 @@ export const HomePage: React.FC = () => {
                     <div className="flex items-center justify-between text-[9px] text-gray-300 pt-0.5">
                       <span className="flex items-center gap-1 text-emerald-300">
                         <CheckCircle2 className="w-3 h-3" />
-                        <span>Approved (9.4s)</span>
+                        <span>{t('home.hero.approved')}</span>
                       </span>
                       <span className="font-mono text-gray-400 dark:text-gray-500">#CP-982</span>
                     </div>
@@ -389,11 +397,11 @@ export const HomePage: React.FC = () => {
                         <InstagramLogo className="w-3.5 h-3.5" />
                       </div>
                       <div className="text-left">
-                        <div className="text-[10px] font-bold text-white">Instagram Story Repost</div>
-                        <div className="text-[9px] text-gray-300">2 min • Limited slots</div>
+                        <div className="text-[10px] font-bold text-white">{t('home.hero.task2Title')}</div>
+                        <div className="text-[9px] text-gray-300">{t('home.hero.task2Meta')}</div>
                       </div>
                     </div>
-                    <span className="text-[11px] font-bold text-emerald-300">+$1.20</span>
+                    <span className="text-[11px] font-bold text-emerald-300">{t('home.hero.task2Reward')}</span>
                   </div>
 
                   {/* Phone Bottom Dock Pill */}
@@ -434,8 +442,8 @@ export const HomePage: React.FC = () => {
                 <BadgeCheck className="w-5 h-5" />
               </span>
               <div>
-                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">Free for Contributors</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">No fees, no deposits — ever</p>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">{t('home.strip.freeTitle')}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">{t('home.strip.freeSub')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -443,8 +451,8 @@ export const HomePage: React.FC = () => {
                 <Wallet className="w-5 h-5" />
               </span>
               <div>
-                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">$50 Minimum Cashout</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">PayPal, Wise, bank, or digital currency</p>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">{t('home.strip.cashoutTitle')}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">{t('home.strip.cashoutSub')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -452,8 +460,8 @@ export const HomePage: React.FC = () => {
                 <ShieldCheck className="w-5 h-5" />
               </span>
               <div>
-                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">Proof Verification</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">Every submission checked before payout</p>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">{t('home.strip.proofTitle')}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">{t('home.strip.proofSub')}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -461,8 +469,8 @@ export const HomePage: React.FC = () => {
                 <Lock className="w-5 h-5" />
               </span>
               <div>
-                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">Escrow Protected</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">Brand funds held safely until approval</p>
+                <p className="text-xs sm:text-sm font-extrabold text-[#101828] dark:text-gray-100">{t('home.strip.escrowTitle')}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">{t('home.strip.escrowSub')}</p>
               </div>
             </div>
           </div>
@@ -481,19 +489,19 @@ export const HomePage: React.FC = () => {
           
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-2.5">
             <span className="px-3.5 py-1 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-100 dark:border-blue-500/30">
-              Zero Followers Required
+              {t('home.how.badge')}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
-              6 Ways You Earn Real Cash On Social Media
+              {t('home.how.title')}
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl mx-auto">
-              Brands pay ordinary consumers for authentic exposure and genuine community engagement. Choose the platforms you already use every day.
+              {t('home.how.sub')}
             </p>
 
             {/* Filter Pills */}
             <div className="flex flex-wrap justify-center gap-2 pt-4">
               {[
-                { id: 'all', label: 'All Channels' },
+                { id: 'all', label: t('home.how.tabAll') },
                 { id: 'instagram', label: 'Instagram' },
                 { id: 'tiktok', label: 'TikTok' },
                 { id: 'youtube', label: 'YouTube' },
@@ -536,7 +544,7 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   <div>
-                    <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">{card.platform} Campaign</span>
+                    <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">{t('home.how.campaign', { platform: card.platform })}</span>
                     <h3 className="text-lg font-black text-gray-900 dark:text-gray-100 mt-0.5 group-hover:text-[#168BFF] transition-colors">
                       {card.title}
                     </h3>
@@ -547,11 +555,11 @@ export const HomePage: React.FC = () => {
 
                   <div className="pt-3 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Reward Range</span>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">{t('home.how.rewardRange')}</span>
                       <span className="text-lg font-black text-[#16B364]">{card.reward}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">Average Time</span>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase block">{t('home.how.avgTime')}</span>
                       <span className="text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1 justify-end">
                         <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                         {card.time}
@@ -568,7 +576,7 @@ export const HomePage: React.FC = () => {
                       to="/tasks"
                       className="font-bold text-[#168BFF] hover:underline flex items-center gap-1"
                     >
-                      <span>Start Task</span>
+                      <span>{t('home.how.startTask')}</span>
                       <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
@@ -581,14 +589,14 @@ export const HomePage: React.FC = () => {
           {/* Banner bottom */}
           <div className="mt-12 p-6 rounded-3xl bg-gradient-to-r from-[#07182F] via-[#0D2342] to-[#07182F] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/10">
             <div className="space-y-1 text-center md:text-left">
-              <h4 className="text-lg font-black">Want to complete tasks on your mobile right now?</h4>
-              <p className="text-xs text-gray-300">Registration takes 45 seconds. Zero documents or credit cards needed.</p>
+              <h4 className="text-lg font-black">{t('home.how.bannerTitle')}</h4>
+              <p className="text-xs text-gray-300">{t('home.how.bannerSub')}</p>
             </div>
             <Link
               to="/contributor/register"
               className="px-8 py-3.5 bg-gradient-brand text-white text-xs sm:text-sm font-black rounded-2xl shadow-lg hover:scale-105 transition-all shrink-0 flex items-center gap-2"
             >
-              <span>Join Free & Start Today</span>
+              <span>{t('home.how.bannerCta')}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -604,13 +612,13 @@ export const HomePage: React.FC = () => {
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-purple-50 text-[#7357FF] dark:bg-purple-500/15 dark:text-purple-300 text-xs font-bold uppercase tracking-wider">
-              The Reality Check
+              {t('home.compare.badge')}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
-              Stop Scrolling For Free. Get Paid Instead.
+              {t('home.compare.title')}
             </h2>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              The average smartphone user spends 2 hours and 27 minutes daily on social media generating zero income. Here is the difference:
+              {t('home.compare.sub')}
             </p>
           </div>
 
@@ -620,19 +628,19 @@ export const HomePage: React.FC = () => {
             <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-8 border border-red-200/80 shadow-sm space-y-6 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-extrabold uppercase">
-                  <span>❌ What Most People Do</span>
+                  <span>{t('home.compare.oldTag')}</span>
                 </div>
-                <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100">Endless Free Scrolling</h3>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-gray-100">{t('home.compare.oldTitle')}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  You spend hours scrolling past algorithm ads, liking random posts, and viewing brand stories without receiving a single penny in return.
+                  {t('home.compare.oldText')}
                 </p>
 
                 <div className="space-y-3 pt-2">
                   {[
-                    '2.5 hours per day completely uncompensated',
-                    'Big tech platforms earn advertising revenue off your attention',
-                    'Zero savings, zero earnings, zero side income',
-                    'No transparent payout or rewards for your time',
+                    t('home.compare.old1'),
+                    t('home.compare.old2'),
+                    t('home.compare.old3'),
+                    t('home.compare.old4'),
                   ].map((pt, i) => (
                     <div key={i} className="flex items-start gap-2.5 text-xs text-gray-600 dark:text-gray-400 font-semibold">
                       <span className="text-red-500 font-bold shrink-0 mt-0.5">×</span>
@@ -643,7 +651,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               <div className="pt-4 border-t border-gray-100 dark:border-white/10 text-center text-xs font-bold text-red-600 bg-red-50/50 p-3 rounded-xl">
-                Result: $0.00 Earned • Wasted Hours
+                {t('home.compare.oldResult')}
               </div>
             </div>
 
@@ -653,19 +661,19 @@ export const HomePage: React.FC = () => {
 
               <div className="space-y-4 relative z-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-[#16B364] text-xs font-extrabold uppercase border border-emerald-500/30">
-                  <span>⚡ The eBizEarn Way</span>
+                  <span>{t('home.compare.newTag')}</span>
                 </div>
-                <h3 className="text-2xl font-black text-white">Monetized Spare Time</h3>
+                <h3 className="text-2xl font-black text-white">{t('home.compare.newTitle')}</h3>
                 <p className="text-xs text-gray-300 leading-relaxed">
-                  Spend just 20 to 45 minutes completing verified brand tasks on the same social platforms and build a reliable daily cash balance.
+                  {t('home.compare.newText')}
                 </p>
 
                 <div className="space-y-3 pt-2">
                   {[
-                    'Turn spare minutes into $15–$60+ extra cash every week',
-                    'Payouts starting from $50.00 directly to PayPal, Wise, or Bank',
-                    'Computer vision AI verifies your proof in seconds',
-                    'Level up for higher rewards and 10% daily streak bonuses',
+                    t('home.compare.new1'),
+                    t('home.compare.new2'),
+                    t('home.compare.new3'),
+                    t('home.compare.new4'),
                   ].map((pt, i) => (
                     <div key={i} className="flex items-start gap-2.5 text-xs text-gray-200 font-semibold">
                       <CheckCircle2 className="w-4 h-4 text-[#16B364] shrink-0 mt-0.5" />
@@ -676,7 +684,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               <div className="pt-4 border-t border-white/10 text-center text-xs font-extrabold text-[#20C4E8] bg-white/5 p-3 rounded-xl relative z-10">
-                Result: Real Money In Your Wallet Whenever You Want
+                {t('home.compare.newResult')}
               </div>
             </div>
 
@@ -693,13 +701,13 @@ export const HomePage: React.FC = () => {
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#16B364] dark:bg-emerald-500/15 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider">
-              Real Expectations
+              {t('home.calc.badge')}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
-              Calculate Your Daily & Monthly Potential
+              {t('home.calc.title')}
             </h2>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              Realistic earnings based on active task completion and current marketplace reward averages.
+              {t('home.calc.sub')}
             </p>
           </div>
 
@@ -708,10 +716,10 @@ export const HomePage: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-black text-gray-800 dark:text-gray-200">
-                  How many hours per day can you spend on tasks?
+                  {t('home.calc.label')}
                 </label>
                 <span className="text-sm font-black text-[#168BFF] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
-                  {calculatorHours} {calculatorHours === 1 ? 'Hour' : 'Hours'} / Day
+                  {calculatorHours === 1 ? t('home.calc.hourOne', { n: calculatorHours }) : t('home.calc.hourMany', { n: calculatorHours })}
                 </span>
               </div>
               
@@ -726,40 +734,40 @@ export const HomePage: React.FC = () => {
               />
               
               <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
-                <span>Casual (30 mins)</span>
-                <span>Active (2 hours)</span>
-                <span>Power Earner (4 hours)</span>
+                <span>{t('home.calc.casual')}</span>
+                <span>{t('home.calc.active')}</span>
+                <span>{t('home.calc.power')}</span>
               </div>
             </div>
 
             {/* Results Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 rounded-2xl bg-[#07182F] text-white">
               <div>
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">Estimated Weekly Payout</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">{t('home.calc.weekly')}</span>
                 <div className="text-3xl sm:text-4xl font-black text-[#20C4E8] mt-1">
                   ${(parseFloat(calculatedMonthly) / 4).toFixed(0)} USD
                 </div>
-                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">Paid directly to PayPal / Wise</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">{t('home.calc.weeklyNote')}</span>
               </div>
 
               <div className="sm:border-l sm:border-white/10 sm:pl-6">
-                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">Estimated 30-Day Potential</span>
+                <span className="text-[10px] text-gray-400 dark:text-gray-500 uppercase font-bold tracking-wider block">{t('home.calc.monthly')}</span>
                 <div className="text-3xl sm:text-4xl font-black text-[#16B364] mt-1">
                   ${calculatedMonthly} USD
                 </div>
-                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">Based on $6.50/hr average yield</span>
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 block">{t('home.calc.monthlyNote')}</span>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                • Cashout starts from $50.00 threshold. Zero platform deduction for contributors.
+                {t('home.calc.footnote')}
               </span>
               <Link
                 to="/contributor/register"
                 className="px-7 py-3 bg-[#07182F] hover:bg-[#168BFF] text-white font-black text-xs rounded-xl shadow transition-colors flex items-center gap-2"
               >
-                <span>Create Free Account</span>
+                <span>{t('home.calc.cta')}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -778,13 +786,13 @@ export const HomePage: React.FC = () => {
             
             <div className="lg:col-span-8 space-y-4">
               <span className="px-3.5 py-1.5 rounded-full bg-white/10 text-[#20C4E8] text-xs font-bold uppercase tracking-wider border border-white/15">
-                For Brands & Digital Marketers
+                {t('home.biz.badge')}
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight text-white">
-                Need 10,000+ Real Humans Behind Your Campaign?
+                {t('home.biz.title')}
               </h2>
               <p className="text-sm sm:text-base text-gray-300 leading-relaxed max-w-xl">
-                Deploy verified contributors across Instagram, TikTok, Meta, and Google in hours. Stop paying for bot clicks and inflated agency retainers. Pay strictly for verified proof.
+                {t('home.biz.sub')}
               </p>
               
               <div className="flex flex-wrap gap-4 pt-2">
@@ -792,43 +800,43 @@ export const HomePage: React.FC = () => {
                   to="/business/register"
                   className="px-7 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
                 >
-                  <span>Create Campaign</span>
+                  <span>{t('home.biz.cta1')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   to="/business/login"
                   className="px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 transition-all"
                 >
-                  Business Login
+                  {t('home.biz.cta2')}
                 </Link>
                 <button
                   type="button"
                   onClick={() => setDemoModalOpen(true)}
                   className="px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 transition-all"
                 >
-                  Request Demo
+                  {t('home.biz.cta3')}
                 </button>
               </div>
             </div>
 
             <div className="lg:col-span-4 bg-white/5 rounded-3xl p-6 border border-white/10 backdrop-blur-md space-y-3">
-              <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">Enterprise Campaign Stats</span>
+              <span className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">{t('home.biz.statsTitle')}</span>
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between py-1.5 border-b border-white/10">
-                  <span className="text-gray-300">Audience Authenticity</span>
-                  <span className="font-bold text-[#16B364]">100% Real Humans</span>
+                  <span className="text-gray-300">{t('home.biz.stat1Label')}</span>
+                  <span className="font-bold text-[#16B364]">{t('home.biz.stat1Value')}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-white/10">
-                  <span className="text-gray-300">Average Turnaround</span>
-                  <span className="font-bold text-white">Under 4 Hours</span>
+                  <span className="text-gray-300">{t('home.biz.stat2Label')}</span>
+                  <span className="font-bold text-white">{t('home.biz.stat2Value')}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-white/10">
-                  <span className="text-gray-300">Proof Verification</span>
-                  <span className="font-bold text-[#20C4E8]">Computer Vision AI</span>
+                  <span className="text-gray-300">{t('home.biz.stat3Label')}</span>
+                  <span className="font-bold text-[#20C4E8]">{t('home.biz.stat3Value')}</span>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-gray-300">Budget Protection</span>
-                  <span className="font-bold text-white">Escrow Guaranteed</span>
+                  <span className="text-gray-300">{t('home.biz.stat4Label')}</span>
+                  <span className="font-bold text-white">{t('home.biz.stat4Value')}</span>
                 </div>
               </div>
             </div>
@@ -845,13 +853,13 @@ export const HomePage: React.FC = () => {
           
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
-              Transparency First
+              {t('home.faq.badge')}
             </span>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
-              Frequently Asked Questions
+              {t('home.faq.title')}
             </h2>
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-              Clear answers about earning, proof verification, and getting paid.
+              {t('home.faq.sub')}
             </p>
           </div>
 
@@ -900,15 +908,15 @@ export const HomePage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5 relative z-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-xs font-bold text-[#20C4E8] border border-white/15">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Start Earning Today</span>
+            <span>{t('home.cta.badge')}</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
-            Start Earning From Your Phone In Under 60 Seconds.
+            {t('home.cta.title')}
           </h2>
 
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
-            Zero registration fees. Payouts start from $50.00 directly to PayPal, Wise, or Bank. No follower requirements.
+            {t('home.cta.sub')}
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
@@ -916,7 +924,7 @@ export const HomePage: React.FC = () => {
               to="/contributor/register"
               className="w-full sm:w-auto px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-2xl hover:scale-105 transition-all flex items-center justify-center gap-2"
             >
-              <span>Create Free Account Now</span>
+              <span>{t('home.cta.primary')}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -924,7 +932,7 @@ export const HomePage: React.FC = () => {
               to="/tasks"
               className="w-full sm:w-auto px-7 py-3.5 bg-white/10 hover:bg-white/15 text-white font-bold text-xs sm:text-sm rounded-xl border border-white/20 transition-all"
             >
-              Explore Open Tasks
+              {t('home.cta.secondary')}
             </Link>
           </div>
         </div>

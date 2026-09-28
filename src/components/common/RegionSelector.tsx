@@ -1,43 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, Globe } from 'lucide-react';
+import { useRegion, REGIONS, type Region } from '../../context/RegionContext';
+import { CountryFlag } from './CountryFlag';
 
-interface Region {
-  code: string;
-  name: string;
-  currency: string;
-  /** [top stripe, middle stripe, bottom stripe, hoist band] */
-  flag: [string, string, string, string];
-}
-
-const REGIONS: Region[] = [
-  { code: 'GE', name: 'Georgia', currency: 'GEL', flag: ['#FFFFFF', '#FF0000', '#FFFFFF', '#FF0000'] },
-  { code: 'SA', name: 'Saudi Arabia', currency: 'SAR', flag: ['#006C35', '#006C35', '#006C35', '#FFFFFF'] },
-  { code: 'US', name: 'United States', currency: 'USD', flag: ['#3C3B6E', '#FFFFFF', '#B22234', '#3C3B6E'] },
-  { code: 'GB', name: 'United Kingdom', currency: 'GBP', flag: ['#012169', '#FFFFFF', '#C8102E', '#012169'] },
-  { code: 'EU', name: 'European Union', currency: 'EUR', flag: ['#003399', '#003399', '#003399', '#FFDD00'] },
-  { code: 'IN', name: 'India', currency: 'INR', flag: ['#FF9933', '#FFFFFF', '#138808', '#000080'] },
-  { code: 'PK', name: 'Pakistan', currency: 'PKR', flag: ['#01411C', '#01411C', '#01411C', '#FFFFFF'] },
-];
-
-const STORAGE_KEY = 'ebizearn_region';
-
-/** Crisp CSS flag: hoist band + three horizontal stripes. */
-export const RegionFlag: React.FC<{ region: Region; className?: string }> = ({ region, className = 'w-6 h-[18px]' }) => {
-  const [top, mid, bot, hoist] = region.flag;
-  return (
-    <span
-      className={`relative inline-block overflow-hidden rounded-[4px] ring-1 ring-black/10 shrink-0 ${className}`}
-      aria-hidden="true"
-    >
-      <span className="absolute inset-y-0 left-0 w-[28%]" style={{ background: hoist }} />
-      <span className="absolute inset-y-0 right-0 left-[28%] flex flex-col">
-        <span className="flex-1" style={{ background: top }} />
-        <span className="flex-1" style={{ background: mid }} />
-        <span className="flex-1" style={{ background: bot }} />
-      </span>
-    </span>
-  );
-};
+/**
+ * Real flag for a region — served from flagcdn.com (correct artwork for every
+ * region, incl. the five-cross Georgian flag and the EU circle of stars),
+ * falling back to the emoji flag if the image can't load.
+ * (Previously this rendered every flag as three CSS stripes, which made
+ * Georgia look like Poland and every other flag wrong.)
+ */
+export const RegionFlag: React.FC<{ region: Region; className?: string }> = ({ region, className = 'w-6 h-[18px]' }) => (
+  <CountryFlag iso={region.code} className={className} />
+);
 
 interface RegionSelectorProps {
   /** 'dark' for navy headers, 'light' for white headers. */
@@ -46,17 +21,13 @@ interface RegionSelectorProps {
 }
 
 /**
- * Clean flag-style region & currency selector: Georgia flag mark + "GEL" + "Georgia"
- * chip with a polished dropdown. Display preference persisted locally.
+ * Region & currency selector. Region + currency + language are a single
+ * persisted source of truth (RegionContext) — changing the region here
+ * updates the header badge, this dropdown, the AI support bubble and the
+ * site language everywhere at once.
  */
 export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark', className = '' }) => {
-  const [code, setCode] = useState<string>(() => {
-    try {
-      return localStorage.getItem(STORAGE_KEY) || 'GE';
-    } catch {
-      return 'GE';
-    }
-  });
+  const { region: current, setRegion, t, regionName } = useRegion();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -75,8 +46,8 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
     };
   }, []);
 
-  const current = REGIONS.find((r) => r.code === code) || REGIONS[0];
   const dark = variant === 'dark';
+  const shortName = regionName.split(' ')[0];
 
   return (
     <div ref={ref} className={`relative ${className}`}>
@@ -85,7 +56,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`Region: ${current.name}, currency ${current.currency}. Change region`}
+        aria-label={t('region.ariaLabel', { name: regionName, currency: current.currency })}
         className={`flex items-center gap-2 pl-2 pr-2.5 rounded-full border transition-all h-10 shrink-0 ${
           dark
             ? 'border-white/15 bg-white/[0.06] hover:bg-white/[0.12] text-white'
@@ -98,23 +69,24 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         </span>
         <span className={`h-3.5 w-px ${dark ? 'bg-white/20' : 'bg-slate-200'}`} />
         <span className={`text-[11px] font-bold ${dark ? 'text-slate-300' : 'text-slate-500 dark:text-gray-400'}`}>
-          {current.name.split(' ')[0]}
+          {shortName}
         </span>
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''} ${dark ? 'text-slate-400 dark:text-gray-500' : 'text-slate-400 dark:text-gray-500'}`} />
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''} text-slate-400 dark:text-gray-500`} />
       </button>
 
       {open && (
         <div
           role="listbox"
-          aria-label="Select region"
+          aria-label={t('region.title')}
           className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in"
         >
           <p className="px-4 pt-3 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-            <Globe className="w-3 h-3" /> Region & currency
+            <Globe className="w-3 h-3" /> {t('region.title')}
           </p>
           <div className="p-1.5 max-h-72 overflow-y-auto">
             {REGIONS.map((r) => {
-              const active = r.code === code;
+              const active = r.code === current.code;
+              const name = t(r.nameKey);
               return (
                 <button
                   key={r.code}
@@ -122,33 +94,34 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
                   role="option"
                   aria-selected={active}
                   onClick={() => {
-                    setCode(r.code);
-                    try {
-                      localStorage.setItem(STORAGE_KEY, r.code);
-                    } catch {
-                      /* ignore */
-                    }
+                    setRegion(r.code);
                     setOpen(false);
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
-                    active ? 'bg-blue-50' : 'hover:bg-slate-50 dark:hover:bg-white/5'
+                    /* Selected row: readable in BOTH themes (was bg-blue-50
+                       with light text in dark mode — unreadable). */
+                    active
+                      ? 'bg-blue-50 dark:bg-blue-500/15'
+                      : 'hover:bg-slate-50 dark:hover:bg-white/5'
                   }`}
                 >
                   <RegionFlag region={r} className="w-7 h-[21px]" />
                   <span className="flex-1 min-w-0">
-                    <span className="block text-sm font-bold text-slate-800 dark:text-gray-200 truncate">{r.name}</span>
-                    <span className="block text-[11px] text-slate-400 dark:text-gray-500">Currency: {r.currency}</span>
+                    <span className="block text-sm font-bold text-slate-800 dark:text-gray-100 truncate">{name}</span>
+                    <span className="block text-[11px] text-slate-400 dark:text-gray-400">
+                      {t('region.currencyLabel', { currency: r.currency })}
+                    </span>
                   </span>
-                  {active && <Check className="w-4 h-4 text-[#168BFF] shrink-0" />}
+                  {active && <Check className="w-4 h-4 text-[#168BFF] dark:text-blue-400 shrink-0" />}
                 </button>
               );
             })}
           </div>
-          <p className="px-4 py-2.5 text-[10px] text-slate-400 dark:text-gray-500 border-t border-slate-100">
-            Balances are shown in your account currency. Region affects display only.
+          <p className="px-4 py-2.5 text-[10px] text-slate-400 dark:text-gray-500 border-t border-slate-100 dark:border-white/10">
+            {t('region.footnote')}
           </p>
         </div>
       )}
     </div>
   );
-};
+}

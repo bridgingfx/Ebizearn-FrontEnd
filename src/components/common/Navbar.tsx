@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useRegion } from '../../context/RegionContext';
 import { EBizLogo } from './EBizLogo';
 import { RegionSelector } from './RegionSelector';
 import { ThemeToggle } from './ThemeToggle';
@@ -10,6 +11,7 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, role } = useAuth();
+  const { t } = useRegion();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,14 +23,21 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const targetLabel =
+    role === 'business'
+      ? t('nav.targetBusiness')
+      : role === 'admin' || role === 'superadmin' || role === 'moderator'
+        ? t('nav.targetAdmin')
+        : t('nav.targetContributor');
+
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'How It Works', path: '/how-it-works' },
-    { name: 'Tasks', path: '/tasks' },
-    { name: 'Earn', path: '/earn' },
-    { name: 'For Businesses', path: '/for-businesses' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'About', path: '/about' },
+    { name: t('nav.home'), path: '/' },
+    { name: t('nav.howItWorks'), path: '/how-it-works' },
+    { name: t('nav.tasks'), path: '/tasks' },
+    { name: t('nav.earn'), path: '/earn' },
+    { name: t('nav.forBusinesses'), path: '/for-businesses' },
+    { name: t('nav.blog'), path: '/blog' },
+    { name: t('nav.about'), path: '/about' },
   ];
 
   return (
@@ -74,7 +83,7 @@ export const Navbar: React.FC = () => {
               to={role === 'business' ? '/business' : role === 'admin' || role === 'superadmin' || role === 'moderator' ? '/admin' : '/app'}
               className="flex items-center gap-2 text-sm font-semibold text-white bg-gradient-brand px-5 py-2.5 rounded-full shadow-md hover:opacity-95 transition-all"
             >
-              <span>Go to {role === 'business' ? 'Business CRM' : role === 'admin' || role === 'moderator' ? 'Admin Panel' : 'Contributor App'}</span>
+              <span>{t('nav.goTo', { target: targetLabel })}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           ) : (
@@ -83,14 +92,14 @@ export const Navbar: React.FC = () => {
                 to="/login"
                 className="text-sm font-medium text-gray-200 hover:text-white transition-colors px-2 py-1.5"
               >
-                Login
+                {t('nav.login')}
               </Link>
 
               <Link
                 to="/contributor/register"
                 className="text-sm font-semibold text-white bg-gradient-brand px-5 py-2.5 rounded-full shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
               >
-                <span>Sign Up Free</span>
+                <span>{t('nav.signupFree')}</span>
               </Link>
             </>
           )}
@@ -103,7 +112,7 @@ export const Navbar: React.FC = () => {
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="text-gray-300 hover:text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={mobileMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-menu"
           >
@@ -135,7 +144,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-3 text-sm font-semibold text-white bg-gradient-brand rounded-xl shadow-md"
               >
-                Go to {role === 'business' ? 'Business CRM' : role === 'admin' || role === 'superadmin' || role === 'moderator' ? 'Admin Panel' : 'Contributor App'}
+                {t('nav.goTo', { target: targetLabel })}
               </Link>
             ) : (
               <>
@@ -144,14 +153,14 @@ export const Navbar: React.FC = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-3 text-sm font-medium text-white border border-white/20 rounded-xl"
                 >
-                  Login
+                  {t('nav.login')}
                 </Link>
                 <Link
                   to="/contributor/register"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-3 text-sm font-semibold text-white bg-gradient-brand rounded-xl shadow-md"
                 >
-                  Sign Up Free
+                  {t('nav.signupFree')}
                 </Link>
               </>
             )}

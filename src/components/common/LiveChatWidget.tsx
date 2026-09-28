@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { usePlatform, type PlatformSupportTicket } from '../../context/PlatformDataContext';
 import { useAuth } from '../../context/AuthContext';
+import { useRegion } from '../../context/RegionContext';
+import { CountryFlag } from './CountryFlag';
 import { supportApi, getApiError } from '../../api';
 import type { TicketCategory } from '../../types';
 
@@ -186,6 +188,7 @@ export const LiveChatWidget: React.FC = () => {
   const navigate = useNavigate();
   const { createSupportTicket } = usePlatform();
   const { user } = useAuth();
+  const { region, regionName, t } = useRegion();
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -489,7 +492,7 @@ Here are key actions you can take right now:
             type="button"
             onClick={() => setIsOpen(true)}
             className="group flex items-center gap-3 bg-gradient-to-r from-emerald-600/90 via-teal-600/90 to-slate-900/90 backdrop-blur-xl text-white px-4 py-3 rounded-full shadow-2xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:-translate-y-1 border border-white/25"
-            aria-label="Open eBiz AI Live Chat Assistant"
+            aria-label={t('chat.openLabel')}
           >
             <div className="relative">
               <MessageCircle className="w-6 h-6 text-white transition-transform group-hover:scale-110" />
@@ -499,13 +502,14 @@ Here are key actions you can take right now:
 
             <div className="text-left hidden sm:block">
               <div className="text-xs font-bold tracking-wide flex items-center gap-1.5">
-                <span>eBiz AI Support</span>
+                <span>{t('chat.title')}</span>
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                <span className="text-[10px] bg-emerald-800/90 text-emerald-100 px-1.5 py-0.2 rounded font-mono font-bold">
-                  🇬🇪 Georgia
+                <span className="text-[10px] bg-emerald-800/90 text-emerald-100 px-1.5 py-0.5 rounded font-mono font-bold inline-flex items-center gap-1">
+                  <CountryFlag iso={region.code} className="w-4 h-3" />
+                  {regionName}
                 </span>
               </div>
-              <div className="text-[11px] text-emerald-100/90 font-medium">Instant AI Answers & Live Desk</div>
+              <div className="text-[11px] text-emerald-100/90 font-medium">{t('chat.subtitle')}</div>
             </div>
 
             {unreadCount > 0 && (

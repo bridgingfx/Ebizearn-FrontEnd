@@ -1,0 +1,261 @@
+/**
+ * Lightweight locale dictionaries for the public marketing surface.
+ * English is the source of truth and the fallback for any missing key.
+ * Locales: en (English), ka (Georgian), ar (Arabic).
+ */
+export type Locale = 'en' | 'ka' | 'ar';
+
+export const en = {
+  /* ---------- Navbar ---------- */
+  'nav.home': 'Home',
+  'nav.howItWorks': 'How It Works',
+  'nav.tasks': 'Tasks',
+  'nav.earn': 'Earn',
+  'nav.forBusinesses': 'For Businesses',
+  'nav.blog': 'Blog',
+  'nav.about': 'About',
+  'nav.login': 'Login',
+  'nav.signupFree': 'Sign Up Free',
+  'nav.goTo': 'Go to {target}',
+  'nav.targetBusiness': 'Business CRM',
+  'nav.targetAdmin': 'Admin Panel',
+  'nav.targetContributor': 'Contributor App',
+  'nav.openMenu': 'Open menu',
+  'nav.closeMenu': 'Close menu',
+
+  /* ---------- Region selector ---------- */
+  'region.title': 'Region & currency',
+  'region.currencyLabel': 'Currency: {currency}',
+  'region.ariaLabel': 'Region: {name}, currency {currency}. Change region',
+  'region.footnote': 'Balances are shown in your account currency. Region affects display only.',
+  'region.GE': 'Georgia',
+  'region.SA': 'Saudi Arabia',
+  'region.US': 'United States',
+  'region.GB': 'United Kingdom',
+  'region.EU': 'European Union',
+  'region.IN': 'India',
+  'region.PK': 'Pakistan',
+
+  /* ---------- Footer ---------- */
+  'footer.tagline': 'The premier digital task & reputation marketplace connecting real contributors with verified enterprise campaigns in Georgia and worldwide.',
+  'footer.address': 'Office 102 - Global link Business centre, 37 Platon Ioseliani St, Tbilisi, Georgia',
+  'footer.quickLinks': 'Quick Links',
+  'footer.support': 'Support',
+  'footer.legal': 'Legal',
+  'footer.stayConnected': 'Stay Connected',
+  'footer.helpCenter': 'Help Center',
+  'footer.contactUs': 'Contact Us',
+  'footer.paymentGuide': 'Payment Guide',
+  'footer.community': 'Community',
+  'footer.terms': 'Terms of Service',
+  'footer.privacy': 'Privacy Policy',
+  'footer.disclaimer': 'Disclaimer',
+  'footer.cookies': 'Cookie Policy',
+  'footer.antiFraud': 'Anti-Fraud Policy',
+  'footer.compliance': 'Compliance',
+  'footer.aboutUs': 'About Us',
+  'footer.newsletterPlaceholder': 'Enter your email',
+  'footer.newsletterThanks': "Thanks — newsletter sign-up isn't wired up yet. Check back soon, or reach us at",
+  'footer.disclaimerNote': 'Please note:',
+  'footer.disclaimerText': 'participating in eBizEarn tasks is not employment; earnings vary and are not guaranteed, and task rewards are released only after verification. We process your personal data as described in the consent you accepted at signup — see our',
+  'footer.disclaimerAnd': 'and',
+  'footer.disclaimerLaw': 'eBizEarn is governed by the laws of Georgia.',
+  'footer.rights': '© 2026 eBiz Network (ebizearn.com). All rights reserved.',
+  'footer.slogan': 'A Global Platform for a Brighter Tomorrow',
+  'footer.internalAccess': 'Internal Access',
+  'footer.moderatorLogin': 'Moderator Login',
+
+  /* ---------- AI chat bubble ---------- */
+  'chat.title': 'eBiz AI Support',
+  'chat.subtitle': 'Instant AI Answers & Live Desk',
+  'chat.openLabel': 'Open eBiz AI Live Chat Assistant',
+
+  /* ---------- Homepage: hero ---------- */
+  'home.hero.pill': 'Verified Social Micro-Earning Platform',
+  'home.hero.title1': 'Turn Daily Social Media Time Into',
+  'home.hero.titleAccent': 'Verified',
+  'home.hero.title2': 'Cash Income.',
+  'home.hero.sub': 'eBizEarn connects forward-thinking brands with verified mobile contributors worldwide. Complete simple tasks on Instagram, TikTok, YouTube, and WhatsApp — get verified in seconds, and cash out starting from $50.00.',
+  'home.hero.cta1': 'Get Started & Earn Free',
+  'home.hero.cta2': 'View Tasks',
+  'home.hero.like': '+1 Like',
+  'home.hero.hotTask': 'Hot Task',
+  'home.hero.verified': 'Verified',
+  'home.hero.instantPayout': 'Instant Payout',
+  'home.hero.instantPayoutValue': '+$50.00 Verified Cash',
+  'home.hero.newTask': 'New Task',
+  'home.hero.newTaskValue': 'Upload Review Photo',
+  'home.hero.sponsored': 'Sponsored Campaign',
+  'home.hero.sponsoredValue': 'Review: TikTok Video',
+  'home.hero.balance': "Today's Balance",
+  'home.hero.balanceValue': '$38.90 Total',
+  'home.hero.userName': 'Alex M.',
+  'home.hero.userRole': 'Verified Contributor',
+  'home.hero.availableBalance': 'Available Balance',
+  'home.hero.todayGain': '+$5.00 Today',
+  'home.hero.instantCashout': 'Instant Cashout',
+  'home.hero.history': 'History',
+  'home.hero.task1Title': 'TikTok Sound Promo',
+  'home.hero.task1Reward': '+$3.50',
+  'home.hero.aiScanner': 'AI Proof Scanner',
+  'home.hero.aiMatch': '100% Match',
+  'home.hero.approved': 'Approved (9.4s)',
+  'home.hero.task2Title': 'Instagram Story Repost',
+  'home.hero.task2Meta': '2 min • Limited slots',
+  'home.hero.task2Reward': '+$1.20',
+
+  /* ---------- Homepage: guarantees strip ---------- */
+  'home.strip.freeTitle': 'Free for Contributors',
+  'home.strip.freeSub': 'No fees, no deposits — ever',
+  'home.strip.cashoutTitle': '$50 Minimum Cashout',
+  'home.strip.cashoutSub': 'PayPal, Wise, bank, or digital currency',
+  'home.strip.proofTitle': 'Proof Verification',
+  'home.strip.proofSub': 'Every submission checked before payout',
+  'home.strip.escrowTitle': 'Escrow Protected',
+  'home.strip.escrowSub': 'Brand funds held safely until approval',
+
+  /* ---------- Homepage: how it works ---------- */
+  'home.how.badge': 'Zero Followers Required',
+  'home.how.title': '6 Ways You Earn Real Cash On Social Media',
+  'home.how.sub': 'Brands pay ordinary consumers for authentic exposure and genuine community engagement. Choose the platforms you already use every day.',
+  'home.how.tabAll': 'All Channels',
+  'home.how.campaign': '{platform} Campaign',
+  'home.how.rewardRange': 'Reward Range',
+  'home.how.avgTime': 'Average Time',
+  'home.how.startTask': 'Start Task',
+  'home.how.card1Title': 'Story Reposts & Link Stickers',
+  'home.how.card1Reward': '$0.40 - $1.50',
+  'home.how.card1Time': '2 mins',
+  'home.how.card1Slots': 'Limited slots available',
+  'home.how.card1Desc': 'Share verified promotional creative to your personal story with official brand sticker and campaign tags.',
+  'home.how.card1Tag': 'Most Popular',
+  'home.how.card2Title': 'Duets, Sounds & Video Reviews',
+  'home.how.card2Reward': '$2.00 - $8.50',
+  'home.how.card2Time': '5 mins',
+  'home.how.card2Slots': 'New tasks go live daily',
+  'home.how.card2Desc': 'Record a quick 15-second authentic reaction duet or use sponsored sound clips to boost brand visibility.',
+  'home.how.card2Tag': 'High Earning',
+  'home.how.card3Title': 'Feedback, Likes & Community Votes',
+  'home.how.card3Reward': '$1.00 - $3.50',
+  'home.how.card3Time': '4 mins',
+  'home.how.card3Slots': 'Limited slots available',
+  'home.how.card3Desc': 'Watch pre-release video trailers or product demos, leave thoughtful constructive feedback, and subscribe.',
+  'home.how.card3Tag': 'Quick & Easy',
+  'home.how.card4Title': 'Niche Group & Community Shares',
+  'home.how.card4Reward': '$0.35 - $1.00',
+  'home.how.card4Time': '2 mins',
+  'home.how.card4Slots': 'New tasks go live daily',
+  'home.how.card4Desc': 'Share verified brand campaigns and announcements into relevant discussion communities and local groups.',
+  'home.how.card4Tag': 'High Volume',
+  'home.how.card5Title': 'Status Updates & Broadcast Posts',
+  'home.how.card5Reward': '$0.45 - $1.20',
+  'home.how.card5Time': '1 min',
+  'home.how.card5Slots': 'Limited slots available',
+  'home.how.card5Desc': 'Publish verified business promotions to your WhatsApp Status for 24 hours and submit view screenshot.',
+  'home.how.card5Tag': 'Fastest Completion',
+  'home.how.card6Title': 'Pre-Release Testing & Store Ratings',
+  'home.how.card6Reward': '$1.80 - $5.00',
+  'home.how.card6Time': '5 mins',
+  'home.how.card6Slots': 'New tasks go live daily',
+  'home.how.card6Desc': 'Download newly launched iOS or Android apps, test core navigation flows, and leave genuine user ratings.',
+  'home.how.card6Tag': 'Top Rated',
+  'home.how.bannerTitle': 'Want to complete tasks on your mobile right now?',
+  'home.how.bannerSub': 'Registration takes 45 seconds. Zero documents or credit cards needed.',
+  'home.how.bannerCta': 'Join Free & Start Today',
+
+  /* ---------- Homepage: comparison ---------- */
+  'home.compare.badge': 'The Reality Check',
+  'home.compare.title': 'Stop Scrolling For Free. Get Paid Instead.',
+  'home.compare.sub': 'The average smartphone user spends 2 hours and 27 minutes daily on social media generating zero income. Here is the difference:',
+  'home.compare.oldTag': '❌ What Most People Do',
+  'home.compare.oldTitle': 'Endless Free Scrolling',
+  'home.compare.oldText': 'You spend hours scrolling past algorithm ads, liking random posts, and viewing brand stories without receiving a single penny in return.',
+  'home.compare.old1': '2.5 hours per day completely uncompensated',
+  'home.compare.old2': 'Big tech platforms earn advertising revenue off your attention',
+  'home.compare.old3': 'Zero savings, zero earnings, zero side income',
+  'home.compare.old4': 'No transparent payout or rewards for your time',
+  'home.compare.oldResult': 'Result: $0.00 Earned • Wasted Hours',
+  'home.compare.newTag': '⚡ The eBizEarn Way',
+  'home.compare.newTitle': 'Monetized Spare Time',
+  'home.compare.newText': 'Spend just 20 to 45 minutes completing verified brand tasks on the same social platforms and build a reliable daily cash balance.',
+  'home.compare.new1': 'Turn spare minutes into $15–$60+ extra cash every week',
+  'home.compare.new2': 'Payouts starting from $50.00 directly to PayPal, Wise, or Bank',
+  'home.compare.new3': 'Computer vision AI verifies your proof in seconds',
+  'home.compare.new4': 'Level up for higher rewards and 10% daily streak bonuses',
+  'home.compare.newResult': 'Result: Real Money In Your Wallet Whenever You Want',
+
+  /* ---------- Homepage: calculator ---------- */
+  'home.calc.badge': 'Real Expectations',
+  'home.calc.title': 'Calculate Your Daily & Monthly Potential',
+  'home.calc.sub': 'Realistic earnings based on active task completion and current marketplace reward averages.',
+  'home.calc.label': 'How many hours per day can you spend on tasks?',
+  'home.calc.hourOne': '{n} Hour / Day',
+  'home.calc.hourMany': '{n} Hours / Day',
+  'home.calc.casual': 'Casual (30 mins)',
+  'home.calc.active': 'Active (2 hours)',
+  'home.calc.power': 'Power Earner (4 hours)',
+  'home.calc.weekly': 'Estimated Weekly Payout',
+  'home.calc.weeklyNote': 'Paid directly to PayPal / Wise',
+  'home.calc.monthly': 'Estimated 30-Day Potential',
+  'home.calc.monthlyNote': 'Based on $6.50/hr average yield',
+  'home.calc.footnote': '• Cashout starts from $50.00 threshold. Zero platform deduction for contributors.',
+  'home.calc.cta': 'Create Free Account',
+
+  /* ---------- Homepage: business banner ---------- */
+  'home.biz.badge': 'For Brands & Digital Marketers',
+  'home.biz.title': 'Need 10,000+ Real Humans Behind Your Campaign?',
+  'home.biz.sub': 'Deploy verified contributors across Instagram, TikTok, Meta, and Google in hours. Stop paying for bot clicks and inflated agency retainers. Pay strictly for verified proof.',
+  'home.biz.cta1': 'Create Campaign',
+  'home.biz.cta2': 'Business Login',
+  'home.biz.cta3': 'Request Demo',
+  'home.biz.statsTitle': 'Enterprise Campaign Stats',
+  'home.biz.stat1Label': 'Audience Authenticity',
+  'home.biz.stat1Value': '100% Real Humans',
+  'home.biz.stat2Label': 'Average Turnaround',
+  'home.biz.stat2Value': 'Under 4 Hours',
+  'home.biz.stat3Label': 'Proof Verification',
+  'home.biz.stat3Value': 'Computer Vision AI',
+  'home.biz.stat4Label': 'Budget Protection',
+  'home.biz.stat4Value': 'Escrow Guaranteed',
+
+  /* ---------- Homepage: FAQ ---------- */
+  'home.faq.badge': 'Transparency First',
+  'home.faq.title': 'Frequently Asked Questions',
+  'home.faq.sub': 'Clear answers about earning, proof verification, and getting paid.',
+  'home.faq.q1': 'How do I earn money using my social media accounts?',
+  'home.faq.a1': 'Brands list verified social media tasks on eBizEarn (such as sharing a story with a brand sticker, doing a 15-second TikTok duet, or posting in a niche Facebook group). You choose any open task, complete it on your phone, upload a screenshot or live link as proof, and our automated AI verifies your submission in seconds to credit your wallet balance.',
+  'home.faq.q2': 'Do I need a large follower count or influencer status?',
+  'home.faq.a2': 'No. You do not need thousands of followers. Most tasks are designed for everyday social media users — brands want authentic word-of-mouth engagement and peer recommendations from genuine people, not just sponsored influencer posts.',
+  'home.faq.q3': 'Is eBizEarn 100% free? Are there any hidden fees?',
+  'home.faq.a3': 'eBizEarn is 100% free to join and will always remain free. We will never ask you for an upfront registration fee, membership fee, deposit, or account unlock charge. You complete tasks and earn real cash.',
+  'home.faq.q4': 'How fast can I cash out and what is the minimum payout?',
+  'home.faq.a4': 'The minimum withdrawal threshold is $50.00. You can cash out anytime directly to your PayPal, Wise transfer, direct bank account, Revolut, or digital currency (USDT/USDC). Payouts are processed reliably with double-entry ledger security.',
+  'home.faq.q5': 'How does AI proof verification work?',
+  'home.faq.a5': 'When you submit a screenshot, our proprietary computer vision algorithm checks the post timestamp, image dimensions, text content, and account handle in seconds. Once verified, funds transfer immediately into your available balance.',
+
+  /* ---------- Homepage: final CTA ---------- */
+  'home.cta.badge': 'Start Earning Today',
+  'home.cta.title': 'Start Earning From Your Phone In Under 60 Seconds.',
+  'home.cta.sub': 'Zero registration fees. Payouts start from $50.00 directly to PayPal, Wise, or Bank. No follower requirements.',
+  'home.cta.primary': 'Create Free Account Now',
+  'home.cta.secondary': 'Explore Open Tasks',
+} as const;
+
+export type DictKey = keyof typeof en;
+
+import { ka } from './dictionaries.ka';
+import { ar } from './dictionaries.ar';
+
+const LOCALES: Record<Locale, Record<string, string>> = { en, ka, ar };
+
+/** Translate a key for a locale. Falls back to English, then the key itself. */
+export function translate(locale: Locale, key: string, vars?: Record<string, string | number>): string {
+  const dict = LOCALES[locale] ?? en;
+  let text: string = dict[key] ?? en[key as DictKey] ?? key;
+  if (vars) {
+    for (const [k, v] of Object.entries(vars)) {
+      text = text.split(`{${k}}`).join(String(v));
+    }
+  }
+  return text;
+}

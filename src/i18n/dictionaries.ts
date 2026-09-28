@@ -1,9 +1,12 @@
 /**
- * Lightweight locale dictionaries for the public marketing surface.
- * English is the source of truth and the fallback for any missing key.
- * Locales: en (English), ka (Georgian), ar (Arabic).
+ * English source strings for the public marketing surface.
+ *
+ * NOTE: this dictionary no longer does translation. English is the single
+ * page source (Google Translate `pageLanguage: 'en'`) and the GTranslate
+ * component translates the entire DOM uniformly. `translate()` always
+ * resolves English so every `t()` call site keeps working unchanged.
  */
-export type Locale = 'en' | 'ka' | 'ar';
+export type Locale = 'en';
 
 export const en = {
   /* ---------- Navbar ---------- */
@@ -243,15 +246,9 @@ export const en = {
 
 export type DictKey = keyof typeof en;
 
-import { ka } from './dictionaries.ka';
-import { ar } from './dictionaries.ar';
-
-const LOCALES: Record<Locale, Record<string, string>> = { en, ka, ar };
-
-/** Translate a key for a locale. Falls back to English, then the key itself. */
-export function translate(locale: Locale, key: string, vars?: Record<string, string | number>): string {
-  const dict = LOCALES[locale] ?? en;
-  let text: string = dict[key] ?? en[key as DictKey] ?? key;
+/** Resolve a key to its English source string (translation is done by GTranslate). */
+export function translate(_locale: Locale, key: string, vars?: Record<string, string | number>): string {
+  let text: string = en[key as DictKey] ?? key;
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
       text = text.split(`{${k}}`).join(String(v));

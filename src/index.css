@@ -392,3 +392,23 @@ body.chat-widget-hidden .chat-widget-root {
   caret-color: #f1f5f9;
   transition: background-color 9999s ease-out;
 }
+
+/* ── Google Translate engine chrome suppression ──────────────────────────
+   Our GTranslate component drives translation via the hidden combo element.
+   Google's injected banner / balloon / tooltip frames must never be visible,
+   and the `body { top: ... }` offset Google applies for its banner must be
+   neutralised. */
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-gadget {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+}
+/* Google wraps translated text in <font> tags — keep them invisible. */
+font {
+  background: transparent !important;
+  color: inherit !important;
+}

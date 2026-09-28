@@ -8,6 +8,7 @@ import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
 import { DeferredPageLoader } from './components/common/PageLoader';
 import { Toaster } from './components/common/Toast';
+import { reapplyGTranslateLang } from './components/common/GTranslate';
 
 // Layouts — the public shell stays in the main bundle (first paint);
 // role shells are lazy so their code ships with their portal chunk.
@@ -102,6 +103,19 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
+/** Re-apply the current Google translation on SPA route changes — Google
+ *  doesn't always translate dynamically rendered nodes by itself. */
+const ReapplyTranslation: React.FC = () => {
+  const { pathname } = useLocation();
+
+  React.useEffect(() => {
+    const id = window.setTimeout(() => reapplyGTranslateLang(), 300);
+    return () => window.clearTimeout(id);
+  }, [pathname]);
+
+  return null;
+};
+
 /** On boot, rehydrate the session against the real API if a token is stored. */
 const BootAuth: React.FC = () => {
   const { refreshMe } = useAuth();
@@ -120,6 +134,7 @@ export const App: React.FC = () => {
       <PlatformDataProvider>
         <BrowserRouter>
         <ScrollToTop />
+        <ReapplyTranslation />
         <RouteSeo />
         <BootAuth />
         <Suspense fallback={<DeferredPageLoader />}>

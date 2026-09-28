@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext';
 
 import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
+import { GTranslate } from '../components/common/GTranslate';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { AppFooter } from '../components/common/AppFooter';
@@ -168,6 +169,7 @@ export const BusinessLayout: React.FC = () => {
             <ThemeToggle />
             <div className="hidden md:block">
               <RegionSelector variant="light" />
+              <GTranslate variant="light" />
             </div>
             <div className="flex items-center gap-2.5 pl-2">
               <div className="hidden sm:block text-right">

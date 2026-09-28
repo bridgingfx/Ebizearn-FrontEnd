@@ -12,7 +12,7 @@ interface CountrySelectProps {
 }
 
 /** Popular markets first, then every country A–Z. */
-const PINNED = ['AE', 'SA', 'IN', 'PK', 'BD', 'PH', 'EG', 'GB', 'US'];
+const PINNED = ['GE', 'SA', 'IN', 'PK', 'BD', 'PH', 'EG', 'GB', 'US'];
 const ORDERED = [
   ...PINNED.map((iso) => findCountryDialByIso(iso)!).filter(Boolean),
   ...COUNTRY_DIALS.filter((c) => !PINNED.includes(c.iso)).sort((a, b) => a.name.localeCompare(b.name)),

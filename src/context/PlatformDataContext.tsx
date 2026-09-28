@@ -1305,7 +1305,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
       compliance: 'Approved & Compliant',
       created: 'Just now',
       region: `${data.regionState ? data.regionState + ', ' : ''}${data.country || 'Georgia 🇬🇪'}`,
-      country: data.country || 'AE',
+      country: data.country || 'GE',
       regionState: data.regionState || 'All Regions',
       cityArea: data.cityArea || 'Georgia Nationwide',
       targetChannelType: data.targetChannelType,

@@ -1,7 +1,7 @@
 /**
  * Every country / territory (ISO 3166-1) with its international dial code.
  * Used by the phone field's code picker and the country picker on signup.
- * UAE (primary market) is listed first; the rest are alphabetical.
+ * Georgia (primary market) is listed first; the rest are alphabetical.
  *
  * Keep the backend allow-list (config/phone.php) in sync with these codes.
  */
@@ -12,7 +12,7 @@ export interface CountryDial {
 }
 
 export const COUNTRY_DIALS: CountryDial[] = [
-  { iso: 'AE', name: 'United Arab Emirates', dial: '+971' },
+  { iso: 'GE', name: 'Georgia', dial: '+995' },
   { iso: 'AF', name: 'Afghanistan', dial: '+93' },
   { iso: 'AX', name: 'Åland Islands', dial: '+358' },
   { iso: 'AL', name: 'Albania', dial: '+355' },
@@ -93,7 +93,6 @@ export const COUNTRY_DIALS: CountryDial[] = [
   { iso: 'PF', name: 'French Polynesia', dial: '+689' },
   { iso: 'GA', name: 'Gabon', dial: '+241' },
   { iso: 'GM', name: 'Gambia', dial: '+220' },
-  { iso: 'GE', name: 'Georgia', dial: '+995' },
   { iso: 'DE', name: 'Germany', dial: '+49' },
   { iso: 'GH', name: 'Ghana', dial: '+233' },
   { iso: 'GI', name: 'Gibraltar', dial: '+350' },

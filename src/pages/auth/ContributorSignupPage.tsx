@@ -39,7 +39,7 @@ export const ContributorSignupPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [country, setCountry] = useState('AE');
+  const [country, setCountry] = useState('GE');
   /** Once the user picks a country, the phone code no longer changes it. */
   const [countryTouched, setCountryTouched] = useState(false);
   const [phone, setPhone] = useState<PhoneValue>({ dialCode: DEFAULT_DIAL, number: '' });

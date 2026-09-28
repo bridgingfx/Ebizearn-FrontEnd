@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useRegion } from '../../context/RegionContext';
 import { EBizLogo } from './EBizLogo';
 import { RegionSelector } from './RegionSelector';
+import { GTranslate } from './GTranslate';
 import { ThemeToggle } from './ThemeToggle';
 
 export const Navbar: React.FC = () => {
@@ -77,6 +78,7 @@ export const Navbar: React.FC = () => {
           <ThemeToggle tone="onDark" />
           {/* Region & currency selector */}
           <RegionSelector variant="dark" />
+          <GTranslate variant="dark" />
 
           {user ? (
             <Link
@@ -137,6 +139,7 @@ export const Navbar: React.FC = () => {
           <div className="pt-4 flex flex-col gap-3">
             <div className="flex justify-center">
               <RegionSelector variant="dark" />
+              <GTranslate variant="dark" />
             </div>
             {user ? (
               <Link

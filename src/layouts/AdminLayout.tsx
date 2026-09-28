@@ -29,6 +29,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
+import { GTranslate } from '../components/common/GTranslate';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { AppFooter } from '../components/common/AppFooter';
@@ -177,6 +178,7 @@ export const AdminLayout: React.FC = () => {
             <ThemeToggle />
             <div className="hidden sm:block">
               <RegionSelector variant="light" />
+              <GTranslate variant="light" />
             </div>
             <div className="w-9 h-9 rounded-full bg-[#0E1C2F] text-white flex items-center justify-center text-xs font-bold">
               {initials}

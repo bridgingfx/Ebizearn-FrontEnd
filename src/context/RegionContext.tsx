@@ -22,6 +22,9 @@ export const REGIONS: Region[] = [
 
 /** Legacy key kept for compatibility with previously stored preferences. */
 const STORAGE_KEY = 'ebizearn_region';
+/** One-time migration marker: resets Georgian that the old first-load logic
+ *  auto-applied (and persisted) without the user ever choosing it. */
+const LANG_DEFAULT_MIGRATION_KEY = 'lm-lang-default-v1';
 
 function getInitialCode(): string {
   if (typeof window === 'undefined') return 'GE';
@@ -65,10 +68,17 @@ const RegionContext = createContext<RegionContextValue>({
  * Region and language are INDEPENDENT selections:
  * - `setRegion(code)` changes region + currency AND applies that region's
  *   default language (Georgia → ka, Saudi Arabia → ar, India → hi,
- *   US/UK/EU/Pakistan → en).
+ *   US/UK/EU/Pakistan → en) — but only when the user explicitly picks a
+ *   region from the dropdown. A region *fallback* (no stored region, so the
+ *   pill shows Georgia) never changes the language.
  * - `setLang(code)` changes ONLY the language (persisted via `lm-lang` +
  *   the googtrans cookie by the GTranslate engine).
  * Either can be re-picked afterwards without disturbing the other.
+ *
+ * DEFAULT LANGUAGE RULE: the site always loads in English. The language
+ * changes only when the user explicitly picks a language, or explicitly
+ * picks a region. There is no IP-based region detection — the region pill
+ * simply defaults to Georgia (GEL) until the user picks one.
  */
 export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [code, setCode] = useState<string>(getInitialCode);
@@ -81,12 +91,27 @@ export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     // Page source is English; Google translates the DOM from here.
     document.documentElement.lang = 'en';
-    // First load: if the user never picked a language, default from region.
     try {
-      if (!window.localStorage.getItem('lm-lang')) {
-        setGTranslateLang(region.locale);
-        setLangState(region.locale);
+      // One-time recovery (2026-09-29): the old first-load logic auto-applied
+      // the region's default language — Georgian for the Georgia fallback —
+      // and persisted it as if the user had chosen it. If Georgian is stored
+      // but the user never explicitly picked a region, that Georgian was never
+      // a real choice: reset to English. Runs once per device.
+      if (!window.localStorage.getItem(LANG_DEFAULT_MIGRATION_KEY)) {
+        const pickedRegion = window.localStorage.getItem(STORAGE_KEY);
+        if (window.localStorage.getItem('lm-lang') === 'ka' && !pickedRegion) {
+          setGTranslateLang('en');
+        }
+        window.localStorage.setItem(LANG_DEFAULT_MIGRATION_KEY, '1');
       }
+      // Default site language is English — a region fallback (or a stale
+      // googtrans cookie) must never change it. `setGTranslateLang('en')`
+      // also clears any stale translation cookie, so a fresh visitor with a
+      // leftover cookie still lands on English.
+      if (!window.localStorage.getItem('lm-lang')) {
+        setGTranslateLang('en');
+      }
+      setLangState(getGTranslateLangCode());
     } catch {
       /* ignore */
     }
@@ -95,17 +120,19 @@ export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const setRegion = useCallback((next: string) => {
     const target = REGIONS.find((r) => r.code === next);
-    if (!target || next === code) return;
+    if (!target) return;
     setCode(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
     } catch {
       /* ignore */
     }
-    // Region selection applies the region's default language.
+    // Explicit region pick applies the region's default language (re-picking
+    // the already-active region counts as explicit, e.g. tapping Georgia
+    // while the Georgia fallback is shown).
     setGTranslateLang(target.locale);
     setLangState(target.locale);
-  }, [code]);
+  }, []);
 
   const setLang = useCallback((next: string) => {
     setGTranslateLang(next);

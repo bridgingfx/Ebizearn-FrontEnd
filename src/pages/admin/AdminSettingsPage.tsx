@@ -11,8 +11,9 @@ import { useAuth } from '../../context/AuthContext';
 /**
  * Platform settings. Reads/writes real system settings (GET + PATCH
  * /admin/system-settings) and real feature flags (GET /admin/feature-flags).
- * There are no payment-gateway toggles here — crypto is out of scope per the
- * owner decision, and gateways live under the superadmin payments endpoints.
+ * There are no payment-gateway toggles here — gateways live under the
+ * superadmin payments endpoints. USDT payouts are an offered rail (manual
+ * review); see the contributor wallet withdrawal flow and admin payouts queue.
  *
  * Withdrawal threshold: stored on the `withdrawal_minimum_usd` system-setting
  * key as a provisional control (default $50 per the mission brief). The

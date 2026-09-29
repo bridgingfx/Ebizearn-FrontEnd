@@ -176,7 +176,7 @@ export const EarnPage: React.FC = () => {
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Earn from $0.40 to $8.50 per task across Instagram, TikTok, YouTube, Facebook, and WhatsApp. Cash out starting from <strong className="text-white font-bold">$50.00</strong> to PayPal, Wise, or Bank.
+              Earn from $0.40 to $8.50 per task across Instagram, TikTok, YouTube, Facebook, and WhatsApp. Cash out starting from <strong className="text-white font-bold">$50.00</strong> to PayPal, Wise, Bank, or USDT.
             </p>
           </div>
 
@@ -464,6 +464,7 @@ export const EarnPage: React.FC = () => {
               { name: 'PayPal', min: '$50.00 min', time: 'After manual review' },
               { name: 'Wise Transfer', min: '$50.00 min', time: 'After manual review' },
               { name: 'Direct Bank', min: '$50.00 min', time: 'After manual review' },
+              { name: 'USDT (TRC-20 / ERC-20)', min: '$50.00 min', time: 'After manual review' },
               { name: 'Revolut', min: '$50.00 min', time: 'After manual review' },
               { name: 'Mobile Money', min: '$50.00 min', time: 'After manual review' },
             ].map((method, idx) => (

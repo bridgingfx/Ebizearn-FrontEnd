@@ -11,6 +11,7 @@ import {
   Info,
   X,
   Landmark,
+  Coins,
   Eye,
   EyeOff,
   BadgeCheck,
@@ -34,12 +35,24 @@ interface WalletState {
   is_locked: boolean;
 }
 
-/** Crypto is out of the MVP — only real fiat rails are offered. */
+/** USDT is a real payout rail (manual review). 1 USDT = $1; ledger stays USD. */
 const PAYOUT_METHODS = [
   { value: 'bank_transfer', label: 'Bank transfer', hint: 'IBAN / account number', icon: Landmark },
   { value: 'paypal', label: 'PayPal', hint: 'PayPal email', icon: WalletIcon },
   { value: 'wise', label: 'Wise', hint: 'Wise email or account ID', icon: TrendingUp },
+  { value: 'usdt', label: 'USDT', hint: 'Crypto wallet address', icon: Coins },
 ];
+
+const USDT_NETWORKS = ['TRC-20', 'ERC-20'] as const;
+type UsdtNetwork = (typeof USDT_NETWORKS)[number];
+
+const USDT_PROFILE_KEY = 'ebizearn_usdt_profile_v1';
+
+const isValidTronAddress = (addr: string): boolean => /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(addr.trim());
+const isValidErc20Address = (addr: string): boolean => /^0x[0-9a-fA-F]{40}$/.test(addr.trim());
+
+const isValidUsdtAddress = (addr: string, network: UsdtNetwork): boolean =>
+  network === 'TRC-20' ? isValidTronAddress(addr) : isValidErc20Address(addr);
 
 type TxnTab = 'all' | 'earnings' | 'withdrawals';
 
@@ -61,6 +74,9 @@ export const ContributorWalletPage: React.FC = () => {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('bank_transfer');
   const [details, setDetails] = useState('');
+  const [usdtNetwork, setUsdtNetwork] = useState<UsdtNetwork>('TRC-20');
+  const [usdtAddress, setUsdtAddress] = useState('');
+  const [saveUsdtAddress, setSaveUsdtAddress] = useState(false);
   const [withdrawError, setWithdrawError] = useState<string | null>(null);
   const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -132,6 +148,20 @@ export const ContributorWalletPage: React.FC = () => {
     if (!requireVerified()) return;
     setWithdrawError(null);
     setWithdrawSuccess(null);
+    // Pre-fill a previously saved USDT address (profile convenience only).
+    try {
+      const raw = localStorage.getItem(USDT_PROFILE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as { network?: UsdtNetwork; wallet_address?: string };
+        if (saved.wallet_address) {
+          setUsdtAddress(saved.wallet_address);
+          if (saved.network === 'TRC-20' || saved.network === 'ERC-20') setUsdtNetwork(saved.network);
+          setSaveUsdtAddress(true);
+        }
+      }
+    } catch {
+      /* saved profile is best-effort */
+    }
     setWithdrawOpen(true);
   };
 
@@ -148,9 +178,25 @@ export const ContributorWalletPage: React.FC = () => {
       setWithdrawError('Amount exceeds your available balance.');
       return;
     }
-    if (!details.trim()) {
-      setWithdrawError('Please enter your payout details.');
-      return;
+    const isUsdt = method === 'usdt';
+    let payoutDetails: Record<string, string>;
+    if (isUsdt) {
+      const trimmed = usdtAddress.trim();
+      if (!isValidUsdtAddress(trimmed, usdtNetwork)) {
+        setWithdrawError(
+          usdtNetwork === 'TRC-20'
+            ? 'Enter a valid TRC-20 address (starts with T, 34 characters).'
+            : 'Enter a valid ERC-20 address (0x followed by 40 hex characters).'
+        );
+        return;
+      }
+      payoutDetails = { wallet_address: trimmed, network: usdtNetwork };
+    } else {
+      if (!details.trim()) {
+        setWithdrawError('Please enter your payout details.');
+        return;
+      }
+      payoutDetails = { account: details.trim() };
     }
     setSubmitting(true);
     try {
@@ -158,13 +204,21 @@ export const ContributorWalletPage: React.FC = () => {
         amount_cents: amountCents,
         payout_method: method,
         currency,
-        payout_details: { account: details.trim() },
+        payout_details: payoutDetails,
       });
       if (res.success) {
+        if (isUsdt && saveUsdtAddress) {
+          try {
+            localStorage.setItem(USDT_PROFILE_KEY, JSON.stringify({ network: usdtNetwork, wallet_address: usdtAddress.trim() }));
+          } catch {
+            /* best-effort */
+          }
+        }
         setWithdrawSuccess('Withdrawal request submitted. It will be reviewed and paid out manually by the platform team.');
         setWithdrawOpen(false);
         setAmount('');
         setDetails('');
+        setUsdtAddress('');
         fetchAll();
       } else {
         setWithdrawError(res.message || 'Withdrawal request failed.');
@@ -455,7 +509,7 @@ export const ContributorWalletPage: React.FC = () => {
               </div>
               <div>
                 <span className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">Payout method</span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {PAYOUT_METHODS.map((m) => {
                     const MIcon = m.icon;
                     const active = method === m.value;
@@ -477,20 +531,77 @@ export const ContributorWalletPage: React.FC = () => {
                   })}
                 </div>
               </div>
-              <div>
-                <label htmlFor="withdraw-details" className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">
-                  Payout details
-                </label>
-                <input
-                  id="withdraw-details"
-                  type="text"
-                  required
-                  value={details}
-                  onChange={(e) => setDetails(e.target.value)}
-                  placeholder={method === 'bank_transfer' ? 'Full name + IBAN / account number' : 'Account email'}
-                  className="w-full min-h-[52px] px-4 text-base bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
-                />
-              </div>
+              {method === 'usdt' ? (
+                <>
+                  <div>
+                    <span className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">Network</span>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {USDT_NETWORKS.map((n) => {
+                        const active = usdtNetwork === n;
+                        return (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => setUsdtNetwork(n)}
+                            aria-pressed={active}
+                            className={`p-3 rounded-2xl border-2 text-left transition-all min-h-[64px] ${
+                              active ? 'border-[#168BFF] bg-blue-50/60 dark:bg-blue-500/10' : 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20'
+                            }`}
+                          >
+                            <p className={`text-sm font-extrabold ${active ? 'text-[#168BFF]' : 'text-slate-900 dark:text-gray-100'}`}>{n}</p>
+                            <p className="text-[10px] text-slate-400 dark:text-gray-500 leading-tight mt-0.5">
+                              {n === 'TRC-20' ? 'Tron network · lower fees' : 'Ethereum network'}
+                            </p>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="withdraw-usdt-address" className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">
+                      USDT wallet address
+                    </label>
+                    <input
+                      id="withdraw-usdt-address"
+                      type="text"
+                      required
+                      value={usdtAddress}
+                      onChange={(e) => setUsdtAddress(e.target.value)}
+                      placeholder={usdtNetwork === 'TRC-20' ? 'T…' : '0x…'}
+                      autoComplete="off"
+                      spellCheck={false}
+                      className="w-full min-h-[52px] px-4 text-base font-mono bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
+                    />
+                    <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
+                      1 USDT = $1. Processed after manual review — double-check the address and network before submitting.
+                    </p>
+                    <label className="mt-2.5 flex items-center gap-2.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={saveUsdtAddress}
+                        onChange={(e) => setSaveUsdtAddress(e.target.checked)}
+                        className="w-4 h-4 rounded accent-[#168BFF]"
+                      />
+                      <span className="text-xs font-medium text-slate-600 dark:text-gray-400">Save this address to my profile</span>
+                    </label>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <label htmlFor="withdraw-details" className="block text-sm font-bold text-slate-800 dark:text-gray-200 mb-2">
+                    Payout details
+                  </label>
+                  <input
+                    id="withdraw-details"
+                    type="text"
+                    required
+                    value={details}
+                    onChange={(e) => setDetails(e.target.value)}
+                    placeholder={method === 'bank_transfer' ? 'Full name + IBAN / account number' : 'Account email'}
+                    className="w-full min-h-[52px] px-4 text-base bg-white dark:bg-[#0C1322] border-2 border-slate-200 dark:border-white/10 rounded-2xl placeholder:text-slate-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#168BFF] focus:ring-4 focus:ring-[#168BFF]/15 transition-all"
+                  />
+                </div>
+              )}
               <div className="flex items-start gap-2.5 p-4 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/25">
                 <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                 <p className="text-[13px] text-blue-800 dark:text-blue-300 leading-relaxed">

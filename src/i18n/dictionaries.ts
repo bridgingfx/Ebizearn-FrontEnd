@@ -28,6 +28,7 @@ export const en = {
 
   /* ---------- Region selector ---------- */
   'region.title': 'Region & currency',
+  'region.languageTitle': 'Language',
   'region.currencyLabel': 'Currency: {currency}',
   'region.ariaLabel': 'Region: {name}, currency {currency}. Change region',
   'region.footnote': 'Balances are shown in your account currency. Region affects display only.',

@@ -240,6 +240,7 @@ export const COUNTRY_DIALS: CountryDial[] = [
   { iso: 'TV', name: 'Tuvalu', dial: '+688' },
   { iso: 'UG', name: 'Uganda', dial: '+256' },
   { iso: 'UA', name: 'Ukraine', dial: '+380' },
+  { iso: 'AE', name: 'United Arab Emirates', dial: '+971' },
   { iso: 'GB', name: 'United Kingdom', dial: '+44' },
   { iso: 'US', name: 'United States', dial: '+1' },
   { iso: 'VI', name: 'U.S. Virgin Islands', dial: '+1' },

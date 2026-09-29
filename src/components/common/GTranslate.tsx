@@ -6,9 +6,10 @@ import { useEffect } from 'react';
  * DOM — every page, every modal, every dynamically rendered node — so
  * "the language changes everywhere".
  *
- * There is NO visible language dropdown anymore: the single region+currency
- * selector (RegionContext) drives the site language (Georgia → ka,
- * Saudi Arabia → ar, everything else → en) via `setGTranslateLang`.
+ * There is NO visible language dropdown anymore: language is picked from the
+ * LANGUAGE section of the RegionSelector (independent of region), or applied
+ * as a region default via `setRegion` (RegionContext). Both paths call
+ * `setGTranslateLang` / `setLang` in this module.
  *
  * This module stays engine-only: hidden `gt-engine-container` injection,
  * toolbar suppression, cookie + `lm-lang` persistence, and the programmatic

@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useCallback, useEffect, useState } from 'react';
 import { translate, type DictKey } from '../i18n/dictionaries';
-import { setGTranslateLang } from '../components/common/GTranslate';
+import { getGTranslateLangCode, setGTranslateLang } from '../components/common/GTranslate';
 
 export interface Region {
   code: string;
   nameKey: string; // dictionary key: region.<CODE>
   currency: string;
-  /** Google Translate target language for this region (ka / ar / en). */
+  /** Google Translate target language for this region (ka / ar / hi / en). */
   locale: string;
 }
 
@@ -16,7 +16,7 @@ export const REGIONS: Region[] = [
   { code: 'US', nameKey: 'region.US', currency: 'USD', locale: 'en' },
   { code: 'GB', nameKey: 'region.GB', currency: 'GBP', locale: 'en' },
   { code: 'EU', nameKey: 'region.EU', currency: 'EUR', locale: 'en' },
-  { code: 'IN', nameKey: 'region.IN', currency: 'INR', locale: 'en' },
+  { code: 'IN', nameKey: 'region.IN', currency: 'INR', locale: 'hi' },
   { code: 'PK', nameKey: 'region.PK', currency: 'PKR', locale: 'en' },
 ];
 
@@ -36,8 +36,12 @@ function getInitialCode(): string {
 
 interface RegionContextValue {
   region: Region;
-  /** Switch region — persists region + currency and drives the site language via GTranslate. */
+  /** Switch region — persists region + currency and applies the region's default language. */
   setRegion: (code: string) => void;
+  /** Active site language code (e.g. 'ka', 'ar', 'hi', 'en'). Independent of region. */
+  lang: string;
+  /** Switch language only — region and currency are untouched. Persisted via the GTranslate engine. */
+  setLang: (code: string) => void;
   /** Resolve a dictionary key to its English source string (Google translates the DOM). */
   t: (key: DictKey | string, vars?: Record<string, string | number>) => string;
   /** Display name of the current region (English source). */
@@ -47,23 +51,30 @@ interface RegionContextValue {
 const RegionContext = createContext<RegionContextValue>({
   region: REGIONS[0],
   setRegion: () => {},
+  lang: 'en',
+  setLang: () => {},
   t: (key) => String(key),
   regionName: 'Georgia',
 });
 
 /**
  * Single source of truth for region + currency. The page source language is
- * always English (`pageLanguage: 'en'`); the GTranslate component translates
- * the entire DOM via the Google Translate engine.
+ * always English (`pageLanguage: 'en'`); the GTranslate engine translates
+ * the entire DOM via Google Translate element.js.
  *
- * Region → language wiring: Georgia → Georgian (ka), Saudi Arabia → Arabic
- * (ar), everything else → English. Changing the region calls
- * `setGTranslateLang`, which persists the choice (`lm-lang` + googtrans
- * cookie) and applies it in-page; the persisted choice restores on reload
- * via the cookie-before-script-load trick in the GTranslate module.
+ * Region and language are INDEPENDENT selections:
+ * - `setRegion(code)` changes region + currency AND applies that region's
+ *   default language (Georgia → ka, Saudi Arabia → ar, India → hi,
+ *   US/UK/EU/Pakistan → en).
+ * - `setLang(code)` changes ONLY the language (persisted via `lm-lang` +
+ *   the googtrans cookie by the GTranslate engine).
+ * Either can be re-picked afterwards without disturbing the other.
  */
 export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [code, setCode] = useState<string>(getInitialCode);
+  const [lang, setLangState] = useState<string>(() =>
+    typeof window === 'undefined' ? 'en' : getGTranslateLangCode(),
+  );
 
   const region = REGIONS.find((r) => r.code === code) ?? REGIONS[0];
 
@@ -74,6 +85,7 @@ export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       if (!window.localStorage.getItem('lm-lang')) {
         setGTranslateLang(region.locale);
+        setLangState(region.locale);
       }
     } catch {
       /* ignore */
@@ -90,9 +102,15 @@ export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } catch {
       /* ignore */
     }
-    // Region selection drives the site language.
+    // Region selection applies the region's default language.
     setGTranslateLang(target.locale);
+    setLangState(target.locale);
   }, [code]);
+
+  const setLang = useCallback((next: string) => {
+    setGTranslateLang(next);
+    setLangState(getGTranslateLangCode());
+  }, []);
 
   const t = useCallback(
     (key: DictKey | string, vars?: Record<string, string | number>) => translate('en', key, vars),
@@ -102,7 +120,7 @@ export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const regionName = t(region.nameKey);
 
   return (
-    <RegionContext.Provider value={{ region, setRegion, t, regionName }}>
+    <RegionContext.Provider value={{ region, setRegion, lang, setLang, t, regionName }}>
       {children}
     </RegionContext.Provider>
   );

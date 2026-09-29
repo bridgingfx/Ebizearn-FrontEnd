@@ -9,7 +9,21 @@ import { toast } from '../utils/toast';
 const rawBaseUrl = import.meta.env.VITE_API_URL || '/api/v1';
 const API_BASE_URL = rawBaseUrl.endsWith('/api/v1') ? rawBaseUrl : `${rawBaseUrl.replace(/\/$/, '')}/api/v1`;
 
-export const TOKEN_KEY = 'biznetwork_token';
+export const TOKEN_KEY = 'ebizearn_token';
+
+/**
+ * One-time migration: the key was 'biznetwork_token' before the eBizEarn
+ * rebrand. Move any surviving old-brand session to the new key so existing
+ * users are not silently logged out by the rename.
+ */
+const LEGACY_TOKEN_KEY = 'biznetwork_token';
+if (typeof localStorage !== 'undefined') {
+  const legacy = localStorage.getItem(LEGACY_TOKEN_KEY);
+  if (legacy && !localStorage.getItem(TOKEN_KEY)) {
+    localStorage.setItem(TOKEN_KEY, legacy);
+    localStorage.removeItem(LEGACY_TOKEN_KEY);
+  }
+}
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

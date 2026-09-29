@@ -158,22 +158,22 @@ export const HowItWorksPage: React.FC = () => {
     },
     {
       num: '04',
-      title: 'Instant AI Computer Vision Verification',
-      subtitle: 'Screenshots Audited in ~12 Seconds',
-      desc: 'Upload your proof screenshot or live post URL. Our automated computer vision AI checks timestamps, image resolution, and hashtag compliance in seconds.',
-      actionTitle: 'Proprietary Vision OCR',
-      actionBadge: '98.2% Auto-Approved',
+      title: 'Proof Review & Fraud Screening',
+      subtitle: 'Sample Preview — Illustrative Data',
+      desc: 'Upload your proof screenshot or live post URL. Every submission is reviewed manually and with automated checks for timestamps, image quality, and task compliance.',
+      actionTitle: 'Proof Review',
+      actionBadge: 'Sample Preview',
       icon: ShieldCheck,
       screenMock: (
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
-            <span className="font-bold text-[#16B364]">AI Screening Telemetry</span>
-            <span className="text-gray-400 dark:text-gray-500 font-mono">12.4s Latency</span>
+            <span className="font-bold text-[#16B364]">Sample Review Checklist</span>
+            <span className="text-gray-400 dark:text-gray-500 font-mono">Sample Data</span>
           </div>
           <div className="space-y-1 text-[11px]">
             <div className="flex justify-between py-1 border-b border-white/5">
               <span className="text-gray-300">Timestamp Match</span>
-              <span className="text-[#16B364] font-bold">100% Valid</span>
+              <span className="text-[#16B364] font-bold">Checked</span>
             </div>
             <div className="flex justify-between py-1 border-b border-white/5">
               <span className="text-gray-300">Hashtag & Account Handle</span>
@@ -181,7 +181,7 @@ export const HowItWorksPage: React.FC = () => {
             </div>
             <div className="flex justify-between py-1">
               <span className="text-gray-300">Duplicate Image Hash</span>
-              <span className="text-[#16B364] font-bold">Zero Match (Original)</span>
+              <span className="text-[#16B364] font-bold">Screened</span>
             </div>
           </div>
         </div>
@@ -190,8 +190,8 @@ export const HowItWorksPage: React.FC = () => {
     {
       num: '05',
       title: 'Immediate Wallet Credit & Cash Out from $50.00',
-      subtitle: 'PayPal, Wise, Bank & Crypto',
-      desc: 'Upon approval, your reward is credited immediately to your double-entry ledger wallet. Request payouts anytime starting from $50.00 with zero deduction.',
+      subtitle: 'PayPal, Wise & Bank',
+      desc: 'Upon approval, your reward is credited to your double-entry ledger wallet. Request payouts anytime starting from $50.00 with zero deduction; requests are processed manually after review.',
       actionTitle: 'Double-Entry Accounting',
       actionBadge: '$50.00 Min Cashout',
       icon: Wallet,
@@ -250,7 +250,7 @@ export const HowItWorksPage: React.FC = () => {
     {
       num: '02',
       title: 'Lock Campaign Budget into Smart Escrow',
-      subtitle: 'Zero Waste • 100% Guaranteed Delivery',
+      subtitle: 'Pay Only for Verified Work',
       desc: 'Deposit your campaign funds securely via Stripe, Wire, or Corporate Card. Your budget is locked in escrow and only released per verified and approved task completion.',
       actionTitle: 'Escrow Protection',
       actionBadge: '100% Refundable',
@@ -282,7 +282,7 @@ export const HowItWorksPage: React.FC = () => {
       num: '03',
       title: 'Mobilize Real Micro-Contributors',
       subtitle: 'Authentic Organic Reach • No Bots',
-      desc: 'Your campaign instantly goes live across verified mobile earners worldwide. Real people post your media, generate organic impressions, and interact naturally with their own followers.',
+      desc: 'Your campaign goes live across verified mobile earners across Georgia. Real people post your media, generate organic impressions, and interact naturally with their own followers.',
       actionTitle: 'Decentralized Workforce',
       actionBadge: 'Verified Workforce',
       icon: Users,
@@ -300,37 +300,37 @@ export const HowItWorksPage: React.FC = () => {
             <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
               <div className="bg-[#168BFF] h-full w-[59%]" />
             </div>
-            <span className="text-[10px] text-gray-400 dark:text-gray-500 block text-right">59% Completed</span>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 block text-end">59% Completed</span>
           </div>
         </div>
       ),
     },
     {
       num: '04',
-      title: 'Automated Computer Vision & Anti-Fraud Audit',
-      subtitle: 'Zero Effort Proof Validation',
-      desc: 'eBizEarn proprietary vision AI scans every submitted screenshot, validates timestamp against server clock, extracts hashtags with OCR, and detects duplicate image hashes.',
-      actionTitle: 'AI Fraud Radar',
-      actionBadge: 'Perceptual Hashing',
+      title: 'Proof Review & Anti-Fraud Checks',
+      subtitle: 'Human Review + Automated Checks',
+      desc: 'Every submitted proof goes through anti-fraud screening — timestamp and handle validation, duplicate-image checks — with human reviewers making the final call.',
+      actionTitle: 'Fraud Screening',
+      actionBadge: 'Sample Preview',
       icon: ShieldCheck,
       screenMock: (
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
-            <span className="font-bold text-[#16B364]">Vision OCR Telemetry</span>
-            <span className="text-xs text-gray-400 dark:text-gray-500">12.4s Avg</span>
+            <span className="font-bold text-[#16B364]">Sample Review Checklist</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Sample Data</span>
           </div>
           <div className="space-y-1 text-[11px]">
             <div className="flex justify-between py-1 border-b border-white/5">
               <span className="text-gray-300">Hashtag Verification:</span>
-              <span className="text-[#16B364] font-bold">100% Match</span>
+              <span className="text-[#16B364] font-bold">Checked</span>
             </div>
             <div className="flex justify-between py-1 border-b border-white/5">
               <span className="text-gray-300">Duplicate Screening:</span>
-              <span className="text-[#16B364] font-bold">0 Duplicates Passed</span>
+              <span className="text-[#16B364] font-bold">Screened</span>
             </div>
             <div className="flex justify-between py-1">
-              <span className="text-gray-300">Auto-Approval Rate:</span>
-              <span className="text-white font-bold">98.2%</span>
+              <span className="text-gray-300">Final Decision:</span>
+              <span className="text-white font-bold">Human Review</span>
             </div>
           </div>
         </div>
@@ -342,22 +342,22 @@ export const HowItWorksPage: React.FC = () => {
       subtitle: 'Exportable Reports • Certified Reach',
       desc: 'Access your Business Portal dashboard to monitor total impressions, verified links, geo-distribution, and user engagement. Download compliance reports for corporate audits.',
       actionTitle: 'Enterprise Reporting',
-      actionBadge: 'Live Telemetry',
+      actionBadge: 'Sample Preview',
       icon: BarChart3,
       screenMock: (
         <div className="bg-[#07182F] text-white p-5 rounded-2xl border border-white/10 space-y-3 text-xs font-sans">
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
             <span className="font-bold text-white">Campaign Analytics</span>
-            <span className="text-[#20C4E8] font-mono">Live</span>
+            <span className="text-[#20C4E8] font-mono">Sample Data</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-center text-[10px]">
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
               <span className="text-gray-400 dark:text-gray-500 block">Total Reach</span>
-              <span className="text-base font-bold text-white">142,500</span>
+              <span className="text-base font-bold text-white">—</span>
             </div>
             <div className="p-2 rounded-xl bg-white/5 border border-white/10">
               <span className="text-gray-400 dark:text-gray-500 block">Avg CPM</span>
-              <span className="text-base font-bold text-[#16B364]">$2.80</span>
+              <span className="text-base font-bold text-[#16B364]">—</span>
             </div>
           </div>
         </div>
@@ -374,11 +374,11 @@ export const HowItWorksPage: React.FC = () => {
     },
     {
       q: 'What is the minimum cashout amount and how do payouts work?',
-      a: 'The minimum withdrawal is $50.00 USD. Payouts are queued for manual processing by our payouts team. We support PayPal, Wise, Direct Bank Wire / IBAN, and USDC Crypto rails.',
+      a: 'The minimum withdrawal is $50.00 USD. Payouts are queued for manual processing by our payouts team. We support PayPal, Wise, and Direct Bank Wire / IBAN.',
     },
     {
       q: 'How does eBizEarn verify that tasks are done correctly?',
-      a: 'We utilize an advanced AI Computer Vision and OCR pipeline. When a contributor uploads a screenshot or post link, our system verifies device timestamps, hashtag accuracy, account handles, and image uniqueness within ~12 seconds.',
+      a: 'Submitted proofs are reviewed by our team with manual checks and automated tooling — we verify timestamps, hashtag accuracy, account handles, and image uniqueness before approval.',
     },
     {
       q: 'How are campaign budgets protected for business advertisers?',
@@ -387,7 +387,7 @@ export const HowItWorksPage: React.FC = () => {
   ];
 
   return (
-    <div className="text-left font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
+    <div className="text-start font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
       
       {/* =========================================================================
           1. BESPOKE HERO: DUAL JOURNEY INTRO
@@ -563,8 +563,8 @@ export const HowItWorksPage: React.FC = () => {
           </h2>
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
             {activeTab === 'contributor'
-              ? 'Join over 528,000 contributors worldwide. 100% free to register. Cash out from $50.00.'
-              : 'Launch your campaign in 3 minutes with smart escrow protection and automated AI proof auditing.'}
+              ? 'Join contributors across Georgia. 100% free to register. Cash out from $50.00.'
+              : 'Launch your campaign in minutes with escrow protection and human-reviewed proof audits.'}
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -572,7 +572,7 @@ export const HowItWorksPage: React.FC = () => {
               className="px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>{activeTab === 'contributor' ? 'Sign Up Free as Contributor' : 'Create Business Account'}</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
             <Link
               to={activeTab === 'contributor' ? '/tasks' : '/tasks'}

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useCallback, useEffect, useState } from 'react';
 import { translate, type DictKey } from '../i18n/dictionaries';
-import { getGTranslateLangCode, setGTranslateLang } from '../components/common/GTranslate';
+import { getGTranslateLangCode, setGTranslateLang, applyDocumentDirection } from '../components/common/GTranslate';
 
 export interface Region {
   code: string;
@@ -89,8 +89,12 @@ export const RegionProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const region = REGIONS.find((r) => r.code === code) ?? REGIONS[0];
 
   useEffect(() => {
-    // Page source is English; Google translates the DOM from here.
-    document.documentElement.lang = 'en';
+    // `lang` + `dir` always follow the active language (e.g. Arabic →
+    // lang="ar" dir="rtl"). Google's pageLanguage stays 'en' — that is its
+    // translation source, independent of these attributes.
+    const activeCode = getGTranslateLangCode();
+    document.documentElement.lang = activeCode;
+    applyDocumentDirection(activeCode);
     try {
       // One-time recovery (2026-09-29): the old first-load logic auto-applied
       // the region's default language — Georgian for the Georgia fallback —

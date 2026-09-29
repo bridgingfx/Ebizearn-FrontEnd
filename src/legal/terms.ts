@@ -10,13 +10,12 @@
  * with every signup (register + social payloads) and recorded as proof of consent.
  */
 
-export const TERMS_VERSION = '1.0';
+export const TERMS_VERSION = '1.1';
 export const TERMS_UPDATED = 'September 26, 2026';
 
 export const COMPANY_LEGAL_NAME = 'eBiz Network';
 export const COMPANY_ADDRESS =
   'Office 102 - Global link Business centre, 37 Platon Ioseliani St, Tbilisi, Georgia';
-export const COMPANY_REGISTRATION_NUMBER = '[COMPANY REGISTRATION NUMBER]';
 export const GOVERNING_LAW_SHORT = 'Georgia';
 export const SUPPORT_EMAIL = 'support@ebizearn.com';
 export const PLATFORM_URL = 'ebizearn.com';
@@ -58,7 +57,7 @@ export const TERMS_SECTIONS: LegalSection[] = [
     title: 'Who We Are',
     blocks: [
       p(
-        `eBizEarn is operated by ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}. Company registration number: ${COMPANY_REGISTRATION_NUMBER}.`
+        `eBizEarn is operated by ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}.`
       ),
       p(
         `For any question about these Terms, contact us at ${SUPPORT_EMAIL}.`
@@ -286,7 +285,7 @@ export const TERMS_SECTIONS: LegalSection[] = [
     title: 'Contact',
     blocks: [
       p(
-        `For questions about these Terms of Service, contact us at ${SUPPORT_EMAIL}. eBizEarn is operated by ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}. Company registration number: ${COMPANY_REGISTRATION_NUMBER}.`
+        `For questions about these Terms of Service, contact us at ${SUPPORT_EMAIL}. eBizEarn is operated by ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}.`
       ),
     ],
   },

@@ -178,7 +178,7 @@ const InstagramPostMockup: React.FC<{ task: UiTask }> = ({ task }) => (
         <Send className="w-5 h-5 text-gray-800 dark:text-gray-200" />
         <Bookmark className="w-5 h-5 text-gray-800 dark:text-gray-200 ml-auto" />
       </div>
-      <p className="px-4 text-[11px] font-bold text-gray-900 dark:text-gray-100">24,512 likes</p>
+      <p className="px-4 text-[11px] font-bold text-gray-900 dark:text-gray-100">Sample likes</p>
       <p className="px-4 pb-4 pt-1 text-[11px] text-gray-700 dark:text-gray-300 leading-snug">
         <span className="font-black">{handle(task.brandName)}</span>{' '}
         {task.postCopy.slice(0, 140)}

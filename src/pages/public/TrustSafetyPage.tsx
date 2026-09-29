@@ -20,7 +20,7 @@ export const TrustSafetyPage: React.FC = () => {
         {[
           {
             icon: ShieldCheck,
-            title: 'AI-Assisted Computer Vision Verification',
+            title: 'Manual + Automated Proof Verification',
             desc: 'Every submission is pre-screened for image clarity, timestamp consistency, and exact instruction compliance before manual review.',
           },
           {
@@ -31,7 +31,7 @@ export const TrustSafetyPage: React.FC = () => {
           {
             icon: Lock,
             title: 'Escrowed Financial Protection',
-            desc: 'Brand budgets are locked in escrow upfront. Contributor rewards are guaranteed upon proof verification with ledger-backed payouts.',
+            desc: 'Brand budgets are held in escrow upfront. Contributor rewards are credited upon proof approval, backed by ledger-based payouts.',
           },
           {
             icon: RefreshCw,

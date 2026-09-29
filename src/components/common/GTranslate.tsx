@@ -113,6 +113,21 @@ export function getGTranslateLangCode(): string {
   return _activeLang.code;
 }
 
+/** Languages that render right-to-left. */
+const RTL_LANG_CODES = new Set(['ar', 'ur']);
+
+/**
+ * Keep the page direction in sync with the active language: Arabic renders
+ * right-to-left; every other supported language is left-to-right.
+ * Called on engine init (initial load), on every programmatic language
+ * change, and on every route-change reapply so `dir` can never drift out
+ * of sync with the language.
+ */
+export function applyDocumentDirection(code: string): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.dir = RTL_LANG_CODES.has(code) ? 'rtl' : 'ltr';
+}
+
 /**
  * Bulletproof Google toolbar suppression. element.js shows its top toolbar by
  * (a) un-hiding a `body > div.skiptranslate` wrapper and (b) pushing the page
@@ -157,6 +172,7 @@ function injectGoogleTranslate(): void {
 
   // Set the cookie BEFORE the script loads so Google auto-translates on init
   const savedCode = loadSavedCode();
+  applyDocumentDirection(savedCode);
   if (savedCode !== 'en') {
     setGoogTransCookie(savedCode);
   }
@@ -215,6 +231,7 @@ export function setGTranslateLang(code: string): void {
   const lang = findLang(code);
   _activeLang = lang;
   saveLang(lang.code);
+  applyDocumentDirection(lang.code);
   if (lang.code === 'en') {
     clearGoogTransCookie();
   } else {
@@ -229,6 +246,7 @@ export function setGTranslateLang(code: string): void {
  */
 export function reapplyGTranslateLang(): void {
   const code = getGTranslateLangCode();
+  applyDocumentDirection(code);
   if (code === 'en') return;
   retryUntil(() => applyLang(code));
 }

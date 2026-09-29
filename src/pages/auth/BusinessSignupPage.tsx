@@ -263,7 +263,7 @@ export const BusinessSignupPage: React.FC = () => {
             </AuthField>
             <AuthField id="referral" label="Referral code (optional)" error={fieldErrors.referral_code}>
               <div className="relative">
-                <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute start-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="referral"
                   type="text"
@@ -271,7 +271,7 @@ export const BusinessSignupPage: React.FC = () => {
                   onChange={(e) => setReferralCode(e.target.value)}
                   placeholder="e.g. AB12CD34"
                   autoComplete="off"
-                  className={`${authInputClass} pl-10 uppercase`}
+                  className={`${authInputClass} ps-10 uppercase`}
                 />
               </div>
             </AuthField>
@@ -300,7 +300,7 @@ export const BusinessSignupPage: React.FC = () => {
           disabledLabel="Review and accept the Terms of Service first"
         >
           <span>Create business account</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
         </AuthSubmitButton>
       </form>
 

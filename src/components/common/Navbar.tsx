@@ -84,7 +84,7 @@ export const Navbar: React.FC = () => {
               className="flex items-center gap-2 text-sm font-semibold text-white bg-gradient-brand px-5 py-2.5 rounded-full shadow-md hover:opacity-95 transition-all"
             >
               <span>{t('nav.goTo', { target: targetLabel })}</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
           ) : (
             <>

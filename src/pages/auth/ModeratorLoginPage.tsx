@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
@@ -20,7 +20,7 @@ import {
   authInputClass,
 } from '../../components/auth/AuthSplitLayout';
 import { PasswordInput } from './PasswordInput';
-import { navigateAfterLogin } from '../../components/auth/EmailVerification';
+import { navigateAfterLogin, stateFrom } from '../../components/auth/EmailVerification';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -33,6 +33,7 @@ export const ModeratorLoginPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const validate = (): boolean => {
     let ok = true;
@@ -59,7 +60,7 @@ export const ModeratorLoginPage: React.FC = () => {
     try {
       const role = await login(email.trim(), password, 'moderator');
       if (role) {
-        await navigateAfterLogin(navigate, role);
+        await navigateAfterLogin(navigate, role, stateFrom(location.state));
       }
     } catch (err) {
       // Display the API's own message (covers 403 portal mismatch).

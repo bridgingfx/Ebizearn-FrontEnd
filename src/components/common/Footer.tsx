@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Globe, CheckCircle2 } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { EBizLogo } from './EBizLogo';
 import { useRegion } from '../../context/RegionContext';
 
 export const Footer: React.FC = () => {
-  const [newsletterDone, setNewsletterDone] = useState(false);
   const { t } = useRegion();
 
   const quickLinks = [
@@ -34,7 +33,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-[#07182F] text-gray-400 dark:text-gray-500 text-sm border-t border-white/10 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-14 border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-14 border-b border-white/10">
 
           {/* Col 1: Brand */}
           <div className="lg:col-span-1 space-y-4">
@@ -79,48 +78,6 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Col 5: Stay Connected */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">{t('footer.stayConnected')}</h4>
-
-            {/* Newsletter Input — honest: no backend endpoint yet, so the form
-                confirms receipt locally and tells the truth instead of faking
-                a subscription. */}
-            {newsletterDone ? (
-              <div className="flex items-start gap-2.5 p-3 rounded-lg bg-white/5 border border-white/10">
-                <CheckCircle2 className="w-4 h-4 text-[#16B364] shrink-0 mt-0.5" />
-                <p className="text-xs text-gray-300 leading-relaxed">
-                  {t('footer.newsletterThanks')}{' '}
-                  <a href="mailto:support@ebizearn.com" className="text-[#20C4E8] font-bold hover:underline">
-                    support@ebizearn.com
-                  </a>
-                  .
-                </p>
-              </div>
-            ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setNewsletterDone(true);
-                }}
-                className="relative"
-              >
-                <input
-                  type="email"
-                  placeholder={t('footer.newsletterPlaceholder')}
-                  required
-                  className="w-full bg-[#0D2342] text-xs text-white placeholder-gray-500 pl-3.5 pr-10 py-2.5 rounded-lg border border-white/10 focus:outline-none focus:border-[#168BFF]"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-1.5 top-1.5 bottom-1.5 px-2 bg-white/10 hover:bg-[#168BFF] text-white rounded-md flex items-center justify-center transition-colors"
-                  aria-label="Subscribe"
-                >
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </form>
-            )}
-          </div>
         </div>
 
         {/* Compact legal disclaimer */}

@@ -821,8 +821,8 @@ export const CreateCampaignWizardPage: React.FC = () => {
               {err('reward') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('reward')}</p>}
               <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Platform minimum: ${MIN_REWARD_USD.toFixed(2)}.</p>
               {converted && rewardCents > 0 && (
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 notranslate" translate="no">
-                  ≈ {fmt(rewardCents)} per task in your currency (estimate).
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
+                  ≈ <span className="notranslate" translate="no">{fmt(rewardCents)}</span> per task in your currency (estimate).
                 </p>
               )}
               {selectedTaskType && (
@@ -900,9 +900,10 @@ export const CreateCampaignWizardPage: React.FC = () => {
               Estimate only. At launch the server recalculates the fee (currently 15%) and checks your balance
               before holding funds. If funds are insufficient, launch is blocked with a clear message.
               {converted && (
-                <span className="notranslate" translate="no">
-                  {' '}≈ {fmt(estimate.total)} total in {displayCurrency} at today&rsquo;s rate.
-                </span>
+                <>
+                  {' '}≈ <span className="notranslate" translate="no">{fmt(estimate.total)}</span> total in{' '}
+                  <span className="notranslate" translate="no">{displayCurrency}</span> at today&rsquo;s rate.
+                </>
               )}
             </p>
           </div>

@@ -59,7 +59,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={t('region.ariaLabel', { name: regionName, currency: current.currency })}
-        className={`flex items-center gap-2 pl-2 pr-2.5 rounded-full border transition-all h-10 shrink-0 ${
+        className={`flex items-center gap-2 ps-2 pe-2.5 rounded-full border transition-all h-10 shrink-0 ${
           dark
             ? 'border-white/15 bg-white/[0.06] hover:bg-white/[0.12] text-white'
             : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-gray-200 shadow-xs'
@@ -80,7 +80,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         <div
           role="listbox"
           aria-label={t('region.title')}
-          className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in"
+          className="absolute end-0 mt-2 w-72 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in"
         >
           <div className="p-1.5 max-h-[22rem] overflow-y-auto">
             {/* ── LANGUAGE (independent of region) ────────────────────
@@ -99,7 +99,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
                     role="option"
                     aria-selected={active}
                     onClick={() => setLang(l.code)}
-                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-left transition-colors ${
+                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-start transition-colors ${
                       active
                         ? 'bg-blue-50 dark:bg-blue-500/15'
                         : 'hover:bg-slate-50 dark:hover:bg-white/5'
@@ -134,7 +134,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
                     setRegion(r.code);
                     setOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-start transition-colors ${
                     /* Selected row: readable in BOTH themes (was bg-blue-50
                        with light text in dark mode — unreadable). */
                     active

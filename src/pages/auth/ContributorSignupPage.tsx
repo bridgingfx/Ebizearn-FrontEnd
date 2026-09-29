@@ -242,7 +242,7 @@ export const ContributorSignupPage: React.FC = () => {
 
           <AuthField id="referral" label="Referral code (optional)" error={fieldErrors.referral}>
             <div className="relative">
-              <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute start-3.5 top-1/2 -translate-y-1/2" />
               <input
                 id="referral"
                 type="text"
@@ -250,7 +250,7 @@ export const ContributorSignupPage: React.FC = () => {
                 onChange={(e) => setReferralCode(e.target.value)}
                 placeholder="e.g. AB12CD34"
                 autoComplete="off"
-                className={`${authInputClass} pl-10 uppercase placeholder:normal-case`}
+                className={`${authInputClass} ps-10 uppercase placeholder:normal-case`}
               />
             </div>
           </AuthField>
@@ -269,7 +269,7 @@ export const ContributorSignupPage: React.FC = () => {
           disabledLabel="Review and accept the Terms of Service first"
         >
           <span>Create free account</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
         </AuthSubmitButton>
       </form>
 

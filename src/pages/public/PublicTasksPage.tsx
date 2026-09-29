@@ -172,7 +172,7 @@ export const PublicTasksPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] text-left font-sans">
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] text-start font-sans">
       
       {/* =========================================================================
           1. BESPOKE MARKETPLACE HERO BANNER
@@ -193,7 +193,7 @@ export const PublicTasksPage: React.FC = () => {
               </h1>
 
               <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
-                Choose tasks from Trustpilot, Google Reviews, Instagram, TikTok, and YouTube across the globe. Follow genuine steps, upload verified proof, and get paid with instant escrow release.
+                Choose tasks from Trustpilot, Google Reviews, Instagram, TikTok, and YouTube across Georgia. Follow genuine steps, upload verified proof, and get paid after manual payout review.
               </p>
             </div>
 
@@ -384,7 +384,7 @@ export const PublicTasksPage: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="text-right">
+                      <div className="text-end">
                         <span className="text-base sm:text-lg font-black text-[#16B364]">${rewardUsd}</span>
                         <span className="block text-[9px] text-gray-400 dark:text-gray-500 font-bold">USD Net</span>
                       </div>
@@ -445,7 +445,7 @@ export const PublicTasksPage: React.FC = () => {
                       className="px-4 py-1.5 rounded-xl bg-[#07182F] hover:bg-[#168BFF] text-white font-black text-xs transition-colors flex items-center gap-1 shadow-sm"
                     >
                       <span>Start Task</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
+                      <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
                     </Link>
                   </div>
 

@@ -31,7 +31,7 @@ export const en = {
   'region.languageTitle': 'Language',
   'region.currencyLabel': 'Currency: {currency}',
   'region.ariaLabel': 'Region: {name}, currency {currency}. Change region',
-  'region.footnote': 'Balances are shown in your account currency. Region affects display only.',
+  'region.footnote': 'Balances convert to your selected currency at today\u2019s rate. Payouts settle in USD.',
   'region.GE': 'Georgia',
   'region.SA': 'Saudi Arabia',
   'region.US': 'United States',

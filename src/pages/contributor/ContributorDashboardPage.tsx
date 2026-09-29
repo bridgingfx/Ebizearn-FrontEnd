@@ -12,7 +12,9 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
-import { mapTaskForUi, money } from '../../utils/apiMappers';
+import { mapTaskForUi } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
+import { FxNote } from '../../components/common/Money';
 import type { UiTask } from '../../types';
 import { TaskCard } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -29,6 +31,7 @@ interface DashboardStats {
 
 export const ContributorDashboardPage: React.FC = () => {
   const { user } = useAuth();
+  const { fmt } = useMoney();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recommended, setRecommended] = useState<UiTask[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +109,7 @@ export const ContributorDashboardPage: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             label="Available balance"
-            value={money(stats?.available_balance_cents ?? 0)}
+            value={fmt(stats?.available_balance_cents ?? 0)}
             sub="Ready to withdraw"
             icon={Wallet}
             gradient="from-emerald-500 to-teal-600"
@@ -115,7 +118,7 @@ export const ContributorDashboardPage: React.FC = () => {
           />
           <StatCard
             label="Pending review"
-            value={money(stats?.pending_balance_cents ?? 0)}
+            value={fmt(stats?.pending_balance_cents ?? 0)}
             sub="Approved, releasing soon"
             icon={Clock}
             gradient="from-amber-500 to-orange-600"
@@ -142,6 +145,7 @@ export const ContributorDashboardPage: React.FC = () => {
           />
         </div>
       )}
+      <FxNote className="mt-1" />
 
       {/* ── Recommended tasks ─────────────────────────────────────── */}
       <div>

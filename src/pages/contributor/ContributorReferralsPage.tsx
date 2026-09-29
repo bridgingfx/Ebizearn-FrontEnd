@@ -15,7 +15,7 @@ import {
   Network,
 } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
-import { money } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
 import type { ReferralsData } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { StatCard, SectionHeader } from '../../components/common/StatCard';
@@ -116,6 +116,7 @@ const ShareButtons: React.FC<{ link: string }> = ({ link }) => {
 };
 
 export const ContributorReferralsPage: React.FC = () => {
+  const { fmt } = useMoney();
   const [data, setData] = useState<ReferralsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -174,7 +175,7 @@ export const ContributorReferralsPage: React.FC = () => {
   }, [data]);
 
   /** Level-1 direct reward: what you earn when a friend completes their first verified task. */
-  const rewardPerReferral = data?.by_level?.[1]?.reward_cents != null ? money(data.by_level[1].reward_cents, 'USD') : '—';
+  const rewardPerReferral = data?.by_level?.[1]?.reward_cents != null ? fmt(data.by_level[1].reward_cents) : '—';
 
   return (
     <div className="space-y-8 text-left">
@@ -261,7 +262,7 @@ export const ContributorReferralsPage: React.FC = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard label="Total referred" value={String(data.total_referred)} icon={Users} gradient="from-[#168BFF] to-[#20C4E8]" shadow="shadow-lg shadow-blue-500/25" />
             <StatCard label="Qualified" value={String(qualifiedReferrals)} sub="Met qualification rules" icon={ShieldCheck} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
-            <StatCard label="Referral earnings" value={money(data.total_earned_cents)} icon={BadgeDollarSign} gradient="from-[#7257FF] to-[#9D7BFF]" shadow="shadow-lg shadow-violet-500/25" />
+            <StatCard label="Referral earnings" value={fmt(data.total_earned_cents)} icon={BadgeDollarSign} gradient="from-[#7257FF] to-[#9D7BFF]" shadow="shadow-lg shadow-violet-500/25" />
             <StatCard label="Per referral" value={rewardPerReferral} icon={Layers} gradient="from-amber-500 to-orange-600" shadow="shadow-lg shadow-amber-500/25" />
           </div>
 
@@ -295,7 +296,7 @@ export const ContributorReferralsPage: React.FC = () => {
                           <p className="text-xl font-black text-slate-900 dark:text-gray-100">
                             {stat.count} <span className="text-xs font-bold text-slate-400 dark:text-gray-500">referral{stat.count === 1 ? '' : 's'}</span>
                           </p>
-                          <p className="text-sm font-extrabold text-emerald-600 mt-0.5">{money(stat.earned)} earned</p>
+                          <p className="text-sm font-extrabold text-emerald-600 mt-0.5">{fmt(stat.earned)} earned</p>
                         </div>
                       ) : (
                         <p className="mt-3 pt-3 border-t border-slate-200/70 dark:border-white/10 text-xs font-bold text-slate-400 dark:text-gray-500">
@@ -369,7 +370,7 @@ export const ContributorReferralsPage: React.FC = () => {
                       </div>
                       <span className={`hidden sm:inline-block text-[11px] font-black px-3 py-1.5 rounded-full border ${st.className}`}>{st.label}</span>
                       <p className={`text-base font-black shrink-0 ${r.reward_cents > 0 ? 'text-emerald-600' : 'text-slate-300 dark:text-gray-600'}`}>
-                        {r.reward_cents > 0 ? `+${money(r.reward_cents)}` : money(0)}
+                        {r.reward_cents > 0 ? `+${fmt(r.reward_cents)}` : fmt(0)}
                       </p>
                     </div>
                   );

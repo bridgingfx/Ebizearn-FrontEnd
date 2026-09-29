@@ -15,7 +15,8 @@ import {
   Loader2,
 } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
-import { mapTaskForUi, money } from '../../utils/apiMappers';
+import { mapTaskForUi } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
 import type { UiTask, TaskSubmission } from '../../types';
 import { PlatformPreview } from '../../components/task/PlatformPreview';
 import { TaskAssetActions } from '../../components/task/TaskAssetActions';
@@ -32,6 +33,7 @@ import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification
  */
 export const TaskDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { fmt } = useMoney();
   const { requireVerified, gate } = useRequireVerifiedEmail();
   const [task, setTask] = useState<UiTask | null>(null);
   const [loading, setLoading] = useState(true);
@@ -225,7 +227,7 @@ export const TaskDetailPage: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
                 <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Reward</p>
-                <p className="text-sm font-black text-[#16B364] mt-0.5">{money(task.reward_cents)}</p>
+                <p className="text-sm font-black text-[#16B364] mt-0.5">{fmt(task.reward_cents)}</p>
               </div>
               <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
                 <p className="text-[10px] font-bold uppercase text-gray-400 dark:text-gray-500">Est. time</p>

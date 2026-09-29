@@ -16,7 +16,10 @@ import {
   BadgeCheck,
 } from 'lucide-react';
 import { walletApi, tasksApi, getApiError } from '../../api';
-import { money, mapTaskForUi } from '../../utils/apiMappers';
+import { mapTaskForUi } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
+import { formatExactUsd } from '../../utils/currency';
+import { FxNote } from '../../components/common/Money';
 import type { WalletTransaction } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { StatCard } from '../../components/common/StatCard';
@@ -117,12 +120,13 @@ export const ContributorWalletPage: React.FC = () => {
     return transactions;
   }, [transactions, tab]);
 
+  const { fmt } = useMoney();
   const availableCents = wallet?.available_balance_cents ?? 0;
   const pendingCents = wallet?.pending_balance_cents ?? 0;
   const totalCents = availableCents + pendingCents;
   const currency = wallet?.currency || 'USD';
 
-  const displayMoney = (cents: number) => (balanceHidden ? '••••••' : money(cents, currency));
+  const displayMoney = (cents: number) => (balanceHidden ? '••••••' : fmt(cents));
 
   const openWithdraw = () => {
     if (!requireVerified()) return;
@@ -137,7 +141,7 @@ export const ContributorWalletPage: React.FC = () => {
     setWithdrawSuccess(null);
     const amountCents = Math.round(parseFloat(amount) * 100);
     if (!Number.isFinite(amountCents) || amountCents < minWithdrawalCents) {
-      setWithdrawError(`Minimum withdrawal is ${money(minWithdrawalCents, currency)}.`);
+      setWithdrawError(`Minimum withdrawal is ${fmt(minWithdrawalCents)}.`);
       return;
     }
     if (amountCents > availableCents) {
@@ -253,7 +257,7 @@ export const ContributorWalletPage: React.FC = () => {
                   wallet?.is_locked
                     ? 'Wallet is locked'
                     : availableCents < minWithdrawalCents
-                      ? `Available balance is below the ${money(minWithdrawalCents, currency)} minimum`
+                      ? `Available balance is below the ${fmt(minWithdrawalCents)} minimum`
                       : 'Request a withdrawal'
                 }
                 className="mt-5 w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[56px] px-8 rounded-2xl bg-gradient-to-r from-[#16B364] to-[#0EA968] text-white font-extrabold text-base shadow-lg shadow-emerald-500/30 hover:brightness-105 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
@@ -262,7 +266,7 @@ export const ContributorWalletPage: React.FC = () => {
                 Withdraw funds
               </button>
               <p className="mt-2.5 text-[11px] text-slate-400 dark:text-gray-500">
-                Minimum withdrawal {money(minWithdrawalCents, currency)} · manual review by the platform team
+                Minimum withdrawal {fmt(minWithdrawalCents)} · manual review by the platform team
               </p>
             </div>
           </div>
@@ -316,6 +320,7 @@ export const ContributorWalletPage: React.FC = () => {
               shadow="shadow-lg shadow-slate-500/25"
             />
           </div>
+          <FxNote />
 
           {/* ── Transactions ──────────────────────────────────────── */}
           <div>
@@ -376,10 +381,10 @@ export const ContributorWalletPage: React.FC = () => {
                       </div>
                       <div className="text-right shrink-0">
                         <p className={`text-base font-black ${positive ? 'text-emerald-600' : 'text-slate-700 dark:text-gray-300'}`}>
-                          {meta.sign}{balanceHidden ? '••••' : money(Math.abs(t.amount_cents), t.currency || currency)}
+                          {meta.sign}{balanceHidden ? '••••' : fmt(Math.abs(t.amount_cents))}
                         </p>
                         <p className="text-[10px] text-slate-400 dark:text-gray-500 font-medium">
-                          Bal {balanceHidden ? '••••' : money(t.balance_after_cents, t.currency || currency)}
+                          Bal {balanceHidden ? '••••' : fmt(t.balance_after_cents)}
                         </p>
                       </div>
                     </div>
@@ -414,8 +419,8 @@ export const ContributorWalletPage: React.FC = () => {
               <div>
                 <h3 id="withdraw-modal-title" className="text-xl font-black text-slate-900 dark:text-gray-100">Request withdrawal</h3>
                 <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">
-                  Available: <span className="font-extrabold text-emerald-600">{money(availableCents, currency)}</span>
-                  {' · '}Minimum: {money(minWithdrawalCents, currency)}
+                  Available: <span className="font-extrabold text-emerald-600">{formatExactUsd(availableCents)}</span>
+                  {' · '}Minimum: {formatExactUsd(minWithdrawalCents)}
                 </p>
               </div>
               <button type="button" onClick={() => setWithdrawOpen(false)} className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Close">

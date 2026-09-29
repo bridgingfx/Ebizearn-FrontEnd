@@ -18,6 +18,7 @@ import { businessApi, getApiError, api } from '../../api';
 import { COUNTRY_OPTIONS } from '../../config/geoLocations';
 import { useAuth } from '../../context/AuthContext';
 import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification';
+import { useMoney } from '../../hooks/useMoney';
 import { TaskPreview, TaskPreviewSummary, classifyTaskPreview } from '../../components/task/TaskPreview';
 import type { UiTask, Campaign } from '../../types';
 import {
@@ -126,6 +127,7 @@ const TEMPLATE_TO_TASK_TYPE: Record<string, string> = {
 export const CreateCampaignWizardPage: React.FC = () => {
   const navigate = useNavigate();
   const { requireVerified, gate } = useRequireVerifiedEmail();
+  const { fmt, converted, displayCurrency } = useMoney();
   const [searchParams] = useSearchParams();
   const templateHint = searchParams.get('template');
   const { user } = useAuth();
@@ -818,6 +820,11 @@ export const CreateCampaignWizardPage: React.FC = () => {
               />
               {err('reward') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('reward')}</p>}
               <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Platform minimum: ${MIN_REWARD_USD.toFixed(2)}.</p>
+              {converted && rewardCents > 0 && (
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1 notranslate" translate="no">
+                  ≈ {fmt(rewardCents)} per task in your currency (estimate).
+                </p>
+              )}
               {selectedTaskType && (
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
                   “{selectedTaskType.name}” allows{' '}
@@ -892,6 +899,11 @@ export const CreateCampaignWizardPage: React.FC = () => {
             <p className="text-[11px] text-gray-400 dark:text-gray-500">
               Estimate only. At launch the server recalculates the fee (currently 15%) and checks your balance
               before holding funds. If funds are insufficient, launch is blocked with a clear message.
+              {converted && (
+                <span className="notranslate" translate="no">
+                  {' '}≈ {fmt(estimate.total)} total in {displayCurrency} at today&rsquo;s rate.
+                </span>
+              )}
             </p>
           </div>
         </div>

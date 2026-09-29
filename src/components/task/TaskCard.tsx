@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, CalendarDays, ShieldAlert, ArrowRight, Users } from 'lucide-react';
 import type { UiTask } from '../../types';
-import { money } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
 import {
   InstagramLogo,
   TikTokLogo,
@@ -105,8 +105,9 @@ interface TaskCardProps {
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => {
+  const { fmt } = useMoney();
   const detailUrl = `/app/tasks/${task.uuid || task.id}`;
-  const reward = money(task.reward_cents, 'USD');
+  const reward = fmt(task.reward_cents);
   const deadline = formatDeadline(task.campaign?.ends_at);
   const retention = humanizeRetention(task.retentionHours);
   const requirements = proofRequirementLabels(task.campaign?.proof_requirements_json);

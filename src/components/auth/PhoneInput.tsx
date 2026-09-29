@@ -87,7 +87,8 @@ export const PhoneField: React.FC<PhoneFieldProps> = ({
       (c) =>
         c.name.toLowerCase().includes(q) ||
         c.dial.replace('+', '').startsWith(q.replace('+', '')) ||
-        c.iso.toLowerCase() === q
+        c.iso.toLowerCase() === q ||
+        (c.aliases ?? []).some((a) => a.toLowerCase().includes(q))
     );
   }, [query]);
 

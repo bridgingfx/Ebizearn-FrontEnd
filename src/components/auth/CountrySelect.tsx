@@ -35,7 +35,7 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({ id, value, onChang
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return ORDERED;
-    return ORDERED.filter((c) => c.name.toLowerCase().includes(q) || c.iso.toLowerCase() === q);
+    return ORDERED.filter((c) => c.name.toLowerCase().includes(q) || c.iso.toLowerCase() === q || (c.aliases ?? []).some((a) => a.toLowerCase().includes(q)));
   }, [query]);
 
   useEffect(() => setActiveIndex(0), [query]);

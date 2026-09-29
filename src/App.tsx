@@ -8,7 +8,7 @@ import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
 import { DeferredPageLoader } from './components/common/PageLoader';
 import { Toaster } from './components/common/Toast';
-import { reapplyGTranslateLang } from './components/common/GTranslate';
+import { reapplyGTranslateLang, GTranslateEngine } from './components/common/GTranslate';
 
 // Layouts — the public shell stays in the main bundle (first paint);
 // role shells are lazy so their code ships with their portal chunk.
@@ -135,6 +135,7 @@ export const App: React.FC = () => {
         <BrowserRouter>
         <ScrollToTop />
         <ReapplyTranslation />
+        <GTranslateEngine />
         <RouteSeo />
         <BootAuth />
         <Suspense fallback={<DeferredPageLoader />}>

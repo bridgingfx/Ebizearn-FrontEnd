@@ -123,14 +123,26 @@ export const BlogPostPage: React.FC = () => {
     <div className="pt-24 pb-16 sm:pb-20">
       <ReadingProgress />
       <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back + breadcrumb */}
-        <Link
-          to="/blog"
-          className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-[#168BFF] transition-colors mb-8"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          All articles
-        </Link>
+        {/* Breadcrumb: Home / Blog / article */}
+        <nav aria-label="Breadcrumb" className="mb-8">
+          <ol className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-gray-500 dark:text-gray-400">
+            <li>
+              <Link to="/" className="hover:text-[#168BFF] transition-colors">
+                Home
+              </Link>
+            </li>
+            <li aria-hidden className="text-gray-300 dark:text-gray-600">/</li>
+            <li>
+              <Link to="/blog" className="hover:text-[#168BFF] transition-colors">
+                Blog
+              </Link>
+            </li>
+            <li aria-hidden className="text-gray-300 dark:text-gray-600">/</li>
+            <li aria-current="page" className="text-gray-700 dark:text-gray-300 font-semibold max-w-[16rem] sm:max-w-md truncate">
+              {post.title}
+            </li>
+          </ol>
+        </nav>
 
         {/* Hero */}
         <header className="max-w-3xl">
@@ -179,7 +191,14 @@ export const BlogPostPage: React.FC = () => {
         {/* Hero image or premium gradient hero */}
         <div className="mt-8 rounded-3xl overflow-hidden border border-[#E4EAF2] dark:border-white/10 shadow-lg">
           {post.heroImage ? (
-            <img src={post.heroImage} alt={post.title} className="w-full max-h-[420px] object-cover" />
+            <img
+              src={post.heroImage}
+              alt={post.title}
+              width={1920}
+              height={1280}
+              loading="lazy"
+              className="w-full max-h-[420px] object-cover"
+            />
           ) : (
             <div className={`relative bg-gradient-to-br ${style.gradient} px-8 py-14 sm:py-20`}>
               <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />

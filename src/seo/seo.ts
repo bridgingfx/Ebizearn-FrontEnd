@@ -102,25 +102,25 @@ export function faqPageSchema(faqs: FaqItem[]): Record<string, unknown> {  retur
 export const SEO_BY_PATH: Record<string, PageSeo> = {
   /* ── Public marketing pages ─────────────────────────────────────── */
   '/': {
-    title: 'eBizEarn — Complete Social Media Tasks & Earn Real Money | Free to Join',
+    title: 'eBizEarn — Complete Social Media Tasks & Earn Real Money',
     description: BASE_DESCRIPTION,
     jsonLd: [organizationSchema(), webSiteSchema(), faqPageSchema(homeFaqs)],
   },
   '/tasks': {
     title: 'Browse Open Tasks — Verified Social Media Gigs | eBizEarn',
     description:
-      'Browse the open eBizEarn task marketplace: verified social media tasks from real businesses. Pick a task, complete it on your phone, submit proof, and get paid. Free to join.',
+      'Browse open eBizEarn tasks: verified social media gigs from real businesses. Pick a task, complete it, submit proof, and get paid. Free to join.',
   },
   '/earn': {
     title: 'How Earning Works — Tasks, Rewards & $50 Payouts | eBizEarn',
     description:
-      'How earning on eBizEarn works: complete verified social tasks, get rewards credited to your wallet, and withdraw from $50.00 via PayPal, Wise, bank, or mobile money. Free to join.',
+      'How earning on eBizEarn works: complete verified social tasks, earn wallet rewards, and withdraw from $50 via PayPal, Wise, bank, or mobile money.',
     jsonLd: [faqPageSchema(earnFaqs)],
   },
   '/for-businesses': {
     title: 'For Businesses — Launch Verified Social Campaigns | eBizEarn',
     description:
-      'Run verified social-media campaigns on eBizEarn: self-serve 6-step campaign wizard, escrowed budgets, AI-verified proof, and real human engagement. Create a corporate account free.',
+      'Run verified social-media campaigns on eBizEarn: self-serve campaign wizard, escrowed budgets, AI-verified proof, and real human engagement.',
   },
   '/pricing': {
     title: 'Pricing — Business Campaign Plans | eBizEarn',
@@ -131,12 +131,12 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
   '/how-it-works': {
     title: 'How It Works — Pick a Task, Verify, Get Paid | eBizEarn',
     description:
-      'How eBizEarn works in three steps: pick a verified task, complete it on your social accounts, submit proof — AI verification credits your wallet in seconds. Free to join.',
+      'How eBizEarn works: pick a verified task, complete it on your social accounts, submit proof — AI verification credits your wallet in seconds.',
   },
   '/about': {
     title: 'About eBizEarn — The Social Task Marketplace | eBizEarn',
     description:
-      'About eBizEarn: the social-media task marketplace connecting contributors who complete verified tasks with businesses running promotional campaigns. Based in Georgia, open worldwide.',
+      'About eBizEarn: the social-media task marketplace connecting contributors with businesses running promotional campaigns. Based in Georgia, open worldwide.',
   },
   '/faq': {
     title: 'FAQ — Tasks, Earnings & Payouts | eBizEarn',
@@ -147,7 +147,7 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
   '/payments': {
     title: 'Payments & Withdrawals FAQ | eBizEarn',
     description:
-      'eBizEarn payments explained: wallet crediting after proof verification, $50.00 minimum withdrawal, PayPal, Wise, bank, Revolut, USDT/USDC, and mobile money payouts.',
+      'eBizEarn payments explained: wallet crediting after proof verification, $50 minimum withdrawal — PayPal, Wise, bank, Revolut, USDT, and mobile money.',
     canonical: '/faq',
   },
   '/blog': {
@@ -157,9 +157,9 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
     jsonLd: [blogListingSchema()],
   },
   '/trust-safety': {
-    title: 'Trust & Safety — Verification, Escrow & Fraud Prevention | eBizEarn',
+    title: 'Trust & Safety — Fraud Prevention & Escrow | eBizEarn',
     description:
-      'How eBizEarn keeps the marketplace fair: AI-assisted proof verification, duplicate-proof detection, escrowed brand budgets, human appeals, and a strict ban on fake reviews.',
+      'How eBizEarn keeps the marketplace fair: AI-assisted proof verification, duplicate detection, escrowed brand budgets, human appeals, and no fake reviews.',
   },
   '/contact': {
     title: 'Contact eBizEarn — Support & Business Inquiries | eBizEarn',
@@ -170,7 +170,7 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
   '/terms': {
     title: 'Terms of Service | eBizEarn',
     description:
-      'eBizEarn Terms of Service: the rules governing contributors, businesses, and visitors on the eBizEarn task marketplace. Free access for contributors; earnings vary and are never guaranteed.',
+      'eBizEarn Terms of Service: the rules for contributors, businesses, and visitors. Free access for contributors; earnings vary and are never guaranteed.',
   },
   '/privacy': {
     title: 'Privacy Policy | eBizEarn',

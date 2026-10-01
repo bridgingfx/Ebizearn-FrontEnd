@@ -24,7 +24,6 @@ import {
 import { usePlatform, type PlatformSupportTicket } from '../../context/PlatformDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { useRegion } from '../../context/RegionContext';
-import { CountryFlag } from './CountryFlag';
 import { supportApi, getApiError } from '../../api';
 import type { TicketCategory } from '../../types';
 
@@ -188,7 +187,7 @@ export const LiveChatWidget: React.FC = () => {
   const navigate = useNavigate();
   const { createSupportTicket } = usePlatform();
   const { user } = useAuth();
-  const { region, regionName, t } = useRegion();
+  const { t } = useRegion();
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -504,10 +503,6 @@ Here are key actions you can take right now:
               <div className="text-xs font-bold tracking-wide flex items-center gap-1.5">
                 <span>{t('chat.title')}</span>
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                <span className="text-[10px] bg-emerald-800/90 text-emerald-100 px-1.5 py-0.5 rounded font-mono font-bold inline-flex items-center gap-1">
-                  <CountryFlag iso={region.code} className="w-4 h-3" />
-                  {regionName}
-                </span>
               </div>
               <div className="text-[11px] text-emerald-100/90 font-medium">{t('chat.subtitle')}</div>
             </div>

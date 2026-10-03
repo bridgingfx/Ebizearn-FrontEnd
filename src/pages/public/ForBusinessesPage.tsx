@@ -108,9 +108,26 @@ export const ForBusinessesPage: React.FC = () => {
           1. BESPOKE CORPORATE PRESTIGE HERO BANNER
          ========================================================================= */}
       <section className="relative bg-[#07182F] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 overflow-hidden border-b border-white/10">
+        {/* Cinematic photographic backdrop — real corporate photography,
+            faded into the navy so the page never looks AI-generated. */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <picture>
+            <source srcSet="/images/for-businesses-hero.webp" type="image/webp" />
+            <img
+              src="/images/for-businesses-hero.jpg"
+              alt=""
+              className="w-full h-full object-cover"
+              loading="eager"
+            />
+          </picture>
+          {/* Navy cinematic grade: image melts into the page, text stays readable */}
+          <div className="absolute inset-0 bg-[#07182F]/62" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#07182F]/80 via-transparent to-[#07182F]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#07182F]/70 via-transparent to-[#07182F]/40" />
+        </div>
         {/* Glow ambient meshes */}
-        <div className="absolute top-10 left-1/3 w-[550px] h-[550px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-        <div className="absolute bottom-0 right-10 w-[450px] h-[450px] bg-[#20C4E8]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-10 left-1/3 w-[550px] h-[550px] bg-[#168BFF]/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+        <div className="absolute bottom-0 right-10 w-[450px] h-[450px] bg-[#20C4E8]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">

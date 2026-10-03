@@ -170,11 +170,19 @@ function injectGoogleTranslate(): void {
   // Start the toolbar suppression before Google's script even loads
   suppressGoogleChrome();
 
-  // Set the cookie BEFORE the script loads so Google auto-translates on init
+  // Set the cookie BEFORE the script loads so Google auto-translates on init.
+  // Reconcile on EVERY boot: a stale googtrans cookie (e.g. left over from
+  // an earlier non-English session) would otherwise make Google
+  // auto-translate on init even though the saved language is English — the
+  // page renders Arabic while the pill shows English. This module is the
+  // sole writer of the cookie, so a cookie that disagrees with the saved
+  // language is stale by definition and must go before Google reads it.
   const savedCode = loadSavedCode();
   applyDocumentDirection(savedCode);
   if (savedCode !== 'en') {
     setGoogTransCookie(savedCode);
+  } else {
+    clearGoogTransCookie();
   }
 
   window.googleTranslateElementInit = function () {

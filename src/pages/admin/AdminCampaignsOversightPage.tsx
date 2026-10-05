@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Megaphone, Building2, Pause, Play, Loader2 } from 'lucide-react';
+import { Megaphone, Building2, Pause, Play, Loader2, Plus } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { Campaign } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PageHeader, StatusBadge, SearchInput, FilterPills, LoadingBlock, ErrorBlock, Card, fmtMoney } from '../../components/common/ui';
+import { CreateCampaignModal } from '../../components/admin/CreateCampaignModal';
 
 /**
  * Phase 11: real campaign oversight. Lists every campaign platform-wide via
  * GET /staff/campaigns (search + status filter), with pause/resume actions.
+ * Admins can also post new campaigns on behalf of a business via
+ * POST /staff/campaigns (same pipeline as the business portal).
  * All figures come from the backend — nothing is invented.
  */
 export const AdminCampaignsOversightPage: React.FC = () => {
@@ -19,6 +22,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [actingId, setActingId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 350);
@@ -88,8 +92,16 @@ export const AdminCampaignsOversightPage: React.FC = () => {
             { value: 'cancelled', label: 'Cancelled' },
           ]}
         />
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
           <SearchInput value={search} onChange={setSearch} placeholder="Search campaigns…" />
+          <button
+            type="button"
+            onClick={() => setShowCreate(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#168BFF] hover:bg-[#0f7ae5] transition-colors shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Post campaign
+          </button>
         </div>
       </div>
 
@@ -107,7 +119,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
         <EmptyState
           icon={Megaphone}
           title="No campaigns found"
-          description="No campaigns match these filters. Businesses create campaigns from the business portal — nothing is shown here until they do."
+          description="No campaigns match these filters. Post one with the button above, or wait for a business to create one from their portal."
         />
       ) : (
         <Card>
@@ -192,6 +204,10 @@ export const AdminCampaignsOversightPage: React.FC = () => {
             </table>
           </div>
         </Card>
+      )}
+
+      {showCreate && (
+        <CreateCampaignModal onClose={() => setShowCreate(false)} onCreated={() => void load()} />
       )}
     </div>
   );

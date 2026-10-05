@@ -40,6 +40,25 @@ export const adminApi = {
   // the backend; returns { data: { data: Campaign[], ... } } (Laravel pager).
   staffCampaigns: (params?: { status?: string; search?: string; business_id?: number; per_page?: number; page?: number }) =>
     api.get('/staff/campaigns', { params }).then((r) => r.data),
+  // Staff-created campaign: admin posts a campaign on behalf of a business
+  // (POST /staff/campaigns). Same pipeline as the business portal.
+  createStaffCampaign: (payload: {
+    business_id: number;
+    title: string;
+    objective?: string;
+    description: string;
+    category_id: number;
+    platform?: string;
+    reward_per_task_cents: number;
+    task_type_key: string;
+    target_contributors_count: number;
+    instructions_markdown: string;
+    proof_requirements_json?: string[];
+    target_countries?: string[];
+    target_languages?: string[];
+    min_contributor_level?: string;
+    retention_hours?: number;
+  }) => api.post('/staff/campaigns', payload).then((r) => r.data),
   updateStaffCampaignStatus: (id: number | string, status: 'active' | 'paused' | 'cancelled') =>
     api.patch(`/staff/campaigns/${id}/status`, { status }).then((r) => r.data),
   // Phase 11: platform-wide referral overview (read-only aggregate).

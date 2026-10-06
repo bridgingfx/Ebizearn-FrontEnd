@@ -481,16 +481,17 @@ export const ContributorProfilePage: React.FC = () => {
           <div className="pb-4 border-b border-gray-100 dark:border-white/10">
             <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Payout Methods</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Supported rails for withdrawals. Minimum withdrawal is $50.00 with zero platform fees. Crypto payouts are not offered.
+              Supported rails for withdrawals. Minimum withdrawal is $50.00 with zero platform fees. USDT payouts are processed after manual review (1 USDT = $1).
             </p>
           </div>
 
           {/* Supported rails (informational — details are entered per withdrawal) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { id: 'paypal', label: 'PayPal', fee: '0% Fee', icon: '🅿️' },
               { id: 'wise', label: 'Wise Transfer', fee: '0% Fee', icon: '🌐' },
               { id: 'bank', label: 'Direct Bank Transfer', fee: '0% Fee', icon: '🏦' },
+              { id: 'usdt', label: 'USDT (TRC-20 / ERC-20)', fee: '0% Fee', icon: '💲' },
             ].map((rail) => (
               <div
                 key={rail.id}

@@ -350,6 +350,7 @@ export interface WithdrawalRequest {
   status: 'requested' | 'compliance_check' | 'processing' | 'paid' | 'failed' | 'rejected' | 'cancelled';
   created_at: string;
   processed_at?: string;
+  provider_transaction_id?: string;
   user?: User;
 }
 

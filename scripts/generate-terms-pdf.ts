@@ -14,7 +14,6 @@ import { fileURLToPath } from 'node:url';
 import {
   COMPANY_ADDRESS,
   COMPANY_LEGAL_NAME,
-  COMPANY_REGISTRATION_NUMBER,
   GOVERNING_LAW_SHORT,
   SUPPORT_EMAIL,
   TERMS_SECTIONS,
@@ -78,7 +77,6 @@ function main(): void {
   doc.fillColor(BODY).font('Helvetica').fontSize(10.5);
   doc.text(`Operated by ${COMPANY_LEGAL_NAME}.`, { lineGap: 2 });
   doc.text(`Registered address: ${COMPANY_ADDRESS}.`, { lineGap: 2 });
-  doc.text(`Company registration number: ${COMPANY_REGISTRATION_NUMBER}.`, { lineGap: 2 });
   doc.text(`Contact: ${SUPPORT_EMAIL}.`, { lineGap: 2 });
   doc.text(`Governing law: the laws of ${GOVERNING_LAW_SHORT}; disputes are subject to the exclusive jurisdiction of the competent courts of Tbilisi, Georgia.`, { lineGap: 2 });
   doc.moveDown(1.2);

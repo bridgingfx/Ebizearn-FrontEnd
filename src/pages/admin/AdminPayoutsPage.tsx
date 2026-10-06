@@ -29,6 +29,8 @@ export const AdminPayoutsPage: React.FC = () => {
   const [actionError, setActionError] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [approvingId, setApprovingId] = useState<number | null>(null);
+  const [txHash, setTxHash] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -51,11 +53,11 @@ export const AdminPayoutsPage: React.FC = () => {
     void load();
   }, [load]);
 
-  const handleAction = async (id: number, action: 'approve' | 'reject', reason?: string) => {
+  const handleAction = async (id: number, action: 'approve' | 'reject', reason?: string, providerTxId?: string) => {
     setProcessingId(id);
     setActionError(null);
     try {
-      const res = await adminApi.processPayout(id, { action, reason });
+      const res = await adminApi.processPayout(id, { action, reason, provider_tx_id: providerTxId });
       if (res.success && res.data) {
         setPayouts((items) => items.map((item) => (item.id === id ? res.data : item)));
       } else {
@@ -67,6 +69,8 @@ export const AdminPayoutsPage: React.FC = () => {
       setProcessingId(null);
       setRejectingId(null);
       setRejectReason('');
+      setApprovingId(null);
+      setTxHash('');
     }
   };
 
@@ -239,6 +243,9 @@ export const AdminPayoutsPage: React.FC = () => {
                     {p.payout_details_json && Object.keys(p.payout_details_json).length > 0 && (
                       <> · {Object.entries(p.payout_details_json).map(([k, v]) => `${k}: ${v}`).join(' / ')}</>
                     )}
+                    {p.provider_transaction_id && (
+                      <> · <span className="font-mono break-all">tx: {p.provider_transaction_id}</span></>
+                    )}
                     <span className="text-gray-400 dark:text-gray-500"> · fee {fmt(p.fee_cents)}</span>
                   </p>
                 </div>
@@ -248,7 +255,11 @@ export const AdminPayoutsPage: React.FC = () => {
                     <button
                       type="button"
                       disabled={processingId === p.id}
-                      onClick={() => void handleAction(p.id, 'approve')}
+                      onClick={() =>
+                        (p.payout_method || '').toLowerCase() === 'usdt'
+                          ? (setApprovingId(p.id), setTxHash(''))
+                          : void handleAction(p.id, 'approve')
+                      }
                       className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#16B364] hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition-colors"
                     >
                       {processingId === p.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
@@ -301,6 +312,50 @@ export const AdminPayoutsPage: React.FC = () => {
                 className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white transition-colors"
               >
                 Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approve USDT modal — optional tx hash recorded as provider reference */}
+      {approvingId != null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setApprovingId(null)} />
+          <div className="relative bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <h3 className="text-base font-extrabold text-gray-900 dark:text-gray-100">Approve USDT payout</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+              After you send the USDT manually, paste the transaction hash here so it is recorded against
+              the request. Leave empty to approve without a hash (you can add it later).
+            </p>
+            <div>
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Transaction hash (optional)</label>
+              <input
+                type="text"
+                value={txHash}
+                onChange={(e) => setTxHash(e.target.value)}
+                placeholder="0x… / Tron txid…"
+                autoComplete="off"
+                spellCheck={false}
+                className="w-full px-3 py-2.5 text-sm font-mono border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setApprovingId(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={processingId != null}
+                onClick={() => void handleAction(approvingId, 'approve', undefined, txHash.trim() || undefined)}
+                className="flex-1 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#16B364] hover:bg-emerald-600 disabled:opacity-50 text-white transition-colors inline-flex items-center justify-center gap-1.5"
+              >
+                {processingId === approvingId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                Confirm Approval
               </button>
             </div>
           </div>

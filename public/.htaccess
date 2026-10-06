@@ -1,6 +1,17 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+
+    # Canonical domain: force https + apex (no www) so search engines see one URL.
+    # NOTE: this file is currently excluded from the FTPS deploy (see
+    # .github/workflows/deploy.yml `exclude`). These rules take effect on
+    # ebizearn.com only once the exclude is removed or they are added in cPanel.
+    RewriteCond %{HTTP_HOST} ^www\.ebizearn\.com$ [NC]
+    RewriteRule ^(.*)$ https://ebizearn.com/$1 [L,R=301]
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # SPA fallback: serve real files/dirs first, everything else → index.html
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . index.html [L]

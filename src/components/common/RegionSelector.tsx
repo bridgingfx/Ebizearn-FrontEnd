@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Check, ChevronDown, Globe } from 'lucide-react';
-import { useRegion, REGIONS, type Region } from '../../context/RegionContext';
+import { Check, ChevronDown, Languages } from 'lucide-react';
+import { useRegion, type Region } from '../../context/RegionContext';
+import { GTRANSLATE_LANGS } from './GTranslate';
 import { CountryFlag } from './CountryFlag';
 
 /**
@@ -21,13 +22,13 @@ interface RegionSelectorProps {
 }
 
 /**
- * Region & currency selector. Region + currency + language are a single
- * persisted source of truth (RegionContext) — changing the region here
- * updates the header badge, this dropdown, the AI support bubble and the
- * site language everywhere at once.
+ * Language selector. Every amount on the site is shown in USD (the ledger and
+ * payout currency), so there is no currency picker: a currency pick could
+ * never convert the USD figures in page copy, which left the pill saying
+ * e.g. PKR while prices still read "$1.80".
  */
 export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark', className = '' }) => {
-  const { region: current, setRegion, t, regionName } = useRegion();
+  const { lang, setLang, t } = useRegion();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -47,7 +48,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
   }, []);
 
   const dark = variant === 'dark';
-  const shortName = regionName.split(' ')[0];
+  const current = GTRANSLATE_LANGS.find((l) => l.code === lang) ?? GTRANSLATE_LANGS[0];
 
   return (
     <div ref={ref} className={`relative ${className}`}>
@@ -56,20 +57,17 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={t('region.ariaLabel', { name: regionName, currency: current.currency })}
-        className={`flex items-center gap-2 pl-2 pr-2.5 rounded-full border transition-all h-10 shrink-0 ${
+        aria-label={t('region.ariaLabel', { name: current.label })}
+        translate="no"
+        className={`notranslate flex items-center gap-2 ps-2 pe-2.5 rounded-full border transition-all h-10 shrink-0 ${
           dark
             ? 'border-white/15 bg-white/[0.06] hover:bg-white/[0.12] text-white'
             : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-gray-200 shadow-xs'
         }`}
       >
-        <RegionFlag region={current} />
-        <span className={`text-xs font-black tracking-wide ${dark ? 'text-white' : 'text-slate-900 dark:text-gray-100'}`}>
-          {current.currency}
-        </span>
-        <span className={`h-3.5 w-px ${dark ? 'bg-white/20' : 'bg-slate-200'}`} />
-        <span className={`text-[11px] font-bold ${dark ? 'text-slate-300' : 'text-slate-500 dark:text-gray-400'}`}>
-          {shortName}
+        <CountryFlag iso={current.flag} className="w-6 h-[18px]" />
+        <span className={`text-xs font-bold max-w-[6.5rem] truncate ${dark ? 'text-white' : 'text-slate-900 dark:text-gray-100'}`}>
+          {current.label}
         </span>
         <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''} text-slate-400 dark:text-gray-500`} />
       </button>
@@ -77,45 +75,42 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
       {open && (
         <div
           role="listbox"
-          aria-label={t('region.title')}
-          className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in"
+          aria-label={t('region.languageTitle')}
+          className="absolute end-0 mt-2 w-72 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in"
         >
-          <p className="px-4 pt-3 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
-            <Globe className="w-3 h-3" /> {t('region.title')}
-          </p>
-          <div className="p-1.5 max-h-72 overflow-y-auto">
-            {REGIONS.map((r) => {
-              const active = r.code === current.code;
-              const name = t(r.nameKey);
-              return (
-                <button
-                  key={r.code}
-                  type="button"
-                  role="option"
-                  aria-selected={active}
-                  onClick={() => {
-                    setRegion(r.code);
-                    setOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
-                    /* Selected row: readable in BOTH themes (was bg-blue-50
-                       with light text in dark mode — unreadable). */
-                    active
-                      ? 'bg-blue-50 dark:bg-blue-500/15'
-                      : 'hover:bg-slate-50 dark:hover:bg-white/5'
-                  }`}
-                >
-                  <RegionFlag region={r} className="w-7 h-[21px]" />
-                  <span className="flex-1 min-w-0">
-                    <span className="block text-sm font-bold text-slate-800 dark:text-gray-100 truncate">{name}</span>
-                    <span className="block text-[11px] text-slate-400 dark:text-gray-400">
-                      {t('region.currencyLabel', { currency: r.currency })}
+          <div className="p-1.5 max-h-[22rem] overflow-y-auto">
+            <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
+              <Languages className="w-3 h-3" /> {t('region.languageTitle')}
+            </p>
+            {/* Native labels must NOT be machine-translated. */}
+            <div className="notranslate grid grid-cols-2 gap-0.5 px-1 pb-1" translate="no">
+              {GTRANSLATE_LANGS.map((l) => {
+                const active = l.code === lang;
+                return (
+                  <button
+                    key={l.code}
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    onClick={() => {
+                      setLang(l.code);
+                      setOpen(false);
+                    }}
+                    className={`flex items-center gap-2 px-2.5 py-2 rounded-xl text-start transition-colors ${
+                      active
+                        ? 'bg-blue-50 dark:bg-blue-500/15'
+                        : 'hover:bg-slate-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <CountryFlag iso={l.flag} className="w-5 h-[15px]" />
+                    <span className="flex-1 min-w-0 truncate text-[13px] font-semibold text-slate-700 dark:text-gray-200">
+                      {l.label}
                     </span>
-                  </span>
-                  {active && <Check className="w-4 h-4 text-[#168BFF] dark:text-blue-400 shrink-0" />}
-                </button>
-              );
-            })}
+                    {active && <Check className="w-3.5 h-3.5 text-[#168BFF] dark:text-blue-400 shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <p className="px-4 py-2.5 text-[10px] text-slate-400 dark:text-gray-500 border-t border-slate-100 dark:border-white/10">
             {t('region.footnote')}

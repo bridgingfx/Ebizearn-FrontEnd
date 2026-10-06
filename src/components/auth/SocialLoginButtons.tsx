@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { toast } from '../../utils/toast';
 import { useAuth } from '../../context/AuthContext';
@@ -7,7 +7,7 @@ import { useTheme } from '../../context/ThemeContext';
 import type { LoginPortal } from '../../api';
 import { authApi } from '../../api';
 import { AppleLogo, GoogleLogo } from '../common/PlatformIcons';
-import { navigateAfterLogin } from './EmailVerification';
+import { navigateAfterLogin, stateFrom } from './EmailVerification';
 import { setPendingPhoneRole } from '../../utils/pendingAuth';
 import { useAuthProviders } from '../../utils/useAuthProviders';
 import type { TermsAcceptance } from '../../api';
@@ -106,6 +106,7 @@ type Mode = 'login' | 'register';
 function useSocialFinish(portal: LoginPortal | undefined, mode: Mode) {
   const { socialLogin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [signingIn, setSigningIn] = useState(false);
 
   const finish = useCallback(
@@ -140,14 +141,14 @@ function useSocialFinish(portal: LoginPortal | undefined, mode: Mode) {
           }
         }
         // Same post-auth routing as password login.
-        await navigateAfterLogin(navigate, role);
+        await navigateAfterLogin(navigate, role, stateFrom(location.state));
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Sign-in failed. Please try again or use email instead.');
       } finally {
         setSigningIn(false);
       }
     },
-    [socialLogin, portal, navigate, mode],
+    [socialLogin, portal, navigate, location, mode],
   );
 
   return { finish, signingIn };

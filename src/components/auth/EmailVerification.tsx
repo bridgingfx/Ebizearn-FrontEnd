@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   MailCheck,
   MailOpen,
@@ -12,7 +12,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { authApi, getApiError } from '../../api';
+import { authApi, getApiError, TOKEN_KEY } from '../../api';
 import { EBizLogo } from '../common/EBizLogo';
 import { AppFooter } from '../common/AppFooter';
 import type { User, UserRole } from '../../types';
@@ -39,6 +39,7 @@ const RESEND_COOLDOWN_SECONDS = 60;
 export const VerifyEmailPage: React.FC = () => {
   const { user, refreshMe, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [cooldown, setCooldown] = useState(0);
   const [resending, setResending] = useState(false);
@@ -80,7 +81,7 @@ export const VerifyEmailPage: React.FC = () => {
         const me = await authApi.me().catch(() => null);
         const latest = me?.data?.user ?? user;
         if (latest) {
-          await navigateAfterLogin(navigate, latest.role);
+          await navigateAfterLogin(navigate, latest.role, stateFrom(location.state));
         } else {
           navigate('/login', { replace: true });
         }
@@ -121,12 +122,13 @@ export const VerifyEmailPage: React.FC = () => {
     try {
       await refreshMe();
       // Re-read the latest user after refresh; navigate when verified.
-      const stored = localStorage.getItem('biznetwork_token');
+      const stored = localStorage.getItem(TOKEN_KEY);
       if (stored) {
         const me = await authApi.me().catch(() => null);
         const latest = me?.data?.user;
         if (latest && isEmailVerified(latest)) {
-          navigate(roleRoute[latest.role], { replace: true });
+          const from = stateFrom(location.state);
+          navigate(from ?? roleRoute[latest.role], { replace: true });
           return;
         }
       }
@@ -294,18 +296,40 @@ export const VerifyEmailPage: React.FC = () => {
 };
 
 /**
+ * Pulls the deep-link target RoleGuard stashed in location state (e.g. the
+ * /app/wallet a guest tried to open before being bounced to login).
+ * Only safe same-app paths are returned — never an external URL.
+ */
+export const stateFrom = (state: unknown): string | null => {
+  if (state && typeof state === 'object' && 'from' in state) {
+    const from = (state as { from?: unknown }).from;
+    if (typeof from === 'string' && from.startsWith('/') && !from.startsWith('//')) {
+      return from;
+    }
+  }
+  return null;
+};
+
+/**
  * Post-login routing shared by every portal login page: the /me response
  * is the source of truth for email verification — unverified users are
  * sent to the verification gate instead of the dashboard.
+ * When `from` carries a safe deep link (RoleGuard's location.state.from),
+ * the user lands there; otherwise they fall back to their role dashboard.
  */
 export const navigateAfterLogin = async (
   navigate: (to: string, opts?: { replace?: boolean }) => void,
-  role: UserRole
+  role: UserRole,
+  from: string | null = null
 ): Promise<void> => {
   const me = await authApi.me().catch(() => null);
   const latest = me?.data?.user;
   if (latest && !isEmailVerified(latest)) {
     navigate('/verify-email', { replace: true });
+    return;
+  }
+  if (from) {
+    navigate(from, { replace: true });
     return;
   }
   navigate(roleRoute[role], { replace: true });

@@ -12,11 +12,13 @@ import {
 } from 'lucide-react';
 import { businessApi, getApiError } from '../../api';
 import type { Campaign, Task, TaskSubmission } from '../../types';
-import { money } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
+import { FxNote } from '../../components/common/Money';
 import { EmptyState } from '../../components/common/EmptyState';
 
 export const BusinessCampaignDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { fmt } = useMoney();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [submissions, setSubmissions] = useState<TaskSubmission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -176,10 +178,10 @@ export const BusinessCampaignDetailPage: React.FC = () => {
       {/* Stats — real values from the API only */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Reward / task', value: money(campaign.reward_per_task_cents, 'USD') },
+          { label: 'Reward / task', value: fmt(campaign.reward_per_task_cents) },
           { label: 'Completed', value: `${campaign.completed_contributors_count ?? 0} / ${campaign.target_contributors_count ?? 0}` },
-          { label: 'Total budget', value: money(campaign.total_budget_cents, 'USD') },
-          { label: 'Spent', value: money(spent, 'USD') },
+          { label: 'Total budget', value: fmt(campaign.total_budget_cents) },
+          { label: 'Spent', value: fmt(spent) },
         ].map((s) => (
           <div key={s.label} className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-4">
             <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">{s.label}</p>
@@ -187,6 +189,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
           </div>
         ))}
       </div>
+      <FxNote className="mt-1" />
 
       {/* Submissions */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-6">

@@ -13,7 +13,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
-import { mapTaskForUi, money } from '../../utils/apiMappers';
+import { mapTaskForUi } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
 import type { TaskSubmission, UiTask } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { VerificationTimeline } from '../../components/task/VerificationTimeline';
@@ -40,6 +41,7 @@ const TABS = [
 ] as const;
 
 export const ContributorMyTasksPage: React.FC = () => {
+  const { fmt } = useMoney();
   const [submissions, setSubmissions] = useState<EnrichedSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -202,7 +204,7 @@ export const ContributorMyTasksPage: React.FC = () => {
                     {task && <p className="text-[11px] text-gray-500 dark:text-gray-400">{task.brandName}</p>}
                   </div>
                   <div className="text-left sm:text-right shrink-0">
-                    <p className="text-base font-black text-[#16B364]">{task ? money(task.reward_cents) : '—'}</p>
+                    <p className="text-base font-black text-[#16B364]">{task ? fmt(task.reward_cents) : '—'}</p>
                     {s.aiResult && (
                       <p className="text-[10px] text-gray-400 dark:text-gray-500">
                         {s.aiResult.ai_label || (s.aiResult.ai_simulated === false ? 'AI check' : 'Simulated check')}: {Math.round((s.aiResult.confidence_score || 0) * 100)}%

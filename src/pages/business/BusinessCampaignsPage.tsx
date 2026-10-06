@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { businessApi, getApiError } from '../../api';
 import type { Campaign } from '../../types';
-import { money } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
 import { EmptyState } from '../../components/common/EmptyState';
 
 type Tab = 'active' | 'in_review' | 'draft' | 'paused' | 'all';
@@ -25,6 +25,7 @@ const VALID_TABS: Tab[] = ['active', 'in_review', 'draft', 'paused', 'all'];
 
 export const BusinessCampaignsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { fmt } = useMoney();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -131,9 +132,9 @@ export const BusinessCampaignsPage: React.FC = () => {
 
   const kpiCards = [
     { icon: Zap, label: 'Active Campaigns', value: String(kpis.active), tone: 'text-[#168BFF]', bg: 'bg-blue-100 dark:bg-blue-500/15' },
-    { icon: Wallet, label: 'Total Budget', value: money(kpis.totalBudget, 'USD'), tone: 'text-violet-600', bg: 'bg-violet-100 dark:bg-violet-500/15' },
+    { icon: Wallet, label: 'Total Budget', value: fmt(kpis.totalBudget), tone: 'text-violet-600', bg: 'bg-violet-100 dark:bg-violet-500/15' },
     { icon: CheckSquare, label: 'Verified Tasks', value: kpis.verified.toLocaleString(), tone: 'text-emerald-600', bg: 'bg-emerald-100 dark:bg-emerald-500/15' },
-    { icon: Target, label: 'Avg. Reward / Task', value: money(kpis.avgCost, 'USD'), tone: 'text-amber-600', bg: 'bg-amber-100 dark:bg-amber-500/15' },
+    { icon: Target, label: 'Avg. Reward / Task', value: fmt(kpis.avgCost), tone: 'text-amber-600', bg: 'bg-amber-100 dark:bg-amber-500/15' },
   ];
 
   return (
@@ -274,7 +275,7 @@ export const BusinessCampaignsPage: React.FC = () => {
 
                     <div className="grid grid-cols-3 gap-2 text-center mb-4">
                       <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={money(c.reward_per_task_cents, 'USD')}>{money(c.reward_per_task_cents, 'USD')}</p>
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={fmt(c.reward_per_task_cents)}>{fmt(c.reward_per_task_cents)}</p>
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">per task</p>
                       </div>
                       <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
@@ -284,7 +285,7 @@ export const BusinessCampaignsPage: React.FC = () => {
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">done</p>
                       </div>
                       <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={money(spentOf(c), 'USD')}>{money(spentOf(c), 'USD')}</p>
+                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={fmt(spentOf(c))}>{fmt(spentOf(c))}</p>
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">spent</p>
                       </div>
                     </div>

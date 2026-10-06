@@ -97,9 +97,9 @@ export const LegalPage: React.FC = () => {
               </div>
 
               <div>
-                <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">4. Payouts & Escrow Guarantee</h2>
+                <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">4. Payouts & Escrow Protection</h2>
                 <p>
-                  Payouts are issued starting from a minimum threshold of $50.00 USD. Withdrawal requests are queued for manual processing. Rewards are credited upon computer vision or moderator verification. Zero withdrawal fees are deducted by eBizEarn.
+                  Payouts are issued starting from a minimum threshold of $50.00 USD. Withdrawal requests are queued for manual processing. Rewards are credited upon moderator verification. Zero withdrawal fees are deducted by eBizEarn.
                 </p>
               </div>
             </div>
@@ -123,7 +123,7 @@ export const LegalPage: React.FC = () => {
               </div>
 
               <div>
-                <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">3. Zero Data Resale Guarantee</h2>
+                <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">3. Our No-Data-Resale Commitment</h2>
                 <p>
                   eBizEarn will never sell, rent, or monetize your personal information to third-party data brokers.
                 </p>
@@ -144,7 +144,7 @@ export const LegalPage: React.FC = () => {
               <div>
                 <h2 className="text-lg font-black text-gray-900 dark:text-gray-100 mb-2">2. Analytics Cookies</h2>
                 <p>
-                  Aggregated telemetry is used to evaluate vision OCR performance latency and server health. These metrics are strictly anonymized.
+                  Aggregated telemetry is used to evaluate platform performance and server health. These metrics are strictly anonymized.
                 </p>
               </div>
             </div>

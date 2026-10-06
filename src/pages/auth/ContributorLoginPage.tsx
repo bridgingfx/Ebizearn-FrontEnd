@@ -18,7 +18,7 @@ import {
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
-import { navigateAfterLogin } from '../../components/auth/EmailVerification';
+import { navigateAfterLogin, stateFrom } from '../../components/auth/EmailVerification';
 import { prefetchWhenIdle, preloadContributorApp } from '../../routes/prefetch';
 import { toast } from '../../utils/toast';
 
@@ -78,7 +78,7 @@ export const ContributorLoginPage: React.FC = () => {
     try {
       const role = await login(email.trim(), password, 'contributor');
       if (role) {
-        await navigateAfterLogin(navigate, role);
+        await navigateAfterLogin(navigate, role, stateFrom(location.state));
       }
     } catch (err) {
       // Display the API's own message (covers 403 portal mismatch).

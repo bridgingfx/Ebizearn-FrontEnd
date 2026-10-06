@@ -1,11 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { useEffect } from 'react';
 
 /**
- * Site-wide language switcher powered by the Google Translate element.js
- * engine. Unlike the old key-by-key dictionary, this translates the ENTIRE
- * rendered DOM — every page, every modal, every dynamically rendered node —
- * so "the language changes everywhere".
+ * Site-wide language engine powered by Google Translate element.js.
+ * Unlike the old key-by-key dictionary, this translates the ENTIRE rendered
+ * DOM — every page, every modal, every dynamically rendered node — so
+ * "the language changes everywhere".
+ *
+ * There is NO visible language dropdown anymore: language is picked from the
+ * LANGUAGE section of the RegionSelector (independent of region), or applied
+ * as a region default via `setRegion` (RegionContext). Both paths call
+ * `setGTranslateLang` / `setLang` in this module.
+ *
+ * This module stays engine-only: hidden `gt-engine-container` injection,
+ * toolbar suppression, cookie + `lm-lang` persistence, and the programmatic
+ * API below. No Google chrome is ever visible.
  *
  * Ported to TypeScript from the approved GTranslate.jsx reference with two
  * deliberate deviations (owner-notified):
@@ -41,7 +49,6 @@ export const GTRANSLATE_LANGS: GTranslateLang[] = [
 ];
 
 const STORAGE_KEY = 'lm-lang';
-const FLAG_BASE = 'https://flagcdn.com/16x12';
 const ENGINE_CONTAINER_ID = 'gt-engine-container';
 
 declare global {
@@ -96,27 +103,61 @@ function findLang(code: string): GTranslateLang {
   return GTRANSLATE_LANGS.find((l) => l.code === code) || GTRANSLATE_LANGS[0];
 }
 
-// ── Module-level singleton: all instances share the same selection ────────────
+// ── Module-level state: the active language code for the whole page ──────────
 let _activeLang: GTranslateLang = findLang(
   typeof window === 'undefined' ? 'en' : loadSavedCode(),
 );
-const _listeners = new Set<(lang: GTranslateLang) => void>();
-
-function subscribe(fn: (lang: GTranslateLang) => void): () => void {
-  _listeners.add(fn);
-  return () => {
-    _listeners.delete(fn);
-  };
-}
-
-function broadcastLang(lang: GTranslateLang): void {
-  _activeLang = lang;
-  _listeners.forEach((fn) => fn(lang));
-}
 
 /** Current Google language code for the whole page (e.g. 'ka', 'ar', 'en'). */
 export function getGTranslateLangCode(): string {
   return _activeLang.code;
+}
+
+/** Languages that render right-to-left. */
+const RTL_LANG_CODES = new Set(['ar', 'ur']);
+
+/**
+ * Keep the page direction in sync with the active language: Arabic renders
+ * right-to-left; every other supported language is left-to-right.
+ * Called on engine init (initial load), on every programmatic language
+ * change, and on every route-change reapply so `dir` can never drift out
+ * of sync with the language.
+ */
+export function applyDocumentDirection(code: string): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.dir = RTL_LANG_CODES.has(code) ? 'rtl' : 'ltr';
+}
+
+/**
+ * Bulletproof Google toolbar suppression. element.js shows its top toolbar by
+ * (a) un-hiding a `body > div.skiptranslate` wrapper and (b) pushing the page
+ * down via `body.style.top = "40px"`. The CSS in index.css already hides the
+ * wrapper, but this observer guarantees it STAYS hidden no matter how Google
+ * toggles it (inline styles, re-insertion, future markup tweaks): it re-hides
+ * the wrapper and neutralises the 40px page push on every relevant mutation.
+ * Translation itself is unaffected — the toolbar is purely informational UI
+ * ("Translated to: X" / "Show original"); switching back to English is done
+ * programmatically via `setGTranslateLang('en')` (e.g. by picking a
+ * region whose locale is 'en').
+ */
+function suppressGoogleChrome(): void {
+  const kill = (): void => {
+    document.querySelectorAll('body > div.skiptranslate').forEach((el) => {
+      const node = el as HTMLElement;
+      if (node.id === ENGINE_CONTAINER_ID) return; // never hide our engine
+      if (node.style.display !== 'none') node.style.display = 'none';
+    });
+    const top = document.body.style.top;
+    if (top && top !== '0px') document.body.style.top = '0px';
+  };
+  kill(); // banner may already exist (auto-translate on load via cookie)
+  const obs = new MutationObserver(kill);
+  obs.observe(document.body, {
+    childList: true,
+    attributes: true,
+    attributeFilter: ['style'],
+    subtree: false,
+  });
 }
 
 // ── Google Translate engine (injected once) ───────────────────────────────────
@@ -126,10 +167,22 @@ function injectGoogleTranslate(): void {
   if (gtInjected || typeof window === 'undefined') return;
   gtInjected = true;
 
-  // Set the cookie BEFORE the script loads so Google auto-translates on init
+  // Start the toolbar suppression before Google's script even loads
+  suppressGoogleChrome();
+
+  // Set the cookie BEFORE the script loads so Google auto-translates on init.
+  // Reconcile on EVERY boot: a stale googtrans cookie (e.g. left over from
+  // an earlier non-English session) would otherwise make Google
+  // auto-translate on init even though the saved language is English — the
+  // page renders Arabic while the pill shows English. This module is the
+  // sole writer of the cookie, so a cookie that disagrees with the saved
+  // language is stale by definition and must go before Google reads it.
   const savedCode = loadSavedCode();
+  applyDocumentDirection(savedCode);
   if (savedCode !== 'en') {
     setGoogTransCookie(savedCode);
+  } else {
+    clearGoogTransCookie();
   }
 
   window.googleTranslateElementInit = function () {
@@ -184,8 +237,9 @@ function retryUntil(fn: () => boolean): void {
  */
 export function setGTranslateLang(code: string): void {
   const lang = findLang(code);
-  broadcastLang(lang);
+  _activeLang = lang;
   saveLang(lang.code);
+  applyDocumentDirection(lang.code);
   if (lang.code === 'en') {
     clearGoogTransCookie();
   } else {
@@ -200,140 +254,21 @@ export function setGTranslateLang(code: string): void {
  */
 export function reapplyGTranslateLang(): void {
   const code = getGTranslateLangCode();
+  applyDocumentDirection(code);
   if (code === 'en') return;
   retryUntil(() => applyLang(code));
 }
 
-interface GTranslateProps {
-  /** 'dark' for navy headers, 'light' for white headers. */
-  variant?: 'dark' | 'light';
-  className?: string;
-}
 
 /**
- * Language dropdown. Styled to match the region/currency selector:
- * dark navy glass on navy headers, readable in BOTH light and dark themes.
- * The button + menu carry `notranslate` so Google never translates the
- * language names themselves.
+ * Invisible engine mount — renders nothing. Injects the Google Translate
+ * element.js engine once (hidden container + toolbar-suppression observer)
+ * so region-driven translation works on every page with zero visible
+ * Google UI. Mount once near the app root (see App.tsx).
  */
-export const GTranslate: React.FC<GTranslateProps> = ({ variant = 'dark', className = '' }) => {
-  const [selected, setSelected] = useState<GTranslateLang>(() => _activeLang);
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-
+export function GTranslateEngine(): null {
   useEffect(() => {
     injectGoogleTranslate();
-    // Preload all flag images into browser cache so the dropdown opens instantly
-    GTRANSLATE_LANGS.forEach(({ flag }) => {
-      const img = new Image();
-      img.src = `${FLAG_BASE}/${flag}.png`;
-    });
   }, []);
-
-  // Stay in sync when another instance (or setGTranslateLang) changes the language
-  useEffect(() => subscribe(setSelected), []);
-
-  // Close dropdown on outside click / Escape
-  useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    document.addEventListener('mousedown', onDocClick);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDocClick);
-      document.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
-
-  const changeLang = (lang: GTranslateLang): void => {
-    setOpen(false);
-    setGTranslateLang(lang.code);
-  };
-
-  const dark = variant === 'dark';
-
-  return (
-    <div ref={rootRef} className={`relative ${className}`}>
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        aria-haspopup="listbox"
-        aria-label="Change language"
-        // Google must never translate the language picker itself
-        className={`notranslate flex items-center gap-2 pl-2 pr-2.5 rounded-full border transition-all h-10 shrink-0 ${
-          dark
-            ? 'border-white/15 bg-white/[0.06] hover:bg-white/[0.12] text-white'
-            : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-gray-200 shadow-xs'
-        }`}
-        translate="no"
-      >
-        <img
-          src={`${FLAG_BASE}/${selected.flag}.png`}
-          alt={selected.label}
-          width={16}
-          height={12}
-          className="rounded-[2px]"
-        />
-        <span
-          className={`text-xs font-black tracking-wide ${
-            dark ? 'text-white' : 'text-slate-900 dark:text-gray-100'
-          }`}
-        >
-          {selected.label}
-        </span>
-        <ChevronDown
-          className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''} text-slate-400 dark:text-gray-500`}
-        />
-      </button>
-
-      {open && (
-        <ul
-          role="listbox"
-          aria-label="Language"
-          className="notranslate absolute right-0 mt-2 w-56 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50"
-          translate="no"
-        >
-          <div className="p-1.5 max-h-72 overflow-y-auto">
-            {GTRANSLATE_LANGS.map((lang) => {
-              const active = lang.code === selected.code;
-              return (
-                <li key={lang.code} role="option" aria-selected={active}>
-                  <button
-                    type="button"
-                    onClick={() => changeLang(lang)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
-                      /* Selected row: readable in BOTH themes. */
-                      active
-                        ? 'bg-blue-50 dark:bg-blue-500/15'
-                        : 'hover:bg-slate-50 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    <img
-                      src={`${FLAG_BASE}/${lang.flag}.png`}
-                      alt=""
-                      width={16}
-                      height={12}
-                      className="rounded-[2px] shrink-0"
-                    />
-                    <span className="flex-1 min-w-0 block text-sm font-bold text-slate-800 dark:text-gray-100 truncate">
-                      {lang.label}
-                    </span>
-                    {active && <Check className="w-4 h-4 text-[#168BFF] dark:text-blue-400 shrink-0" />}
-                  </button>
-                </li>
-              );
-            })}
-          </div>
-        </ul>
-      )}
-    </div>
-  );
-};
-
-export default GTranslate;
+  return null;
+}

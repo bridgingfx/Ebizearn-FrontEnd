@@ -77,7 +77,7 @@ export const ForBusinessesPage: React.FC = () => {
     },
     {
       feature: 'Verification Burden on You',
-      eBiz: '0% Effort — eBiz AI & Admin team inspects 100% of proofs',
+      eBiz: 'Low effort — our review team inspects proofs',
       agencies: 'High — hours spent coordinating contracts & checking posts',
       botFarms: 'None, but leads to platform account bans & penalization',
     },
@@ -85,7 +85,7 @@ export const ForBusinessesPage: React.FC = () => {
       feature: 'Reputation & Review Quality',
       eBiz: 'Constructive 5-star Trustpilot & Google Business reviews',
       agencies: 'Rarely handle direct review platforms',
-      botFarms: 'Instantly detected and purged by Google / Trustpilot filters',
+      botFarms: 'Leads to platform account bans & penalization',
     },
     {
       feature: 'Cost Per Verified Action',
@@ -102,15 +102,32 @@ export const ForBusinessesPage: React.FC = () => {
   ];
 
   return (
-    <div className="text-left font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
+    <div className="text-start font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
       
       {/* =========================================================================
           1. BESPOKE CORPORATE PRESTIGE HERO BANNER
          ========================================================================= */}
       <section className="relative bg-[#07182F] text-white pt-24 pb-16 sm:pt-28 sm:pb-20 overflow-hidden border-b border-white/10">
+        {/* Cinematic photographic backdrop — real corporate photography,
+            faded into the navy so the page never looks AI-generated. */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <picture>
+            <source srcSet="/images/for-businesses-hero.webp" type="image/webp" />
+            <img
+              src="/images/for-businesses-hero.jpg"
+              alt=""
+              className="w-full h-full object-cover"
+              loading="eager"
+            />
+          </picture>
+          {/* Navy cinematic grade: image melts into the page, text stays readable */}
+          <div className="absolute inset-0 bg-[#07182F]/62" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#07182F]/80 via-transparent to-[#07182F]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#07182F]/70 via-transparent to-[#07182F]/40" />
+        </div>
         {/* Glow ambient meshes */}
-        <div className="absolute top-10 left-1/3 w-[550px] h-[550px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
-        <div className="absolute bottom-0 right-10 w-[450px] h-[450px] bg-[#20C4E8]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-10 left-1/3 w-[550px] h-[550px] bg-[#168BFF]/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow" />
+        <div className="absolute bottom-0 right-10 w-[450px] h-[450px] bg-[#20C4E8]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -122,7 +139,7 @@ export const ForBusinessesPage: React.FC = () => {
                 <Building2 className="w-3.5 h-3.5" />
                 <span>Enterprise Brand Protection & Social Distribution</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#16B364]" />
-                <span className="text-white font-mono">Georgia 🇬🇪 • Global</span>
+                <span className="text-white font-mono">Georgia 🇬🇪</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
@@ -133,7 +150,7 @@ export const ForBusinessesPage: React.FC = () => {
               </h1>
 
               <p className="text-xs sm:text-sm text-gray-300 max-w-xl leading-relaxed font-normal">
-                Deploy verified human contributors across <strong>Trustpilot, Google Business, Instagram, TikTok, and App Stores</strong>. Safeguard your online prestige with automated AI OCR auditing and zero administrative overhead.
+                Deploy verified human contributors across <strong>Trustpilot, Google Business, Instagram, TikTok, and App Stores</strong>. Safeguard your online prestige with manual proof review and zero administrative overhead.
               </p>
 
               {/* Supported Platforms Strip */}
@@ -167,7 +184,7 @@ export const ForBusinessesPage: React.FC = () => {
                   className="px-7 py-4 bg-gradient-brand hover:opacity-95 text-white font-black text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
                 >
                   <span>Launch Institutional Campaign</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                 </Link>
                 <a
                   href="#simulator"
@@ -223,8 +240,7 @@ export const ForBusinessesPage: React.FC = () => {
                   </div>
 
                   <div className="text-white font-bold text-sm flex items-center gap-2">
-                    <TrustpilotLogo className="w-4 h-4" />
-                    <span>Trustpilot 5-Star Verified Experience</span>
+                    <span>Sponsored Reviews Campaign</span>
                   </div>
 
                   {/* Progress bar */}
@@ -286,11 +302,11 @@ export const ForBusinessesPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-bold text-white">Zero Verification Overhead for Business Owners</h2>
                   <span className="px-2.5 py-0.5 rounded-full bg-[#16B364]/20 text-[#16B364] border border-[#16B364]/30 text-[10px] font-black uppercase">
-                    100% Automated & Admin Audited
+                    Manually Reviewed & Admin Audited
                   </span>
                 </div>
                 <p className="text-xs text-gray-300 leading-relaxed max-w-3xl">
-                  Unlike conventional platforms that burden your marketing managers with verifying thousands of screenshots and links, <strong>eBiz Network handles 100% of proof auditing</strong>. Our multi-agent AI Vision OCR inspects URLs, timestamps, account legitimacy, and review authenticity. Your team never reviews a single submission.
+                  Unlike conventional platforms that burden your marketing managers with verifying thousands of screenshots and links, <strong>eBiz Network handles proof auditing</strong>. Our team reviews submissions with manual checks and automated tooling for URLs, timestamps, account legitimacy, and review authenticity. Your team never reviews a single submission.
                 </p>
               </div>
             </div>
@@ -336,7 +352,7 @@ export const ForBusinessesPage: React.FC = () => {
                     key={key}
                     type="button"
                     onClick={() => handleObjectiveSelect(key)}
-                    className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                    className={`p-3.5 rounded-2xl border text-start transition-all cursor-pointer ${
                       objective === key
                         ? 'border-[#168BFF] bg-blue-50/60 dark:bg-blue-500/10 shadow-sm ring-2 ring-[#168BFF]/20'
                         : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 bg-white dark:bg-[#0C1322]'
@@ -415,7 +431,7 @@ export const ForBusinessesPage: React.FC = () => {
                 <span className="font-bold text-white">USD {contributorBudget.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs">
-                <span className="text-gray-300">Escrow & AI Vision Moderation Fee (15%)</span>
+                <span className="text-gray-300">Escrow & Moderation Fee (15%)</span>
                 <span className="font-bold text-white">USD {platformFee.toFixed(2)}</span>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
@@ -425,7 +441,7 @@ export const ForBusinessesPage: React.FC = () => {
                     ${totalBudget} <span className="text-xs font-normal text-white">USD</span>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <span className="text-xs text-gray-300 block">Estimated Completion</span>
                   <div className="text-sm font-bold text-[#16B364] mt-0.5 flex items-center gap-1 justify-end">
                     <Clock className="w-3.5 h-3.5" />
@@ -444,7 +460,7 @@ export const ForBusinessesPage: React.FC = () => {
                 className="px-7 py-3.5 bg-gradient-brand text-white text-xs sm:text-sm font-bold rounded-xl shadow hover:scale-105 transition-all flex items-center gap-2"
               >
                 <span>Deploy Campaign to Marketplace</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
               </Link>
             </div>
 
@@ -478,7 +494,7 @@ export const ForBusinessesPage: React.FC = () => {
                   className="px-8 py-3.5 bg-[#168BFF] hover:bg-[#1277dc] text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl transition-all flex items-center gap-2"
                 >
                   <span>Create Business Account</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                 </Link>
                 <button
                   type="button"
@@ -512,7 +528,7 @@ export const ForBusinessesPage: React.FC = () => {
           </div>
 
           <div className="glass rounded-3xl overflow-x-auto">
-            <table className="min-w-[640px] w-full text-left border-collapse text-xs">
+            <table className="min-w-[640px] w-full text-start border-collapse text-xs">
               <thead>
                 <tr className="bg-[#07182F] text-white">
                   <th className="p-4 sm:p-5 font-bold">Key Criteria</th>
@@ -559,7 +575,7 @@ export const ForBusinessesPage: React.FC = () => {
               className="px-8 py-4 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>Create Business Account</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
             <Link
               to="/business/login"

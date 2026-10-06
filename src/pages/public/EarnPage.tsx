@@ -126,7 +126,7 @@ export const EarnPage: React.FC = () => {
       level: 'Verified Contributor',
       tier: 'Level 2',
       req: '5 verified tasks with 90%+ score',
-      perk: 'Unlocks app testing & priority AI review',
+      perk: 'Unlocks app testing & priority review',
       cap: '$45 / day cap',
       badge: 'bg-blue-100 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300',
     },
@@ -141,15 +141,15 @@ export const EarnPage: React.FC = () => {
     {
       level: 'Elite Squad',
       tier: 'Level 4',
-      req: 'Top 5% contributors worldwide',
-      perk: 'Direct brand campaigns & +10% cash bonus',
+      req: 'Top contributors in Georgia',
+      perk: 'Direct brand campaigns & bonus rewards',
       cap: 'Unlimited + Bonuses',
       badge: 'bg-emerald-100 text-[#16B364] dark:bg-emerald-500/15 dark:text-emerald-300',
     },
   ];
 
   return (
-    <div className="text-left font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
+    <div className="text-start font-sans min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19]">
       
       {/* =========================================================================
           1. BESPOKE HERO: SOCIAL EARNING COMMAND HUB & INTERACTIVE MATRIX
@@ -176,7 +176,7 @@ export const EarnPage: React.FC = () => {
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Earn from $0.40 to $8.50 per task across Instagram, TikTok, YouTube, Facebook, and WhatsApp. Cash out starting from <strong className="text-white font-bold">$50.00</strong> to PayPal, Wise, or Bank.
+              Earn from $0.40 to $8.50 per task across Instagram, TikTok, YouTube, Facebook, and WhatsApp. Cash out starting from <strong className="text-white font-bold">$50.00</strong> to PayPal, Wise, Bank, or USDT.
             </p>
           </div>
 
@@ -251,7 +251,7 @@ export const EarnPage: React.FC = () => {
                     className="px-8 py-3.5 bg-gradient-brand hover:opacity-95 text-white text-xs sm:text-sm font-black rounded-xl shadow-lg hover:scale-105 transition-all flex items-center gap-2"
                   >
                     <span>Start Earning on {currentChannel.name.split(' ')[0]}</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 rtl:rotate-180" />
                   </Link>
                   <Link
                     to="/tasks"
@@ -262,12 +262,12 @@ export const EarnPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right: Live Simulated Task Card */}
+              {/* Right: Sample Task Card (illustrative) */}
               <div className="lg:col-span-5 bg-white dark:bg-[#0C1322] rounded-3xl p-6 text-gray-900 dark:text-gray-100 shadow-2xl border border-gray-100 dark:border-white/10 space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-white/10">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#16B364] animate-ping" />
-                    <span className="text-xs font-black text-gray-900 dark:text-gray-100 uppercase">Live Task Example</span>
+                    <span className="text-xs font-black text-gray-900 dark:text-gray-100 uppercase">Task Example (Sample)</span>
                   </div>
                   <span className="text-base font-black text-[#16B364]">{currentChannel.payout}</span>
                 </div>
@@ -283,12 +283,12 @@ export const EarnPage: React.FC = () => {
                     <span className="font-bold text-gray-900 dark:text-gray-100">Screenshot Proof</span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400">
-                    <span>AI Review Time:</span>
-                    <span className="font-bold text-[#168BFF]">12 Seconds</span>
+                    <span>Review Time:</span>
+                    <span className="font-bold text-[#168BFF]">Manual Review</span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400">
                     <span>Payout Eligibility:</span>
-                    <span className="font-bold text-[#16B364]">Instant Wallet Credit</span>
+                    <span className="font-bold text-[#16B364]">Ledger Credit</span>
                   </div>
                 </div>
 
@@ -381,7 +381,7 @@ export const EarnPage: React.FC = () => {
                 className="px-6 py-3 bg-[#07182F] hover:bg-[#168BFF] text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-2"
               >
                 <span>Sign Up Free to Start</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 rtl:rotate-180" />
               </Link>
             </div>
 
@@ -404,7 +404,7 @@ export const EarnPage: React.FC = () => {
               Level Up for Higher Rewards & Bonuses
             </h2>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              Every verified task improves your contributor score, unlocking higher payouts, instant withdrawals, and daily streak rewards.
+              Every verified task improves your contributor score, unlocking higher payouts, withdrawal priority, and streak rewards.
             </p>
           </div>
 
@@ -442,7 +442,7 @@ export const EarnPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          4. MULTI-RAIL CASHOUT METHODS ($50.00 MINIMUM)
+          4. CASHOUT METHODS ($50.00 MINIMUM)
          ========================================================================= */}
       <section className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
@@ -461,12 +461,12 @@ export const EarnPage: React.FC = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { name: 'PayPal', min: '$50.00 min', time: 'Instant' },
-              { name: 'Wise Transfer', min: '$50.00 min', time: 'Under 2h' },
-              { name: 'Direct Bank', min: '$50.00 min', time: '1-2 Days' },
-              { name: 'Revolut', min: '$50.00 min', time: 'Instant' },
-              { name: 'USDT / USDC', min: '$50.00 min', time: '10 Mins' },
-              { name: 'Mobile Money', min: '$50.00 min', time: 'Instant' },
+              { name: 'PayPal', min: '$50.00 min', time: 'After manual review' },
+              { name: 'Wise Transfer', min: '$50.00 min', time: 'After manual review' },
+              { name: 'Direct Bank', min: '$50.00 min', time: 'After manual review' },
+              { name: 'USDT (TRC-20 / ERC-20)', min: '$50.00 min', time: 'After manual review' },
+              { name: 'Revolut', min: '$50.00 min', time: 'After manual review' },
+              { name: 'Mobile Money', min: '$50.00 min', time: 'After manual review' },
             ].map((method, idx) => (
               <div key={idx} className="p-4 rounded-2xl bg-[#F7F9FC] dark:bg-[#0B0F19] border border-[#E4EAF2] dark:border-white/10 text-center space-y-1 hover:border-[#168BFF]/40 transition-colors">
                 <div className="text-xs font-bold text-gray-900 dark:text-gray-100">{method.name}</div>
@@ -477,7 +477,7 @@ export const EarnPage: React.FC = () => {
           </div>
 
           <div className="p-5 rounded-2xl bg-[#07182F] text-white flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-left space-y-0.5">
+            <div className="text-start space-y-0.5">
               <h4 className="text-sm font-bold">Double-Entry Financial Ledger Protection</h4>
               <p className="text-xs text-gray-300">Every cent earned is cryptographically journaled before and after withdrawal.</p>
             </div>
@@ -520,7 +520,7 @@ export const EarnPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-gray-900 dark:text-gray-100 hover:text-[#168BFF] transition-colors"
+                    className="w-full p-5 sm:p-6 text-start flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-gray-900 dark:text-gray-100 hover:text-[#168BFF] transition-colors"
                   >
                     <span className="flex items-center gap-2.5">
                       <HelpCircle className="w-4 h-4 text-[#168BFF] shrink-0" />
@@ -557,7 +557,7 @@ export const EarnPage: React.FC = () => {
               className="px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>Create Free Account Now</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
             <Link
               to="/tasks"

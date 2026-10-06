@@ -192,7 +192,7 @@ export const PortalBanner: React.FC<{ label: string; className?: string }> = ({ 
     </span>
     <span
       aria-hidden="true"
-      className="relative ml-auto hidden h-px w-24 shrink-0 bg-gradient-to-r from-transparent via-white/50 to-transparent sm:block"
+      className="relative ms-auto hidden h-px w-24 shrink-0 bg-gradient-to-r from-transparent via-white/50 to-transparent sm:block"
     />
   </div>
 );

@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ArrowDownLeft, ArrowUpRight, Clock, Loader2, Plus, Receipt, RefreshCw, Wallet } from 'lucide-react';
-import { depositsApi, formatUsd, getApiError } from '../../api';
+import { depositsApi, getApiError } from '../../api';
+import { useMoney } from '../../hooks/useMoney';
+import { FxNote } from '../../components/common/Money';
 import type { BusinessDepositsOverview, DepositMethod, DepositStatus } from '../../api';
 import { EmptyState } from '../../components/common/EmptyState';
 import { DepositModal, METHOD_ICONS } from '../../components/business/DepositModal';
@@ -25,6 +27,7 @@ const TX_LABELS: Record<string, string> = {
 const date = (iso: string) => new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 export const BusinessBillingPage: React.FC = () => {
+  const { fmt } = useMoney();
   const [methods, setMethods] = useState<DepositMethod[]>([]);
   const [overview, setOverview] = useState<BusinessDepositsOverview | null>(null);
   const [loading, setLoading] = useState(true);
@@ -88,11 +91,12 @@ export const BusinessBillingPage: React.FC = () => {
               <div className="absolute -top-6 -right-6 w-36 h-36 bg-[#168BFF]/25 rounded-full blur-2xl pointer-events-none" />
               <span className="text-xs font-bold text-gray-300 uppercase tracking-wider">Available campaign balance</span>
               <div>
-                <span className="text-3xl sm:text-4xl font-black tracking-tight tabular-nums">{wallet ? formatUsd(wallet.available_balance_cents, wallet.currency) : '—'}</span>
+                <span className="text-3xl sm:text-4xl font-black tracking-tight tabular-nums">{wallet ? fmt(wallet.available_balance_cents) : '—'}</span>
                 <span className="text-xs text-gray-300 block mt-1">Used to fund your campaigns.</span>
+                <FxNote />
               </div>
               <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
-                <span className="text-gray-400">{pending.length > 0 ? `${formatUsd(pendingCents)} awaiting confirmation` : 'No pending deposits'}</span>
+                <span className="text-gray-400">{pending.length > 0 ? `${fmt(pendingCents)} awaiting confirmation` : 'No pending deposits'}</span>
                 <button type="button" onClick={openDeposit} className="text-[#20C4E8] font-bold hover:underline">+ Deposit</button>
               </div>
             </div>
@@ -175,7 +179,7 @@ export const BusinessBillingPage: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-3 sm:justify-end">
                           <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${STATUS_STYLES[d.status]}`}>{STATUS_LABEL[d.status]}</span>
-                          <span className="text-sm font-black text-gray-900 dark:text-gray-100 tabular-nums w-28 text-right">{formatUsd(d.amount_cents, d.currency)}</span>
+                          <span className="text-sm font-black text-gray-900 dark:text-gray-100 tabular-nums w-28 text-right">{fmt(d.amount_cents)}</span>
                         </div>
                       </li>
                     );
@@ -201,9 +205,9 @@ export const BusinessBillingPage: React.FC = () => {
                       </div>
                       <div className="text-right">
                         <p className={`text-sm font-black tabular-nums ${credit ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-gray-100'}`}>
-                          {credit ? '+' : '−'}{formatUsd(Math.abs(t.amount_cents), t.currency)}
+                          {credit ? '+' : '−'}{fmt(Math.abs(t.amount_cents))}
                         </p>
-                        <p className="text-[11px] text-gray-400 tabular-nums">Balance {formatUsd(t.balance_after_cents, t.currency)}</p>
+                        <p className="text-[11px] text-gray-400 tabular-nums">Balance {fmt(t.balance_after_cents)}</p>
                       </div>
                     </li>
                   );

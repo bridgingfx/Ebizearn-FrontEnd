@@ -31,7 +31,42 @@ import { setPendingOtpEmail } from '../../utils/pendingAuth';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
 
-const INDUSTRIES = ['Tech & SaaS', 'E-Commerce', 'Consumer Brands', 'Mobile Apps', 'Real Estate', 'Finance', 'Other'];
+const INDUSTRIES = [
+  'Tech & SaaS',
+  'Forex Broker',
+  'Crypto Exchange',
+  'Crypto & Web3 Project',
+  'Trading & Investment Platform',
+  'Fintech & Payments',
+  'Banking & Finance',
+  'Insurance',
+  'E-Commerce',
+  'Retail & Consumer Brands',
+  'Mobile Apps',
+  'Gaming & Esports',
+  'iGaming & Betting',
+  'Media & Entertainment',
+  'Digital Marketing Agency',
+  'Influencer & Creator Brand',
+  'Education & E-Learning',
+  'Health & Wellness',
+  'Beauty & Personal Care',
+  'Fashion & Apparel',
+  'Food & Beverage',
+  'Restaurants & Delivery',
+  'Travel & Hospitality',
+  'Real Estate',
+  'Automotive',
+  'Telecom & Internet',
+  'Logistics & Transport',
+  'Manufacturing',
+  'Energy & Utilities',
+  'Professional Services',
+  'Recruitment & HR',
+  'Non-Profit & NGO',
+  'Government & Public Sector',
+  'Other',
+];
 
 export const BusinessSignupPage: React.FC = () => {
   const [name, setName] = useState('');
@@ -170,7 +205,7 @@ export const BusinessSignupPage: React.FC = () => {
               type="text"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="e.g. Acme Growth Labs"
+              placeholder="e.g. eBiz Network"
               autoComplete="organization"
               className={authInputClass}
             />
@@ -263,7 +298,7 @@ export const BusinessSignupPage: React.FC = () => {
             </AuthField>
             <AuthField id="referral" label="Referral code (optional)" error={fieldErrors.referral_code}>
               <div className="relative">
-                <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Gift className="w-4 h-4 text-slate-400 dark:text-gray-500 absolute start-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="referral"
                   type="text"
@@ -271,7 +306,7 @@ export const BusinessSignupPage: React.FC = () => {
                   onChange={(e) => setReferralCode(e.target.value)}
                   placeholder="e.g. AB12CD34"
                   autoComplete="off"
-                  className={`${authInputClass} pl-10 uppercase`}
+                  className={`${authInputClass} ps-10 uppercase`}
                 />
               </div>
             </AuthField>
@@ -300,7 +335,7 @@ export const BusinessSignupPage: React.FC = () => {
           disabledLabel="Review and accept the Terms of Service first"
         >
           <span>Create business account</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4 rtl:rotate-180" />
         </AuthSubmitButton>
       </form>
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, CalendarDays, ShieldAlert, ArrowRight, Users } from 'lucide-react';
 import type { UiTask } from '../../types';
-import { money } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
 import {
   InstagramLogo,
   TikTokLogo,
@@ -105,8 +105,9 @@ interface TaskCardProps {
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => {
+  const { fmt } = useMoney();
   const detailUrl = `/app/tasks/${task.uuid || task.id}`;
-  const reward = money(task.reward_cents, 'USD');
+  const reward = fmt(task.reward_cents);
   const deadline = formatDeadline(task.campaign?.ends_at);
   const retention = humanizeRetention(task.retentionHours);
   const requirements = proofRequirementLabels(task.campaign?.proof_requirements_json);
@@ -130,11 +131,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
             {task.brandName} · {task.platform} · {task.categoryName}
           </p>
         </div>
-        <div className="text-right shrink-0">
+        <div className="text-end shrink-0">
           <p className="text-base font-black text-[#16B364]">{reward}</p>
           <p className="text-[11px] text-slate-400 dark:text-gray-500 font-medium">{task.estimated_minutes} min</p>
         </div>
-        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#168BFF] group-hover:translate-x-0.5 transition-all shrink-0" />
+        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#168BFF] group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5 transition-all shrink-0" />
       </Link>
     );
   }
@@ -218,7 +219,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
         </div>
         <span className="flex items-center justify-center gap-2 w-full min-h-[54px] rounded-2xl bg-gradient-to-r from-[#16B364] to-[#0EA968] text-white font-extrabold text-base shadow-lg shadow-emerald-500/25 group-hover:brightness-105 group-hover:shadow-xl transition-all">
           Start task
-          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1 transition-transform" />
         </span>
       </div>
     </Link>

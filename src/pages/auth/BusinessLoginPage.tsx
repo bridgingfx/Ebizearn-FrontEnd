@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   ArrowRight,
@@ -17,7 +17,7 @@ import {
 } from '../../components/auth/AuthSplitLayout';
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons';
 import { PasswordInput } from './PasswordInput';
-import { navigateAfterLogin } from '../../components/auth/EmailVerification';
+import { navigateAfterLogin, stateFrom } from '../../components/auth/EmailVerification';
 import { prefetchWhenIdle, preloadBusinessApp } from '../../routes/prefetch';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,6 +31,7 @@ export const BusinessLoginPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Warm the business CRM chunk in the background: the user is one successful
   // login away from /business, so prefetching now hides the chunk download
@@ -64,7 +65,7 @@ export const BusinessLoginPage: React.FC = () => {
     try {
       const role = await login(email.trim(), password, 'business');
       if (role) {
-        await navigateAfterLogin(navigate, role);
+        await navigateAfterLogin(navigate, role, stateFrom(location.state));
       }
     } catch (err) {
       // Display the API's own message (covers 403 portal mismatch).

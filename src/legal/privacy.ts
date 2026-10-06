@@ -7,7 +7,6 @@
 import {
   COMPANY_ADDRESS,
   COMPANY_LEGAL_NAME,
-  COMPANY_REGISTRATION_NUMBER,
   PLATFORM_URL,
   SUPPORT_EMAIL,
   type LegalBlock,
@@ -16,7 +15,7 @@ import {
 
 export type { LegalBlock };
 
-export const PRIVACY_VERSION = '1.0';
+export const PRIVACY_VERSION = '1.1';
 export const PRIVACY_UPDATED = 'September 26, 2026';
 
 const p = (text: string): LegalBlock => ({ type: 'p', text });
@@ -28,7 +27,7 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     title: 'Who We Are',
     blocks: [
       p(
-        `This Privacy Policy applies to eBizEarn ("we", "our", "us"), a product of ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}, accessible at ${PLATFORM_URL}. Company registration number: ${COMPANY_REGISTRATION_NUMBER}. We are the data controller for personal data processed through the platform.`
+        `This Privacy Policy applies to eBizEarn ("we", "our", "us"), a product of ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}, accessible at ${PLATFORM_URL}. We are the data controller for personal data processed through the platform.`
       ),
       p(
         `For any privacy question or request, contact us at ${SUPPORT_EMAIL}.`
@@ -167,7 +166,7 @@ export const PRIVACY_SECTIONS: LegalSection[] = [
     title: 'Contact Us',
     blocks: [
       p(
-        `For privacy questions, requests, or complaints, contact us at ${SUPPORT_EMAIL}. eBizEarn is operated by ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}. Company registration number: ${COMPANY_REGISTRATION_NUMBER}.`
+        `For privacy questions, requests, or complaints, contact us at ${SUPPORT_EMAIL}. eBizEarn is operated by ${COMPANY_LEGAL_NAME}, ${COMPANY_ADDRESS}.`
       ),
     ],
   },

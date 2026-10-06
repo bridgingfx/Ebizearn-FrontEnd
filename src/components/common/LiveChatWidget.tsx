@@ -24,7 +24,6 @@ import {
 import { usePlatform, type PlatformSupportTicket } from '../../context/PlatformDataContext';
 import { useAuth } from '../../context/AuthContext';
 import { useRegion } from '../../context/RegionContext';
-import { CountryFlag } from './CountryFlag';
 import { supportApi, getApiError } from '../../api';
 import type { TicketCategory } from '../../types';
 
@@ -52,16 +51,16 @@ interface ChatMessage {
 const KNOWLEDGE_RESPONSES = [
   {
     keywords: ['geo', 'target', 'location', 'local', 'city', 'state', 'country', 'worldwide', 'global', 'group', 'whatsapp', 'community', 'broadcast'],
-    reply: `🌐 **Worldwide & Geo-Targeted Community Broadcast Tasks:**
-When an enterprise runs a campaign targeting specific global regions, countries, states, or cities:
-- **How to Earn:** Join active local or professional WhatsApp groups, LinkedIn chapters, or community forums matching the target region (or open global networks) and share the sponsor's announcement flyer and link.
-- **Fair Regional Pricing:** All task payouts are credited in US Dollars (USD $) regardless of contributor country — your payout provider converts to local currency at withdrawal.
+    reply: `🌐 **Geo-Targeted Community Broadcast Tasks:**
+When an enterprise runs a campaign targeting specific Georgian regions, cities, or districts:
+- **How to Earn:** Join active local or professional WhatsApp groups, LinkedIn chapters, or community forums matching the target region and share the sponsor's announcement flyer and link.
+- **Fair Pricing:** All task payouts are credited in US Dollars (USD $) — your payout provider converts to local currency at withdrawal.
 - **Proof Requirement:** Upload a clean screenshot clearly displaying the group name matching the campaign target region along with your published message and timestamp.
-- **Automated Validation:** Vision OCR AI automatically cross-checks verified workplace IP, GPS geofence compliance, and group member counts.
+- **Validation:** Submitted proofs are checked against task requirements (e.g. group member counts, post visibility) with manual review by our team.
 
 👉 Do this now: [Browse Available Tasks](/tasks) or [Submit Task Proof](/app/tasks) to claim your rewards!`,
     actionLinks: [
-      { label: 'Browse Worldwide Tasks', url: '/tasks' },
+      { label: 'Browse Tasks', url: '/tasks' },
       { label: 'Submit Task Proof', url: '/app/tasks' },
     ],
   },
@@ -82,16 +81,16 @@ Verified businesses in Georgia pay real consumers to test their services and lea
   },
   {
     keywords: ['payout', 'withdraw', 'cashout', 'wire', 'bank', 'currency', 'gel', 'usd', 'money', 'payment gateway'],
-    reply: `💳 **USD Rewards & Global Payout Rails:**
-- **Currency:** All earnings and platform balances are 100% in **US Dollars (USD)**.
+    reply: `💳 **USD Rewards & Payouts:**
+- **Currency:** All earnings and platform balances are **US Dollars (USD)**.
 - **Minimum Withdrawal:** Strictly **$50.00** with 0 account fees.
-- **Supported Payout Rails:**
+- **Supported Payout Methods:**
   1. **Direct Bank Transfer:** Settlement to your bank account (Georgian IBAN supported).
-  2. **Instant Bank Wire:** Real-time bank-to-bank settlement.
-  3. **Checkout.com & Stripe:** Card & mobile wallet payouts.
-  4. **Circle USDC Rail:** High-speed blockchain treasury settlement.
+  2. **PayPal & Wise:** Digital wallet payouts.
+  3. **Card & mobile wallet payouts.**
+- **Processing:** All payout requests are processed manually after review.
 
-👉 Do this now: [Open Your Contributor Wallet](/app/wallet) to check your balance and request an instant payout!`,
+👉 Do this now: [Open Your Contributor Wallet](/app/wallet) to check your balance and request a payout!`,
     actionLinks: [
       { label: 'Open Contributor Wallet', url: '/app/wallet' },
       { label: 'View Payout Guide', url: '/trust-safety' },
@@ -119,7 +118,7 @@ Per eBiz Security Specification:
 In line with Georgian anti-money laundering regulations:
 - **Threshold:** KYC is mandatory for cumulative withdrawals exceeding **$50.00**.
 - **Documents Accepted:** Georgian National ID (front & back) or passport.
-- **Automated AI Scan:** Our Vision AI checks optical holograms, EXIF authenticity, and matches legal names in under 60 seconds.
+- **Document Review:** Our team reviews submitted documents with automated checks, then verifies legal names against account details.
 - **Privacy:** All documents are encrypted with AES-256 and stored encrypted in secure data centers.
 
 👉 Do this now: [Complete Your National ID KYC](/app/wallet) to unlock unlimited withdrawals!`,
@@ -130,10 +129,10 @@ In line with Georgian anti-money laundering regulations:
   {
     keywords: ['campaign', 'business', 'sponsor', 'brand', 'create campaign', 'promote', 'advertise'],
     reply: `🏢 **For Businesses & Enterprise Advertisers:**
-Grow your brand across local and global communities with 100% verified human engagement:
-- **Cascading Targeting:** Country (Worldwide, US, UK, Georgia, EU, etc.) 🌐 → State / Province → City / District → Channel (WhatsApp, LinkedIn, Google Maps, Trustpilot).
-- **Escrow Protection:** Your budget is safely locked in automated escrow. Funds are ONLY released after verified proof.
-- **Zero Admin Burden:** eBiz AI Vision OCR and our compliance moderation team verify all contributor screenshots—you never have to review thousands of submissions manually!
+Grow your brand across Georgian communities with verified human contributors:
+- **Targeting:** Georgia regions → city / district → channel (WhatsApp, LinkedIn, Google Maps, Trustpilot).
+- **Escrow Protection:** Your budget is safely locked in escrow. Funds are only released after verified proof.
+- **Zero Admin Burden:** Our review team checks every contributor screenshot with manual and automated checks — you never have to review thousands of submissions manually!
 
 👉 Do this now: [Launch New Business Campaign](/business/campaigns/new) or learn more on [For Businesses](/for-businesses)!`,
     actionLinks: [
@@ -157,7 +156,7 @@ If you need a person to investigate your account, re-review a verification decis
   {
     keywords: ['ticket', 'generate ticket', 'support ticket', 'dispute', 'complaint', 'issue', 'help desk'],
     reply: `🎫 **Official Support Ticket Portal:**
-Our Global Operations Desk investigates all priority tickets with a response target of **< 2 hours** (not a guarantee):
+Our Support Desk investigates all priority tickets with a response target of **< 2 hours** (not a guarantee):
 - **Common Tickets:** Proof OCR verification disputes, multi-currency bank transfer inquiries, KYC approvals, and Business escrow adjustments.
 - **Tracking:** Every ticket receives a canonical tracking ID (e.g. \`#TKT-GLB-8921\`) that you can monitor in real time.
 
@@ -188,7 +187,7 @@ export const LiveChatWidget: React.FC = () => {
   const navigate = useNavigate();
   const { createSupportTicket } = usePlatform();
   const { user } = useAuth();
-  const { region, regionName, t } = useRegion();
+  const { t } = useRegion();
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -199,7 +198,7 @@ export const LiveChatWidget: React.FC = () => {
 I'm an **automated assistant, not a human agent** — I answer instantly from our help guides. For anything that needs a real person, [🎫 generate a support ticket](/contact) and our support team will follow up with you.
 
 I can help with:
-- Earning rewards with 🌐 [Worldwide & Geo-Targeted Tasks](/tasks)
+- Earning rewards with 🌐 [Geo-Targeted Tasks](/tasks)
 - [Trustpilot & Google Reviews](/tasks)
 - [USD Cashouts (auto-convert to local currency)](/app/wallet) & 72h retention hold
 - [ID & Profile KYC Verification](/app/wallet)
@@ -208,7 +207,7 @@ I can help with:
 If you wish to speak to a human officer or file an official dispute, you can [🎫 Generate a Support Ticket](/contact) anytime. How can I help you today?`,
       timestamp: 'Just now',
       chips: [
-        '🌐 How do geo-targeted & global tasks work?',
+        '🌐 How do geo-targeted tasks work?',
         '⭐ How do Trustpilot & Google reviews work?',
         '💳 How do I withdraw funds & currencies?',
         '🛡️ What is the 72-hour retention hold?',
@@ -364,7 +363,7 @@ Here are key actions you can take right now:
         text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         chips: [
-          '🌐 How do geo-targeted & global tasks work?',
+          '🌐 How do geo-targeted tasks work?',
           '💳 How do multi-currency payouts work?',
           '🛡️ What is the 72-hour retention hold?',
           '🎫 Generate a Support Ticket',
@@ -504,10 +503,6 @@ Here are key actions you can take right now:
               <div className="text-xs font-bold tracking-wide flex items-center gap-1.5">
                 <span>{t('chat.title')}</span>
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                <span className="text-[10px] bg-emerald-800/90 text-emerald-100 px-1.5 py-0.5 rounded font-mono font-bold inline-flex items-center gap-1">
-                  <CountryFlag iso={region.code} className="w-4 h-3" />
-                  {regionName}
-                </span>
               </div>
               <div className="text-[11px] text-emerald-100/90 font-medium">{t('chat.subtitle')}</div>
             </div>
@@ -591,7 +586,7 @@ Here are key actions you can take right now:
             <div className="bg-emerald-50/90 border-b border-emerald-100/80 px-3.5 py-1.5 text-[11px] text-emerald-900 flex items-center justify-between">
               <div className="flex items-center gap-1.5 truncate">
                 <Building2 className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
-                <span className="truncate font-semibold">Escrow Guaranteed</span>
+                <span className="truncate font-semibold">Escrow Protected</span>
               </div>
               <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase shrink-0">
                 T+72h Anti-Fraud
@@ -625,7 +620,7 @@ Here are key actions you can take right now:
                       onChange={(e) => setTicketCategory(e.target.value)}
                       className="w-full bg-white dark:bg-[#0C1322] border border-slate-300 dark:border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-gray-200 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                     >
-                      <option value="Task Verification Dispute">🌐 Geo-Targeted Task Dispute (Global / Local)</option>
+                      <option value="Task Verification Dispute">🌐 Geo-Targeted Task Dispute (Regional / Local)</option>
                       <option value="Payout Inquiry">💳 Multi-Currency Payout & Bank Transfer</option>
                       <option value="KYC Verification">🆔 Identity & Profile KYC Verification</option>
                       <option value="Business Campaign Escrow">🏢 Business Campaign & Escrow</option>
@@ -865,7 +860,7 @@ Here are key actions you can take right now:
                     type="text"
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
-                    placeholder="Ask about global tasks, geo-targeting, payouts, KYC verification..."
+                    placeholder="Ask about geo-targeted tasks, payouts, KYC verification..."
                     className="w-full text-xs sm:text-sm pl-3 pr-8 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white dark:focus:bg-[#0C1322] text-slate-800 dark:text-gray-200 transition-colors placeholder:text-slate-400 dark:placeholder:text-gray-500"
                   />
                   <button

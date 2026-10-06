@@ -50,7 +50,7 @@ export const ContactPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>24/7 Global Support Network</span>
+            <span>24/7 Support Network</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
@@ -58,7 +58,7 @@ export const ContactPage: React.FC = () => {
           </h1>
 
           <p className="text-xs sm:text-sm text-gray-300 max-w-xl mx-auto leading-relaxed">
-            Whether you are an earner seeking payout assistance or an enterprise brand planning a viral campaign, our global team is ready.
+            Whether you are an earner seeking payout assistance or an enterprise brand planning a campaign, our team is ready.
           </p>
         </div>
       </section>

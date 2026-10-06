@@ -31,9 +31,37 @@ export function articleSchema(post: BlogPost): Record<string, unknown> {
   };
 }
 
+/** BreadcrumbList schema for article pages (matches the visible breadcrumb). */
+export function breadcrumbSchema(post: BlogPost): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `${SITE_URL}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: `${SITE_URL}/blog`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: post.title,
+        item: `${SITE_URL}/blog/${post.slug}`,
+      },
+    ],
+  };
+}
+
 export function articleSchemas(post: BlogPost): Record<string, unknown>[] {
   const faqs = post.content.flatMap((b) => (b.type === 'faq' ? b.items : []));
-  const schemas: Record<string, unknown>[] = [articleSchema(post)];
+  const schemas: Record<string, unknown>[] = [articleSchema(post), breadcrumbSchema(post)];
   if (faqs.length > 0) schemas.push(faqPageSchema(faqs));
   return schemas;
 }

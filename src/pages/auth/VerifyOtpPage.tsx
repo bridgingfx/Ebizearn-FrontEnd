@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   AlertCircle,
   CheckCircle2,
@@ -20,7 +20,7 @@ import {
   AuthError,
   authInputClass,
 } from '../../components/auth/AuthSplitLayout';
-import { navigateAfterLogin } from '../../components/auth/EmailVerification';
+import { navigateAfterLogin, stateFrom } from '../../components/auth/EmailVerification';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 const CODE_LENGTH = 6;
@@ -80,6 +80,7 @@ const OTP_BULLETS = [
  */
 export const VerifyOtpPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { completeSession } = useAuth();
   const [pending] = useState(getPendingOtpEmail);
   const email = pending.email;
@@ -115,7 +116,7 @@ export const VerifyOtpPage: React.FC = () => {
           setSuccess(true);
           clearPendingOtp();
           const userRole = completeSession(res.data.user, res.data.token);
-          await navigateAfterLogin(navigate, userRole);
+          await navigateAfterLogin(navigate, userRole, stateFrom(location.state));
           return;
         }
         setError(res.message || 'Verification failed. Please try again.');

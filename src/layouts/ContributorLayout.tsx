@@ -17,7 +17,6 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
-import { GTranslate } from '../components/common/GTranslate';
 import { UserAvatar } from '../components/common/UserAvatar';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { ThemeToggle } from '../components/common/ThemeToggle';
@@ -92,7 +91,6 @@ export const ContributorLayout: React.FC = () => {
 
           <div className="mb-6 flex justify-start shrink-0">
             <RegionSelector variant="dark" />
-            <GTranslate variant="dark" />
           </div>
 
           <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar -mx-1 px-1 py-1">
@@ -167,7 +165,6 @@ export const ContributorLayout: React.FC = () => {
           <ThemeToggle tone="onDark" />
           <div className="hidden sm:block">
             <RegionSelector variant="dark" />
-            <GTranslate variant="dark" />
           </div>
           <Link to="/app/notifications" aria-label="Notifications" className="relative p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors">
             <Bell className="w-4 h-4" />

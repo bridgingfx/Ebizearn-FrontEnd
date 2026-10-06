@@ -35,10 +35,10 @@ export const AboutPage: React.FC = () => {
     {
       title: 'Real Humans, Zero Bots',
       icon: Users,
-      desc: 'Our proprietary computer vision and fraud telemetry algorithms audit every submission. We verify authentic humans, preserving brand integrity.',
+      desc: 'Every submission is reviewed manually and with automated checks. We verify authentic humans, preserving brand integrity.',
     },
     {
-      title: 'Global Economic Inclusion',
+      title: 'Economic Inclusion in Georgia',
       icon: Globe,
       desc: 'Digital earnings should not be limited by geography. We support contributors in over 150 countries with local and international payout rails.',
     },
@@ -57,7 +57,7 @@ export const AboutPage: React.FC = () => {
   ];
 
   return (
-    <div className="text-left font-sans">
+    <div className="text-start font-sans">
       
       {/* =========================================================================
           HERO SECTION (Corporate Dark Navy #07182F)
@@ -70,7 +70,7 @@ export const AboutPage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-5">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Global Technology • Decentralized Human Workforce</span>
+            <span>Technology • Human Workforce</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
@@ -81,7 +81,7 @@ export const AboutPage: React.FC = () => {
           </h1>
 
           <p className="text-xs sm:text-sm text-gray-300 leading-relaxed max-w-2xl mx-auto font-normal">
-            eBizEarn bridges growing brands needing genuine human engagement with a global mobile workforce seeking flexible, transparent, and immediate income from social media and digital tasks.
+            eBizEarn bridges growing brands needing genuine human engagement with a mobile workforce across Georgia seeking flexible, transparent income from social media and digital tasks.
           </p>
 
           <div className="pt-1 flex flex-wrap justify-center gap-3">
@@ -90,7 +90,7 @@ export const AboutPage: React.FC = () => {
               className="px-7 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>Join as Contributor</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
             <Link
               to="/for-businesses"
@@ -123,7 +123,7 @@ export const AboutPage: React.FC = () => {
             </div>
             <div>
               <div className="text-3xl font-black text-[#7357FF]">4</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Payout Rails: PayPal, Wise, Bank, Crypto</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold mt-1">Payout Rails: PayPal, Wise, Bank</p>
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export const AboutPage: React.FC = () => {
                 A Transparent, Verification-First Human Marketplace.
               </h3>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                eBizEarn replaces guesswork with verified outcomes. Brands set clear task parameters and escrow funds safely. Contributors complete tasks from their smartphones and upload uncropped proof. Our computer vision engine screens submissions in seconds, releasing funds directly to immutable ledger accounts.
+                eBizEarn replaces guesswork with verified outcomes. Brands set clear task parameters and escrow funds safely. Contributors complete tasks from their smartphones and upload uncropped proof. Our team reviews submissions and credits approved earnings to ledger accounts.
               </p>
               <div className="space-y-2.5">
                 {[
@@ -266,7 +266,7 @@ export const AboutPage: React.FC = () => {
             Be Part of the Future of Digital Work.
           </h2>
           <p className="text-sm sm:text-base text-gray-300 max-w-xl mx-auto">
-            Whether you want to earn real income on your own terms, or deploy high-impact verified campaigns worldwide, eBizEarn is built for you.
+            Whether you want to earn real income on your own terms, or deploy high-impact verified campaigns across Georgia, eBizEarn is built for you.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -274,7 +274,7 @@ export const AboutPage: React.FC = () => {
               className="px-8 py-3.5 bg-gradient-brand text-white font-bold text-xs sm:text-sm rounded-xl shadow-xl hover:scale-105 transition-all flex items-center gap-2"
             >
               <span>Get Started Free</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </Link>
             <Link
               to="/for-businesses"

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AlertCircle, ArrowRight, CheckCircle2, Loader2, PhoneCall, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { authApi, getApiError, getOtpError } from '../../api';
@@ -14,7 +14,7 @@ import { readStoredConsent, type TermsConsent } from '../../utils/termsConsent';
 import { phoneDigits, phoneToE164, validatePhone, type PhoneValue } from '../../utils/phone';
 import { DEFAULT_DIAL } from '../../utils/countryDialCodes';
 import { getPendingPhoneRole, clearPendingPhoneRole } from '../../utils/pendingAuth';
-import { navigateAfterLogin } from '../../components/auth/EmailVerification';
+import { navigateAfterLogin, stateFrom } from '../../components/auth/EmailVerification';
 
 const PHONE_SETUP_BULLETS = [
   { icon: PhoneCall, title: 'Security alerts', text: 'Get notified about important account activity.' },
@@ -33,6 +33,7 @@ const PHONE_SETUP_BULLETS = [
  */
 export const PhoneSetupPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, token, updateUser } = useAuth();
   const [phone, setPhone] = useState<PhoneValue>({ dialCode: DEFAULT_DIAL, number: '' });
   const [fieldError, setFieldError] = useState<string | null>(null);
@@ -81,7 +82,7 @@ export const PhoneSetupPage: React.FC = () => {
   const proceed = async () => {
     const pendingRole = getPendingPhoneRole();
     clearPendingPhoneRole();
-    await navigateAfterLogin(navigate, (pendingRole as 'contributor' | 'business') || user.role);
+    await navigateAfterLogin(navigate, (pendingRole as 'contributor' | 'business') || user.role, stateFrom(location.state));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

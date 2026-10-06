@@ -14,11 +14,13 @@ import {
 } from 'lucide-react';
 import { businessApi, getApiError } from '../../api';
 import type { BusinessDashboardData, Campaign, TaskSubmission } from '../../types';
-import { money } from '../../utils/apiMappers';
+import { useMoney } from '../../hooks/useMoney';
+import { FxNote } from '../../components/common/Money';
 import { EmptyState } from '../../components/common/EmptyState';
 import { StatCard, SectionHeader } from '../../components/common/StatCard';
 
 export const BusinessDashboardPage: React.FC = () => {
+  const { fmt } = useMoney();
   const navigate = useNavigate();
   const [data, setData] = useState<BusinessDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -123,21 +125,22 @@ export const BusinessDashboardPage: React.FC = () => {
             />
             <StatCard
               label="Budget spent"
-              value={metrics ? money(metrics.spent_budget_cents, 'USD') : '—'}
-              sub={metrics ? `${money(metrics.remaining_budget_cents, 'USD')} still available` : 'Paid to contributors'}
+              value={metrics ? fmt(metrics.spent_budget_cents) : '—'}
+              sub={metrics ? `${fmt(metrics.remaining_budget_cents)} still available` : 'Paid to contributors'}
               icon={Wallet}
               gradient="from-[#7257FF] to-[#9D7BFF]"
               shadow="shadow-lg shadow-violet-500/25"
             />
             <StatCard
               label="Avg. cost / task"
-              value={metrics ? money(metrics.average_cost_cents, 'USD') : '—'}
+              value={metrics ? fmt(metrics.average_cost_cents) : '—'}
               sub="Across all your campaigns"
               icon={Target}
               gradient="from-amber-500 to-orange-600"
               shadow="shadow-lg shadow-amber-500/25"
             />
           </div>
+          <FxNote className="mt-1" />
 
           {/* ── Active campaigns — real list ──────────────────────── */}
           <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6 sm:p-7">
@@ -175,11 +178,11 @@ export const BusinessDashboardPage: React.FC = () => {
                             {c.title}
                           </p>
                           <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
-                            {money(c.reward_per_task_cents, 'USD')} per task · {done.toLocaleString()} / {target.toLocaleString()} completions
+                            {fmt(c.reward_per_task_cents)} per task · {done.toLocaleString()} / {target.toLocaleString()} completions
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-sm font-black text-slate-900 dark:text-gray-100">{money(spent, 'USD')}</p>
+                          <p className="text-sm font-black text-slate-900 dark:text-gray-100">{fmt(spent)}</p>
                           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-gray-500">spent</p>
                         </div>
                       </div>

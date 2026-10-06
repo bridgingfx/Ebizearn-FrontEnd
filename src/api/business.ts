@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Campaign, TaskSubmission } from '../types';
+import type { Campaign, CampaignEditInput, TaskSubmission } from '../types';
 
 export const businessApi = {
   dashboard: () => api.get('/business/dashboard').then((r) => r.data as { success: boolean; message?: string; data: any }),
@@ -27,6 +27,12 @@ export const businessApi = {
   }),
   updateCampaignStatus: (id: number | string, status: 'active' | 'paused' | 'cancelled') =>
     api.patch(`/business/campaigns/${id}/status`, { status }).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  /** Edit own campaign copy / targeting (edit_own_campaigns). */
+  updateCampaign: (id: number | string, payload: CampaignEditInput) =>
+    api.patch(`/business/campaigns/${id}`, payload).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  /** Delete own campaign (delete_own_campaigns); refused once contributors worked on it. */
+  deleteCampaign: (id: number | string) =>
+    api.delete(`/business/campaigns/${id}`).then((r) => r.data as { success: boolean; message?: string; data?: { escrow_released_cents: number } }),
   submissions: () => api.get('/business/submissions').then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),
   /** First-step review of a proof on the business's own campaign; staff confirm and release payment. */
   reviewSubmission: (id: number | string, decision: 'approve' | 'reject', reason?: string) =>

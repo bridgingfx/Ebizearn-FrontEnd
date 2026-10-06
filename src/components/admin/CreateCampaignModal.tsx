@@ -7,6 +7,7 @@ import { fmtMoney } from '../common/ui';
 interface BusinessOption {
   id: number;
   company_name: string;
+  available_balance_cents: number;
 }
 
 interface TaskCategory {
@@ -74,16 +75,17 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
     (async () => {
       try {
         const [bizRes, catRes, typeRes] = await Promise.all([
-          adminApi.users({ role: 'business' }),
+          adminApi.staffBusinessOptions(),
           api.get('/task-categories'),
           api.get('/task-types'),
         ]);
         if (cancelled) return;
-        const users = (bizRes?.data ?? []) as { business?: { id: number; company_name: string } }[];
         setBusinesses(
-          users
-            .filter((u) => u.business?.id)
-            .map((u) => ({ id: u.business!.id, company_name: u.business!.company_name || `Business #${u.business!.id}` })),
+          (bizRes?.data ?? []).map((b) => ({
+            id: b.id,
+            company_name: b.company_name || `Business #${b.id}`,
+            available_balance_cents: b.available_balance_cents,
+          })),
         );
         setCategories((catRes.data?.data ?? catRes.data ?? []) as TaskCategory[]);
         setTaskTypes(((typeRes.data?.data ?? typeRes.data ?? []) as TaskType[]).filter((t) => t.reward_band_max_cents > 0));
@@ -190,7 +192,7 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
                     <option value="">Select the business this campaign belongs to…</option>
                     {businesses.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.company_name}
+                        {b.company_name} ({fmtMoney(b.available_balance_cents)} available)
                       </option>
                     ))}
                   </select>

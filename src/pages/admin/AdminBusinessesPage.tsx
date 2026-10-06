@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Building2, Loader2, AlertCircle, Ban, CheckCircle2 } from 'lucide-react';
+import { Building2, Loader2, AlertCircle, Ban, CheckCircle2, Plus } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { User } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
+import { CreateBusinessUserModal } from '../../components/admin/CreateBusinessUserModal';
+import { useAuth } from '../../context/AuthContext';
+import { can } from '../../utils/can';
+import { toast } from '../../utils/toast';
 
 /**
- * Business accounts. Served live from GET /admin/users?role=business — the
- * backend has no dedicated admin-businesses endpoint, so this directory is
- * built on the user list. Suspend/reactivate uses the standard user-status
- * endpoint.
+ * Business accounts. Served live from GET /admin/users?role=business, so
+ * this directory is built on the user list. Suspend/reactivate uses the
+ * standard user-status endpoint. "Create business account" (POST
+ * /admin/businesses, create_business_users) adds a ready-to-sign-in owner.
  */
 export const AdminBusinessesPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -16,6 +20,9 @@ export const AdminBusinessesPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [actionId, setActionId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const { user } = useAuth();
+  const canCreate = can(user, 'create_business_users');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -57,13 +64,34 @@ export const AdminBusinessesPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Businesses</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Business accounts on the platform — {users.length} total. Campaign management stays with each
-          business's own portal; this view is for account oversight only.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Businesses</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Business accounts on the platform — {users.length} total. Campaign management stays with each
+            business's own portal; this view is for account oversight.
+          </p>
+        </div>
+        {canCreate && (
+          <button
+            type="button"
+            onClick={() => setShowCreate(true)}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all shrink-0"
+          >
+            <Plus className="w-4 h-4" /> Create business account
+          </button>
+        )}
       </div>
+
+      {showCreate && (
+        <CreateBusinessUserModal
+          onClose={() => setShowCreate(false)}
+          onCreated={(u) => {
+            setUsers((prev) => [u, ...prev]);
+            toast.success(`Business account created for ${u.email}.`);
+          }}
+        />
+      )}
 
       {actionError && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3 text-xs font-bold text-red-700 dark:text-red-300">

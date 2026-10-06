@@ -33,7 +33,7 @@ export const AdminTaskLibraryPage: React.FC = () => {
   const [deleting, setDeleting] = useState<TaskTemplate | null>(null);
   const [prefill, setPrefill] = useState<CampaignPrefill | null>(null);
 
-  const canPost = can(user, 'manage_task_templates');
+  const canPost = can(user, 'post_campaigns');
 
   const load = useCallback(async () => {
     setLoading(true);

@@ -27,6 +27,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
   const { user } = useAuth();
   const canEdit = can(user, 'edit_campaigns');
   const canDelete = can(user, 'delete_campaigns');
+  const canPost = can(user, 'post_campaigns');
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [total, setTotal] = useState(0);
@@ -140,14 +141,16 @@ export const AdminCampaignsOversightPage: React.FC = () => {
         title="Campaigns"
         subtitle="Every campaign across all business accounts. Pausing stops new task acceptance; escrow accounting stays on the ledger."
         actions={
-          <button
-            type="button"
-            onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Post campaign
-          </button>
+          canPost ? (
+            <button
+              type="button"
+              onClick={() => setShowCreate(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Post campaign
+            </button>
+          ) : undefined
         }
       />
 
@@ -209,7 +212,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
               title={campaigns.length === 0 ? 'No campaigns found' : 'No campaigns in this tab'}
               description={
                 campaigns.length === 0
-                  ? 'Post one with the button above, or wait for a business to create one from their portal.'
+                  ? canPost ? 'Post one with the button above, or wait for a business to create one from their portal.' : 'Campaigns appear here when a business creates one from their portal.'
                   : 'Try another tab or search term.'
               }
             />

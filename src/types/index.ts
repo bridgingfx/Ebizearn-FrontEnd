@@ -290,6 +290,7 @@ export interface Task {
   /** Staff task list (/staff/tasks) eager-loads the type. */
   task_type?: { id: number; key: string; name: string } | null;
   platform?: string | null;
+  instructions?: string | null;
 }
 
 /** Icon keys the backend accepts for a Task Library template. */

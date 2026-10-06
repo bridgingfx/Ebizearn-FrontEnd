@@ -57,7 +57,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Social Channels', path: '/admin/social-channels', icon: AtSign, perm: 'review_kyc' },
     { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
     { name: 'Verification', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_task_templates' },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_campaigns' },
     { name: 'Tasks', path: '/admin/tasks', icon: ClipboardList, perm: 'manage_task_templates' },
     { name: 'Task Library', path: '/admin/task-library', icon: BookOpen, perm: 'view_task_library' },
     { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight, perm: 'process_payouts' },
@@ -87,7 +87,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Users', path: '/admin/users', icon: Users, perm: 'manage_users' },
     { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
     { name: 'Verify', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_task_templates' },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_campaigns' },
   ].filter(canSee);
   const tabPaths = new Set(mobileTabs.map((t) => t.path));
   const moreItems = navItems.filter((item) => !item.exact && !tabPaths.has(item.path));

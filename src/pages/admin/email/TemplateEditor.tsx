@@ -48,7 +48,7 @@ const useSampleValues = (userName: string) =>
       verification_url: `${origin}/verify-email`,
       reset_url: `${origin}/reset-password`,
       amount: 'USD 25.00',
-      task_title: 'Follow @acmebrand on Instagram',
+      task_title: 'Follow @ebizearn on Instagram',
       reason: 'The screenshot does not show the follow button.',
     } as Record<string, string>;
   }, [userName]);

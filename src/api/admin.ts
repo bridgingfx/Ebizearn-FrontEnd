@@ -1,6 +1,23 @@
 import { api } from './client';
 import type { AdminUserDetail, Campaign, CampaignEditInput, ReferralRule, ReferralRuleInput, ReferralRulesResponse, AuditLog, FeatureFlag, FraudEvent, Task, TaskSubmission, User, WithdrawalRequest } from '../types';
 
+export interface StaffTaskCampaignOption {
+  id: number;
+  title: string;
+  status: Campaign['status'];
+  platform: string | null;
+  instructions_markdown: string | null;
+  pool_cents: number;
+  business_name: string | null;
+}
+
+export interface StaffBusinessOption {
+  id: number;
+  company_name: string;
+  owner_name: string | null;
+  available_balance_cents: number;
+}
+
 export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
   verificationQueue: (params?: { status?: string; search?: string; business_decision?: 'approved' | 'rejected' | 'none' }) =>
@@ -90,6 +107,15 @@ export const adminApi = {
     estimated_minutes?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
   }) => api.post('/staff/tasks', payload).then((r) => r.data as { success: boolean; message?: string; data: Task }),
+  // Campaigns a task can be added to (create_tasks; no campaign access needed).
+  staffTaskCampaignOptions: () =>
+    api.get('/staff/tasks/campaign-options').then((r) => r.data as { success: boolean; message?: string; data: StaffTaskCampaignOption[] }),
+  // Businesses a campaign can be posted for (post_campaigns; no manage_users needed).
+  staffBusinessOptions: () =>
+    api.get('/staff/campaigns/business-options').then((r) => r.data as { success: boolean; message?: string; data: StaffBusinessOption[] }),
+  // Create a business user account (create_business_users). Role is fixed server-side.
+  createBusinessUser: (payload: { name: string; email: string; password: string; company_name: string; website?: string; industry?: string; country_code?: string }) =>
+    api.post('/admin/businesses', payload).then((r) => r.data as { success: boolean; message?: string; data: User }),
   updateStaffTask: (id: number | string, payload: Record<string, unknown>) =>
     api.patch(`/staff/tasks/${id}`, payload).then((r) => r.data as { success: boolean; message?: string; data: Task }),
   deleteStaffTask: (id: number | string) =>

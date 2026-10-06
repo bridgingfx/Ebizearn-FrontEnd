@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ClipboardList, Search, Loader2, AlertCircle, X, Eye, Plus, Pause, Play, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ClipboardList, Search, Loader2, AlertCircle, X, Eye, Plus, Pause, Play, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { Task } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -7,14 +7,17 @@ import { ConfirmModal } from '../../components/common/ConfirmModal';
 import { mapTaskForUi } from '../../utils/apiMappers';
 import { toast } from '../../utils/toast';
 import { TaskPreview, TaskPreviewSummary } from '../../components/task/TaskPreview';
-import { CreateTaskModal } from '../../components/admin/CreateTaskModal';
+import { TaskFormModal } from '../../components/admin/TaskFormModal';
+import { useAuth } from '../../context/AuthContext';
+import { can } from '../../utils/can';
 
 /**
- * Staff task management (GET/POST/PATCH/DELETE /staff/tasks, gated on
- * manage_task_templates). Every task across all campaigns, including
- * paused ones. Create adds a task to a funded campaign (reward band + pool
- * checked server-side); pause/resume toggles availability; delete is
- * refused by the server once contributors have taken the task.
+ * Staff task management (/staff/tasks). manage_task_templates opens the
+ * list; create_tasks / edit_tasks (incl. pause/resume) / delete_tasks each
+ * show their control only when held — Super Admin switches them per role
+ * in Roles & Permissions, and the backend enforces the same gates. Create
+ * adds a task to a funded campaign (reward band + pool checked
+ * server-side); delete is refused once contributors have taken the task.
  */
 export const AdminTasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -28,6 +31,12 @@ export const AdminTasksPage: React.FC = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [actingId, setActingId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState<Task | null>(null);
+  const [editing, setEditing] = useState<Task | null>(null);
+  const { user } = useAuth();
+  const canCreate = can(user, 'create_tasks');
+  const canEdit = can(user, 'edit_tasks');
+  const canDelete = can(user, 'delete_tasks');
+  const hasActions = canEdit || canDelete;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -118,13 +127,15 @@ export const AdminTasksPage: React.FC = () => {
             Every task across all campaigns — {total} task{total === 1 ? '' : 's'}. Tasks with contributor activity can only be paused, not deleted.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowCreate(true)}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all shrink-0"
-        >
-          <Plus className="w-4 h-4" /> Create task
-        </button>
+        {canCreate && (
+          <button
+            type="button"
+            onClick={() => setShowCreate(true)}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all shrink-0"
+          >
+            <Plus className="w-4 h-4" /> Create task
+          </button>
+        )}
       </div>
 
       <div className="relative sm:w-72">
@@ -162,7 +173,7 @@ export const AdminTasksPage: React.FC = () => {
           title={tasks.length === 0 ? 'No tasks yet' : 'No tasks match your search'}
           description={
             tasks.length === 0
-              ? 'Tasks are created when a campaign launches, or with "Create task" above.'
+              ? canCreate ? 'Tasks are created when a campaign launches, or with "Create task" above.' : 'Tasks are created when a campaign launches.'
               : 'Try a different search term.'
           }
         />
@@ -219,7 +230,8 @@ export const AdminTasksPage: React.FC = () => {
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-1">
                         {actingId === t.id && <Loader2 className="w-4 h-4 animate-spin text-[#168BFF] mr-1" />}
-                        {(t.status === 'available' || t.status === 'paused') && (
+                        {!hasActions && <span className="text-[11px] text-gray-400 dark:text-gray-500">View only</span>}
+                        {canEdit && (t.status === 'available' || t.status === 'paused') && (
                           <button
                             type="button"
                             disabled={actingId === t.id}
@@ -231,16 +243,30 @@ export const AdminTasksPage: React.FC = () => {
                             {t.status === 'available' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                           </button>
                         )}
-                        <button
-                          type="button"
-                          disabled={actingId === t.id}
-                          onClick={() => setDeleting(t)}
-                          title="Delete task"
-                          aria-label={`Delete ${t.title}`}
-                          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canEdit && (
+                          <button
+                            type="button"
+                            disabled={actingId === t.id}
+                            onClick={() => setEditing(t)}
+                            title="Edit task"
+                            aria-label={`Edit ${t.title}`}
+                            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors disabled:opacity-50"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            type="button"
+                            disabled={actingId === t.id}
+                            onClick={() => setDeleting(t)}
+                            title="Delete task"
+                            aria-label={`Delete ${t.title}`}
+                            className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -276,12 +302,25 @@ export const AdminTasksPage: React.FC = () => {
       )}
 
       {showCreate && (
-        <CreateTaskModal
+        <TaskFormModal
           onClose={() => setShowCreate(false)}
-          onCreated={() => {
+          onSaved={() => {
             toast.success('Task created.');
             if (page === 1) void load();
             else setPage(1);
+          }}
+        />
+      )}
+
+      {editing && (
+        <TaskFormModal
+          task={editing}
+          onClose={() => setEditing(null)}
+          onSaved={(saved) => {
+            toast.success('Task saved.');
+            setTasks((items) =>
+              items.map((x) => (x.id === saved.id ? { ...x, ...saved, campaign: x.campaign } : x)),
+            );
           }}
         />
       )}

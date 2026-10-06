@@ -11,6 +11,7 @@ export { tasksApi } from './tasks';
 export { walletApi } from './wallet';
 export { businessApi } from './business';
 export { adminApi } from './admin';
+export { taskTemplatesApi } from './taskTemplates';
 export { emailApi } from './email';
 export type { EmailProvider, EmailProviderInput, EmailTemplate, EmailTemplateInput, EmailLog, EmailDriver, EmailStatus, EmailCampaign, EmailCampaignInput, CampaignAudience } from './email';
 export { socialChannelsApi, staffSocialChannelsApi } from './socialChannels';

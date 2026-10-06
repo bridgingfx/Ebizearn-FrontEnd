@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { AdminUserDetail, ReferralRule, ReferralRuleInput, ReferralRulesResponse, AuditLog, FeatureFlag, FraudEvent, TaskSubmission, User, WithdrawalRequest } from '../types';
+import type { AdminUserDetail, Campaign, CampaignEditInput, ReferralRule, ReferralRuleInput, ReferralRulesResponse, AuditLog, FeatureFlag, FraudEvent, Task, TaskSubmission, User, WithdrawalRequest } from '../types';
 
 export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
@@ -61,6 +61,39 @@ export const adminApi = {
   }) => api.post('/staff/campaigns', payload).then((r) => r.data),
   updateStaffCampaignStatus: (id: number | string, status: 'active' | 'paused' | 'cancelled') =>
     api.patch(`/staff/campaigns/${id}/status`, { status }).then((r) => r.data),
+  // GET /staff/campaigns/{id}: campaign + business + tasks + spent_cents.
+  staffCampaign: (id: number | string) =>
+    api.get(`/staff/campaigns/${id}`).then((r) => r.data as { success: boolean; message?: string; data: Campaign & { spent_cents: number } }),
+  // Edit copy / targeting only (edit_campaigns). Money fields are not editable.
+  updateStaffCampaign: (id: number | string, payload: CampaignEditInput) =>
+    api.patch(`/staff/campaigns/${id}`, payload).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  // Safe delete (delete_campaigns): refused once contributors worked on it;
+  // outstanding escrow goes back to the business wallet first.
+  deleteStaffCampaign: (id: number | string) =>
+    api.delete(`/staff/campaigns/${id}`).then((r) => r.data as { success: boolean; message?: string; data?: { escrow_released_cents: number } }),
+  // Staff task CRUD (manage_task_templates). Paginated 20/page.
+  staffTasks: (params?: { campaign_id?: number; status?: string; page?: number }) =>
+    api.get('/staff/tasks', { params }).then((r) => r.data as {
+      success: boolean;
+      message?: string;
+      data: Task[];
+      meta?: { current_page: number; last_page: number; total: number };
+    }),
+  createStaffTask: (payload: {
+    campaign_id: number;
+    task_type_key: string;
+    title: string;
+    reward_cents: number;
+    slots_total: number;
+    instructions?: string;
+    platform?: string;
+    estimated_minutes?: number;
+    difficulty?: 'easy' | 'medium' | 'hard';
+  }) => api.post('/staff/tasks', payload).then((r) => r.data as { success: boolean; message?: string; data: Task }),
+  updateStaffTask: (id: number | string, payload: Record<string, unknown>) =>
+    api.patch(`/staff/tasks/${id}`, payload).then((r) => r.data as { success: boolean; message?: string; data: Task }),
+  deleteStaffTask: (id: number | string) =>
+    api.delete(`/staff/tasks/${id}`).then((r) => r.data as { success: boolean; message?: string }),
   // Phase 11: platform-wide referral overview (read-only aggregate).
   referralOverview: () =>
     api.get('/admin/referrals/overview').then((r) => r.data),

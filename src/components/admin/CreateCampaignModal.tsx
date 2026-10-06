@@ -33,10 +33,20 @@ const labelCls = 'block text-xs font-bold uppercase tracking-wider text-gray-500
  * belongs to, fills the same fields a business would, and the backend runs
  * the identical creation pipeline (reward bands, funding gate against the
  * business wallet, escrow hold, parked in pending_review for approval).
+ * `initial` pre-fills the form from a Task Library template.
  */
-export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () => void }> = ({
+export interface CampaignPrefill {
+  title?: string;
+  description?: string;
+  instructions?: string;
+  taskTypeKey?: string | null;
+  platform?: string | null;
+}
+
+export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () => void; initial?: CampaignPrefill }> = ({
   onClose,
   onCreated,
+  initial,
 }) => {
   const [businesses, setBusinesses] = useState<BusinessOption[]>([]);
   const [categories, setCategories] = useState<TaskCategory[]>([]);
@@ -45,13 +55,13 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
   const [refError, setRefError] = useState<string | null>(null);
 
   const [businessId, setBusinessId] = useState('');
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState(initial?.title ?? '');
   const [objective, setObjective] = useState('');
-  const [description, setDescription] = useState('');
-  const [instructions, setInstructions] = useState('');
+  const [description, setDescription] = useState(initial?.description ?? '');
+  const [instructions, setInstructions] = useState(initial?.instructions ?? '');
   const [categoryId, setCategoryId] = useState('');
-  const [taskTypeKey, setTaskTypeKey] = useState('');
-  const [platform, setPlatform] = useState('');
+  const [taskTypeKey, setTaskTypeKey] = useState(initial?.taskTypeKey ?? '');
+  const [platform, setPlatform] = useState(initial?.platform ?? '');
   const [rewardUsd, setRewardUsd] = useState('1.00');
   const [contributors, setContributors] = useState('10');
   const [minLevel, setMinLevel] = useState('starter');

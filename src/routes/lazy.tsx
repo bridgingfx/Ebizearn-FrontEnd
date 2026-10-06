@@ -237,6 +237,9 @@ export const LazyAdminBusinessesPage = React.lazy(() =>
 export const LazyAdminTasksPage = React.lazy(() =>
   named(import('../pages/admin/AdminTasksPage'), 'AdminTasksPage'),
 );
+export const LazyAdminTaskLibraryPage = React.lazy(() =>
+  named(import('../pages/admin/AdminTaskLibraryPage'), 'AdminTaskLibraryPage'),
+);
 export const LazyAdminWalletsPage = React.lazy(() =>
   named(import('../pages/admin/AdminWalletsPage'), 'AdminWalletsPage'),
 );

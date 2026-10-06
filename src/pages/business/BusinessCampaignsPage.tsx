@@ -4,8 +4,6 @@ import {
   Megaphone,
   Plus,
   Search,
-  Play,
-  Pause,
   Eye,
   Loader2,
   AlertCircle,
@@ -18,6 +16,12 @@ import { businessApi, getApiError } from '../../api';
 import type { Campaign } from '../../types';
 import { useMoney } from '../../hooks/useMoney';
 import { EmptyState } from '../../components/common/EmptyState';
+import { ConfirmModal } from '../../components/common/ConfirmModal';
+import { CampaignCard } from '../../components/campaign/CampaignCard';
+import { EditCampaignModal } from '../../components/campaign/EditCampaignModal';
+import { useAuth } from '../../context/AuthContext';
+import { can } from '../../utils/can';
+import { toast } from '../../utils/toast';
 
 type Tab = 'active' | 'in_review' | 'draft' | 'paused' | 'all';
 
@@ -37,6 +41,11 @@ export const BusinessCampaignsPage: React.FC = () => {
   });
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [editing, setEditing] = useState<Campaign | null>(null);
+  const [deleting, setDeleting] = useState<Campaign | null>(null);
+  const { user } = useAuth();
+  const canEdit = can(user, 'edit_own_campaigns');
+  const canDelete = can(user, 'delete_own_campaigns');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -111,24 +120,25 @@ export const BusinessCampaignsPage: React.FC = () => {
     { id: 'all', label: 'All', count: campaigns.length },
   ];
 
-  const statusStyle = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
-      case 'pending_review':
-        return 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300';
-      case 'draft':
-        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
-      case 'paused':
-        return 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300';
-      case 'completed':
-        return 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300';
-      default:
-        return 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400';
+  const confirmDelete = async () => {
+    const c = deleting;
+    if (!c) return;
+    setDeleting(null);
+    setTogglingId(c.id);
+    try {
+      const res = await businessApi.deleteCampaign(c.id);
+      if (res.success) {
+        setCampaigns((prev) => prev.filter((p) => p.id !== c.id));
+        toast.success(res.message || 'Campaign deleted.');
+      } else {
+        toast.error(res.message || 'Could not delete the campaign.');
+      }
+    } catch (e) {
+      toast.error(getApiError(e, 'Could not delete the campaign.'));
+    } finally {
+      setTogglingId(null);
     }
   };
-
-  const spentOf = (c: Campaign) => Math.max(0, (c.total_budget_cents ?? 0) - (c.remaining_budget_cents ?? 0));
 
   const kpiCards = [
     { icon: Zap, label: 'Active Campaigns', value: String(kpis.active), tone: 'text-[#168BFF]', bg: 'bg-blue-100 dark:bg-blue-500/15' },
@@ -243,75 +253,64 @@ export const BusinessCampaignsPage: React.FC = () => {
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {filtered.map((c) => {
-                const status = c.status;
-                const canToggle = status === 'active' || status === 'paused';
-                return (
-                  <div
-                    key={c.id}
-                    className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${statusStyle(status)}`}
-                      >
-                        {status}
-                      </span>
-                      {canToggle && (
-                        <button
-                          type="button"
-                          disabled={togglingId === c.id}
-                          onClick={() => void handleToggle(c)}
-                          title={status === 'active' ? 'Pause campaign' : 'Resume campaign'}
-                          className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-[#168BFF] hover:bg-blue-50 dark:bg-blue-500/10 transition-colors disabled:opacity-50"
-                        >
-                          {status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                        </button>
-                      )}
-                    </div>
-
-                    <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-1">{c.title}</h3>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{c.description}</p>
-
-                    <div className="grid grid-cols-3 gap-2 text-center mb-4">
-                      <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={fmt(c.reward_per_task_cents)}>{fmt(c.reward_per_task_cents)}</p>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">per task</p>
-                      </div>
-                      <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={`${c.completed_contributors_count ?? 0}/${c.target_contributors_count ?? 0}`}>
-                          {(c.completed_contributors_count ?? 0)}/{(c.target_contributors_count ?? 0)}
-                        </p>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">done</p>
-                      </div>
-                      <div className="bg-gray-50 dark:bg-white/5 rounded-xl py-2 px-1">
-                        <p className="text-xs font-extrabold text-gray-900 dark:text-gray-100 truncate" title={fmt(spentOf(c))}>{fmt(spentOf(c))}</p>
-                        <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase">spent</p>
-                      </div>
-                    </div>
-
-                    {c.status === 'draft' ? (
+              {filtered.map((c) => (
+                <CampaignCard
+                  key={c.id}
+                  campaign={c}
+                  fmt={fmt}
+                  busy={togglingId === c.id}
+                  onToggle={(x) => void handleToggle(x)}
+                  // Drafts are edited in the wizard ("Continue editing").
+                  onEdit={canEdit && c.status !== 'draft' ? setEditing : undefined}
+                  onDelete={canDelete ? setDeleting : undefined}
+                  detailsAction={
+                    c.status === 'draft' ? (
                       <Link
                         to={`/business/campaigns/create?draft=${c.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline self-start"
                       >
                         <Eye className="w-3.5 h-3.5" /> Continue editing
                       </Link>
                     ) : (
                       <Link
                         to={`/business/campaigns/${c.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline self-start"
                       >
                         <Eye className="w-3.5 h-3.5" /> View details
                       </Link>
-                    )}
-                  </div>
-                );
-              })}
+                    )
+                  }
+                />
+              ))}
             </div>
           )}
         </>
       )}
+
+      {editing && (
+        <EditCampaignModal
+          campaign={editing}
+          save={businessApi.updateCampaign}
+          onClose={() => setEditing(null)}
+          onSaved={(c) => setCampaigns((prev) => prev.map((p) => (p.id === c.id ? { ...p, ...c } : p)))}
+        />
+      )}
+
+      <ConfirmModal
+        open={Boolean(deleting)}
+        title="Delete this campaign?"
+        message={
+          <>
+            <strong>{deleting?.title}</strong> will be removed. Any unspent escrow returns to your wallet; the platform fee
+            is not refunded. Campaigns contributors already worked on can't be deleted — pause or cancel those instead.
+          </>
+        }
+        confirmLabel="Delete"
+        cancelLabel="Keep"
+        variant="danger"
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => setDeleting(null)}
+      />
     </div>
   );
 };

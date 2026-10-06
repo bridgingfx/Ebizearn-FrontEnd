@@ -1,106 +1,50 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  BookOpen,
-  ArrowRight,
-  Clock,
-  Video,
-  MessageSquare,
-  Share2,
-  Smartphone,
-  MessagesSquare,
-  AtSign,
-  Tag,
-  Megaphone,
-  ClipboardCheck,
-} from 'lucide-react';
+import { BookOpen, Loader2, Lock, Megaphone } from 'lucide-react';
+import axios from 'axios';
+import { getApiError, taskTemplatesApi } from '../../api';
+import type { TaskTemplate } from '../../types';
+import { EmptyState } from '../../components/common/EmptyState';
+import { TaskTemplateCard } from '../../components/task/TaskTemplateCard';
 
 /**
- * Task recipes — content templates only. No performance claims: pass rates,
- * budgets and "top trending" labels require real campaign data and are not
- * shown here. Every template opens the real campaign wizard pre-filled.
+ * Task recipes — content templates only, managed by Super Admin (who also
+ * decides which templates businesses see). No performance claims: pass
+ * rates, budgets and "top trending" labels require real campaign data and
+ * are not shown here. Every template opens the real campaign wizard
+ * pre-filled.
  */
-interface TaskTemplate {
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-  description: string;
-  duration: string;
-  suggestedReward: string;
-  templateKey: string;
-}
-
-const templates: TaskTemplate[] = [
-  {
-    name: 'Instagram Story Share',
-    icon: Share2,
-    description: 'Ask contributors to share your story, post, or reel to their followers.',
-    duration: '2–5 min',
-    suggestedReward: '$0.10 – $0.30',
-    templateKey: 'share',
-  },
-  {
-    name: 'TikTok Video / Duet',
-    icon: Video,
-    description: 'Contributors create or duet a short video featuring your brand.',
-    duration: '10–20 min',
-    suggestedReward: 'Custom (UGC pricing)',
-    templateKey: 'tiktok',
-  },
-  {
-    name: 'YouTube Comment',
-    icon: MessageSquare,
-    description: 'Leave a genuine comment on a video to drive engagement.',
-    duration: '2–3 min',
-    suggestedReward: '$0.20 platform minimum',
-    templateKey: 'comment',
-  },
-  {
-    name: 'App Testing',
-    icon: Smartphone,
-    description: 'Install an app, complete a short flow, and report any issues.',
-    duration: '10–15 min',
-    suggestedReward: 'Custom',
-    templateKey: 'app',
-  },
-  {
-    name: 'WhatsApp Status Share',
-    icon: MessagesSquare,
-    description: 'Share a brand visual to a personal WhatsApp status.',
-    duration: '2–4 min',
-    suggestedReward: '$0.10 – $0.30',
-    templateKey: 'whatsapp',
-  },
-  {
-    name: 'X Repost & Reply',
-    icon: AtSign,
-    description: 'Repost brand content and reply with a genuine comment.',
-    duration: '3–5 min',
-    suggestedReward: '$0.10 – $0.30',
-    templateKey: 'share',
-  },
-  {
-    name: 'Google Business Review',
-    icon: Tag,
-    description: 'Leave an honest review on your Google Business profile.',
-    duration: '3–5 min',
-    suggestedReward: '$0.20 – $2.00',
-    templateKey: 'review',
-  },
-  {
-    name: 'Survey / Feedback Form',
-    icon: ClipboardCheck,
-    description: 'Fill out a short survey or feedback questionnaire.',
-    duration: '5–10 min',
-    suggestedReward: '$0.20 – $2.00',
-    templateKey: 'survey',
-  },
-];
-
 export const BusinessTaskLibraryPage: React.FC = () => {
   const navigate = useNavigate();
+  const [templates, setTemplates] = useState<TaskTemplate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [denied, setDenied] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await taskTemplatesApi.businessList();
+      if (res.success) setTemplates(res.data ?? []);
+      else setError(res.message || 'Could not load the Task Library.');
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response?.status === 403) setDenied(true);
+      else setError(getApiError(e, 'Could not load the Task Library.'));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const applyTemplate = (t: TaskTemplate) => {
-    navigate(`/business/campaigns/create?template=${encodeURIComponent(t.templateKey)}`);
+    const params = new URLSearchParams();
+    if (t.template_key) params.set('template', t.template_key);
+    const qs = params.toString();
+    navigate(`/business/campaigns/create${qs ? `?${qs}` : ''}`);
   };
 
   return (
@@ -116,43 +60,40 @@ export const BusinessTaskLibraryPage: React.FC = () => {
         </div>
         <Link
           to="/business/campaigns/create"
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all shrink-0"
         >
           <Megaphone className="w-4 h-4" />
           <span>Start from scratch</span>
         </Link>
       </div>
 
-      {/* Templates */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {templates.map((t) => (
-          <div
-            key={t.name}
-            className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 flex flex-col hover:shadow-md transition-shadow"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2.5 rounded-xl bg-[#168BFF]/10 text-[#168BFF]">
-                <t.icon className="w-5 h-5" />
-              </div>
-              <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">{t.name}</h3>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4 flex-1">{t.description}</p>
-            <div className="flex items-center gap-4 text-[11px] text-gray-500 dark:text-gray-400 mb-4">
-              <span className="inline-flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" /> {t.duration}
-              </span>
-              <span className="font-bold text-gray-700 dark:text-gray-300">{t.suggestedReward}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => applyTemplate(t)}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-bold rounded-xl transition-colors"
-            >
-              Use This Template <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" /> Loading templates…
+        </div>
+      ) : denied ? (
+        <EmptyState
+          icon={Lock}
+          title="Task Library isn't enabled for your account"
+          description="You can still create a campaign from scratch. Contact support if you think this is a mistake."
+        />
+      ) : error ? (
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl p-4 text-sm">
+          <p className="font-bold text-red-700 dark:text-red-300">Could not load the Task Library</p>
+          <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+          <button type="button" onClick={() => void load()} className="mt-2 text-xs font-bold text-red-700 dark:text-red-300 underline">
+            Retry
+          </button>
+        </div>
+      ) : templates.length === 0 ? (
+        <EmptyState icon={BookOpen} title="No templates available yet" description="Start a campaign from scratch in the meantime." />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {templates.map((t) => (
+            <TaskTemplateCard key={t.id} template={t} onUse={applyTemplate} />
+          ))}
+        </div>
+      )}
 
       <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/30 rounded-2xl p-5 flex items-start gap-3">
         <BookOpen className="w-5 h-5 text-[#168BFF] mt-0.5 shrink-0" />

@@ -263,6 +263,16 @@ export interface Campaign {
   tasks_count?: number;
 }
 
+/** Fields PATCH /staff/campaigns/{id} and /business/campaigns/{id} accept. */
+export interface CampaignEditInput {
+  title?: string;
+  objective?: string | null;
+  description?: string;
+  instructions_markdown?: string;
+  platform?: string | null;
+  min_contributor_level?: ContributorLevel;
+}
+
 export interface Task {
   id: number;
   uuid: string;
@@ -277,7 +287,35 @@ export interface Task {
   slots_taken: number;
   category?: TaskCategory;
   campaign?: Campaign;
+  /** Staff task list (/staff/tasks) eager-loads the type. */
+  task_type?: { id: number; key: string; name: string } | null;
+  platform?: string | null;
 }
+
+/** Icon keys the backend accepts for a Task Library template. */
+export type TaskTemplateIcon =
+  | 'share' | 'video' | 'comment' | 'app' | 'whatsapp' | 'at' | 'tag' | 'survey' | 'megaphone' | 'star';
+
+/** Task Library recipe (GET /business/task-templates, /staff/task-templates). */
+export interface TaskTemplate {
+  id: number;
+  name: string;
+  icon: TaskTemplateIcon;
+  description: string;
+  duration_label: string | null;
+  reward_label: string | null;
+  /** Campaign-wizard hint (?template=…). */
+  template_key: string | null;
+  task_type_key: string | null;
+  platform: string | null;
+  instructions: string | null;
+  visible_to_business: boolean;
+  visible_to_admin: boolean;
+  is_active: boolean;
+  sort_order: number;
+}
+
+export type TaskTemplateInput = Partial<Omit<TaskTemplate, 'id'>>;
 
 export interface TaskSubmission {
   id: number;

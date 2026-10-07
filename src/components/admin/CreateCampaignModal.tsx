@@ -3,6 +3,8 @@ import { X, Loader2, Building2, Wallet } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import { api } from '../../api/client';
 import { fmtMoney } from '../common/ui';
+import { PLATFORM_OPTIONS, PlatformBrandIcon } from '../common/PlatformBrandIcon';
+import { CampaignLivePreview } from './CampaignLivePreview';
 
 interface BusinessOption {
   id: number;
@@ -69,6 +71,24 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [seeding, setSeeding] = useState(false);
+
+  const seedTypes = async () => {
+    setSeeding(true);
+    try {
+      const res = await adminApi.seedTaskTypes();
+      if (res.success) {
+        const typeRes = await api.get('/task-types');
+        setTaskTypes((((typeRes.data?.data ?? typeRes.data ?? []) as TaskType[]).filter((t) => t.reward_band_max_cents > 0)));
+      } else {
+        setRefError(res.message || 'Could not seed task types.');
+      }
+    } catch (e) {
+      setRefError(getApiError(e, 'Could not seed task types.'));
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -121,6 +141,21 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
     bandOk &&
     !submitting;
 
+  // Live preview data — every keystroke in the form flows straight here.
+  const previewData = {
+    title,
+    objective,
+    description,
+    businessName: businesses.find((b) => String(b.id) === businessId)?.company_name ?? '',
+    categoryName: categories.find((c) => String(c.id) === categoryId)?.name ?? '',
+    taskTypeName: selectedType?.name ?? '',
+    platform,
+    rewardCents,
+    contributors: contributorCount,
+    minLevel,
+    totalCents: rewardsBudget + fee,
+  };
+
   const submit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
@@ -155,7 +190,7 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#141821] rounded-2xl shadow-2xl">
+      <div className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#141821] rounded-2xl shadow-2xl">
         <div className="sticky top-0 bg-white dark:bg-[#141821] border-b border-gray-100 dark:border-white/10 px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-100">Post a campaign</h2>
@@ -173,7 +208,7 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
           </button>
         </div>
 
-        <div className="px-6 py-5 space-y-4">
+        <div className="px-6 py-5">
           {loadingRefs ? (
             <div className="flex items-center justify-center py-10 text-gray-500 dark:text-gray-400 text-sm">
               <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading businesses, categories and task types…
@@ -183,7 +218,10 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
               {refError}
             </div>
           ) : (
-            <>
+            <div className="grid lg:grid-cols-[360px_minmax(0,1fr)] gap-6 items-start">
+              {/* Live preview — left side, updates as the form is filled. */}
+              <CampaignLivePreview data={previewData} />
+              <div className="space-y-4 min-w-0">
               <div>
                 <label className={labelCls}>Business *</label>
                 <div className="relative">
@@ -237,6 +275,17 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
                   {taskTypes.length === 0 && (
                     <p className="text-xs text-amber-600 dark:text-amber-400 mt-1.5">No task types are configured yet. Run the backend migrations to load the catalog.</p>
                   )}
+                  {taskTypes.length === 0 && !loadingRefs && (
+                    <button
+                      type="button"
+                      onClick={() => void seedTypes()}
+                      disabled={seeding}
+                      className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline disabled:opacity-50"
+                    >
+                      {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                      {seeding ? 'Restoring…' : 'Or restore the standard list now'}
+                    </button>
+                  )}
                 </div>
                 <div>
                   <label className={labelCls}>Reward per task (USD) *</label>
@@ -257,9 +306,29 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
                   <label className={labelCls}>Contributors (min 5) *</label>
                   <input value={contributors} onChange={(e) => setContributors(e.target.value)} inputMode="numeric" className={inputCls} />
                 </div>
-                <div>
-                  <label className={labelCls}>Platform</label>
-                  <input value={platform} onChange={(e) => setPlatform(e.target.value)} maxLength={64} placeholder="e.g. instagram (optional)" className={inputCls} />
+                <div className="sm:col-span-2">
+                  <label className={labelCls}>Target platform</label>
+                  <div className="flex flex-wrap gap-2">
+                    {PLATFORM_OPTIONS.map((p) => {
+                      const active = platform === p.value;
+                      return (
+                        <button
+                          key={p.value}
+                          type="button"
+                          onClick={() => setPlatform(active ? '' : p.value)}
+                          title={p.label}
+                          className={`inline-flex items-center gap-2 pl-2 pr-3 py-2 rounded-full border text-xs font-bold transition-colors ${
+                            active
+                              ? 'border-[#168BFF] bg-[#168BFF]/10 text-gray-900 dark:text-gray-100'
+                              : 'border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-white/20'
+                          }`}
+                        >
+                          <PlatformBrandIcon platform={p.value} className="w-5 h-5" />
+                          {p.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div>
                   <label className={labelCls}>Min. contributor level</label>
@@ -306,7 +375,8 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
                   {submitError}
                 </div>
               )}
-            </>
+              </div>
+            </div>
           )}
         </div>
 

@@ -130,6 +130,8 @@ export interface Profile {
   kyc_submitted_at?: string | null;
   kyc_verified_at?: string | null;
   kyc_rejection_reason?: string | null;
+  /** Contributor's preferred payout rail, chosen on the Payout Methods tab. */
+  preferred_payout_method?: 'paypal' | 'wise' | 'bank' | 'usdt' | null;
   /** Which document sides are on file; paths themselves never leave the API. */
   kyc_documents?: KycDocumentSide[];
 }

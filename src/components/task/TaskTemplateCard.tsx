@@ -109,13 +109,15 @@ export const TaskTemplateCard: React.FC<{
       )}
 
       {onUse && (
-        <button
-          type="button"
-          onClick={() => onUse(t)}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-bold rounded-xl transition-colors"
-        >
-          Use This Template <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => onUse(t)}
+            className="inline-flex items-center gap-2 pl-4 pr-3 py-2 bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-bold rounded-full transition-colors shadow-sm"
+          >
+            Use This Template <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
       )}
     </div>
   );

@@ -78,6 +78,23 @@ export const AdminLayout: React.FC = () => {
   const navItems = allNavItems.filter(canSee);
 
   const [logoutOpen, setLogoutOpen] = React.useState(false);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const profileRef = React.useRef<HTMLDivElement>(null);
+
+  // Close the profile menu on outside click / Escape.
+  React.useEffect(() => {
+    if (!profileOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setProfileOpen(false);
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [profileOpen]);
   const [moreOpen, setMoreOpen] = React.useState(false);
 
   // Mobile bottom tab bar: 5 primary destinations + "More" sheet (the rest
@@ -119,9 +136,10 @@ export const AdminLayout: React.FC = () => {
           <EBizLogo variant="dark" size="sm" subtitleText="Command Center" />
         </Link>
 
-        {/* Scrolls naturally (wheel / touch) with no visible scrollbar; the
-            soft fade at the edges hints there is more above / below. */}
-        <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto overscroll-contain no-scrollbar text-xs -mx-1 px-1 py-2 [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-20px),transparent)]">
+        {/* Scrollable nav with a thin visible scrollbar so every menu item
+            (e.g. Audit Logs at the bottom) is reachable and the scroll
+            position is obvious. */}
+        <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto overscroll-contain sidebar-scroll text-xs -mx-1 px-1 py-2 [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-20px),transparent)]">
           {navItems.map((item) => {
             const isActive = item.exact
               ? location.pathname === item.path
@@ -180,8 +198,41 @@ export const AdminLayout: React.FC = () => {
             <div className="hidden sm:block">
               <RegionSelector variant="light" />
             </div>
-            <div className="w-9 h-9 rounded-full bg-[#0E1C2F] text-white flex items-center justify-center text-xs font-bold">
-              {initials}
+            <div className="relative" ref={profileRef}>
+              <button
+                type="button"
+                onClick={() => setProfileOpen((v) => !v)}
+                aria-label="Account menu"
+                aria-expanded={profileOpen}
+                className="w-9 h-9 rounded-full bg-[#0E1C2F] text-white flex items-center justify-center text-xs font-bold hover:ring-2 hover:ring-[#168BFF]/40 transition-shadow"
+              >
+                {initials}
+              </button>
+              {profileOpen && (
+                <div className="absolute right-0 top-11 w-60 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#141821] shadow-xl overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-white/10">
+                    <p className="text-sm font-extrabold text-gray-900 dark:text-gray-100 truncate">{user?.name || 'Admin'}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mt-0.5 capitalize">{user?.role} workspace</p>
+                  </div>
+                  <div className="p-1.5">
+                    <button
+                      type="button"
+                      onClick={() => { setProfileOpen(false); navigate('/admin/settings'); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                    >
+                      <Settings className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Account settings
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setProfileOpen(false); setLogoutOpen(true); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" /> Sign out
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>

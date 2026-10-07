@@ -330,13 +330,33 @@
   background-image: url('/chat/wallpaper-dark.svg');
 }
 
-/* Scrollable without a visible scrollbar (admin sidebar). */
+/* Scrollable without a visible scrollbar (chat widget, drawers). */
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Admin sidebar: thin always-visible scrollbar so the menu's scroll
+   position is obvious and reachable (Dawood 2026-10-07). */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
 }
 
 /* The floating live-chat launcher hides while a ticket chat / drawer is

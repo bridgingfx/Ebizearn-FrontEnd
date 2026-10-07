@@ -55,8 +55,9 @@ const CopyRow: React.FC<{ label: string; value: string; mono?: boolean }> = ({ l
 
 /** Business → Billing → Add funds: choose an active method, pay, then tell us. */
 export const DepositModal: React.FC<{ methods: DepositMethod[]; onClose: () => void; onSubmitted: () => void }> = ({ methods: allMethods, onClose, onSubmitted }) => {
-  // Crypto deposits are excluded from the MVP — never offer them even if the API returns one.
-  const methods = allMethods.filter((m) => m.key !== 'crypto');
+  // All active methods from the API are offered, including crypto (USDT)
+  // when Super Admin turns it on (owner decision 2026-10-07).
+  const methods = allMethods;
   const [method, setMethod] = useState<DepositMethod | null>(methods.length === 1 ? methods[0] : null);
   const [amount, setAmount] = useState('');
   const [reference, setReference] = useState('');

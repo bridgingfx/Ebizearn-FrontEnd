@@ -113,6 +113,10 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
   }, []);
 
   const isGlobal = value.mode === 'global';
+  // State/city/area only make sense for a single country. With multiple
+  // countries (or none yet), those fields are hidden.
+  const selectedCountries = value.countries || (value.country ? [value.country] : []);
+  const isSingleCountry = selectedCountries.length === 1;
   const states = value.country ? STATES[value.country] || [] : [];
   const filteredCountries = COUNTRIES.filter((c) =>
     c.name.toLowerCase().includes(countrySearch.toLowerCase())
@@ -215,11 +219,16 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
                     onClick={() => {
                       const current = value.countries || (value.country ? [value.country] : []);
                       const next = selected ? current.filter((x) => x !== c.code) : [...current, c.code];
+                      // State/city/area only apply to a single country — clear them when multi-selecting.
+                      const single = next.length === 1;
                       onChange({
                         mode: 'custom',
                         countries: next,
                         country: next[0],
                         countryName: next.length === 1 ? c.name : `${next.length} countries`,
+                        state: single ? value.state : undefined,
+                        city: single ? value.city : undefined,
+                        area: single ? value.area : undefined,
                       });
                       setCountrySearch('');
                     }}
@@ -235,8 +244,8 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
           )}
         </div>
 
-        {/* State (only if country has states) */}
-        {value.country && states.length > 0 && (
+        {/* State (only for a single country that has states) */}
+        {isSingleCountry && states.length > 0 && (
           <div className="relative mb-2.5" ref={stateRef}>
             <button
               type="button"
@@ -274,8 +283,8 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
           </div>
         )}
 
-        {/* City — free text */}
-        {value.country && (
+        {/* City — free text (single country only) */}
+        {isSingleCountry && (
           <div className="mb-2.5">
             <input
               value={value.city || ''}
@@ -287,8 +296,8 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
           </div>
         )}
 
-        {/* Area — free text */}
-        {value.country && (
+        {/* Area — free text (single country only) */}
+        {isSingleCountry && (
           <div className="mb-1">
             <input
               value={value.area || ''}

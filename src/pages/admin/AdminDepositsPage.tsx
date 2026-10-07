@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CheckCircle2, FileText, Loader2, RefreshCw, Save, Search, XCircle } from 'lucide-react';
-import { staffDepositsApi, formatUsd, getApiError } from '../../api';
+import { adminApi, staffDepositsApi, formatUsd, getApiError } from '../../api';
 import type { DepositMethod, DepositMethodKey, DepositRequest, DepositStatus } from '../../api';
 import { PageHeader } from '../../components/common/ui';
 import { METHOD_ICONS } from '../../components/business/DepositModal';
@@ -234,14 +234,29 @@ const MethodCard: React.FC<{ method: DepositMethod; onSaved: (m: DepositMethod) 
     details: { ...(method.details ?? {}) } as Record<string, string>,
     min_amount: (method.min_amount_cents / 100).toString(),
     max_amount: method.max_amount_cents ? (method.max_amount_cents / 100).toString() : '',
+    payment_gateway_id: method.payment_gateway_id ? String(method.payment_gateway_id) : '',
   });
+  const [gateways, setGateways] = useState<{ id: number; name: string; driver: string; is_active: boolean }[]>([]);
   const [saving, setSaving] = useState(false);
   const Icon = METHOD_ICONS[method.key];
+
+  useEffect(() => {
+    adminApi
+      .paymentGateways()
+      .then((res) => {
+        if (res.success) setGateways(res.data || []);
+      })
+      .catch(() => {});
+  }, []);
 
   const save = async (next = form) => {
     setSaving(true);
     try {
-      const res = await staffDepositsApi.updateMethod(method.key, next);
+      const payload = {
+        ...next,
+        payment_gateway_id: next.payment_gateway_id ? Number(next.payment_gateway_id) : null,
+      };
+      const res = await staffDepositsApi.updateMethod(method.key, payload);
       onSaved(res.data);
     } catch {
       // Toasted by the API client.
@@ -303,6 +318,26 @@ const MethodCard: React.FC<{ method: DepositMethod; onSaved: (m: DepositMethod) 
         <label className="block sm:col-span-2">
           <span className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Instructions for businesses</span>
           <textarea rows={2} value={form.instructions} onChange={(e) => setForm({ ...form, instructions: e.target.value })} className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0B111D] text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF] resize-none" />
+        </label>
+        <label className="block sm:col-span-2">
+          <span className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+            Payment gateway {method.is_automatic ? <span className="text-emerald-600 dark:text-emerald-400">(automatic — wallet credits on payment)</span> : <span className="text-gray-400">(manual approval)</span>}
+          </span>
+          <select
+            value={form.payment_gateway_id}
+            onChange={(e) => setForm({ ...form, payment_gateway_id: e.target.value })}
+            className={inputClass}
+          >
+            <option value="">None — manual approval</option>
+            {gateways.map((g) => (
+              <option key={g.id} value={String(g.id)}>
+                {g.name} ({g.driver}){g.is_active ? '' : ' — disabled'}
+              </option>
+            ))}
+          </select>
+          <span className="block text-[11px] text-gray-400 mt-1">
+            Link a Stripe gateway to take card payments automatically. Manage gateways under Admin → Payment Gateways.
+          </span>
         </label>
       </div>
 

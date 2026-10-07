@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Bitcoin, Check, Copy, CreditCard, ExternalLink, Landmark, Loader2, Mail, Paperclip, X } from 'lucide-react';
+import { ArrowLeft, Bitcoin, Check, Copy, CreditCard, ExternalLink, Landmark, Loader2, Mail, Paperclip, X, Zap } from 'lucide-react';
 import { depositsApi, formatUsd, getApiFieldErrors } from '../../api';
 import type { DepositMethod, DepositMethodKey } from '../../api';
 
@@ -72,6 +72,17 @@ export const DepositModal: React.FC<{ methods: DepositMethod[]; onClose: () => v
     setSubmitting(true);
     setErrors({});
     try {
+      // Automatic method (Stripe): create a checkout session and send the
+      // customer to Stripe. The wallet is credited by the webhook.
+      if (method.is_automatic) {
+        const res = await depositsApi.stripeSession({ method: method.key, amount });
+        if (res.success && res.data?.url) {
+          window.location.href = res.data.url;
+          return;
+        }
+        setErrors({ amount: res.message || 'Could not start the payment.' });
+        return;
+      }
       await depositsApi.create({ method: method.key, amount, reference: reference.trim(), note: note.trim(), proof });
       onSubmitted();
       onClose();
@@ -119,7 +130,14 @@ export const DepositModal: React.FC<{ methods: DepositMethod[]; onClose: () => v
                     <Icon className="w-5 h-5" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-bold text-slate-900 dark:text-gray-100">{m.title}</span>
+                    <span className="block text-sm font-bold text-slate-900 dark:text-gray-100">
+                      {m.title}
+                      {m.is_automatic && (
+                        <span className="ml-2 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold align-middle">
+                          Instant
+                        </span>
+                      )}
+                    </span>
                     <span className="block text-xs text-slate-500 dark:text-gray-400 line-clamp-1">{m.instructions}</span>
                   </span>
                   <span className="text-[11px] text-slate-400 shrink-0">from {formatUsd(m.min_amount_cents)}</span>
@@ -127,6 +145,29 @@ export const DepositModal: React.FC<{ methods: DepositMethod[]; onClose: () => v
               );
             })}
           </div>
+        ) : method.is_automatic ? (
+          <form onSubmit={submit} className="p-6 space-y-5">
+            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
+              <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2">
+                <Zap className="w-4 h-4" /> Instant payment
+              </p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
+                Pay securely by card. Your wallet is credited automatically the moment the payment succeeds — no waiting for manual review.
+              </p>
+            </div>
+            <label className="block">
+              <span className="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Amount (USD)</span>
+              <input required type="number" inputMode="decimal" min={method.min_amount_cents / 100} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="e.g. 500" className={inputClass} />
+              <span className={`block text-[11px] mt-1 ${errors.amount ? 'text-red-600 dark:text-red-400' : 'text-slate-400'}`}>
+                {errors.amount ?? `Minimum ${formatUsd(method.min_amount_cents)}${method.max_amount_cents ? ` · maximum ${formatUsd(method.max_amount_cents)}` : ''}`}
+              </span>
+            </label>
+            <button type="submit" disabled={submitting || !amount} className="w-full h-12 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#168BFF] to-[#7257FF] hover:brightness-105 shadow-lg shadow-blue-500/20 disabled:opacity-50 inline-flex items-center justify-center gap-2">
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+              {submitting ? 'Starting secure payment…' : `Pay ${amount ? `$${parseFloat(amount).toFixed(2)}` : ''} now`}
+            </button>
+            <p className="text-[11px] text-center text-slate-400">Secured by Stripe. You will be redirected to complete the payment.</p>
+          </form>
         ) : (
           <form onSubmit={submit} className="p-6 space-y-5">
             {/* Step 1: how to pay */}

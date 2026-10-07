@@ -15,7 +15,8 @@ import {
   UserRound,
   X,
 } from 'lucide-react';
-import { opsApi, adminApi, getApiError } from '../../api';
+import { opsApi, adminApi, departmentsApi, getApiError } from '../../api';
+import { useAuth } from '../../context/AuthContext';
 import type { PermissionDef, PermissionGroup, RolePermissions, User } from '../../types';
 import { PageHeader } from '../../components/common/ui';
 import { UserPermissionOverrides } from '../../components/admin/UserPermissionOverrides';
@@ -35,6 +36,9 @@ const ROLE_META: Record<RolePermissions['name'], { icon: React.ElementType; blur
  *  2. User overrides — allow or deny a permission for one account.
  */
 export const AdminPermissionsPage: React.FC = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'superadmin';
+  const [tab, setTab] = useState<'roles' | 'departments'>('roles');
   const [roles, setRoles] = useState<RolePermissions[]>([]);
   const [catalog, setCatalog] = useState<PermissionDef[]>([]);
   const [active, setActive] = useState<RolePermissions['name']>('admin');
@@ -157,18 +161,46 @@ export const AdminPermissionsPage: React.FC = () => {
         subtitle="Decide what each role can do across the platform, then fine-tune individual accounts. Every change is enforced by the API and recorded in the audit log."
       />
 
-      {error && (
-        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl p-4 text-sm text-red-700 dark:text-red-300 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" /> {error}
+      {!isSuperAdmin && (
+        <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-2xl p-4 text-sm text-blue-700 dark:text-blue-300">
+          You can manage moderator, contributor and business roles, and view departments. The admin role
+          itself and admin accounts are managed by Super Admin only.
         </div>
       )}
 
-      {loading ? (
-        <div className="py-16 text-center text-gray-400 dark:text-gray-500">
-          <Loader2 className="w-6 h-6 animate-spin inline-block" />
-        </div>
+      <div className="flex gap-2">
+        {(['roles', 'departments'] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setTab(t)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+              tab === t
+                ? 'bg-[#07182F] dark:bg-[#168BFF] text-white'
+                : 'bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300'
+            }`}
+          >
+            {t === 'roles' ? 'Roles & permissions' : 'Departments'}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'departments' ? (
+        <DepartmentsSection isSuperAdmin={isSuperAdmin} />
       ) : (
         <>
+          {error && (
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-2xl p-4 text-sm text-red-700 dark:text-red-300 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" /> {error}
+            </div>
+          )}
+
+          {loading ? (
+            <div className="py-16 text-center text-gray-400 dark:text-gray-500">
+              <Loader2 className="w-6 h-6 animate-spin inline-block" />
+            </div>
+          ) : (
+            <>
           {/* Role cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {roles.map((r) => {
@@ -242,8 +274,9 @@ export const AdminPermissionsPage: React.FC = () => {
                             type="button"
                             role="switch"
                             aria-checked={on}
+                            disabled={!isSuperAdmin && active === 'admin'}
                             onClick={() => toggle(p.name)}
-                            className={`flex items-center justify-between gap-3 p-3.5 rounded-2xl border text-left transition-colors ${
+                            className={`flex items-center justify-between gap-3 p-3.5 rounded-2xl border text-left transition-colors disabled:cursor-not-allowed ${
                               on
                                 ? 'border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-500/10'
                                 : 'border-gray-200 dark:border-white/10 bg-gray-50/60 dark:bg-white/5'
@@ -292,8 +325,9 @@ export const AdminPermissionsPage: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  disabled={!dirty || saving}
+                  disabled={!dirty || saving || (!isSuperAdmin && active === 'admin')}
                   onClick={() => void save()}
+                  title={!isSuperAdmin && active === 'admin' ? 'Only Super Admin can change the admin role' : undefined}
                   className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#07182F] hover:bg-[#0D2342] text-white text-xs font-bold disabled:opacity-40"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save {activeRole?.label} permissions
@@ -368,6 +402,125 @@ export const AdminPermissionsPage: React.FC = () => {
             )}
           </div>
         </>
+      )}
+        </>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Departments — organize staff by team. Super Admin manages the list;
+ * admin sees it read-only.
+ */
+const DepartmentsSection: React.FC<{ isSuperAdmin: boolean }> = ({ isSuperAdmin }) => {
+  const [departments, setDepartments] = useState<{ id: number; name: string; label: string | null; users_count?: number }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await departmentsApi.manage();
+      if (res.success) setDepartments(res.data || []);
+    } catch {
+      /* shown as empty */
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const create = async () => {
+    if (!name.trim() || saving) return;
+    setSaving(true);
+    try {
+      const res = await departmentsApi.create({ name: name.trim() });
+      if (res.success) {
+        setName('');
+        void load();
+      }
+    } catch {
+      /* toasted by client */
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id: number) => {
+    try {
+      const res = await departmentsApi.remove(id);
+      if (res.success) void load();
+    } catch {
+      /* toasted by client */
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="py-16 text-center text-gray-400 dark:text-gray-500">
+        <Loader2 className="w-6 h-6 animate-spin inline-block" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 space-y-4">
+      <div>
+        <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Departments</h2>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          Teams your staff belong to — Finance, Support, Operations and so on.
+          {isSuperAdmin ? ' You can add or remove departments.' : ''}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {departments.map((d) => (
+          <div key={d.id} className="p-4 rounded-2xl border border-gray-200 dark:border-white/10 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{d.name}</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                {(d.users_count ?? 0)} staff member{(d.users_count ?? 0) === 1 ? '' : 's'}
+              </p>
+            </div>
+            {isSuperAdmin && (
+              <button
+                type="button"
+                onClick={() => void remove(d.id)}
+                className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+                aria-label={`Delete ${d.name}`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {isSuperAdmin && (
+        <div className="flex gap-2 max-w-md">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') void create(); }}
+            placeholder="New department name…"
+            maxLength={80}
+            className="flex-1 px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF]"
+          />
+          <button
+            type="button"
+            onClick={() => void create()}
+            disabled={!name.trim() || saving}
+            className="px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-[#168BFF] hover:bg-[#0f7ae5] disabled:opacity-50 inline-flex items-center gap-1.5"
+          >
+            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+            Add
+          </button>
+        </div>
       )}
     </div>
   );

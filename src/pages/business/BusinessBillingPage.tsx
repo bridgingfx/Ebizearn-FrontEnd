@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ArrowDownLeft, ArrowUpRight, Clock, Loader2, Plus, Receipt, RefreshCw, Wallet } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, Loader2, Plus, Receipt, RefreshCw, Wallet, XCircle } from 'lucide-react';
 import { depositsApi, getApiError } from '../../api';
 import { useMoney } from '../../hooks/useMoney';
 import { FxNote } from '../../components/common/Money';
@@ -33,6 +34,7 @@ export const BusinessBillingPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showDeposit, setShowDeposit] = useState(false);
   const [tab, setTab] = useState<'deposits' | 'activity'>('deposits');
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const load = useCallback(async () => {
     try {
@@ -44,6 +46,20 @@ export const BusinessBillingPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Returning from Stripe Checkout — show the outcome and refresh.
+  useEffect(() => {
+    const result = searchParams.get('deposit');
+    if (result === 'success') {
+      toast.success('Payment received — your wallet has been credited.');
+      setSearchParams({}, { replace: true });
+      void load();
+    } else if (result === 'cancelled') {
+      toast.error('Payment was cancelled — no charge was made.');
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

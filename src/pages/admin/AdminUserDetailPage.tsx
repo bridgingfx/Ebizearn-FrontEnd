@@ -30,6 +30,7 @@ import { adminApi, staffKycApi, getApiError } from '../../api';
 import { toast } from '../../utils/toast';
 import type { AdminUserDetail, KycDocumentSide, KycDocumentType, KycStatus } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { CountrySelect } from '../../components/auth/CountrySelect';
 import { UserPermissionOverrides } from '../../components/admin/UserPermissionOverrides';
 import { TICKET_STATUS_LABELS, TICKET_STATUS_STYLES, formatTicketTime } from '../../utils/supportTickets';
 import { auditPage, humanizeAction } from '../../utils/auditLabels';
@@ -140,6 +141,67 @@ const EditablePhoneField: React.FC<{ userId: number | string; currentPhone: stri
             <Phone className="w-3 h-3 text-gray-400 dark:text-gray-500" />
             {currentPhone || '—'}
             <button type="button" onClick={() => setEditing(true)} className="p-1 rounded-md text-[#168BFF] hover:bg-[#168BFF]/10" title="Edit phone">
+              <Pencil className="w-3 h-3" />
+            </button>
+          </span>
+        )}
+      </dd>
+    </div>
+  );
+};
+
+/** Inline country editor for admin/super admin. */
+const EditableCountryField: React.FC<{ userId: number | string; currentCountry: string; onSaved: (cc: string) => void }> = ({ userId, currentCountry, onSaved }) => {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(currentCountry);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => setValue(currentCountry), [currentCountry]);
+
+  const save = async () => {
+    const v = value.trim().toUpperCase();
+    if (v && !/^[A-Z]{2}$/.test(v)) {
+      toast.error('Select a valid country.');
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await adminApi.updateUser(userId, { country_code: v });
+      if (res.success) {
+        onSaved(v);
+        setEditing(false);
+        toast.success('Country updated. Task matching will use the new country.');
+      } else {
+        toast.error(res.message || 'Could not update country.');
+      }
+    } catch (e) {
+      toast.error(getApiError(e, 'Could not update country.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="min-w-0">
+      <dt className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Country</dt>
+      <dd className="text-xs font-semibold text-gray-900 dark:text-gray-100 mt-0.5">
+        {editing ? (
+          <div className="flex items-center gap-1.5">
+            <div className="flex-1 min-w-0">
+              <CountrySelect id="admin-user-country" value={value} onChange={setValue} />
+            </div>
+            <button type="button" onClick={save} disabled={saving} className="p-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50 shrink-0" title="Save">
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+            </button>
+            <button type="button" onClick={() => { setEditing(false); setValue(currentCountry); }} className="p-1.5 rounded-lg bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-300 shrink-0" title="Cancel">
+              <XCircle className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <span className="inline-flex items-center gap-1.5">
+            <Globe className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            {currentCountry || '—'}
+            <button type="button" onClick={() => setEditing(true)} className="p-1 rounded-md text-[#168BFF] hover:bg-[#168BFF]/10" title="Edit country">
               <Pencil className="w-3 h-3" />
             </button>
           </span>
@@ -455,7 +517,7 @@ export const AdminUserDetailPage: React.FC = () => {
               <EditableEmailField userId={user.id} currentEmail={user.email} onSaved={(e) => setData(data ? { ...data, user: { ...data.user, email: e } } : data)} />
               <Field label="Email verified" value={user.email_verified_at ? dateTime(user.email_verified_at) : 'Not verified'} />
               <EditablePhoneField userId={user.id} currentPhone={user.phone || profile?.phone || ''} onSaved={(p) => setData(data ? { ...data, user: { ...data.user, phone: p } } : data)} />
-              <Field label="Country" value={profile?.country_code ? <span className="inline-flex items-center gap-1"><Globe className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {profile.country_code}</span> : '—'} />
+              <EditableCountryField userId={user.id} currentCountry={profile?.country_code || ''} onSaved={(cc) => { if (data && data.user.profile) { data.user.profile.country_code = cc; setData({ ...data }); } }} />
               <Field label="City" value={profile?.city ? <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {profile.city}</span> : '—'} />
               <Field label="Language" value={profile?.language?.toUpperCase()} />
               <Field label="Joined" value={<span className="inline-flex items-center gap-1"><CalendarDays className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {dateTime(user.created_at)}</span>} />

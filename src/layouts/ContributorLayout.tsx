@@ -133,16 +133,6 @@ export const ContributorLayout: React.FC = () => {
                 >
                   <UserIcon className="w-3.5 h-3.5 text-[#168BFF]" /> My profile
                 </Link>
-                <div className="px-3 py-1.5 border-t border-white/10">
-                  <RegionSelector variant="dark" compact />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => { setProfileOpen(false); setLogoutOpen(true); }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] font-semibold text-red-300 hover:bg-red-500/10 transition-colors border-t border-white/10"
-                >
-                  <LogOut className="w-3.5 h-3.5" /> Sign out
-                </button>
               </div>
             )}
           </div>
@@ -195,6 +185,19 @@ export const ContributorLayout: React.FC = () => {
               Notifications
             </NavLink>
           </nav>
+        </div>
+
+        {/* Sidebar footer: language + sign out */}
+        <div className="shrink-0 pt-3 mt-3 border-t border-white/10 space-y-2">
+          <RegionSelector variant="dark" compact />
+          <button
+            type="button"
+            onClick={() => setLogoutOpen(true)}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-300 hover:bg-red-500/10 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign out
+          </button>
         </div>
       </aside>
 

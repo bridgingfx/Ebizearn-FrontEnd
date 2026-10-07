@@ -140,7 +140,7 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
     instructions.trim() &&
     categoryId &&
     taskTypeKey &&
-    rewardCents >= 20 &&
+    rewardCents > 0 &&
     contributorCount >= 5 &&
     bandOk &&
     !submitting;

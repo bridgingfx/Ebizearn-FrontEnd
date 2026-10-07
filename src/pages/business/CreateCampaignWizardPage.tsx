@@ -84,7 +84,9 @@ interface TaskType {
   allowed_platforms?: string[];
 }
 
-const MIN_REWARD_USD = 0.2;
+// Sanity floor only — the selected task type's reward band is the real rule
+// (e.g. Follow allows $0.10–$0.20).
+const MIN_REWARD_USD = 0.01;
 const MIN_CONTRIBUTORS = 5;
 /** Estimated platform fee mirrored from backend config (platform.platformFeePercent, default 15).
  *  The backend is the source of truth — it recalculates the fee and verifies
@@ -819,7 +821,6 @@ export const CreateCampaignWizardPage: React.FC = () => {
                 className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
               />
               {err('reward') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('reward')}</p>}
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Platform minimum: ${MIN_REWARD_USD.toFixed(2)}.</p>
               {converted && rewardCents > 0 && (
                 <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
                   ≈ <span className="notranslate" translate="no">{fmt(rewardCents)}</span> per task in your currency (estimate).

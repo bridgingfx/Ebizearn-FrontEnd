@@ -101,7 +101,7 @@ export const BusinessTaskLibraryPage: React.FC = () => {
           <p className="font-bold mb-1">How templates work</p>
           <p>
             A template pre-selects the closest matching task type in the campaign wizard. You still write your
-            own instructions, set the reward (minimum $0.20 per task), and launch with a real budget hold.
+            own instructions, set the reward (within the task type’s allowed range), and launch with a real budget hold.
             Reward guides above come from the platform pricing policy; actual earnings depend on your settings.
           </p>
         </div>

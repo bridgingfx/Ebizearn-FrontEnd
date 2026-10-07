@@ -4,6 +4,7 @@ import { adminApi, getApiError } from '../../api';
 import { api } from '../../api/client';
 import { fmtMoney } from '../common/ui';
 import { PLATFORM_OPTIONS, PlatformBrandIcon } from '../common/PlatformBrandIcon';
+import { usePlatforms } from '../../api/platforms';
 import { CampaignLivePreview } from './CampaignLivePreview';
 
 interface BusinessOption {
@@ -72,6 +73,9 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [seeding, setSeeding] = useState(false);
+
+  // Platforms Super Admin configured (API) — falls back to the built-in set.
+  const { platforms: platformOptions } = usePlatforms();
 
   const seedTypes = async () => {
     setSeeding(true);
@@ -142,6 +146,7 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
     !submitting;
 
   // Live preview data — every keystroke in the form flows straight here.
+  const selectedPlatform = platformOptions.find((p) => p.key === platform);
   const previewData = {
     title,
     objective,
@@ -150,6 +155,8 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
     categoryName: categories.find((c) => String(c.id) === categoryId)?.name ?? '',
     taskTypeName: selectedType?.name ?? '',
     platform,
+    platformLogoUrl: selectedPlatform?.logo_url ?? null,
+    platformBrandColor: selectedPlatform?.brand_color ?? null,
     rewardCents,
     contributors: contributorCount,
     minLevel,
@@ -309,22 +316,22 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
                 <div className="sm:col-span-2">
                   <label className={labelCls}>Target platform</label>
                   <div className="flex flex-wrap gap-2">
-                    {PLATFORM_OPTIONS.map((p) => {
-                      const active = platform === p.value;
+                    {platformOptions.map((p) => {
+                      const active = platform === p.key;
                       return (
                         <button
-                          key={p.value}
+                          key={p.key}
                           type="button"
-                          onClick={() => setPlatform(active ? '' : p.value)}
-                          title={p.label}
+                          onClick={() => setPlatform(active ? '' : p.key)}
+                          title={p.name}
                           className={`inline-flex items-center gap-2 pl-2 pr-3 py-2 rounded-full border text-xs font-bold transition-colors ${
                             active
                               ? 'border-[#168BFF] bg-[#168BFF]/10 text-gray-900 dark:text-gray-100'
                               : 'border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:border-gray-300 dark:hover:border-white/20'
                           }`}
                         >
-                          <PlatformBrandIcon platform={p.value} className="w-5 h-5" />
-                          {p.label}
+                          <PlatformBrandIcon platform={p.key} logoUrl={p.logo_url} brandColor={p.brand_color} className="w-5 h-5" />
+                          {p.name}
                         </button>
                       );
                     })}

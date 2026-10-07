@@ -21,6 +21,7 @@ import {
   Settings,
   ScrollText,
   LogOut,
+  Globe,
   Mail,
   MailCheck,
   AtSign,
@@ -73,6 +74,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, superOnly: true },
     { name: 'Email & Campaigns', path: '/admin/email', icon: MailCheck, superOnly: true },
     { name: 'Settings', path: '/admin/settings', icon: Settings, perm: 'manage_settings' },
+    { name: 'Platforms', path: '/admin/platforms', icon: Globe, superOnly: true },
     { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText, perm: 'view_reports' },
   ];
   const navItems = allNavItems.filter(canSee);

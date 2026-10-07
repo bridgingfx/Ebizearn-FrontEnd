@@ -1,5 +1,5 @@
 import { api, type ApiResponse } from './client';
-import type { PermissionDef, RolePermissions, UserPermissionOverrides } from '../types';
+import type { PermissionDef, RolePermissions, UserPermissionOverrides, Wallet } from '../types';
 
 /** Super Admin permission management (/ops, superadmin only). */
 export const opsApi = {
@@ -16,5 +16,17 @@ export const opsApi = {
   updateUserPermissions: (userId: number, grants: string[], denies: string[]) =>
     api
       .put<ApiResponse<UserPermissionOverrides>>(`/ops/users/${userId}/permissions`, { grants, denies })
+      .then((r) => r.data),
+};
+
+/** Super Admin wallet operations — directory, inspection, manual credits/debits. */
+export const opsWalletsApi = {
+  credit: (walletId: number, payload: { amount: number; description?: string }) =>
+    api
+      .post<ApiResponse<{ wallet: Wallet }>>(`/ops/wallets/${walletId}/credit`, payload)
+      .then((r) => r.data),
+  debit: (walletId: number, payload: { amount: number; description?: string }) =>
+    api
+      .post<ApiResponse<{ wallet: Wallet }>>(`/ops/wallets/${walletId}/debit`, payload)
       .then((r) => r.data),
 };

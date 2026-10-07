@@ -17,6 +17,8 @@ export interface CampaignPreviewData {
   categoryName: string;
   taskTypeName: string;
   platform: string;
+  platformLogoUrl?: string | null;
+  platformBrandColor?: string | null;
   rewardCents: number;
   contributors: number;
   minLevel: string;
@@ -39,9 +41,9 @@ export const CampaignLivePreview: React.FC<{ data: CampaignPreviewData }> = ({ d
       <div className="rounded-2xl border border-[#E7ECF3] dark:border-white/10 bg-gray-50 dark:bg-white/5 overflow-hidden">
         {/* Platform banner with the ORIGINAL brand icon */}
         <div className="px-5 py-4 bg-white dark:bg-[#0C1322] border-b border-gray-100 dark:border-white/10 flex items-center gap-3">
-          {key ? (
+          {key || data.platformLogoUrl ? (
             <span className="w-11 h-11 rounded-2xl bg-gray-50 dark:bg-white/10 border border-gray-100 dark:border-white/10 flex items-center justify-center shrink-0">
-              <PlatformBrandIcon platform={data.platform} className="w-6 h-6" />
+              <PlatformBrandIcon platform={data.platform} logoUrl={data.platformLogoUrl} brandColor={data.platformBrandColor} className="w-6 h-6" />
             </span>
           ) : (
             <span className="w-11 h-11 rounded-2xl bg-gray-100 dark:bg-white/10 flex items-center justify-center shrink-0 text-gray-400 text-lg font-black">

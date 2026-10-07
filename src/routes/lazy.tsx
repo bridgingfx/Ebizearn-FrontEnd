@@ -228,6 +228,9 @@ export const LazyAdminSystemHealthPage = React.lazy(() =>
 export const LazyAdminSettingsPage = React.lazy(() =>
   named(import('../pages/admin/AdminSettingsPage'), 'AdminSettingsPage'),
 );
+export const LazyAdminPlatformsPage = React.lazy(() =>
+  named(import('../pages/admin/AdminPlatformsPage'), 'AdminPlatformsPage'),
+);
 export const LazyAdminAuditLogsPage = React.lazy(() =>
   named(import('../pages/admin/AdminAuditLogsPage'), 'AdminAuditLogsPage'),
 );

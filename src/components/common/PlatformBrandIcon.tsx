@@ -83,19 +83,26 @@ export const PLATFORM_OPTIONS = [
   { value: 'linkedin', label: 'LinkedIn' },
 ];
 
-export const PlatformBrandIcon: React.FC<{ platform?: string | null; className?: string; monochrome?: boolean }> = ({
-  platform,
-  className = 'w-5 h-5',
-  monochrome = false,
-}) => {
+export const PlatformBrandIcon: React.FC<{
+  platform?: string | null;
+  className?: string;
+  monochrome?: boolean;
+  /** Custom logo uploaded by Super Admin — takes precedence over the built-in glyph. */
+  logoUrl?: string | null;
+  brandColor?: string | null;
+}> = ({ platform, className = 'w-5 h-5', monochrome = false, logoUrl, brandColor }) => {
+  if (logoUrl) {
+    return <img src={logoUrl} alt="" className={`${className} object-contain`} loading="lazy" />;
+  }
   const key = platformKey(platform);
   const entry = key ? PATHS[key] : undefined;
   if (!entry) return null;
+  const color = brandColor ?? entry.brand;
   return (
     <svg
       viewBox="0 0 24 24"
       className={className}
-      style={monochrome ? undefined : { color: entry.brand }}
+      style={monochrome ? undefined : { color }}
       fill={entry.custom ? 'none' : 'currentColor'}
       aria-label={entry.label}
       role="img"

@@ -198,7 +198,7 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#141821] rounded-2xl shadow-2xl">
-        <div className="sticky top-0 bg-white dark:bg-[#141821] border-b border-gray-100 dark:border-white/10 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 z-20 bg-white dark:bg-[#141821] border-b border-gray-100 dark:border-white/10 px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-100">Post a campaign</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -387,7 +387,7 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-white dark:bg-[#141821] border-t border-gray-100 dark:border-white/10 px-6 py-4 flex justify-end gap-3 rounded-b-2xl">
+        <div className="sticky bottom-0 z-20 bg-white dark:bg-[#141821] border-t border-gray-100 dark:border-white/10 px-6 py-4 flex justify-end gap-3 rounded-b-2xl">
           <button
             type="button"
             onClick={onClose}

@@ -30,7 +30,7 @@ export const CampaignLivePreview: React.FC<{ data: CampaignPreviewData }> = ({ d
   const hasTitle = data.title.trim().length > 0;
 
   return (
-    <div className="lg:sticky lg:top-0">
+    <div className="lg:sticky lg:top-24">
       <div className="flex items-center gap-2 mb-3">
         <Eye className="w-4 h-4 text-[#168BFF]" />
         <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400">

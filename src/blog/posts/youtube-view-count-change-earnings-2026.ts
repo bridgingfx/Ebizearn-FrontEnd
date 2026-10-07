@@ -11,7 +11,6 @@ export const post: BlogPost = {
   publishedAt: '2026-10-07',
   updatedAt: '2026-10-07',
   readingMinutes: 6,
-  heroImage: '/images/blog/youtube-view-count-change-earnings-2026.jpg',
   content: [
     {
       type: 'intro',

@@ -11,7 +11,6 @@ export const post: BlogPost = {
   publishedAt: '2026-10-07',
   updatedAt: '2026-10-07',
   readingMinutes: 7,
-  heroImage: '/images/blog/tiktok-us-deal-done-creators-new-owners.jpg',
   content: [
     {
       type: 'intro',

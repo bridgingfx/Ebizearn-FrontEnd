@@ -11,7 +11,6 @@ export const post: BlogPost = {
   publishedAt: '2026-10-07',
   updatedAt: '2026-10-07',
   readingMinutes: 6,
-  heroImage: '/images/blog/x-ends-revenue-sharing-creator-rewards-2026.jpg',
   content: [
     {
       type: 'intro',

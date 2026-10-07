@@ -226,6 +226,14 @@ export const AdminTasksPage: React.FC = () => {
                       >
                         {t.status}
                       </span>
+                      {/* Contributors only see tasks of ACTIVE campaigns — flag
+                          an "available" task that is still hidden. */}
+                      {t.status === 'available' && t.campaign?.status && t.campaign.status !== 'active' && (
+                        <p className="mt-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                          Hidden from contributors — campaign is{' '}
+                          {t.campaign.status === 'pending_review' ? 'in review (approve it in Campaigns)' : t.campaign.status.replace('_', ' ')}
+                        </p>
+                      )}
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center justify-end gap-1">

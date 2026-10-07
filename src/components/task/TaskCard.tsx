@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Clock, CalendarDays, ShieldAlert, ArrowRight, Users } from 'lucide-react';
 import type { UiTask } from '../../types';
 import { useMoney } from '../../hooks/useMoney';
+import { usePlatforms } from '../../api/platforms';
 import {
   InstagramLogo,
   TikTokLogo,
@@ -89,10 +90,15 @@ function formatDeadline(iso?: string): string | null {
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export const PlatformMark: React.FC<{ platform: string; className?: string }> = ({
+export const PlatformMark: React.FC<{ platform: string; className?: string; logoUrl?: string | null }> = ({
   platform,
   className = 'w-6 h-6',
+  logoUrl,
 }) => {
+  // Prefer the uploaded logo (Super Admin configured) over the built-in mark.
+  if (logoUrl) {
+    return <img src={logoUrl} alt={platform} className={`${className} object-contain`} loading="lazy" />;
+  }
   const Logo = platformLogos[platform];
   if (!Logo) return null;
   return <Logo className={className} />;
@@ -106,12 +112,18 @@ interface TaskCardProps {
 
 export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => {
   const { fmt } = useMoney();
+  const { platforms } = usePlatforms();
   const detailUrl = `/app/tasks/${task.uuid || task.id}`;
   const reward = fmt(task.reward_cents);
   const deadline = formatDeadline(task.campaign?.ends_at);
   const retention = humanizeRetention(task.retentionHours);
   const requirements = proofRequirementLabels(task.campaign?.proof_requirements_json);
   const slotsLeft = Math.max(0, task.slots_total - task.slots_taken);
+  // Uploaded platform logo (Super Admin) takes precedence over the built-in mark.
+  const platformEntry = platforms.find(
+    (p) => p.key.toLowerCase() === task.platform.toLowerCase() || p.name.toLowerCase() === task.platform.toLowerCase()
+  );
+  const platformLogoUrl = platformEntry?.logo_url || null;
   const tile = platformTile[task.platform] || 'bg-slate-100 dark:bg-white/10';
 
   if (compact) {
@@ -121,7 +133,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
         className="group flex items-center gap-3.5 bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 p-4 cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/[0.07] hover:border-[#168BFF]/50"
       >
         <div className={`w-12 h-12 rounded-2xl ${tile} flex items-center justify-center shrink-0`}>
-          <PlatformMark platform={task.platform} className="w-6 h-6" />
+          <PlatformMark platform={task.platform} className="w-6 h-6" logoUrl={platformLogoUrl} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-extrabold text-slate-900 dark:text-gray-100 truncate group-hover:text-[#168BFF] transition-colors">
@@ -150,7 +162,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, compact = false }) => 
         {/* Brand + platform header */}
         <div className="flex items-center gap-3.5 mb-4">
           <div className={`w-13 h-13 min-w-[52px] min-h-[52px] rounded-2xl ${tile} flex items-center justify-center shrink-0`}>
-            <PlatformMark platform={task.platform} className="w-7 h-7" />
+            <PlatformMark platform={task.platform} className="w-7 h-7" logoUrl={platformLogoUrl} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-bold text-slate-500 dark:text-gray-400 truncate">{task.brandName}</p>

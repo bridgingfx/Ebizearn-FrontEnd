@@ -95,11 +95,22 @@ export const PlatformMark: React.FC<{ platform: string; className?: string; logo
   className = 'w-6 h-6',
   logoUrl,
 }) => {
-  // Prefer the uploaded logo (Super Admin configured) over the built-in mark.
-  if (logoUrl) {
-    return <img src={logoUrl} alt={platform} className={`${className} object-contain`} loading="lazy" />;
+  const [imgFailed, setImgFailed] = React.useState(false);
+  // Case-insensitive lookup — backend may send "instagram" or "Instagram".
+  const Logo = platformLogos[platform] || platformLogos[Object.keys(platformLogos).find((k) => k.toLowerCase() === platform.toLowerCase()) || ''];
+  // Prefer the uploaded logo (Super Admin configured) over the built-in mark,
+  // but fall back to the built-in icon if the upload is missing/broken.
+  if (logoUrl && !imgFailed) {
+    return (
+      <img
+        src={logoUrl}
+        alt={platform}
+        className={`${className} object-contain`}
+        loading="lazy"
+        onError={() => setImgFailed(true)}
+      />
+    );
   }
-  const Logo = platformLogos[platform];
   if (!Logo) return null;
   return <Logo className={className} />;
 };

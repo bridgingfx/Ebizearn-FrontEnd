@@ -71,6 +71,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert, perm: 'review_submissions' },
     { name: 'Support', path: '/admin/support', icon: Headset, perm: 'handle_disputes' },
     { name: 'Analytics', path: '/admin/analytics', icon: Activity, perm: 'view_reports' },
+    { name: 'Website Traffic', path: '/admin/traffic', icon: Globe, perm: 'view_reports' },
     { name: 'System Health', path: '/admin/health', icon: Activity },
     { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, perm: 'manage_roles' },
     { name: 'Email & Campaigns', path: '/admin/email', icon: MailCheck, superOnly: true },

@@ -222,6 +222,9 @@ export const LazyAdminPermissionsPage = React.lazy(() =>
 export const LazyAdminAnalyticsPage = React.lazy(() =>
   named(import('../pages/admin/AdminAnalyticsPage'), 'AdminAnalyticsPage'),
 );
+export const LazyAdminTrafficPage = React.lazy(() =>
+  named(import('../pages/admin/AdminTrafficPage'), 'AdminTrafficPage'),
+);
 export const LazyAdminSystemHealthPage = React.lazy(() =>
   named(import('../pages/admin/AdminSystemHealthPage'), 'AdminSystemHealthPage'),
 );

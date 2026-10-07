@@ -8,6 +8,7 @@ import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
 import { DeferredPageLoader } from './components/common/PageLoader';
 import { Toaster } from './components/common/Toast';
+import { usePageTracking } from './hooks/usePageTracking';
 import { reapplyGTranslateLang, GTranslateEngine } from './components/common/GTranslate';
 
 // Layouts — the public shell stays in the main bundle (first paint);
@@ -81,6 +82,7 @@ import {
   LazyAdminUserDetailPage,
   LazyAdminPermissionsPage,
   LazyAdminAnalyticsPage,
+  LazyAdminTrafficPage,
   LazyAdminSystemHealthPage,
   LazyAdminSettingsPage,
   LazyAdminAuditLogsPage,
@@ -103,6 +105,12 @@ const ScrollToTop: React.FC = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  return null;
+};
+
+/** Logs every page view for the traffic analytics dashboard. */
+const PageViewTracker: React.FC = () => {
+  usePageTracking();
   return null;
 };
 
@@ -137,6 +145,7 @@ export const App: React.FC = () => {
       <PlatformDataProvider>
         <BrowserRouter>
         <ScrollToTop />
+        <PageViewTracker />
         <ReapplyTranslation />
         <GTranslateEngine />
         <RouteSeo />
@@ -259,6 +268,7 @@ export const App: React.FC = () => {
             <Route path="kyc" element={<LazyAdminKycPage />} />
             <Route path="social-channels" element={<LazyAdminSocialChannelsPage />} />
             <Route path="analytics" element={<LazyAdminAnalyticsPage />} />
+            <Route path="traffic" element={<LazyAdminTrafficPage />} />
             <Route path="health" element={<LazyAdminSystemHealthPage />} />
             <Route path="settings" element={<LazyAdminSettingsPage />} />
             <Route path="platforms" element={<LazyAdminPlatformsPage />} />

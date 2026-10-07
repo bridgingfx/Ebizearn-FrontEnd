@@ -21,6 +21,8 @@ interface RegionSelectorProps {
   className?: string;
   /** Compact row style for dropdown menus (smaller padding/text). */
   compact?: boolean;
+  /** 'up' opens the menu above the button (for bottom-of-sidebar placement). */
+  direction?: 'down' | 'up';
 }
 
 /**
@@ -29,7 +31,7 @@ interface RegionSelectorProps {
  * never convert the USD figures in page copy, which left the pill saying
  * e.g. PKR while prices still read "$1.80".
  */
-export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark', className = '', compact = false }) => {
+export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark', className = '', compact = false, direction = 'down' }) => {
   const { lang, setLang, t } = useRegion();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -80,7 +82,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         <div
           role="listbox"
           aria-label={t('region.languageTitle')}
-          className="absolute end-0 mt-2 w-72 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in"
+          className={`absolute end-0 w-72 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in ${direction === 'up' ? 'bottom-full mb-2' : 'mt-2'}`}
         >
           <div className="p-1.5 max-h-[22rem] overflow-y-auto">
             <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 flex items-center gap-1.5">

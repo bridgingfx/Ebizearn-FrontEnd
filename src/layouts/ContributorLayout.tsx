@@ -187,17 +187,22 @@ export const ContributorLayout: React.FC = () => {
           </nav>
         </div>
 
-        {/* Sidebar footer: language + sign out */}
-        <div className="shrink-0 pt-3 mt-3 border-t border-white/10 space-y-2">
-          <RegionSelector variant="dark" compact />
-          <button
-            type="button"
-            onClick={() => setLogoutOpen(true)}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-300 hover:bg-red-500/10 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign out
-          </button>
+        {/* Sidebar footer: language + sign out on one line */}
+        <div className="shrink-0 pt-3 mt-3 border-t border-white/10">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 min-w-0">
+              <RegionSelector variant="dark" compact direction="up" />
+            </div>
+            <button
+              type="button"
+              onClick={() => setLogoutOpen(true)}
+              aria-label="Sign out"
+              title="Sign out"
+              className="shrink-0 p-2.5 rounded-xl text-red-300 hover:bg-red-500/10 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </aside>
 

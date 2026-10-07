@@ -12,6 +12,10 @@ export interface DepositMethod {
   details: Record<string, string> | null;
   min_amount_cents: number;
   max_amount_cents: number | null;
+  payment_gateway_id?: number | null;
+  /** True when payments flow automatically (e.g. Stripe) — no manual approval. */
+  is_automatic?: boolean;
+  gateway_driver?: string | null;
 }
 
 export interface DepositRequest {
@@ -63,6 +67,11 @@ export const depositsApi = {
     if (input.proof) form.append('proof', input.proof);
     return unwrap(api.post<ApiResponse<DepositRequest>>('/business/deposits', form, { headers: { 'Content-Type': 'multipart/form-data' } }));
   },
+  /** Automatic card payment — returns the Stripe Checkout URL to redirect to. */
+  stripeSession: (input: { method: DepositMethodKey; amount: string }) =>
+    unwrap(
+      api.post<ApiResponse<{ url: string; session_id: string; deposit_uuid: string }>>('/business/deposits/stripe-session', input),
+    ),
 };
 
 /** Staff review + Super Admin method settings. */

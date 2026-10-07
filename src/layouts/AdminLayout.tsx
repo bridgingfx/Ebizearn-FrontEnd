@@ -22,6 +22,7 @@ import {
   ScrollText,
   LogOut,
   Globe,
+  CreditCard,
   Mail,
   MailCheck,
   AtSign,
@@ -71,10 +72,11 @@ export const AdminLayout: React.FC = () => {
     { name: 'Support', path: '/admin/support', icon: Headset, perm: 'handle_disputes' },
     { name: 'Analytics', path: '/admin/analytics', icon: Activity, perm: 'view_reports' },
     { name: 'System Health', path: '/admin/health', icon: Activity },
-    { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, superOnly: true },
+    { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, perm: 'manage_roles' },
     { name: 'Email & Campaigns', path: '/admin/email', icon: MailCheck, superOnly: true },
     { name: 'Settings', path: '/admin/settings', icon: Settings, perm: 'manage_settings' },
     { name: 'Platforms', path: '/admin/platforms', icon: Globe, superOnly: true },
+    { name: 'Payment Gateways', path: '/admin/payment-gateways', icon: CreditCard, superOnly: true },
     { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText, perm: 'view_reports' },
   ];
   const navItems = allNavItems.filter(canSee);

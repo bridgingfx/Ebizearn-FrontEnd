@@ -85,6 +85,7 @@ import {
   LazyAdminSettingsPage,
   LazyAdminAuditLogsPage,
   LazyAdminPlatformsPage,
+  LazyAdminPaymentGatewaysPage,
   LazyAdminBusinessesPage,
   LazyAdminTasksPage,
   LazyAdminTaskLibraryPage,
@@ -261,6 +262,7 @@ export const App: React.FC = () => {
             <Route path="health" element={<LazyAdminSystemHealthPage />} />
             <Route path="settings" element={<LazyAdminSettingsPage />} />
             <Route path="platforms" element={<LazyAdminPlatformsPage />} />
+            <Route path="payment-gateways" element={<LazyAdminPaymentGatewaysPage />} />
             <Route path="audit" element={<LazyAdminAuditLogsPage />} />
             <Route path="audit-logs" element={<LazyAdminAuditLogsPage />} />
           </Route>

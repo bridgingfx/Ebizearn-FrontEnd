@@ -6,7 +6,7 @@ export { profileApi } from './profile';
 export type { ProfileUpdatePayload, KycSubmitPayload } from './profile';
 export { supportApi, staffSupportApi, staffKycApi } from './support';
 export type { CreateTicketPayload, StaffTicketCounts } from './support';
-export { opsApi, opsWalletsApi } from './ops';
+export { opsApi, opsWalletsApi, departmentsApi } from './ops';
 export { tasksApi } from './tasks';
 export { walletApi } from './wallet';
 export { businessApi } from './business';

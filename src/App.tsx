@@ -9,6 +9,7 @@ import { RoleGuard } from './components/common/RoleGuard';
 import { DeferredPageLoader } from './components/common/PageLoader';
 import { Toaster } from './components/common/Toast';
 import { usePageTracking } from './hooks/usePageTracking';
+import { useSessionTimeout } from './hooks/useSessionTimeout';
 import { reapplyGTranslateLang, GTranslateEngine } from './components/common/GTranslate';
 
 // Layouts — the public shell stays in the main bundle (first paint);
@@ -114,6 +115,12 @@ const PageViewTracker: React.FC = () => {
   return null;
 };
 
+/** Enforces the Super Admin-configured inactivity auto-logout. */
+const SessionTimeoutEnforcer: React.FC = () => {
+  useSessionTimeout();
+  return null;
+};
+
 /** Re-apply the current Google translation on SPA route changes — Google
  *  doesn't always translate dynamically rendered nodes by itself. */
 const ReapplyTranslation: React.FC = () => {
@@ -146,6 +153,7 @@ export const App: React.FC = () => {
         <BrowserRouter>
         <ScrollToTop />
         <PageViewTracker />
+        <SessionTimeoutEnforcer />
         <ReapplyTranslation />
         <GTranslateEngine />
         <RouteSeo />

@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { PhoneRequiredModal } from './components/auth/PhoneRequiredModal';
 import { PlatformDataProvider } from './context/PlatformDataContext';
 import { LiveChatWidget } from './components/common/LiveChatWidget';
 import { CookieConsent } from './components/common/CookieConsent';
@@ -8,6 +9,8 @@ import { RouteSeo } from './components/common/Seo';
 import { RoleGuard } from './components/common/RoleGuard';
 import { DeferredPageLoader } from './components/common/PageLoader';
 import { Toaster } from './components/common/Toast';
+import { usePageTracking } from './hooks/usePageTracking';
+import { useSessionTimeout } from './hooks/useSessionTimeout';
 import { reapplyGTranslateLang, GTranslateEngine } from './components/common/GTranslate';
 
 // Layouts — the public shell stays in the main bundle (first paint);
@@ -73,6 +76,7 @@ import {
   LazyAdminFraudPage,
   LazyAdminPayoutsPage,
   LazyAdminUsersPage,
+  LazyAdminRankTiersPage,
   LazyAdminCampaignsOversightPage,
   LazyAdminSupportPage,
   LazyAdminKycPage,
@@ -81,9 +85,12 @@ import {
   LazyAdminUserDetailPage,
   LazyAdminPermissionsPage,
   LazyAdminAnalyticsPage,
+  LazyAdminTrafficPage,
   LazyAdminSystemHealthPage,
   LazyAdminSettingsPage,
   LazyAdminAuditLogsPage,
+  LazyAdminPlatformsPage,
+  LazyAdminPaymentGatewaysPage,
   LazyAdminBusinessesPage,
   LazyAdminTasksPage,
   LazyAdminTaskLibraryPage,
@@ -101,6 +108,18 @@ const ScrollToTop: React.FC = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  return null;
+};
+
+/** Logs every page view for the traffic analytics dashboard. */
+const PageViewTracker: React.FC = () => {
+  usePageTracking();
+  return null;
+};
+
+/** Enforces the Super Admin-configured inactivity auto-logout. */
+const SessionTimeoutEnforcer: React.FC = () => {
+  useSessionTimeout();
   return null;
 };
 
@@ -135,6 +154,9 @@ export const App: React.FC = () => {
       <PlatformDataProvider>
         <BrowserRouter>
         <ScrollToTop />
+        <PageViewTracker />
+        <SessionTimeoutEnforcer />
+        <PhoneRequiredModal />
         <ReapplyTranslation />
         <GTranslateEngine />
         <RouteSeo />
@@ -199,7 +221,7 @@ export const App: React.FC = () => {
           <Route path="/app" element={<RoleGuard allowedRoles={['contributor']}><LazyContributorLayout /></RoleGuard>}>
             <Route index element={<LazyContributorDashboardPage />} />
             <Route path="tasks" element={<LazyTaskFeedPage variant="cards" />} />
-            <Route path="feed" element={<LazyTaskFeedPage variant="feed" />} />
+            <Route path="feed" element={<Navigate to="/app/tasks" replace />} />
             <Route path="tasks/:id" element={<LazyTaskDetailPage />} />
             <Route path="tasks/:id/submit" element={<LazyTaskDetailPage />} />
             <Route path="my-tasks" element={<LazyContributorMyTasksPage />} />
@@ -239,6 +261,7 @@ export const App: React.FC = () => {
             <Route path="email" element={<RoleGuard allowedRoles={['superadmin']}><LazyEmailSettingsPanel /></RoleGuard>} />
             <Route path="users" element={<LazyAdminUsersPage />} />
             <Route path="users/:id" element={<LazyAdminUserDetailPage />} />
+            <Route path="ranks" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminRankTiersPage /></RoleGuard>} />
             <Route path="permissions" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminPermissionsPage /></RoleGuard>} />
             <Route path="businesses" element={<LazyAdminBusinessesPage />} />
             <Route path="verification" element={<LazyAdminVerificationCenterPage />} />
@@ -257,8 +280,11 @@ export const App: React.FC = () => {
             <Route path="kyc" element={<LazyAdminKycPage />} />
             <Route path="social-channels" element={<LazyAdminSocialChannelsPage />} />
             <Route path="analytics" element={<LazyAdminAnalyticsPage />} />
+            <Route path="traffic" element={<LazyAdminTrafficPage />} />
             <Route path="health" element={<LazyAdminSystemHealthPage />} />
             <Route path="settings" element={<LazyAdminSettingsPage />} />
+            <Route path="platforms" element={<LazyAdminPlatformsPage />} />
+            <Route path="payment-gateways" element={<LazyAdminPaymentGatewaysPage />} />
             <Route path="audit" element={<LazyAdminAuditLogsPage />} />
             <Route path="audit-logs" element={<LazyAdminAuditLogsPage />} />
           </Route>

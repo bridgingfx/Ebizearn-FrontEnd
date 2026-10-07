@@ -69,6 +69,16 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, sort]);
 
+  // Debounced search: typing in the search box re-fetches after a short pause
+  // (search was previously ignored because this effect wasn't watching it).
+  useEffect(() => {
+    const t = setTimeout(() => {
+      fetchTasks();
+    }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
   const visible = useMemo(
     () => (platform === 'All platforms' ? tasks : tasks.filter((t) => t.platform === platform)),
     [tasks, platform]

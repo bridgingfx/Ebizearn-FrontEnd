@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ArrowRight, Fingerprint, Loader2, Lock, ShieldAlert } from 'lucide-react';
 import { toast } from '../../utils/toast';
 import { useHideChatWidget } from '../../utils/useHideChatWidget';
 import { PasswordInput } from './PasswordInput';
 import { AppFooter } from '../../components/common/AppFooter';
+import { stateFrom } from '../../components/auth/EmailVerification';
 import type { UserRole } from '../../types';
 
 const roleRoute: Record<UserRole, string> = {
@@ -29,6 +30,7 @@ export const SuperAdminLoginPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const { login, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   useHideChatWidget(true);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -43,7 +45,8 @@ export const SuperAdminLoginPage: React.FC = () => {
           toast.error('Access denied. This console is restricted to Super Admin accounts.');
           return;
         }
-        navigate(roleRoute[role], { replace: true });
+        // Return to the page they were on when the session expired, if any.
+        navigate(stateFrom(location.state) ?? roleRoute[role], { replace: true });
       } else {
         toast.error('Invalid credentials.');
       }

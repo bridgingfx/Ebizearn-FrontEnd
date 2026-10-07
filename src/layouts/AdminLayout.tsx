@@ -21,11 +21,14 @@ import {
   Settings,
   ScrollText,
   LogOut,
+  Globe,
+  CreditCard,
   Mail,
   MailCheck,
   AtSign,
   MoreHorizontal,
   X,
+  Trophy,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
@@ -57,7 +60,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Social Channels', path: '/admin/social-channels', icon: AtSign, perm: 'review_kyc' },
     { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
     { name: 'Verification', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_task_templates' },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_campaigns' },
     { name: 'Tasks', path: '/admin/tasks', icon: ClipboardList, perm: 'manage_task_templates' },
     { name: 'Task Library', path: '/admin/task-library', icon: BookOpen, perm: 'view_task_library' },
     { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight, perm: 'process_payouts' },
@@ -69,15 +72,36 @@ export const AdminLayout: React.FC = () => {
     { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert, perm: 'review_submissions' },
     { name: 'Support', path: '/admin/support', icon: Headset, perm: 'handle_disputes' },
     { name: 'Analytics', path: '/admin/analytics', icon: Activity, perm: 'view_reports' },
+    { name: 'Website Traffic', path: '/admin/traffic', icon: Globe, perm: 'view_reports' },
     { name: 'System Health', path: '/admin/health', icon: Activity },
-    { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, superOnly: true },
+    { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, perm: 'manage_roles' },
+    { name: 'Contributor Ranks', path: '/admin/ranks', icon: Trophy, superOnly: true },
     { name: 'Email & Campaigns', path: '/admin/email', icon: MailCheck, superOnly: true },
     { name: 'Settings', path: '/admin/settings', icon: Settings, perm: 'manage_settings' },
+    { name: 'Platforms', path: '/admin/platforms', icon: Globe, superOnly: true },
+    { name: 'Payment Gateways', path: '/admin/payment-gateways', icon: CreditCard, superOnly: true },
     { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText, perm: 'view_reports' },
   ];
   const navItems = allNavItems.filter(canSee);
 
   const [logoutOpen, setLogoutOpen] = React.useState(false);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const profileRef = React.useRef<HTMLDivElement>(null);
+
+  // Close the profile menu on outside click / Escape.
+  React.useEffect(() => {
+    if (!profileOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setProfileOpen(false);
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [profileOpen]);
   const [moreOpen, setMoreOpen] = React.useState(false);
 
   // Mobile bottom tab bar: 5 primary destinations + "More" sheet (the rest
@@ -87,7 +111,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Users', path: '/admin/users', icon: Users, perm: 'manage_users' },
     { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
     { name: 'Verify', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_task_templates' },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_campaigns' },
   ].filter(canSee);
   const tabPaths = new Set(mobileTabs.map((t) => t.path));
   const moreItems = navItems.filter((item) => !item.exact && !tabPaths.has(item.path));
@@ -119,9 +143,10 @@ export const AdminLayout: React.FC = () => {
           <EBizLogo variant="dark" size="sm" subtitleText="Command Center" />
         </Link>
 
-        {/* Scrolls naturally (wheel / touch) with no visible scrollbar; the
-            soft fade at the edges hints there is more above / below. */}
-        <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto overscroll-contain no-scrollbar text-xs -mx-1 px-1 py-2 [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-20px),transparent)]">
+        {/* Scrollable nav with a thin visible scrollbar so every menu item
+            (e.g. Audit Logs at the bottom) is reachable and the scroll
+            position is obvious. */}
+        <nav className="flex-1 min-h-0 space-y-1 overflow-y-auto overscroll-contain sidebar-scroll text-xs -mx-1 px-1 py-2 [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-20px),transparent)]">
           {navItems.map((item) => {
             const isActive = item.exact
               ? location.pathname === item.path
@@ -180,8 +205,41 @@ export const AdminLayout: React.FC = () => {
             <div className="hidden sm:block">
               <RegionSelector variant="light" />
             </div>
-            <div className="w-9 h-9 rounded-full bg-[#0E1C2F] text-white flex items-center justify-center text-xs font-bold">
-              {initials}
+            <div className="relative" ref={profileRef}>
+              <button
+                type="button"
+                onClick={() => setProfileOpen((v) => !v)}
+                aria-label="Account menu"
+                aria-expanded={profileOpen}
+                className="w-9 h-9 rounded-full bg-[#0E1C2F] text-white flex items-center justify-center text-xs font-bold hover:ring-2 hover:ring-[#168BFF]/40 transition-shadow"
+              >
+                {initials}
+              </button>
+              {profileOpen && (
+                <div className="absolute right-0 top-11 w-60 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#141821] shadow-xl overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-gray-100 dark:border-white/10">
+                    <p className="text-sm font-extrabold text-gray-900 dark:text-gray-100 truncate">{user?.name || 'Admin'}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mt-0.5 capitalize">{user?.role} workspace</p>
+                  </div>
+                  <div className="p-1.5">
+                    <button
+                      type="button"
+                      onClick={() => { setProfileOpen(false); navigate('/admin/settings'); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                    >
+                      <Settings className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Account settings
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setProfileOpen(false); setLogoutOpen(true); }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" /> Sign out
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>

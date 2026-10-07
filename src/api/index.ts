@@ -1,4 +1,4 @@
-export { api, getApiError, getApiFieldErrors, TOKEN_KEY } from './client';
+export { api, getApiError, getApiFieldErrors, TOKEN_KEY, SESSION_EXPIRED_EVENT } from './client';
 export type { ApiResponse } from './client';
 export { authApi, getOtpError } from './auth';
 export type { RegisterPayload, AuthSession, LoginPortal, OtpErrorCode, OtpFailure, TermsAcceptance } from './auth';
@@ -6,7 +6,7 @@ export { profileApi } from './profile';
 export type { ProfileUpdatePayload, KycSubmitPayload } from './profile';
 export { supportApi, staffSupportApi, staffKycApi } from './support';
 export type { CreateTicketPayload, StaffTicketCounts } from './support';
-export { opsApi } from './ops';
+export { opsApi, opsWalletsApi, departmentsApi } from './ops';
 export { tasksApi } from './tasks';
 export { walletApi } from './wallet';
 export { businessApi } from './business';

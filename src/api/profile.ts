@@ -8,6 +8,7 @@ export interface ProfileUpdatePayload {
   country_code?: string;
   city?: string | null;
   bio?: string | null;
+  preferred_payout_method?: 'paypal' | 'wise' | 'bank' | 'usdt' | null;
 }
 
 export interface KycSubmitPayload {

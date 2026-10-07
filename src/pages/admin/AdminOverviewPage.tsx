@@ -10,11 +10,16 @@ import {
   Loader2,
   ArrowRight,
   Activity,
+  DollarSign,
+  TrendingUp,
+  UserPlus,
+  Wallet,
 } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
-import type { AdminDashboardMetrics } from '../../types';
+import type { AdminDashboardMetrics, RevenueChartPoint } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { StatCard, SectionHeader } from '../../components/common/StatCard';
+import { useMoney } from '../../hooks/useMoney';
 
 /**
  * Admin overview. Every number comes from GET /admin/dashboard. There are no
@@ -25,21 +30,24 @@ export const AdminOverviewPage: React.FC = () => {
   const [metrics, setMetrics] = useState<AdminDashboardMetrics | null>(null);
   const [verificationQueue, setVerificationQueue] = useState<unknown[]>([]);
   const [fraudAlerts, setFraudAlerts] = useState<unknown[]>([]);
+  const [recentUsers, setRecentUsers] = useState<Array<{ id: number; name: string; email: string; role: string; created_at: string }>>([]);
+  const [revenueChart, setRevenueChart] = useState<RevenueChartPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { fmt } = useMoney();
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const [dash, ver, fraud] = await Promise.all([
-        adminApi.dashboard(),
-        adminApi.verificationQueue(),
-        adminApi.fraudAlerts(),
-      ]);
-      if (dash.success) setMetrics(dash.data.metrics);
-      if (ver.success) setVerificationQueue((ver.data || []).slice(0, 5));
-      if (fraud.success) setFraudAlerts((fraud.data || []).slice(0, 5));
+      const dash = await adminApi.dashboard();
+      if (dash.success) {
+        setMetrics(dash.data.metrics);
+        setVerificationQueue((dash.data.verification_queue || []).slice(0, 5));
+        setFraudAlerts((dash.data.recent_fraud || []).slice(0, 5));
+        setRecentUsers(dash.data.recent_users || []);
+        setRevenueChart(dash.data.revenue_chart || []);
+      }
     } catch (e) {
       setError(getApiError(e, 'Could not load admin dashboard.'));
     } finally {
@@ -122,13 +130,40 @@ export const AdminOverviewPage: React.FC = () => {
       </div>
 
       {/* Metric cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard label="Total contributors" value={String(metrics?.total_contributors ?? '—')} icon={Users} gradient="from-[#168BFF] to-[#20C4E8]" shadow="shadow-lg shadow-blue-500/25" />
-        <StatCard label="Active campaigns" value={String(metrics?.active_campaigns ?? '—')} icon={Megaphone} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
-        <StatCard label="Pending verification" value={String(metrics?.pending_verification ?? '—')} icon={FileCheck} gradient="from-amber-500 to-orange-600" shadow="shadow-lg shadow-amber-500/25" />
-        <StatCard label="Pending payouts" value={String(metrics?.pending_payouts ?? '—')} icon={Receipt} gradient="from-[#7257FF] to-[#9D7BFF]" shadow="shadow-lg shadow-violet-500/25" />
+        <StatCard label="Businesses" value={String(metrics?.total_businesses ?? '—')} icon={Megaphone} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
+        <StatCard label="Active campaigns" value={String(metrics?.active_campaigns ?? '—')} icon={Activity} gradient="from-violet-500 to-purple-600" shadow="shadow-lg shadow-violet-500/25" />
         <StatCard label="Open fraud alerts" value={String(metrics?.fraud_alerts_count ?? '—')} icon={ShieldCheck} gradient="from-red-500 to-rose-600" shadow="shadow-lg shadow-red-500/25" />
       </div>
+
+      {/* Revenue */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Total revenue (fees)" value={fmt(metrics?.total_revenue_cents ?? 0)} icon={DollarSign} gradient="from-amber-500 to-orange-600" shadow="shadow-lg shadow-amber-500/25" />
+        <StatCard label="Today's revenue" value={fmt(metrics?.today_revenue_cents ?? 0)} icon={TrendingUp} gradient="from-emerald-500 to-teal-600" shadow="shadow-lg shadow-emerald-500/25" />
+        <StatCard label="Pending deposits" value={String(metrics?.pending_deposits ?? '—')} icon={Wallet} gradient="from-[#7257FF] to-[#9D7BFF]" shadow="shadow-lg shadow-violet-500/25" />
+        <StatCard label="Pending payouts" value={String(metrics?.pending_payouts ?? '—')} icon={Receipt} gradient="from-sky-500 to-blue-600" shadow="shadow-lg shadow-sky-500/25" />
+      </div>
+
+      {/* Revenue chart */}
+      {revenueChart.length > 0 && (
+        <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6">
+          <SectionHeader title="Revenue — last 7 days" subtitle="Platform fees collected" />
+          <div className="flex items-end gap-2 h-32 mt-4">
+            {revenueChart.map((p) => {
+              const max = Math.max(...revenueChart.map((x) => x.revenue_cents), 1);
+              const h = Math.max(4, Math.round((p.revenue_cents / max) * 100));
+              return (
+                <div key={p.day} className="flex-1 flex flex-col items-center gap-1.5">
+                  <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">${(p.revenue_cents / 100).toFixed(0)}</span>
+                  <div className="w-full rounded-lg bg-gradient-to-t from-[#168BFF] to-[#20C4E8]" style={{ height: `${h}%`, minHeight: 4 }} title={`${p.day}: $${(p.revenue_cents / 100).toFixed(2)}`} />
+                  <span className="text-[10px] text-gray-400">{p.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Queue quick actions */}
       <div>
@@ -196,6 +231,26 @@ export const AdminOverviewPage: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
+      {/* Recent signups */}
+      <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6">
+        <SectionHeader title="Newest members" subtitle="Latest signups across all roles" />
+        {recentUsers.length === 0 ? (
+          <EmptyState icon={UserPlus} title="No signups yet" description="New users will appear here." />
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {recentUsers.map((u) => (
+              <div key={u.id} className="px-4 py-3 bg-[#F8FAFD] dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl">
+                <p className="text-sm font-bold text-slate-900 dark:text-gray-100 truncate">{u.name}</p>
+                <p className="text-xs text-slate-400 truncate">{u.email}</p>
+                <div className="flex items-center justify-between mt-1.5">
+                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300">{u.role}</span>
+                  <span className="text-[10px] text-gray-400">{new Date(u.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

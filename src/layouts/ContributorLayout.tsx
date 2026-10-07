@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -13,8 +13,14 @@ import {
   Bell,
   MoreHorizontal,
   X,
+  ChevronDown,
+  Languages,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useRegion } from '../context/RegionContext';
 import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
 import { UserAvatar } from '../components/common/UserAvatar';
@@ -33,7 +39,6 @@ const TABS = [
   { name: 'My Tasks', path: '/app/my-tasks', icon: ClipboardList },
   { name: 'Wallet', path: '/app/wallet', icon: Wallet },
   { name: 'Referrals', path: '/app/referrals', icon: Users },
-  { name: 'Feed', path: '/app/feed', icon: Zap },
   { name: 'Profile', path: '/app/profile', icon: UserIcon },
 ];
 
@@ -48,7 +53,6 @@ const MOBILE_TABS = [
 
 /** Everything else lives in the mobile "More" sheet. */
 const MORE_TABS = [
-  { name: 'Feed', path: '/app/feed', icon: Zap },
   { name: 'Referrals', path: '/app/referrals', icon: Users },
   { name: 'Notifications', path: '/app/notifications', icon: Bell },
   { name: 'Support', path: '/app/support', icon: HelpCircle },
@@ -60,8 +64,28 @@ export const ContributorLayout: React.FC = () => {
   const navigate = useNavigate();
   const [logoutOpen, setLogoutOpen] = React.useState(false);
   const [moreOpen, setMoreOpen] = React.useState(false);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
+  const { lang, setLang } = useRegion();
   const unreadCount = useUnreadNotifications();
   const badge = unreadCount != null && unreadCount > 0 ? (unreadCount > 9 ? '9+' : String(unreadCount)) : null;
+
+  // Close profile menu on outside click / Escape.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setProfileOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, []);
 
   const handleLogout = () => {
     setLogoutOpen(false);
@@ -77,20 +101,50 @@ export const ContributorLayout: React.FC = () => {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-[#07182F] text-white sticky top-0 h-screen p-5 justify-between shadow-xl z-30 shrink-0">
         <div className="flex-1 min-h-0 flex flex-col">
-          <Link to="/app" className="flex items-center pb-5 border-b border-white/10 mb-5 shrink-0">
-            <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
-          </Link>
-
-          <div className="bg-white/5 rounded-2xl p-3 border border-white/10 mb-4 flex items-center gap-3 shrink-0">
-            <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} className="ring-2 ring-[#168BFF]" />
-            <div className="min-w-0">
-              <p className="text-xs font-black truncate">{user?.name || 'Contributor'}</p>
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">{user?.email}</p>
-            </div>
+          <div className="flex items-center justify-between pb-5 border-b border-white/10 mb-5 shrink-0">
+            <Link to="/app" className="flex items-center">
+              <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
+            </Link>
+            <ThemeToggle tone="onDark" />
           </div>
 
-          <div className="mb-6 flex justify-start shrink-0">
-            <RegionSelector variant="dark" />
+          <div className="relative shrink-0 mb-4" ref={profileRef}>
+            <button
+              type="button"
+              onClick={() => setProfileOpen((v) => !v)}
+              className="w-full bg-white/5 rounded-2xl p-3 border border-white/10 flex items-center gap-3 hover:bg-white/10 transition-colors text-left"
+              aria-expanded={profileOpen}
+              aria-label="Account menu"
+            >
+              <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} className="ring-2 ring-[#168BFF]" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-black truncate">{user?.name || 'Contributor'}</p>
+                <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {profileOpen && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-[#0e2240] rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-1">
+                <Link
+                  to="/app/profile"
+                  onClick={() => setProfileOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2 text-[11px] font-semibold text-gray-200 hover:bg-white/5 transition-colors"
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-[#168BFF]" /> My profile
+                </Link>
+                <div className="px-3 py-1.5 border-t border-white/10">
+                  <RegionSelector variant="dark" compact />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setProfileOpen(false); setLogoutOpen(true); }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] font-semibold text-red-300 hover:bg-red-500/10 transition-colors border-t border-white/10"
+                >
+                  <LogOut className="w-3.5 h-3.5" /> Sign out
+                </button>
+              </div>
+            )}
           </div>
 
           <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar -mx-1 px-1 py-1">
@@ -141,18 +195,6 @@ export const ContributorLayout: React.FC = () => {
               Notifications
             </NavLink>
           </nav>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0 pt-2">
-          <button
-            type="button"
-            onClick={() => setLogoutOpen(true)}
-            className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-300 hover:bg-red-500/10 hover:text-red-300 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
-          <ThemeToggle tone="onDark" />
         </div>
       </aside>
 

@@ -11,7 +11,6 @@ export const post: BlogPost = {
   publishedAt: '2026-10-05',
   updatedAt: '2026-10-05',
   readingMinutes: 6,
-  heroImage: '/images/blog/fake-payment-screenshot-scam-defense.jpg',
   content: [
     {
       type: 'intro',

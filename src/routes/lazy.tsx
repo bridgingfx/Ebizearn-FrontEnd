@@ -198,6 +198,9 @@ export const LazyAdminPayoutsPage = React.lazy(() =>
 export const LazyAdminUsersPage = React.lazy(() =>
   named(import('../pages/admin/AdminUsersPage'), 'AdminUsersPage'),
 );
+export const LazyAdminRankTiersPage = React.lazy(() =>
+  named(import('../pages/admin/AdminRankTiersPage'), 'AdminRankTiersPage'),
+);
 export const LazyAdminCampaignsOversightPage = React.lazy(() =>
   named(import('../pages/admin/AdminCampaignsOversightPage'), 'AdminCampaignsOversightPage'),
 );
@@ -222,11 +225,20 @@ export const LazyAdminPermissionsPage = React.lazy(() =>
 export const LazyAdminAnalyticsPage = React.lazy(() =>
   named(import('../pages/admin/AdminAnalyticsPage'), 'AdminAnalyticsPage'),
 );
+export const LazyAdminTrafficPage = React.lazy(() =>
+  named(import('../pages/admin/AdminTrafficPage'), 'AdminTrafficPage'),
+);
 export const LazyAdminSystemHealthPage = React.lazy(() =>
   named(import('../pages/admin/AdminSystemHealthPage'), 'AdminSystemHealthPage'),
 );
 export const LazyAdminSettingsPage = React.lazy(() =>
   named(import('../pages/admin/AdminSettingsPage'), 'AdminSettingsPage'),
+);
+export const LazyAdminPlatformsPage = React.lazy(() =>
+  named(import('../pages/admin/AdminPlatformsPage'), 'AdminPlatformsPage'),
+);
+export const LazyAdminPaymentGatewaysPage = React.lazy(() =>
+  named(import('../pages/admin/AdminPaymentGatewaysPage'), 'AdminPaymentGatewaysPage'),
 );
 export const LazyAdminAuditLogsPage = React.lazy(() =>
   named(import('../pages/admin/AdminAuditLogsPage'), 'AdminAuditLogsPage'),

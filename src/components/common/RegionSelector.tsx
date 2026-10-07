@@ -19,6 +19,8 @@ interface RegionSelectorProps {
   /** 'dark' for navy headers, 'light' for white headers. */
   variant?: 'dark' | 'light';
   className?: string;
+  /** Compact row style for dropdown menus (smaller padding/text). */
+  compact?: boolean;
 }
 
 /**
@@ -27,7 +29,7 @@ interface RegionSelectorProps {
  * never convert the USD figures in page copy, which left the pill saying
  * e.g. PKR while prices still read "$1.80".
  */
-export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark', className = '' }) => {
+export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark', className = '', compact = false }) => {
   const { lang, setLang, t } = useRegion();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -59,17 +61,19 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         aria-expanded={open}
         aria-label={t('region.ariaLabel', { name: current.label })}
         translate="no"
-        className={`notranslate flex items-center gap-2 ps-2 pe-2.5 rounded-full border transition-all h-10 shrink-0 ${
+        className={`notranslate flex items-center gap-1.5 ps-1.5 pe-2 rounded-full border transition-all shrink-0 ${
+          compact ? 'h-7' : 'h-10 gap-2 ps-2 pe-2.5'
+        } ${
           dark
             ? 'border-white/15 bg-white/[0.06] hover:bg-white/[0.12] text-white'
             : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-gray-200 shadow-xs'
         }`}
       >
-        <CountryFlag iso={current.flag} className="w-6 h-[18px]" />
-        <span className={`text-xs font-bold max-w-[6.5rem] truncate ${dark ? 'text-white' : 'text-slate-900 dark:text-gray-100'}`}>
+        <CountryFlag iso={current.flag} className={compact ? 'w-4 h-3' : 'w-6 h-[18px]'} />
+        <span className={`${compact ? 'text-[11px]' : 'text-xs'} font-bold max-w-[6.5rem] truncate ${dark ? 'text-white' : 'text-slate-900 dark:text-gray-100'}`}>
           {current.label}
         </span>
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''} text-slate-400 dark:text-gray-500`} />
+        <ChevronDown className={`${compact ? 'w-3 h-3' : 'w-3.5 h-3.5'} transition-transform ${open ? 'rotate-180' : ''} text-slate-400 dark:text-gray-500`} />
       </button>
 
       {open && (

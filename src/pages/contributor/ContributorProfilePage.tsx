@@ -20,6 +20,7 @@ import {
   KeyRound,
   Trash2,
   Plus,
+  Check,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -27,6 +28,7 @@ import { AvatarUploadControl } from '../../components/common/AvatarUploadControl
 import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 import { SocialChannelsCard } from '../../components/account/SocialChannelsCard';
 import { profileApi, getApiError } from '../../api';
+import { PAYOUT_RAILS, PayoutRailIcon, type PayoutRailId } from '../../components/common/PayoutRailIcon';
 import { CountrySelect } from '../../components/auth/CountrySelect';
 import type { KycDocumentType } from '../../types';
 
@@ -44,7 +46,31 @@ const inputClass =
 export const ContributorProfilePage: React.FC = () => {
   const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState<ProfileTab>('profile');
-  const [payoutMethod] = useState<'paypal' | 'wise' | 'bank'>('paypal');
+  const [payoutMethod, setPayoutMethod] = useState<PayoutRailId | null>(
+    (user?.profile?.preferred_payout_method as PayoutRailId | null) ?? null,
+  );
+  const [payoutSaving, setPayoutSaving] = useState(false);
+  const [payoutMsg, setPayoutMsg] = useState<string | null>(null);
+
+  /** Select a payout rail — saved to the profile as the withdrawal default. */
+  const selectPayoutMethod = async (id: PayoutRailId) => {
+    if (payoutSaving || payoutMethod === id) return;
+    setPayoutSaving(true);
+    setPayoutMsg(null);
+    try {
+      const res = await profileApi.update({ preferred_payout_method: id });
+      if (res.success && res.data?.user) {
+        updateUser(res.data.user);
+        setPayoutMethod(id);
+      } else {
+        setPayoutMsg(res.message || 'Could not save your payout method.');
+      }
+    } catch (err) {
+      setPayoutMsg(getApiError(err, 'Could not save your payout method.'));
+    } finally {
+      setPayoutSaving(false);
+    }
+  };
 
   const profile = user?.profile;
   const levelLabels: Record<string, string> = {
@@ -485,28 +511,46 @@ export const ContributorProfilePage: React.FC = () => {
             </p>
           </div>
 
-          {/* Supported rails (informational — details are entered per withdrawal) */}
+          {/* Selectable payout rails — the choice is saved as the withdrawal default. */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {[
-              { id: 'paypal', label: 'PayPal', fee: '0% Fee', icon: '🅿️' },
-              { id: 'wise', label: 'Wise Transfer', fee: '0% Fee', icon: '🌐' },
-              { id: 'bank', label: 'Direct Bank Transfer', fee: '0% Fee', icon: '🏦' },
-              { id: 'usdt', label: 'USDT (TRC-20 / ERC-20)', fee: '0% Fee', icon: '💲' },
-            ].map((rail) => (
-              <div
-                key={rail.id}
-                className={`p-4 rounded-2xl border text-left transition-all ${
-                  payoutMethod === rail.id
-                    ? 'border-[#168BFF] bg-blue-50/40 dark:bg-blue-500/15 ring-1 ring-[#168BFF]'
-                    : 'border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322]'
-                }`}
-              >
-                <span className="text-2xl block mb-2">{rail.icon}</span>
-                <span className="text-xs font-black text-gray-900 dark:text-gray-100 block">{rail.label}</span>
-                <span className="text-[10px] text-[#16B364] font-bold block">{rail.fee}</span>
-              </div>
-            ))}
+            {PAYOUT_RAILS.map((rail) => {
+              const selected = payoutMethod === rail.id;
+              return (
+                <button
+                  key={rail.id}
+                  type="button"
+                  onClick={() => void selectPayoutMethod(rail.id)}
+                  disabled={payoutSaving}
+                  aria-pressed={selected}
+                  className={`relative p-4 rounded-2xl border text-left transition-all disabled:opacity-60 ${
+                    selected
+                      ? 'border-[#168BFF] bg-blue-50/50 dark:bg-blue-500/10 ring-2 ring-[#168BFF]/30 shadow-sm'
+                      : 'border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] hover:border-[#168BFF]/50 hover:shadow-sm'
+                  }`}
+                >
+                  {selected && (
+                    <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[#168BFF] text-white flex items-center justify-center">
+                      <Check className="w-3 h-3" strokeWidth={3} />
+                    </span>
+                  )}
+                  <PayoutRailIcon id={rail.id} className="w-10 h-10 mb-3" />
+                  <span className="text-xs font-black text-gray-900 dark:text-gray-100 block">{rail.label}</span>
+                  <span className="text-[10px] text-[#16B364] font-bold block mt-0.5">{rail.fee}</span>
+                </button>
+              );
+            })}
           </div>
+          {payoutMsg && (
+            <p className="text-xs font-semibold text-red-600 dark:text-red-400">{payoutMsg}</p>
+          )}
+          {payoutMethod && !payoutMsg && (
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              <span className="font-bold text-gray-700 dark:text-gray-300">
+                {PAYOUT_RAILS.find((r) => r.id === payoutMethod)?.label}
+              </span>{' '}
+              is your default payout method. Tap another card to change it.
+            </p>
+          )}
 
           <div className="p-5 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 space-y-3">
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">

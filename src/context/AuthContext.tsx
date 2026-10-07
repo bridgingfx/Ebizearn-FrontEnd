@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User, UserRole } from '../types';
-import { authApi, getApiError, TOKEN_KEY, type LoginPortal } from '../api';
+import { authApi, getApiError, TOKEN_KEY, SESSION_EXPIRED_EVENT, type LoginPortal } from '../api';
+import { toast } from '../utils/toast';
 import type { RegisterPayload, TermsAcceptance } from '../api';
 
 interface AuthContextType {
@@ -30,11 +31,15 @@ interface AuthContextType {
   updateWalletBalance: (newBalanceCents: number) => void;
   creditWallet: (amountCents: number) => void;
   updateKycStatus: (status: 'unverified' | 'pending' | 'verified' | 'rejected') => void;
+  /** True when the account has no phone — UI must block until provided. */
+  phoneRequired: boolean;
+  setPhoneRequired: (v: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const ACTIVE_ROLE_KEY = 'ebizearn_active_role';
+export { ACTIVE_ROLE_KEY };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
@@ -48,6 +53,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
   const [isLoading, setIsLoading] = useState<boolean>(!!localStorage.getItem(TOKEN_KEY));
+  // True when the signed-in account has no phone (social signup) — the UI
+  // must block until the user provides one. Dawood: phone is mandatory.
+  const [phoneRequired, setPhoneRequired] = useState(false);
 
   const role: UserRole = user?.role || 'contributor';
 
@@ -97,6 +105,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(res.data.token);
         localStorage.setItem(TOKEN_KEY, res.data.token);
         localStorage.setItem(ACTIVE_ROLE_KEY, res.data.user.role);
+        // Social signup skips phone collection — block the UI until provided.
+        setPhoneRequired(res.data.phone_required === true || !res.data.user.phone);
         setIsLoading(false);
         return res.data.user.role;
       }
@@ -155,6 +165,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem(ACTIVE_ROLE_KEY);
     }
   };
+
+  // The API client reports a revoked/expired token: drop the session locally
+  // (no logout call — the token is already dead). Route guards then send the
+  // user to their own role's sign-in page (ACTIVE_ROLE_KEY is kept so the
+  // guard knows which one — a superadmin must land back on the superadmin
+  // login, not the moderator one).
+  useEffect(() => {
+    const onExpired = () => {
+      if (!localStorage.getItem(TOKEN_KEY)) return;
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem(TOKEN_KEY);
+      toast.error('Your session has expired — please sign in again.');
+    };
+    window.addEventListener(SESSION_EXPIRED_EVENT, onExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
+  }, []);
 
   const refreshMe = async () => {
     const storedToken = localStorage.getItem(TOKEN_KEY);
@@ -235,6 +262,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateWalletBalance,
         creditWallet,
         updateKycStatus,
+        phoneRequired,
+        setPhoneRequired,
       }}
     >
       {children}

@@ -16,6 +16,8 @@ interface Props {
 
 export const PostCard: React.FC<Props> = ({ post, large = false }) => {
   const style = categoryStyle(post.category);
+  // Fall back to the gradient hero if the image file is missing (404).
+  const [imageFailed, setImageFailed] = React.useState(false);
   return (
     <Link
       to={`/blog/${post.slug}`}
@@ -27,11 +29,12 @@ export const PostCard: React.FC<Props> = ({ post, large = false }) => {
       <div
         className={`relative overflow-hidden ${large ? 'h-52 sm:h-auto sm:w-1/2 sm:min-h-[260px]' : 'h-44'}`}
       >
-        {post.heroImage ? (
+        {post.heroImage && !imageFailed ? (
           <img
             src={post.heroImage}
             alt={post.title}
             loading="lazy"
+            onError={() => setImageFailed(true)}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (

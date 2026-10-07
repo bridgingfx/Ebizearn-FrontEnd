@@ -1,8 +1,27 @@
 import { api } from './client';
 import type { AdminUserDetail, Campaign, CampaignEditInput, ReferralRule, ReferralRuleInput, ReferralRulesResponse, AuditLog, FeatureFlag, FraudEvent, Task, TaskSubmission, User, WithdrawalRequest } from '../types';
 
+export interface StaffTaskCampaignOption {
+  id: number;
+  title: string;
+  status: Campaign['status'];
+  platform: string | null;
+  instructions_markdown: string | null;
+  pool_cents: number;
+  business_name: string | null;
+}
+
+export interface StaffBusinessOption {
+  id: number;
+  company_name: string;
+  owner_name: string | null;
+  available_balance_cents: number;
+}
+
 export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
+  traffic: (params?: { from?: string; to?: string }) =>
+    api.get('/admin/traffic', { params }).then((r) => r.data),
   verificationQueue: (params?: { status?: string; search?: string; business_decision?: 'approved' | 'rejected' | 'none' }) =>
     api.get('/admin/verification-queue', { params }).then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),
   submissionDetail: (submissionId: number | string) =>
@@ -21,12 +40,24 @@ export const adminApi = {
   updateSystemSetting: (key: string, value: unknown) =>
     api.patch('/admin/system-settings', { key, value }).then((r) => r.data),
   auditLogs: () => api.get('/admin/audit-logs').then((r) => r.data as { success: boolean; message?: string; data: AuditLog[]; meta?: unknown }),
-  users: (params?: { role?: string; search?: string }) =>
-    api.get('/admin/users', { params }).then((r) => r.data as { success: boolean; message?: string; data: User[]; meta?: unknown }),
+  users: (params?: { role?: string; search?: string; page?: number }) =>
+    api.get('/admin/users', { params }).then(
+      (r) =>
+        r.data as {
+          success: boolean;
+          message?: string;
+          data: User[];
+          meta?: { current_page: number; last_page: number; total: number };
+        },
+    ),
   userDetail: (userId: number | string) =>
     api.get(`/admin/users/${userId}`).then((r) => r.data as { success: boolean; message?: string; data: AdminUserDetail }),
   updateUserStatus: (userId: number | string, status: 'active' | 'suspended' | 'pending_verification') =>
     api.patch(`/admin/users/${userId}/status`, { status }).then((r) => r.data as { success: boolean; message?: string; data: User }),
+  updateUser: (userId: number | string, payload: { name?: string; email?: string; company_name?: string; industry?: string; website?: string; phone?: string }) =>
+    api.patch(`/admin/users/${userId}`, payload).then((r) => r.data as { success: boolean; message?: string; data: User }),
+  impersonate: (userId: number | string) =>
+    api.post(`/admin/users/${userId}/impersonate`, {}).then((r) => r.data as { success: boolean; message?: string; data: { token: string } }),
   health: () => api.get('/admin/health').then((r) => r.data),
   paymentGateways: () => api.get('/admin/payments/gateways').then((r) => r.data),
   createPaymentGateway: (payload: unknown) => api.post('/admin/payments/gateways', payload).then((r) => r.data),
@@ -49,6 +80,7 @@ export const adminApi = {
     description: string;
     category_id: number;
     platform?: string;
+    target_url?: string;
     reward_per_task_cents: number;
     task_type_key: string;
     target_contributors_count: number;
@@ -90,6 +122,18 @@ export const adminApi = {
     estimated_minutes?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
   }) => api.post('/staff/tasks', payload).then((r) => r.data as { success: boolean; message?: string; data: Task }),
+  // Campaigns a task can be added to (create_tasks; no campaign access needed).
+  staffTaskCampaignOptions: () =>
+    api.get('/staff/tasks/campaign-options').then((r) => r.data as { success: boolean; message?: string; data: StaffTaskCampaignOption[] }),
+  // Businesses a campaign can be posted for (post_campaigns; no manage_users needed).
+  staffBusinessOptions: () =>
+    api.get('/staff/campaigns/business-options').then((r) => r.data as { success: boolean; message?: string; data: StaffBusinessOption[] }),
+  // Create a business user account (create_business_users). Role is fixed server-side.
+  createBusinessUser: (payload: { name: string; email: string; password: string; company_name: string; website?: string; industry?: string; country_code?: string }) =>
+    api.post('/admin/businesses', payload).then((r) => r.data as { success: boolean; message?: string; data: User }),
+  // Restore the canonical task-type catalog when the table is empty (superadmin).
+  seedTaskTypes: () =>
+    api.post('/admin/ops/task-types/seed').then((r) => r.data as { success: boolean; message?: string; data: { created: number; updated: number; total: number } }),
   updateStaffTask: (id: number | string, payload: Record<string, unknown>) =>
     api.patch(`/staff/tasks/${id}`, payload).then((r) => r.data as { success: boolean; message?: string; data: Task }),
   deleteStaffTask: (id: number | string) =>

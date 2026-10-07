@@ -11,10 +11,14 @@ type Mode = 'inherit' | 'allow' | 'deny';
  * Each permission is Role default / Allow / Deny. Saved through
  * PUT /ops/users/:id/permissions.
  */
-export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () => void }> = ({ userId, onSaved }) => {
+export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () => void; defaultShowAll?: boolean }> = ({
+  userId,
+  onSaved,
+  defaultShowAll = false,
+}) => {
   const [data, setData] = useState<Overrides | null>(null);
   const [modes, setModes] = useState<Record<string, Mode>>({});
-  const [showAll, setShowAll] = useState(false);
+  const [showAll, setShowAll] = useState(defaultShowAll);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -121,7 +125,25 @@ export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () =>
 
       {groups.map(([group, perms]) => (
         <div key={group} className="space-y-1.5">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{PERMISSION_GROUP_LABELS[group]}</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{PERMISSION_GROUP_LABELS[group]}</p>
+            <div className="flex gap-3 text-[11px] font-bold">
+              <button
+                type="button"
+                onClick={() => setModes((prev) => ({ ...prev, ...Object.fromEntries(perms.map((p) => [p.name, 'allow' as Mode])) }))}
+                className="text-emerald-600 dark:text-emerald-400 hover:underline"
+              >
+                Allow all
+              </button>
+              <button
+                type="button"
+                onClick={() => setModes((prev) => ({ ...prev, ...Object.fromEntries(perms.map((p) => [p.name, 'inherit' as Mode])) }))}
+                className="text-gray-500 dark:text-gray-400 hover:underline"
+              >
+                Role default
+              </button>
+            </div>
+          </div>
           <div className="divide-y divide-gray-100 dark:divide-white/10 rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
             {perms.map((p) => {
               const mode = modes[p.name] ?? 'inherit';

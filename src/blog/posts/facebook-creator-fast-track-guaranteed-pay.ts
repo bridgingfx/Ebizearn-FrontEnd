@@ -11,7 +11,6 @@ export const post: BlogPost = {
   publishedAt: '2026-10-05',
   updatedAt: '2026-10-05',
   readingMinutes: 7,
-  heroImage: '/images/blog/facebook-creator-fast-track-2026.jpg',
   content: [
     {
       type: 'intro',

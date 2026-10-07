@@ -10,6 +10,8 @@ const rawBaseUrl = import.meta.env.VITE_API_URL || '/api/v1';
 const API_BASE_URL = rawBaseUrl.endsWith('/api/v1') ? rawBaseUrl : `${rawBaseUrl.replace(/\/$/, '')}/api/v1`;
 
 export const TOKEN_KEY = 'ebizearn_token';
+/** Fired on window when an authenticated request is rejected with 401. */
+export const SESSION_EXPIRED_EVENT = 'ebizearn:session-expired';
 
 /**
  * One-time migration: the key was 'biznetwork_token' before the eBizEarn
@@ -80,6 +82,21 @@ api.interceptors.response.use(
     const method: string | undefined = config.method;
     const mutating = method && method !== 'get' && method !== 'head' && method !== 'options';
     const status: number | undefined = error?.response?.status;
+    // A request that carried a token came back 401: the token was revoked
+    // (signed in elsewhere — logins are single-session) or expired. Tell the
+    // AuthContext to drop the dead session instead of leaving the user on a
+    // page where every action fails with "Unauthenticated.".
+    // Only when the rejected token is still the current one, so a late 401
+    // from before a fresh login cannot wipe the new session.
+    const sentAuth = config.headers?.Authorization;
+    if (
+      status === 401 &&
+      sentAuth &&
+      typeof window !== 'undefined' &&
+      sentAuth === `Bearer ${localStorage.getItem(TOKEN_KEY)}`
+    ) {
+      window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+    }
     if (mutating && !config.skipToast && !axios.isCancel(error) && status !== 401 && !SILENT_URLS.some((re) => re.test(config.url ?? ''))) {
       toast.auto('error', getApiError(error));
     }

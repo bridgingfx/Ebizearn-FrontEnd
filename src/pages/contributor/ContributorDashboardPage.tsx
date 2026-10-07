@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
+import { RankBadge } from '../../components/common/RankBadge';
 import { mapTaskForUi } from '../../utils/apiMappers';
 import { useMoney } from '../../hooks/useMoney';
 import { FxNote } from '../../components/common/Money';
@@ -71,10 +72,7 @@ export const ContributorDashboardPage: React.FC = () => {
         <div className="absolute -bottom-28 left-1/3 w-72 h-72 rounded-full bg-[#7257FF]/25 blur-3xl" />
         <div className="relative flex flex-col sm:flex-row sm:items-center gap-5 justify-between">
           <div>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.12em] bg-white/10 border border-white/15 text-[#20C4E8] px-3.5 py-1.5 rounded-full">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#16B364]" />
-              {levelLabel[level] || 'Starter'} level
-            </span>
+            <RankBadge level={level} size="md" />
             <h1 className="mt-3 text-2xl sm:text-[2rem] font-black tracking-tight leading-tight">
               Welcome back{firstName ? `, ${firstName}` : ''}
             </h1>

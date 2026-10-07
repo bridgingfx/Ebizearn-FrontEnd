@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, ACTIVE_ROLE_KEY } from '../../context/AuthContext';
 import type { UserRole } from '../../types';
 
 interface RoleGuardProps {
@@ -17,14 +17,29 @@ export function RoleGuard({ allowedRoles, children }: RoleGuardProps) {
   }
 
   if (!user || !token) {
-    // Send unauthenticated visitors to the login portal that matches the area
-    // they were trying to reach — never to a generic login hub.
+    // Send unauthenticated visitors to the login portal that matches who they
+    // are — never to a generic login hub. Prefer the last known role (it
+    // survives session expiry) so a superadmin whose session expired lands
+    // back on the superadmin login, not the moderator one. Fall back to the
+    // URL area for first-time visitors with no stored role.
     const path = location.pathname;
-    const destination = path.startsWith('/business')
-      ? '/business/login'
-      : path.startsWith('/admin')
-        ? '/moderator/login'
-        : '/login';
+    const lastRole = (typeof localStorage !== 'undefined'
+      ? localStorage.getItem(ACTIVE_ROLE_KEY)
+      : null) as UserRole | null;
+    const destination =
+      lastRole === 'superadmin'
+        ? '/secure-control-panel/login'
+        : lastRole === 'business'
+          ? '/business/login'
+          : lastRole === 'admin' || lastRole === 'moderator'
+            ? '/moderator/login'
+            : lastRole === 'contributor'
+              ? '/login'
+              : path.startsWith('/business')
+                ? '/business/login'
+                : path.startsWith('/admin')
+                  ? '/moderator/login'
+                  : '/login';
     return <Navigate to={destination} replace state={{ from: location.pathname }} />;
   }
 

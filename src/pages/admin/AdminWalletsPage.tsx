@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Wallet, Search, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
-import { adminApi, getApiError } from '../../api';
+import { Wallet, Search, Loader2, AlertCircle, ArrowRight, Coins, X } from 'lucide-react';
+import { adminApi, getApiError, opsWalletsApi } from '../../api';
 import type { User } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
+import { toast } from '../../utils/toast';
 
 /**
  * Wallet directory. There is no dedicated admin wallets endpoint — balances
@@ -15,6 +16,7 @@ export const AdminWalletsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [crediting, setCrediting] = useState<{ walletId: number; name: string } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -74,8 +76,7 @@ export const AdminWalletsPage: React.FC = () => {
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Wallets</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Balances served live from user accounts. A dedicated wallets API is pending — until then this is the
-          honest source of truth.
+          Balances served live from user accounts. Super Admin can grant virtual credits to any wallet from here.
         </p>
       </div>
 
@@ -162,12 +163,21 @@ export const AdminWalletsPage: React.FC = () => {
                       {w.currency} {fmt(w.lifetime)}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <Link
-                        to={`/admin/users?search=${encodeURIComponent(w.user.email || '')}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:underline"
-                      >
-                        View user <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      <div className="flex justify-end items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => w.user.wallet && setCrediting({ walletId: w.user.wallet.id, name: w.user.name || w.user.email || '' })}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#16B364] dark:text-emerald-300 hover:underline"
+                        >
+                          <Coins className="w-3.5 h-3.5" /> Grant credits
+                        </button>
+                        <Link
+                          to={`/admin/users?search=${encodeURIComponent(w.user.email || '')}`}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:underline"
+                        >
+                          View user <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -176,6 +186,116 @@ export const AdminWalletsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {crediting && (
+        <GrantCreditsModal
+          walletId={crediting.walletId}
+          name={crediting.name}
+          onClose={() => setCrediting(null)}
+          onDone={() => { setCrediting(null); void load(); }}
+        />
+      )}
+    </div>
+  );
+};
+
+/**
+ * Grant virtual tokens — a manual, ledger-backed credit to a business wallet.
+ */
+const GrantCreditsModal: React.FC<{
+  walletId: number;
+  name: string;
+  onClose: () => void;
+  onDone: () => void;
+}> = ({ walletId, name, onClose, onDone }) => {
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const grant = async () => {
+    const value = parseFloat(amount);
+    if (!Number.isFinite(value) || value <= 0 || saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await opsWalletsApi.credit(walletId, {
+        amount: value,
+        description: note.trim() || undefined,
+      });
+      if (res.success) {
+        toast.success(res.message || 'Credits granted.');
+        onDone();
+      } else {
+        setError(res.message || 'Could not grant credits.');
+      }
+    } catch (e) {
+      setError(getApiError(e, 'Could not grant credits.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Grant credits">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-white dark:bg-[#141821] rounded-2xl shadow-2xl">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between">
+          <h2 className="text-lg font-extrabold text-gray-900 dark:text-gray-100">Grant credits</h2>
+          <button type="button" onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400" aria-label="Close">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Adds virtual tokens to <span className="font-bold text-gray-700 dark:text-gray-300">{name}</span>'s
+            wallet. Fully ledger-backed and audit-logged.
+          </p>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+              Amount (USD) *
+            </label>
+            <input
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              inputMode="decimal"
+              placeholder="100.00"
+              className="w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+              Note (optional)
+            </label>
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              maxLength={500}
+              placeholder="e.g. Promotional top-up"
+              className="w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+            />
+          </div>
+          {error && (
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-sm font-medium rounded-xl px-4 py-3">
+              {error}
+            </div>
+          )}
+        </div>
+        <div className="px-6 py-4 border-t border-gray-100 dark:border-white/10 flex justify-end gap-3">
+          <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => void grant()}
+            disabled={!parseFloat(amount) || parseFloat(amount) <= 0 || saving}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#16B364] hover:bg-[#12995a] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+            Grant credits
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

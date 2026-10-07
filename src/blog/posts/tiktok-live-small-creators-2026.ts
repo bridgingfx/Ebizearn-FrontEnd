@@ -11,7 +11,6 @@ export const post: BlogPost = {
   publishedAt: '2026-10-06',
   updatedAt: '2026-10-06',
   readingMinutes: 6,
-  heroImage: '/images/blog/tiktok-live-small-creators-2026.jpg',
   content: [
     {
       type: 'intro',

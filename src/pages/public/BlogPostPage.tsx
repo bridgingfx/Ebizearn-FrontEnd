@@ -103,6 +103,8 @@ function TableOfContents({ post }: { post: BlogPost }): React.ReactElement | nul
 export const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const post = slug ? getPostBySlug(slug) : undefined;
+  // Hero URL that failed to load (404) — fall back to the gradient hero.
+  const [failedImage, setFailedImage] = useState<string | null>(null);
 
   if (!post) {
     return (
@@ -190,13 +192,14 @@ export const BlogPostPage: React.FC = () => {
 
         {/* Hero image or premium gradient hero */}
         <div className="mt-8 rounded-3xl overflow-hidden border border-[#E4EAF2] dark:border-white/10 shadow-lg">
-          {post.heroImage ? (
+          {post.heroImage && failedImage !== post.heroImage ? (
             <img
               src={post.heroImage}
               alt={post.title}
               width={1920}
               height={1280}
               loading="lazy"
+              onError={() => setFailedImage(post.heroImage ?? null)}
               className="w-full max-h-[420px] object-cover"
             />
           ) : (

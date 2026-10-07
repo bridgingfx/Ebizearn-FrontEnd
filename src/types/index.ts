@@ -130,6 +130,8 @@ export interface Profile {
   kyc_submitted_at?: string | null;
   kyc_verified_at?: string | null;
   kyc_rejection_reason?: string | null;
+  /** Contributor's preferred payout rail, chosen on the Payout Methods tab. */
+  preferred_payout_method?: 'paypal' | 'wise' | 'bank' | 'usdt' | null;
   /** Which document sides are on file; paths themselves never leave the API. */
   kyc_documents?: KycDocumentSide[];
 }
@@ -236,6 +238,8 @@ export interface Campaign {
   category_id: number;
   /** Platform chosen in the wizard (Instagram, TikTok, …) — persisted on the campaign row. */
   platform?: string | null;
+  /** The exact link the contributor must engage with (profile, post, page). */
+  target_url?: string | null;
   title: string;
   objective?: string;
   description: string;
@@ -290,6 +294,7 @@ export interface Task {
   /** Staff task list (/staff/tasks) eager-loads the type. */
   task_type?: { id: number; key: string; name: string } | null;
   platform?: string | null;
+  instructions?: string | null;
 }
 
 /** Icon keys the backend accepts for a Task Library template. */
@@ -519,4 +524,14 @@ export interface AdminDashboardMetrics {
   pending_verification: number;
   pending_payouts: number;
   fraud_alerts_count: number;
+  total_revenue_cents?: number;
+  today_revenue_cents?: number;
+  pending_deposits?: number;
+  pending_deposits_cents?: number;
+}
+
+export interface RevenueChartPoint {
+  day: string;
+  label: string;
+  revenue_cents: number;
 }

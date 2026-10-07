@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { BRAND } from '../config/brand';
 
 export interface PlatformSubmission {
   id: number;
@@ -1288,7 +1289,7 @@ export const PlatformDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     const newCampaign: PlatformCampaign = {
       id: campaignId,
-      brand: user?.business?.company_name || 'Acme Growth Labs',
+      brand: user?.business?.company_name || BRAND.name,
       title: data.title || 'Brand Awareness Campaign',
       category: data.platform.toLowerCase().includes('review') || data.platform.toLowerCase().includes('trustpilot') ? 'review' : 'social',
       platform: data.platform || 'Trustpilot',

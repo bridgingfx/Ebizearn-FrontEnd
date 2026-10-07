@@ -1,5 +1,5 @@
 import { api, type ApiResponse } from './client';
-import type { PermissionDef, RolePermissions, UserPermissionOverrides } from '../types';
+import type { PermissionDef, RolePermissions, UserPermissionOverrides, Wallet } from '../types';
 
 /** Super Admin permission management (/ops, superadmin only). */
 export const opsApi = {
@@ -17,4 +17,32 @@ export const opsApi = {
     api
       .put<ApiResponse<UserPermissionOverrides>>(`/ops/users/${userId}/permissions`, { grants, denies })
       .then((r) => r.data),
+};
+
+/** Super Admin wallet operations — directory, inspection, manual credits/debits. */
+export const opsWalletsApi = {
+  credit: (walletId: number, payload: { amount: number; description?: string }) =>
+    api
+      .post<ApiResponse<{ wallet: Wallet }>>(`/ops/wallets/${walletId}/credit`, payload)
+      .then((r) => r.data),
+  debit: (walletId: number, payload: { amount: number; description?: string }) =>
+    api
+      .post<ApiResponse<{ wallet: Wallet }>>(`/ops/wallets/${walletId}/debit`, payload)
+      .then((r) => r.data),
+};
+
+/** Departments — organizing staff by team. */
+export interface Department {
+  id: number;
+  name: string;
+  label: string | null;
+  users_count?: number;
+}
+
+export const departmentsApi = {
+  list: () => api.get<ApiResponse<Department[]>>('/ops/departments').then((r) => r.data),
+  manage: () => api.get<ApiResponse<Department[]>>('/ops/departments/manage').then((r) => r.data),
+  create: (payload: { name: string; label?: string }) =>
+    api.post<ApiResponse<Department>>('/ops/departments', payload).then((r) => r.data),
+  remove: (id: number) => api.delete<ApiResponse<null>>(`/ops/departments/${id}`).then((r) => r.data),
 };

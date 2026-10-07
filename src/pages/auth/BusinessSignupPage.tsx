@@ -290,7 +290,7 @@ export const BusinessSignupPage: React.FC = () => {
                 type="url"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
-                placeholder="https://acme.com"
+                placeholder="https://ebizearn.com"
                 autoComplete="url"
                 inputMode="url"
                 className={authInputClass}

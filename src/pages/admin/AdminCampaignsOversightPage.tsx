@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Building2, CheckSquare, Eye, Megaphone, Plus, Target, Wallet, X, Zap } from 'lucide-react';
+import { Building2, CheckSquare, Eye, Megaphone, Plus, Target, Wallet, X, Zap, FileText, Trash2, Play } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { Campaign } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,7 @@ import { PageHeader, SearchInput, LoadingBlock, ErrorBlock, StatusBadge, fmtMone
 import { CreateCampaignModal } from '../../components/admin/CreateCampaignModal';
 import { CampaignCard, campaignSpent } from '../../components/campaign/CampaignCard';
 import { EditCampaignModal } from '../../components/campaign/EditCampaignModal';
+import { listDrafts, deleteDraft, draftTitle, type CampaignDraft } from '../../lib/campaignDrafts';
 
 type Tab = 'active' | 'pending_review' | 'draft' | 'paused' | 'cancelled' | 'all';
 
@@ -27,6 +28,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
   const { user } = useAuth();
   const canEdit = can(user, 'edit_campaigns');
   const canDelete = can(user, 'delete_campaigns');
+  const canPost = can(user, 'post_campaigns');
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [total, setTotal] = useState(0);
@@ -40,6 +42,15 @@ export const AdminCampaignsOversightPage: React.FC = () => {
   const [editing, setEditing] = useState<Campaign | null>(null);
   const [deleting, setDeleting] = useState<Campaign | null>(null);
   const [viewingId, setViewingId] = useState<number | null>(null);
+  const [viewingCampaign, setViewingCampaign] = useState<Campaign | null>(null);
+  const [localDrafts, setLocalDrafts] = useState<CampaignDraft[]>([]);
+  const [resumeDraft, setResumeDraft] = useState<CampaignDraft | null>(null);
+
+  const refreshDrafts = useCallback(() => setLocalDrafts(listDrafts()), []);
+
+  useEffect(() => {
+    refreshDrafts();
+  }, [refreshDrafts, showCreate]);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 350);
@@ -140,16 +151,62 @@ export const AdminCampaignsOversightPage: React.FC = () => {
         title="Campaigns"
         subtitle="Every campaign across all business accounts. Pausing stops new task acceptance; escrow accounting stays on the ledger."
         actions={
-          <button
-            type="button"
-            onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Post campaign
-          </button>
+          canPost ? (
+            <button
+              type="button"
+              onClick={() => {
+                const drafts = listDrafts();
+                setResumeDraft(drafts[0] ?? null);
+                setShowCreate(true);
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Post campaign
+            </button>
+          ) : undefined
         }
       />
+
+      {canPost && localDrafts.length > 0 && (
+        <div className="rounded-2xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/60 dark:bg-amber-500/5 p-4">
+          <p className="text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300 mb-3">
+            Unfinished drafts ({localDrafts.length})
+          </p>
+          <div className="space-y-2">
+            {localDrafts.map((d) => (
+              <div
+                key={d.id}
+                className="flex items-center gap-3 rounded-xl bg-white dark:bg-white/5 border border-amber-100 dark:border-white/10 px-4 py-2.5"
+              >
+                <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{draftTitle(d)}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Last edited {new Date(d.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setResumeDraft(d); setShowCreate(true); }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#168BFF] hover:bg-[#0f7ae5] transition-colors"
+                >
+                  <Play className="w-3.5 h-3.5" />
+                  Resume
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { deleteDraft(d.id); refreshDrafts(); }}
+                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                  aria-label="Delete draft"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading && campaigns.length === 0 ? (
         <LoadingBlock label="Loading campaigns…" />
@@ -209,7 +266,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
               title={campaigns.length === 0 ? 'No campaigns found' : 'No campaigns in this tab'}
               description={
                 campaigns.length === 0
-                  ? 'Post one with the button above, or wait for a business to create one from their portal.'
+                  ? canPost ? 'Post one with the button above, or wait for a business to create one from their portal.' : 'Campaigns appear here when a business creates one from their portal.'
                   : 'Try another tab or search term.'
               }
             />
@@ -229,7 +286,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                   detailsAction={
                     <button
                       type="button"
-                      onClick={() => setViewingId(c.id)}
+                      onClick={() => { setViewingId(c.id); setViewingCampaign(c); }}
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline self-start"
                     >
                       <Eye className="w-3.5 h-3.5" /> View details
@@ -242,7 +299,13 @@ export const AdminCampaignsOversightPage: React.FC = () => {
         </>
       )}
 
-      {showCreate && <CreateCampaignModal onClose={() => setShowCreate(false)} onCreated={() => void load()} />}
+      {showCreate && (
+        <CreateCampaignModal
+          onClose={() => { setShowCreate(false); setResumeDraft(null); refreshDrafts(); }}
+          onCreated={() => void load()}
+          resumeDraft={resumeDraft}
+        />
+      )}
 
       {editing && (
         <EditCampaignModal
@@ -269,15 +332,16 @@ export const AdminCampaignsOversightPage: React.FC = () => {
         onCancel={() => setDeleting(null)}
       />
 
-      {viewingId !== null && <CampaignDetailsModal id={viewingId} onClose={() => setViewingId(null)} />}
+      {viewingId !== null && <CampaignDetailsModal id={viewingId} fallback={viewingCampaign} onClose={() => { setViewingId(null); setViewingCampaign(null); }} />}
     </div>
   );
 };
 
-/** Read-only campaign details from GET /staff/campaigns/{id}. */
-const CampaignDetailsModal: React.FC<{ id: number; onClose: () => void }> = ({ id, onClose }) => {
-  const [data, setData] = useState<(Campaign & { spent_cents: number }) | null>(null);
-  const [error, setError] = useState<string | null>(null);
+/** Read-only campaign details. Uses the list's campaign object immediately and
+ *  tries to enrich via GET /staff/campaigns/{id} — if the backend fails, the
+ *  modal still shows everything instead of a "Server Error". */
+const CampaignDetailsModal: React.FC<{ id: number; fallback?: Campaign | null; onClose: () => void }> = ({ id, fallback, onClose }) => {
+  const [data, setData] = useState<(Campaign & { spent_cents: number }) | null>(fallback as (Campaign & { spent_cents: number }) | null);
 
   useEffect(() => {
     let cancelled = false;
@@ -285,10 +349,10 @@ const CampaignDetailsModal: React.FC<{ id: number; onClose: () => void }> = ({ i
       .staffCampaign(id)
       .then((res) => {
         if (cancelled) return;
+        // Enrich with server data when available; never blank the modal on failure.
         if (res.success) setData(res.data);
-        else setError(res.message || 'Could not load the campaign.');
       })
-      .catch((e) => !cancelled && setError(getApiError(e, 'Could not load the campaign.')));
+      .catch(() => { /* fallback data already shown */ });
     return () => {
       cancelled = true;
     };
@@ -336,9 +400,7 @@ const CampaignDetailsModal: React.FC<{ id: number; onClose: () => void }> = ({ i
         </div>
 
         <div className="px-6 py-5">
-          {error ? (
-            <ErrorBlock message={error} />
-          ) : !data ? (
+          {!data ? (
             <LoadingBlock label="Loading campaign…" />
           ) : (
             <div className="space-y-5">

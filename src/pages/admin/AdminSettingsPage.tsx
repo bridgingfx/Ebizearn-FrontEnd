@@ -22,6 +22,9 @@ import { useAuth } from '../../context/AuthContext';
  */
 const WITHDRAWAL_KEY = 'withdrawal_minimum_usd';
 const DEFAULT_THRESHOLD = 50;
+const TIMEOUT_KEY = 'session_timeout_minutes';
+const TIMEOUT_OPTIONS = [2, 3, 5, 15, 30, 60];
+const DEFAULT_TIMEOUT = 30;
 
 const toMap = (list: SystemSetting[]): Record<string, string> => {
   const m: Record<string, string> = {};
@@ -122,6 +125,31 @@ export const AdminSettingsPage: React.FC = () => {
     }
   };
 
+  const timeoutMinutes = useMemo(() => {
+    const v = parseInt(drafts[TIMEOUT_KEY] || '', 10);
+    return Number.isFinite(v) && v >= 0 ? v : DEFAULT_TIMEOUT;
+  }, [drafts]);
+
+  const [customTimeout, setCustomTimeout] = useState('');
+
+  const saveTimeout = async (mins: number) => {
+    setSavingKey(TIMEOUT_KEY);
+    setNotice(null);
+    try {
+      const res = await adminApi.updateSystemSetting(TIMEOUT_KEY, String(mins));
+      if ((res as { success?: boolean }).success !== false) {
+        setNotice({ kind: 'ok', text: mins === 0 ? 'Session timeout disabled.' : `Session timeout set to ${mins} minute${mins === 1 ? '' : 's'}.` });
+        await load();
+      } else {
+        setNotice({ kind: 'err', text: (res as { message?: string }).message || 'Could not save timeout.' });
+      }
+    } catch (e) {
+      setNotice({ kind: 'err', text: getApiError(e, 'Could not save timeout.') });
+    } finally {
+      setSavingKey(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
@@ -195,6 +223,57 @@ export const AdminSettingsPage: React.FC = () => {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Session timeout */}
+      <div className="bg-white dark:bg-[#0C1322] rounded-[1.5rem] border border-[#E7ECF3] dark:border-white/10 card-shadow p-6">
+        <h3 className="text-sm font-black flex items-center gap-2 mb-1 text-gray-900 dark:text-gray-100">
+          <ShieldAlert className="w-4 h-4 text-[#168BFF] dark:text-blue-300" /> Session Timeout
+        </h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+          Automatically log users out after this long without any mouse, keyboard, or touch activity.
+          A 60-second warning appears before logout. Set to 0 to disable.
+        </p>
+        <div className="flex gap-2 flex-wrap items-center">
+          {TIMEOUT_OPTIONS.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              disabled={savingKey === TIMEOUT_KEY}
+              onClick={() => void saveTimeout(opt)}
+              className={`px-5 py-2.5 rounded-xl text-sm font-extrabold transition-colors disabled:opacity-50 ${
+                timeoutMinutes === opt
+                  ? 'bg-[#07182F] text-white'
+                  : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
+              }`}
+            >
+              {opt >= 60 ? `${opt / 60} hour` : `${opt} min`}
+            </button>
+          ))}
+          <div className="flex items-center gap-2 ml-2">
+            <input
+              type="number"
+              min={0}
+              max={1440}
+              value={customTimeout}
+              onChange={(e) => setCustomTimeout(e.target.value)}
+              placeholder="Custom"
+              className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-transparent text-sm font-bold"
+            />
+            <span className="text-xs text-gray-500">min</span>
+            <button
+              type="button"
+              disabled={savingKey === TIMEOUT_KEY || !customTimeout}
+              onClick={() => { const v = parseInt(customTimeout, 10); if (Number.isFinite(v) && v >= 0) void saveTimeout(v); }}
+              className="px-4 py-2.5 rounded-xl bg-[#168BFF] text-white text-sm font-bold disabled:opacity-50"
+            >
+              Set
+            </button>
+          </div>
+        </div>
+        {timeoutMinutes === 0 && (
+          <p className="mt-3 text-xs font-bold text-amber-600 dark:text-amber-400">Timeout is currently disabled — sessions never expire from inactivity.</p>
+        )}
       </div>
 
       {/* System settings */}

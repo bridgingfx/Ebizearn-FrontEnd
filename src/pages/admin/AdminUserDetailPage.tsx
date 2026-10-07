@@ -24,8 +24,10 @@ import {
   Building2,
   Globe,
   ScrollText,
+  Pencil,
 } from 'lucide-react';
 import { adminApi, staffKycApi, getApiError } from '../../api';
+import { toast } from '../../utils/toast';
 import type { AdminUserDetail, KycDocumentSide, KycDocumentType, KycStatus } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { UserPermissionOverrides } from '../../components/admin/UserPermissionOverrides';
@@ -81,6 +83,137 @@ const Field: React.FC<{ label: string; value: React.ReactNode }> = ({ label, val
     <dd className="text-xs font-semibold text-gray-900 dark:text-gray-100 mt-0.5 break-words">{value ?? '—'}</dd>
   </div>
 );
+
+/** Inline phone editor for admin/super admin. */
+const EditablePhoneField: React.FC<{ userId: number | string; currentPhone: string; onSaved: (phone: string) => void }> = ({ userId, currentPhone, onSaved }) => {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(currentPhone);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => setValue(currentPhone), [currentPhone]);
+
+  const save = async () => {
+    const v = value.trim();
+    if (v && !/^[+\d][\d\s\-()]{3,24}$/.test(v)) {
+      toast.error('Enter a valid phone number with country code.');
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await adminApi.updateUser(userId, { phone: v || '' });
+      if (res.success) {
+        onSaved(v);
+        setEditing(false);
+        toast.success('Phone number updated.');
+      } else {
+        toast.error(res.message || 'Could not update phone.');
+      }
+    } catch (e) {
+      toast.error(getApiError(e, 'Could not update phone.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="min-w-0">
+      <dt className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Phone</dt>
+      <dd className="text-xs font-semibold text-gray-900 dark:text-gray-100 mt-0.5">
+        {editing ? (
+          <div className="flex items-center gap-1.5">
+            <input
+              type="tel"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="+971501234567"
+              className="flex-1 min-w-0 px-2 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs outline-none focus:border-[#168BFF]"
+            />
+            <button type="button" onClick={save} disabled={saving} className="p-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50" title="Save">
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+            </button>
+            <button type="button" onClick={() => { setEditing(false); setValue(currentPhone); }} className="p-1.5 rounded-lg bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-300" title="Cancel">
+              <XCircle className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <span className="inline-flex items-center gap-1.5">
+            <Phone className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            {currentPhone || '—'}
+            <button type="button" onClick={() => setEditing(true)} className="p-1 rounded-md text-[#168BFF] hover:bg-[#168BFF]/10" title="Edit phone">
+              <Pencil className="w-3 h-3" />
+            </button>
+          </span>
+        )}
+      </dd>
+    </div>
+  );
+};
+
+/** Inline email editor for admin/super admin (genuine requests via ticket). */
+const EditableEmailField: React.FC<{ userId: number | string; currentEmail: string; onSaved: (email: string) => void }> = ({ userId, currentEmail, onSaved }) => {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(currentEmail);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => setValue(currentEmail), [currentEmail]);
+
+  const save = async () => {
+    const v = value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+      toast.error('Enter a valid email address.');
+      return;
+    }
+    if (!confirm(`Change this user's login email to ${v}?\n\nOnly do this for genuine requests (e.g. via support ticket).`)) return;
+    setSaving(true);
+    try {
+      const res = await adminApi.updateUser(userId, { email: v });
+      if (res.success) {
+        onSaved(v);
+        setEditing(false);
+        toast.success('Email updated.');
+      } else {
+        toast.error(res.message || 'Could not update email.');
+      }
+    } catch (e) {
+      toast.error(getApiError(e, 'Could not update email.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="min-w-0">
+      <dt className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Email</dt>
+      <dd className="text-xs font-semibold text-gray-900 dark:text-gray-100 mt-0.5 break-words">
+        {editing ? (
+          <div className="flex items-center gap-1.5">
+            <input
+              type="email"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="user@example.com"
+              className="flex-1 min-w-0 px-2 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs outline-none focus:border-[#168BFF]"
+            />
+            <button type="button" onClick={save} disabled={saving} className="p-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 disabled:opacity-50" title="Save">
+              {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+            </button>
+            <button type="button" onClick={() => { setEditing(false); setValue(currentEmail); }} className="p-1.5 rounded-lg bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-300" title="Cancel">
+              <XCircle className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <span className="inline-flex items-center gap-1.5">
+            <Mail className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            {currentEmail}
+            <button type="button" onClick={() => setEditing(true)} className="p-1 rounded-md text-[#168BFF] hover:bg-[#168BFF]/10" title="Edit email (genuine requests only)">
+              <Pencil className="w-3 h-3" />
+            </button>
+          </span>
+        )}
+      </dd>
+    </div>
+  );
+};
 
 /** Admin → Users → View: every detail about one account on a single page. */
 export const AdminUserDetailPage: React.FC = () => {
@@ -319,9 +452,9 @@ export const AdminUserDetailPage: React.FC = () => {
           {/* Account & profile */}
           <Card title="Account & profile" icon={FileText}>
             <dl className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-4">
-              <Field label="Email" value={<span className="inline-flex items-center gap-1"><Mail className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {user.email}</span>} />
+              <EditableEmailField userId={user.id} currentEmail={user.email} onSaved={(e) => setData(data ? { ...data, user: { ...data.user, email: e } } : data)} />
               <Field label="Email verified" value={user.email_verified_at ? dateTime(user.email_verified_at) : 'Not verified'} />
-              <Field label="Phone" value={user.phone || profile?.phone ? <span className="inline-flex items-center gap-1"><Phone className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {user.phone || profile?.phone}</span> : '—'} />
+              <EditablePhoneField userId={user.id} currentPhone={user.phone || profile?.phone || ''} onSaved={(p) => setData(data ? { ...data, user: { ...data.user, phone: p } } : data)} />
               <Field label="Country" value={profile?.country_code ? <span className="inline-flex items-center gap-1"><Globe className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {profile.country_code}</span> : '—'} />
               <Field label="City" value={profile?.city ? <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3 text-gray-400 dark:text-gray-500" /> {profile.city}</span> : '—'} />
               <Field label="Language" value={profile?.language?.toUpperCase()} />

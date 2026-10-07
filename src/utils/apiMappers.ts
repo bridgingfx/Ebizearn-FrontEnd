@@ -65,7 +65,7 @@ export const mapTaskForUi = (task: Task): UiTask => {
     flyerUrl: resolveCreativeUrl(task),
     postCopy: campaign?.instructions_markdown || campaign?.description || task.title,
     hashtags: undefined,
-    targetUrl: campaign?.business?.website || undefined,
+    targetUrl: campaign?.target_url || campaign?.business?.website || undefined,
     brandName: campaign?.business?.company_name || 'Brand partner',
   };
 };

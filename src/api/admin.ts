@@ -66,6 +66,7 @@ export const adminApi = {
     description: string;
     category_id: number;
     platform?: string;
+    target_url?: string;
     reward_per_task_cents: number;
     task_type_key: string;
     target_contributors_count: number;

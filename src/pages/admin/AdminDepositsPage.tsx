@@ -212,8 +212,9 @@ const FIELDS: Record<DepositMethodKey, { key: string; label: string; placeholder
   ],
   crypto: [
     { key: 'currency', label: 'Currency', placeholder: 'USDT' },
-    { key: 'network', label: 'Network', placeholder: 'TRC20 / ERC20 / BEP20' },
-    { key: 'wallet_address', label: 'Wallet address', placeholder: 'T… or 0x…' },
+    { key: 'network', label: 'Network (primary)', placeholder: 'TRC20' },
+    { key: 'wallet_address', label: 'Wallet address (primary)', placeholder: 'T… or 0x…' },
+    { key: 'extra_networks', label: 'Extra networks (one per line: NETWORK|address)', placeholder: 'BEP20|0x1234…\nERC20|0xabcd…' },
   ],
   bank: [
     { key: 'bank_name', label: 'Bank name', placeholder: 'Bank of Georgia' },

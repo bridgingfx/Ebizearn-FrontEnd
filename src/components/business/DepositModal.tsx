@@ -191,6 +191,18 @@ export const DepositModal: React.FC<{ methods: DepositMethod[]; onClose: () => v
                   ))}
                 </div>
               )}
+              {/* QR code for crypto wallet — scan to pay */}
+              {method.key === 'crypto' && method.details?.wallet_address && (
+                <div className="flex flex-col items-center gap-2 py-3">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(method.details.wallet_address)}`}
+                    alt="Wallet QR code"
+                    className="w-44 h-44 rounded-xl border border-slate-200 dark:border-white/10 bg-white p-2"
+                    loading="lazy"
+                  />
+                  <p className="text-[11px] text-slate-500 dark:text-gray-400 font-semibold">Scan to pay{method.details?.network ? ` via ${method.details.network}` : ''}</p>
+                </div>
+              )}
             </div>
 
             {/* Step 2: tell us */}

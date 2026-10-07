@@ -192,11 +192,22 @@ export const AdminPaymentGatewaysPage: React.FC = () => {
                   </span>
                 )}
                 {g.last_tested_at && (
-                  <span className="px-2 py-1 rounded-full font-bold bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400">
-                    Tested {new Date(g.last_tested_at).toLocaleDateString()}
+                  <span className={`px-2 py-1 rounded-full font-bold flex items-center gap-1 ${
+                    g.status === 'ok'
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : g.status === 'failed'
+                        ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                        : 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400'
+                  }`}>
+                    {g.status === 'ok' ? '✓ Working' : g.status === 'failed' ? '✗ Failed' : 'Tested'} {new Date(g.last_tested_at).toLocaleDateString()}
                   </span>
                 )}
               </div>
+              {g.last_test_message && (
+                <p className={`text-[11px] mt-1.5 ${g.status === 'failed' ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-500 dark:text-gray-400'}`}>
+                  {g.last_test_message}
+                </p>
+              )}
 
               {g.driver === 'stripe' && <WebhookUrlBox />}
 

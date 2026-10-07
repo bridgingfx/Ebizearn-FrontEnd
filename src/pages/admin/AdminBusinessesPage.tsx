@@ -78,7 +78,13 @@ export const AdminBusinessesPage: React.FC = () => {
         toast.error(res.message || 'Could not log in as this business.');
       }
     } catch (e) {
-      toast.error(getApiError(e, 'Could not log in as this business.'));
+      const msg = getApiError(e, '');
+      // The impersonation endpoint lives in the backend update waiting for deployment.
+      if (msg.includes('404') || msg.includes('not found') || msg.includes('Server Error') || !msg) {
+        toast.error('Login-as needs the backend update — ask Kailash to deploy the latest backend. The button will work after that.');
+      } else {
+        toast.error(msg);
+      }
     }
   };
 

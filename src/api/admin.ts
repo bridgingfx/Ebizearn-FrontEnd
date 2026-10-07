@@ -38,8 +38,16 @@ export const adminApi = {
   updateSystemSetting: (key: string, value: unknown) =>
     api.patch('/admin/system-settings', { key, value }).then((r) => r.data),
   auditLogs: () => api.get('/admin/audit-logs').then((r) => r.data as { success: boolean; message?: string; data: AuditLog[]; meta?: unknown }),
-  users: (params?: { role?: string; search?: string }) =>
-    api.get('/admin/users', { params }).then((r) => r.data as { success: boolean; message?: string; data: User[]; meta?: unknown }),
+  users: (params?: { role?: string; search?: string; page?: number }) =>
+    api.get('/admin/users', { params }).then(
+      (r) =>
+        r.data as {
+          success: boolean;
+          message?: string;
+          data: User[];
+          meta?: { current_page: number; last_page: number; total: number };
+        },
+    ),
   userDetail: (userId: number | string) =>
     api.get(`/admin/users/${userId}`).then((r) => r.data as { success: boolean; message?: string; data: AdminUserDetail }),
   updateUserStatus: (userId: number | string, status: 'active' | 'suspended' | 'pending_verification') =>

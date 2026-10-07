@@ -38,7 +38,7 @@ const ROLE_META: Record<RolePermissions['name'], { icon: React.ElementType; blur
 export const AdminPermissionsPage: React.FC = () => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === 'superadmin';
-  const [tab, setTab] = useState<'roles' | 'departments'>('roles');
+  const [tab, setTab] = useState<'roles' | 'users' | 'departments'>('roles');
   const [roles, setRoles] = useState<RolePermissions[]>([]);
   const [catalog, setCatalog] = useState<PermissionDef[]>([]);
   const [active, setActive] = useState<RolePermissions['name']>('admin');
@@ -48,12 +48,6 @@ export const AdminPermissionsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-
-  // User override lookup
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<User[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [picked, setPicked] = useState<User | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -133,27 +127,6 @@ export const AdminPermissionsPage: React.FC = () => {
     }
   };
 
-  // Debounced user search for overrides.
-  useEffect(() => {
-    const q = query.trim();
-    if (q.length < 2) {
-      setResults([]);
-      return;
-    }
-    const t = setTimeout(async () => {
-      setSearching(true);
-      try {
-        const res = await adminApi.users({ search: q });
-        setResults((res.data || []).filter((u) => u.role !== 'superadmin').slice(0, 8));
-      } catch {
-        setResults([]);
-      } finally {
-        setSearching(false);
-      }
-    }, 350);
-    return () => clearTimeout(t);
-  }, [query]);
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -169,7 +142,7 @@ export const AdminPermissionsPage: React.FC = () => {
       )}
 
       <div className="flex gap-2">
-        {(['roles', 'departments'] as const).map((t) => (
+        {(['roles', 'users', 'departments'] as const).map((t) => (
           <button
             key={t}
             type="button"
@@ -180,13 +153,15 @@ export const AdminPermissionsPage: React.FC = () => {
                 : 'bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300'
             }`}
           >
-            {t === 'roles' ? 'Roles & permissions' : 'Departments'}
+            {t === 'roles' ? 'Roles & permissions' : t === 'users' ? 'Users' : 'Departments'}
           </button>
         ))}
       </div>
 
       {tab === 'departments' ? (
         <DepartmentsSection isSuperAdmin={isSuperAdmin} />
+      ) : tab === 'users' ? (
+        <UsersPermissionsSection isSuperAdmin={isSuperAdmin} currentUserId={user?.id} />
       ) : (
         <>
           {error && (
@@ -336,75 +311,232 @@ export const AdminPermissionsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Per-user overrides */}
-          <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 space-y-4">
+          {/* Per-user overrides live in the Users tab. */}
+          <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Individual account overrides</h2>
+              <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Individual account permissions</h2>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Allow or deny a single permission for one person — e.g. block withdrawals for an account under investigation.
+                Give or take away a permission for one person — e.g. block withdrawals for an account under investigation.
               </p>
             </div>
-
-            {picked ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
-                  <div className="min-w-0">
-                    <Link to={`/admin/users/${picked.id}`} className="text-sm font-bold text-gray-900 dark:text-gray-100 hover:underline">
-                      {picked.name}
-                    </Link>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                      {picked.email} · <span className="capitalize">{picked.role}</span>
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setPicked(null)}
-                    className="p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <UserPermissionOverrides key={picked.id} userId={picked.id} />
-              </div>
-            ) : (
-              <div className="relative max-w-md">
-                <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search a user by name or email…"
-                  className="w-full pl-9 pr-9 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF]"
-                />
-                {searching && <Loader2 className="w-4 h-4 animate-spin text-gray-400 dark:text-gray-500 absolute right-3 top-3" />}
-                {results.length > 0 && (
-                  <ul className="mt-2 rounded-2xl border border-gray-200 dark:border-white/10 divide-y divide-gray-100 dark:divide-white/10 overflow-hidden">
-                    {results.map((u) => (
-                      <li key={u.id}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setPicked(u);
-                            setQuery('');
-                            setResults([]);
-                          }}
-                          className="w-full text-left px-3.5 py-2.5 hover:bg-gray-50 dark:hover:bg-white/5"
-                        >
-                          <span className="block text-xs font-bold text-gray-900 dark:text-gray-100">{u.name}</span>
-                          <span className="block text-[11px] text-gray-500 dark:text-gray-400">
-                            {u.email} · <span className="capitalize">{u.role}</span>
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => setTab('users')}
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#168BFF] hover:bg-[#0f7ae5] text-white text-xs font-bold"
+            >
+              <Users className="w-3.5 h-3.5" /> Open Users tab
+            </button>
           </div>
         </>
       )}
         </>
       )}
+    </div>
+  );
+};
+
+const USER_ROLE_FILTERS = [
+  { key: '', label: 'All' },
+  { key: 'admin', label: 'Admins' },
+  { key: 'moderator', label: 'Moderators' },
+  { key: 'business', label: 'Businesses' },
+  { key: 'contributor', label: 'Contributors' },
+  { key: 'superadmin', label: 'Super Admins' },
+] as const;
+
+const ROLE_BADGE: Record<string, string> = {
+  superadmin: 'bg-[#D4AF37]/15 text-[#A8861C] dark:text-[#E9C760]',
+  admin: 'bg-[#07182F]/10 text-[#07182F] dark:bg-white/10 dark:text-gray-100',
+  moderator: 'bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300',
+  business: 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300',
+  contributor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+};
+
+/**
+ * Users — every account (staff, businesses, contributors) in one list. Pick
+ * one to see exactly which permissions they hold and allow / deny any
+ * permission in the catalog for that account alone.
+ */
+const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; currentUserId?: number }> = ({ isSuperAdmin, currentUserId }) => {
+  const [role, setRole] = useState('');
+  const [query, setQuery] = useState('');
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [users, setUsers] = useState<User[]>([]);
+  const [meta, setMeta] = useState<{ current_page: number; last_page: number; total: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [picked, setPicked] = useState<User | null>(null);
+
+  // Debounce the search box; a new search or filter starts at page 1.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearch(query.trim());
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setError(null);
+    adminApi
+      .users({ role: role || undefined, search: search || undefined, page })
+      .then((res) => {
+        if (!alive) return;
+        setUsers(res.data || []);
+        setMeta(res.meta ?? null);
+      })
+      .catch((e) => alive && setError(getApiError(e, 'Could not load users.')))
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, [role, search, page]);
+
+  const lockedReason = (u: User): string | null => {
+    if (u.role === 'superadmin') return null; // the editor explains this itself
+    if (u.id === currentUserId) return 'You cannot change your own permissions.';
+    if (!isSuperAdmin && u.role === 'admin') return 'Only Super Admin can change permissions of admin accounts.';
+    return null;
+  };
+
+  return (
+    <div className="grid lg:grid-cols-[380px_minmax(0,1fr)] gap-4 items-start">
+      {/* User list */}
+      <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-4 space-y-3">
+        <div className="relative">
+          <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name or email…"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF]"
+          />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {USER_ROLE_FILTERS.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => {
+                setRole(f.key);
+                setPage(1);
+              }}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors ${
+                role === f.key
+                  ? 'bg-[#07182F] dark:bg-[#168BFF] text-white'
+                  : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/10'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {error ? (
+          <p className="text-xs text-red-600 dark:text-red-400 flex items-center gap-1.5">
+            <AlertCircle className="w-4 h-4" /> {error}
+          </p>
+        ) : loading ? (
+          <div className="py-10 text-center text-gray-400 dark:text-gray-500">
+            <Loader2 className="w-5 h-5 animate-spin inline-block" />
+          </div>
+        ) : users.length === 0 ? (
+          <p className="py-8 text-center text-xs text-gray-500 dark:text-gray-400">No users found.</p>
+        ) : (
+          <ul className="divide-y divide-gray-100 dark:divide-white/10 rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
+            {users.map((u) => {
+              const on = picked?.id === u.id;
+              return (
+                <li key={u.id}>
+                  <button
+                    type="button"
+                    onClick={() => setPicked(u)}
+                    className={`w-full text-left px-3.5 py-2.5 flex items-center justify-between gap-2 transition-colors ${
+                      on ? 'bg-[#168BFF]/10' : 'hover:bg-gray-50 dark:hover:bg-white/5'
+                    }`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{u.name}</span>
+                      <span className="block text-[11px] text-gray-500 dark:text-gray-400 truncate">{u.email}</span>
+                    </span>
+                    <span className={`shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold capitalize ${ROLE_BADGE[u.role] ?? ROLE_BADGE.contributor}`}>
+                      {u.role === 'superadmin' ? 'Super Admin' : u.role}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        {meta && meta.last_page > 1 && (
+          <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 dark:text-gray-400">
+            <button
+              type="button"
+              disabled={page <= 1 || loading}
+              onClick={() => setPage((p) => p - 1)}
+              className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 disabled:opacity-40"
+            >
+              Previous
+            </button>
+            <span>
+              Page {meta.current_page} of {meta.last_page} · {meta.total} users
+            </span>
+            <button
+              type="button"
+              disabled={page >= meta.last_page || loading}
+              onClick={() => setPage((p) => p + 1)}
+              className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Selected user's permissions */}
+      <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs p-5 space-y-4 min-w-0">
+        {picked ? (
+          <>
+            <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+              <div className="min-w-0">
+                <Link to={`/admin/users/${picked.id}`} className="text-sm font-bold text-gray-900 dark:text-gray-100 hover:underline">
+                  {picked.name}
+                </Link>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                  {picked.email} · <span className="capitalize">{picked.role === 'superadmin' ? 'Super Admin' : picked.role}</span>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPicked(null)}
+                className="p-2 rounded-xl text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            {lockedReason(picked) ? (
+              <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                <AlertCircle className="w-4 h-4" /> {lockedReason(picked)}
+              </p>
+            ) : (
+              <UserPermissionOverrides key={picked.id} userId={picked.id} defaultShowAll />
+            )}
+          </>
+        ) : (
+          <div className="py-16 text-center">
+            <UserCog className="w-8 h-8 mx-auto text-gray-300 dark:text-gray-600" />
+            <p className="mt-3 text-sm font-bold text-gray-900 dark:text-gray-100">Select a user</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+              Pick anyone from the list to see which permissions they have and allow or deny any permission for that account.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

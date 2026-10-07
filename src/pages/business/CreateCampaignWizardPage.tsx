@@ -13,6 +13,7 @@ import {
   ClipboardList,
   Rocket,
   CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 import { businessApi, getApiError, api } from '../../api';
 import { COUNTRY_OPTIONS } from '../../config/geoLocations';
@@ -170,6 +171,12 @@ export const CreateCampaignWizardPage: React.FC = () => {
   const [contributors, setContributors] = useState<string>('5');
   const [instructions, setInstructions] = useState('');
   const [proofRequirements, setProofRequirements] = useState<string[]>(['Screenshot']);
+
+  // AI-generated post content (for copy-paste tasks: comments, reviews, captions)
+  const [contentBrief, setContentBrief] = useState('');
+  const [generatedContent, setGeneratedContent] = useState('');
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState<string | null>(null);
 
   // Step 5 — Audience
   const [country, setCountry] = useState('GLOBAL');
@@ -441,6 +448,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
         proof_requirements_json: proofRequirements,
         target_countries: [country === 'GLOBAL' ? 'ALL' : country],
         idempotency_key: idempotencyKey,
+        // AI-generated post content for contributors to copy-paste.
+        ...(generatedContent.trim() ? { generated_content: generatedContent.trim() } : {}),
+        ...(contentBrief.trim() ? { content_brief: contentBrief.trim() } : {}),
       };
       if (objective.trim()) payload.objective = objective.trim();
       if (minLevel) payload.min_contributor_level = minLevel;
@@ -858,6 +868,66 @@ export const CreateCampaignWizardPage: React.FC = () => {
               className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF] resize-none"
             />
             {err('instructions') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('instructions')}</p>}
+          </div>
+
+          {/* AI content generator — ready-to-post text contributors copy-paste */}
+          <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border-2 border-violet-200 dark:border-violet-500/25 rounded-2xl p-5 space-y-4">
+            <div>
+              <h4 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-300" />
+                AI post content <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300">optional</span>
+              </h4>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                Describe what the post is for — AI writes creative, platform-ready text (hashtags, keywords, proper length) that contributors copy and paste.
+              </p>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">What is this post for?</label>
+              <input
+                value={contentBrief}
+                onChange={(e) => setContentBrief(e.target.value)}
+                placeholder="e.g. A Google review for our Dubai restaurant, praising the food and service"
+                maxLength={500}
+                className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500"
+              />
+            </div>
+            <button
+              type="button"
+              disabled={!contentBrief.trim() || generating}
+              onClick={async () => {
+                setGenerating(true);
+                setGenError(null);
+                try {
+                  const res = await businessApi.generateContent(platform || 'instagram', contentBrief.trim());
+                  if (res.success && res.content) {
+                    setGeneratedContent(res.content);
+                  } else {
+                    setGenError(res.message || 'Could not generate content.');
+                  }
+                } catch (e) {
+                  setGenError(getApiError(e, 'Could not generate content.'));
+                } finally {
+                  setGenerating(false);
+                }
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-violet-600 hover:bg-violet-700 transition-colors disabled:opacity-50"
+            >
+              {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              {generating ? 'Generating…' : 'Generate with AI'}
+            </button>
+            {genError && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{genError}</p>}
+            {generatedContent && (
+              <div>
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Generated content — contributors will copy this</label>
+                <textarea
+                  value={generatedContent}
+                  onChange={(e) => setGeneratedContent(e.target.value)}
+                  rows={6}
+                  className="w-full px-4 py-3 border border-violet-200 dark:border-violet-500/25 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 resize-none bg-white dark:bg-white/5"
+                />
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">You can edit it before launching. This exact text appears on the task with a copy button.</p>
+              </div>
+            )}
           </div>
 
           <div>

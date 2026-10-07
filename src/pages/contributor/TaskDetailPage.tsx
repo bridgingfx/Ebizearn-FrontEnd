@@ -11,6 +11,9 @@ import {
   Upload,
   Link as LinkIcon,
   ExternalLink,
+  Sparkles,
+  Copy,
+  Check,
   X,
   FileCheck,
   Loader2,
@@ -47,6 +50,7 @@ export const TaskDetailPage: React.FC = () => {
 
   // Proof form
   const [proofUrl, setProofUrl] = useState('');
+  const [copied, setCopied] = useState(false);
   const [note, setNote] = useState('');
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [screenshotName, setScreenshotName] = useState<string | null>(null);
@@ -369,6 +373,31 @@ export const TaskDetailPage: React.FC = () => {
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                     <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate text-center">{task.targetUrl}</p>
+                  </div>
+                )}
+
+                {/* AI-generated content to copy-paste */}
+                {task.generatedContent && (
+                  <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border-2 border-violet-300/40 dark:border-violet-500/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-300 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" /> Ready-to-post content
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(task.generatedContent || '');
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 2000);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white transition-colors"
+                      >
+                        {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copied ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{task.generatedContent}</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500">Copy this text and paste it where the task asks — then screenshot and submit below.</p>
                   </div>
                 )}
                 <p className="text-[10px] text-gray-400 dark:text-gray-500">

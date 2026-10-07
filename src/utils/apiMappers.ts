@@ -67,6 +67,8 @@ export const mapTaskForUi = (task: Task): UiTask => {
     hashtags: undefined,
     targetUrl: campaign?.target_url || campaign?.business?.website || undefined,
     brandName: campaign?.business?.company_name || 'Brand partner',
+    // AI-generated post content for copy-paste (caption, review text, etc.)
+    generatedContent: campaign?.generated_content || undefined,
   };
 };
 

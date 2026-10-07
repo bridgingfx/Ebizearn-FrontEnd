@@ -240,6 +240,9 @@ export interface Campaign {
   platform?: string | null;
   /** The exact link the contributor must engage with (profile, post, page). */
   target_url?: string | null;
+  /** AI-generated post content for contributors to copy-paste. */
+  generated_content?: string | null;
+  content_brief?: string | null;
   title: string;
   objective?: string;
   description: string;
@@ -486,6 +489,7 @@ export interface UiTask extends Task {
   postCopy: string;
   hashtags?: string;
   flyerUrl?: string;
+  generatedContent?: string;
   badgeColor?: string;
 }
 

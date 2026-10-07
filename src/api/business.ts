@@ -5,6 +5,8 @@ export const businessApi = {
   dashboard: () => api.get('/business/dashboard').then((r) => r.data as { success: boolean; message?: string; data: any }),
   campaigns: () => api.get('/business/campaigns').then((r) => r.data as { success: boolean; message?: string; data: Campaign[]; meta?: unknown }),
   createCampaign: (payload: Record<string, unknown>) => api.post('/business/campaigns', payload).then((r) => r.data),
+  generateContent: (platform: string, brief: string) =>
+    api.post('/business/campaigns/generate-content', { platform, brief }).then((r) => r.data as { success: boolean; message?: string; content: string | null }),
   saveCampaignDraft: (payload: Record<string, unknown>) =>
     api.post('/business/campaigns/wizard/draft', payload).then((r) => r.data),
   updateCampaignDraft: (id: number | string, payload: Record<string, unknown>) =>

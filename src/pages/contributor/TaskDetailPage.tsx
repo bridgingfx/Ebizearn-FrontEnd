@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Upload,
   Link as LinkIcon,
+  ExternalLink,
   X,
   FileCheck,
   Loader2,
@@ -60,7 +61,11 @@ export const TaskDetailPage: React.FC = () => {
       .get(id)
       .then((res) => {
         if (res.success && res.data) {
-          setTask(mapTaskForUi(res.data));
+          const mapped = mapTaskForUi(res.data);
+          setTask(mapped);
+          // Pre-fill the proof link with the task's target URL — the
+          // contributor submits the SAME link they visited, for AI verification.
+          if (mapped.targetUrl) setProofUrl(mapped.targetUrl);
           setLoadError(null);
         } else {
           setLoadError('Task not found or no longer available.');
@@ -125,8 +130,13 @@ export const TaskDetailPage: React.FC = () => {
     setSubmitError(null);
 
     const url = proofUrl.trim();
-    if (!url && !screenshot && !note.trim()) {
-      setSubmitError('Add a proof URL, upload a screenshot, or write a note — at least one is required.');
+    // Screenshot is REQUIRED — AI verification needs visual proof.
+    if (!screenshot) {
+      setSubmitError('A screenshot is required. Take a screenshot of your completed action and upload it.');
+      return;
+    }
+    if (!url) {
+      setSubmitError('The proof link is required — it should be the same link from the task above.');
       return;
     }
     if (url && !/^https?:\/\//i.test(url)) {
@@ -328,15 +338,38 @@ export const TaskDetailPage: React.FC = () => {
                   <span>{starting ? 'Reserving…' : 'Start task — reserve my slot'}</span>
                 </button>
                 {task.targetUrl && (
-                  <a
-                    href={task.targetUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full py-3 rounded-2xl font-bold text-sm border-2 border-[#168BFF]/30 text-[#168BFF] hover:bg-[#168BFF]/5 transition-all flex items-center justify-center gap-2"
-                  >
-                    <LinkIcon className="w-4 h-4" />
-                    <span>Open task link</span>
-                  </a>
+                  <div className="bg-gradient-to-br from-[#168BFF]/10 to-[#168BFF]/5 border-2 border-[#168BFF]/30 rounded-2xl p-4 space-y-3">
+                    <p className="text-xs font-black uppercase tracking-wider text-[#168BFF]">How to complete this task</p>
+                    <ol className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                      <li className="flex items-start gap-2">
+                        <span className="shrink-0 w-5 h-5 rounded-full bg-[#168BFF] text-white text-[11px] font-black flex items-center justify-center">1</span>
+                        <span>Tap the button below to open the link</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="shrink-0 w-5 h-5 rounded-full bg-[#168BFF] text-white text-[11px] font-black flex items-center justify-center">2</span>
+                        <span>Complete the action (follow, like, subscribe…)</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="shrink-0 w-5 h-5 rounded-full bg-[#168BFF] text-white text-[11px] font-black flex items-center justify-center">3</span>
+                        <span>Take a screenshot as proof</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="shrink-0 w-5 h-5 rounded-full bg-[#168BFF] text-white text-[11px] font-black flex items-center justify-center">4</span>
+                        <span>Upload it below and submit</span>
+                      </li>
+                    </ol>
+                    <a
+                      href={task.targetUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-3.5 rounded-2xl font-black text-sm bg-[#168BFF] hover:bg-[#2F80FF] text-white transition-all shadow-lg shadow-[#168BFF]/25 flex items-center justify-center gap-2"
+                    >
+                      <LinkIcon className="w-4 h-4" />
+                      <span>Open task link</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate text-center">{task.targetUrl}</p>
+                  </div>
                 )}
                 <p className="text-[10px] text-gray-400 dark:text-gray-500">
                   Reserving holds one of the task's slots under your account while you work.
@@ -404,9 +437,11 @@ export const TaskDetailPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Proof URL */}
+                {/* Proof URL — pre-filled with the task link they visited */}
                 <div>
-                  <label htmlFor="proof-url" className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Proof link (optional)</label>
+                  <label htmlFor="proof-url" className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                    Proof link <span className="text-[#168BFF]">— the same link you visited above</span>
+                  </label>
                   <div className="relative">
                     <LinkIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 absolute left-3 top-3" />
                     <input
@@ -418,6 +453,7 @@ export const TaskDetailPage: React.FC = () => {
                       className="w-full pl-9 pr-3 py-2.5 min-h-[44px] text-xs sm:text-sm bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#168BFF]"
                     />
                   </div>
+                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">This should match the task link — our system verifies it automatically.</p>
                 </div>
 
                 {/* Note */}

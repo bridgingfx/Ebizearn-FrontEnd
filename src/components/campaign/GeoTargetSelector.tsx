@@ -3,8 +3,10 @@ import { ChevronDown, Check, Globe, MapPin } from 'lucide-react';
 
 export interface GeoTarget {
   mode: 'global' | 'custom';
-  country?: string; // ISO code
+  country?: string; // ISO code (legacy single)
   countryName?: string;
+  /** Multi-select: list of ISO codes when targeting several countries. */
+  countries?: string[];
   state?: string;
   city?: string;
   area?: string;
@@ -176,13 +178,19 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
             className={`${inputCls} flex items-center justify-between text-left`}
           >
             <span className="flex items-center gap-2">
-              {value.country ? (
+              {(value.countries?.length || value.country) ? (
                 <>
-                  <img src={`https://flagcdn.com/w40/${value.country.toLowerCase()}.png`} alt="" className="w-5 h-3.5 object-cover rounded-sm" />
-                  {value.countryName}
+                  <span className="flex -space-x-1">
+                    {(value.countries || (value.country ? [value.country] : [])).slice(0, 3).map((code) => (
+                      <img key={code} src={`https://flagcdn.com/w40/${code.toLowerCase()}.png`} alt="" className="w-5 h-3.5 object-cover rounded-sm ring-1 ring-white" />
+                    ))}
+                  </span>
+                  {(value.countries?.length || 0) > 1
+                    ? `${value.countries!.length} countries`
+                    : value.countryName || value.countries?.[0]}
                 </>
               ) : (
-                <span className="text-gray-400">Select country…</span>
+                <span className="text-gray-400">Select countries…</span>
               )}
             </span>
             <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -198,22 +206,31 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
                   autoFocus
                 />
               </div>
-              {filteredCountries.map((c) => (
-                <button
-                  key={c.code}
-                  type="button"
-                  onClick={() => {
-                    onChange({ mode: 'custom', country: c.code, countryName: c.name });
-                    setCountryOpen(false);
-                    setCountrySearch('');
-                  }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5"
-                >
-                  <img src={`https://flagcdn.com/w40/${c.code.toLowerCase()}.png`} alt="" className="w-5 h-3.5 object-cover rounded-sm" loading="lazy" />
-                  <span className="flex-1 text-left">{c.name}</span>
-                  {value.country === c.code && <Check className="w-4 h-4 text-[#168BFF]" />}
-                </button>
-              ))}
+              {filteredCountries.map((c) => {
+                const selected = (value.countries || (value.country ? [value.country] : [])).includes(c.code);
+                return (
+                  <button
+                    key={c.code}
+                    type="button"
+                    onClick={() => {
+                      const current = value.countries || (value.country ? [value.country] : []);
+                      const next = selected ? current.filter((x) => x !== c.code) : [...current, c.code];
+                      onChange({
+                        mode: 'custom',
+                        countries: next,
+                        country: next[0],
+                        countryName: next.length === 1 ? c.name : `${next.length} countries`,
+                      });
+                      setCountrySearch('');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5"
+                  >
+                    <img src={`https://flagcdn.com/w40/${c.code.toLowerCase()}.png`} alt="" className="w-5 h-3.5 object-cover rounded-sm" loading="lazy" />
+                    <span className="flex-1 text-left">{c.name}</span>
+                    {selected && <Check className="w-4 h-4 text-[#168BFF]" />}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -297,6 +314,8 @@ export const GeoTargetSelector: React.FC<Props> = ({ value, onChange }) => {
 
 /** Convert the selector value to the backend target_countries array. */
 export function geoTargetToCountries(v: GeoTarget): string[] {
-  if (v.mode === 'global' || !v.country) return ['ALL'];
-  return [v.country];
+  if (v.mode === 'global') return ['ALL'];
+  if (v.countries?.length) return v.countries;
+  if (v.country) return [v.country];
+  return ['ALL'];
 }

@@ -101,9 +101,12 @@ export const ContributorLayout: React.FC = () => {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-[#07182F] text-white sticky top-0 h-screen p-5 justify-between shadow-xl z-30 shrink-0">
         <div className="flex-1 min-h-0 flex flex-col">
-          <Link to="/app" className="flex items-center pb-5 border-b border-white/10 mb-5 shrink-0">
-            <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
-          </Link>
+          <div className="flex items-center justify-between pb-5 border-b border-white/10 mb-5 shrink-0">
+            <Link to="/app" className="flex items-center">
+              <EBizLogo variant="dark" size="sm" subtitleText="Contributor App" />
+            </Link>
+            <ThemeToggle tone="onDark" />
+          </div>
 
           <div className="relative shrink-0 mb-4" ref={profileRef}>
             <button
@@ -122,7 +125,7 @@ export const ContributorLayout: React.FC = () => {
             </button>
 
             {profileOpen && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#0e2240] rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-1">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-[#0e2240] rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-1">
                 <Link
                   to="/app/profile"
                   onClick={() => setProfileOpen(false)}
@@ -133,14 +136,6 @@ export const ContributorLayout: React.FC = () => {
                 <div className="px-3 py-1.5 border-t border-white/10">
                   <RegionSelector variant="dark" compact />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => { toggleTheme(); }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] font-semibold text-gray-200 hover:bg-white/5 transition-colors border-t border-white/10"
-                >
-                  {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-indigo-300" />}
-                  {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-                </button>
                 <button
                   type="button"
                   onClick={() => { setProfileOpen(false); setLogoutOpen(true); }}

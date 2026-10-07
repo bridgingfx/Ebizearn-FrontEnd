@@ -137,17 +137,19 @@ export const ContributorLayout: React.FC = () => {
           </nav>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0 pt-2">
+        <div className="shrink-0 pt-2 space-y-2">
           <RegionSelector variant="dark" />
-          <button
-            type="button"
-            onClick={() => setLogoutOpen(true)}
-            className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-300 hover:bg-red-500/10 hover:text-red-300 transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
-          <ThemeToggle tone="onDark" />
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setLogoutOpen(true)}
+              className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-300 hover:bg-red-500/10 hover:text-red-300 transition-all"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+            <ThemeToggle tone="onDark" />
+          </div>
         </div>
       </aside>
 

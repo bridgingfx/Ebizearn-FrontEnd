@@ -234,6 +234,9 @@ export const CreateCampaignModal: React.FC<{ onClose: () => void; onCreated: () 
                       </option>
                     ))}
                   </select>
+                  {taskTypes.length === 0 && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1.5">No task types are configured yet. Run the backend migrations to load the catalog.</p>
+                  )}
                 </div>
                 <div>
                   <label className={labelCls}>Reward per task (USD) *</label>

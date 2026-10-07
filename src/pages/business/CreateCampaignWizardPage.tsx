@@ -367,7 +367,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
       contributors: contributorCount,
       instructions: instructions.trim(),
       proof_requirements: proofRequirements,
-      countries: [country],
+      countries: [country === 'GLOBAL' ? 'ALL' : country],
     };
     if (objective.trim()) p.objective = objective.trim();
     if (country !== 'GLOBAL') p.country_code = country;
@@ -439,7 +439,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
         target_contributors_count: contributorCount,
         instructions_markdown: instructions.trim(),
         proof_requirements_json: proofRequirements,
-        target_countries: [country],
+        target_countries: [country === 'GLOBAL' ? 'ALL' : country],
         idempotency_key: idempotencyKey,
       };
       if (objective.trim()) payload.objective = objective.trim();

@@ -146,6 +146,20 @@ export const ContributorProfilePage: React.FC = () => {
   /** Saves through PUT /profile; email is the login identity and stays read-only. */
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Warn before a country change: it invalidates KYC and locks tasks.
+    const originalCountry = user?.profile?.country_code || '';
+    if (country && country !== originalCountry) {
+      const confirmed = window.confirm(
+        'Changing your country of residence will:\n\n' +
+        '• Invalidate your current KYC verification\n' +
+        '• LOCK all tasks until you complete KYC again\n' +
+        '• Require new documents from your new country\n\n' +
+        'Do you want to continue?'
+      );
+      if (!confirmed) return;
+    }
+
     setSaving(true);
     setSaveMsg(null);
     try {
@@ -158,7 +172,16 @@ export const ContributorProfilePage: React.FC = () => {
       });
       if (res.success && res.data?.user) {
         updateUser(res.data.user);
-        setSaveMsg({ ok: true, text: 'Profile saved.' });
+        // Backend signals when a country change reset KYC.
+        const kycReset = (res.data as { kyc_reset?: boolean; kyc_message?: string });
+        if (kycReset.kyc_reset) {
+          setSaveMsg({
+            ok: false,
+            text: kycReset.kyc_message || 'Your country changed. Complete KYC again with documents from your new country to unlock tasks.',
+          });
+        } else {
+          setSaveMsg({ ok: true, text: 'Profile saved.' });
+        }
       } else {
         setSaveMsg({ ok: false, text: res.message || 'Could not save your profile.' });
       }

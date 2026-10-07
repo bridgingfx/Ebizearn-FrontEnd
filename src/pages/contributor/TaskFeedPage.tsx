@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Compass, Zap, SlidersHorizontal } from 'lucide-react';
+import { Search, Compass, Zap, SlidersHorizontal, ShieldAlert } from 'lucide-react';
 import { tasksApi, getApiError } from '../../api';
 import { mapTaskForUi } from '../../utils/apiMappers';
 import type { UiTask } from '../../types';
@@ -37,6 +37,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
   const [tasks, setTasks] = useState<UiTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [kycLocked, setKycLocked] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [platform, setPlatform] = useState('All platforms');
@@ -45,6 +46,7 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
   const fetchTasks = async () => {
     setLoading(true);
     setError(null);
+    setKycLocked(null);
     try {
       const res = await tasksApi.list({
         ...(category ? { category } : {}),
@@ -58,7 +60,13 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
         setError('Could not load tasks. Please try again.');
       }
     } catch (err) {
-      setError(getApiError(err, 'Could not load tasks. Please check your connection.'));
+      // KYC lock: show a friendly designed lock screen, not a red error.
+      const apiErr = err as { response?: { status?: number; data?: { code?: string; message?: string } } };
+      if (apiErr?.response?.status === 403 && apiErr?.response?.data?.code === 'kyc_required') {
+        setKycLocked(apiErr.response.data.message || 'Complete KYC to unlock tasks.');
+      } else {
+        setError(getApiError(err, 'Could not load tasks. Please check your connection.'));
+      }
     } finally {
       setLoading(false);
     }
@@ -216,6 +224,14 @@ export const TaskFeedPage: React.FC<TaskFeedPageProps> = ({ variant = 'cards' })
             </div>
           ))}
         </div>
+      ) : kycLocked ? (
+        <EmptyState
+          title="Tasks locked"
+          description={kycLocked}
+          icon={ShieldAlert}
+          actionLabel="Complete KYC"
+          onAction={() => window.location.href = '/app/profile#kyc'}
+        />
       ) : error ? (
         <ErrorBlock message={error} onRetry={fetchTasks} />
       ) : visible.length === 0 ? (

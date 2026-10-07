@@ -19,7 +19,7 @@ export const EditBusinessModal: React.FC<Props> = ({ user, onClose, onSaved }) =
   const [companyName, setCompanyName] = useState(user.business?.company_name || '');
   const [industry, setIndustry] = useState(user.business?.industry || '');
   const [website, setWebsite] = useState(user.business?.website || '');
-  const [phone, setPhone] = useState(user.business?.phone || '');
+  const [phone, setPhone] = useState((user.business as unknown as { phone?: string })?.phone || '');
   const [saving, setSaving] = useState(false);
 
   const handleSave = async (e: React.FormEvent) => {

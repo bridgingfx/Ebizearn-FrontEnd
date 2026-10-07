@@ -205,8 +205,6 @@ export const ContributorLayout: React.FC = () => {
           </nav>
         </div>
       </aside>
-        </div>
-      </aside>
 
       {/* Mobile top bar */}
       <header className="md:hidden sticky top-0 z-30 bg-[#07182F] text-white px-4 py-3 flex items-center justify-between shadow-md">

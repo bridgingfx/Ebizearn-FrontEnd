@@ -85,12 +85,12 @@ export const AdminBusinessesPage: React.FC = () => {
   const handlePauseAll = async (u: User) => {
     if (!confirm(`Pause ALL active campaigns for ${u.business?.company_name || u.name}?`)) return;
     try {
-      const res = await adminApi.campaigns({ business_id: u.id, status: 'active' });
+      const res = await adminApi.staffCampaigns({ business_id: u.id, status: 'active' });
       const campaigns = res.success ? (res.data || []) : [];
       let paused = 0;
       for (const c of campaigns) {
         try {
-          const r = await adminApi.updateCampaignStatus(c.id, 'paused');
+          const r = await adminApi.updateStaffCampaignStatus(c.id, 'paused');
           if (r.success) paused++;
         } catch { /* continue */ }
       }
@@ -189,14 +189,19 @@ export const AdminBusinessesPage: React.FC = () => {
               </p>
               {/* KYC badge */}
               <div className="mb-3">
-                <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                  u.kyc_status === 'approved' ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-                  : u.kyc_status === 'pending' || u.kyc_status === 'under_review' ? 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300'
-                  : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300'
-                }`}>
-                  {u.kyc_status === 'approved' ? <ShieldCheck className="w-3 h-3" /> : <ShieldAlert className="w-3 h-3" />}
-                  KYC: {(u.kyc_status || 'not submitted').replace(/_/g, ' ')}
-                </span>
+                {(() => {
+                  const ks = (u as unknown as { kyc_status?: string }).kyc_status || 'not submitted';
+                  return (
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                      ks === 'approved' ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                      : ks === 'pending' || ks === 'under_review' ? 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300'
+                      : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+                    }`}>
+                      {ks === 'approved' ? <ShieldCheck className="w-3 h-3" /> : <ShieldAlert className="w-3 h-3" />}
+                      KYC: {ks.replace(/_/g, ' ')}
+                    </span>
+                  );
+                })()}
               </div>
               <div className="flex flex-wrap gap-2">
                 <button

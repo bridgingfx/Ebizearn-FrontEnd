@@ -44,7 +44,7 @@ export const BusinessDetailDrawer: React.FC<Props> = ({ userId, onClose, onEdit,
 
   if (!userId) return null;
   const u = detail?.user;
-  const kycStatus = (detail?.kyc as { status?: string } | undefined)?.status || u?.kyc_status || 'not_submitted';
+  const kycStatus = (detail?.kyc as { status?: string } | undefined)?.status || (u as unknown as { kyc_status?: string })?.kyc_status || 'not_submitted';
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -108,8 +108,8 @@ export const BusinessDetailDrawer: React.FC<Props> = ({ userId, onClose, onEdit,
               <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">Contact</h4>
               <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-200"><Mail className="w-3.5 h-3.5 text-gray-400" />{u.email}</div>
               {u.business?.website && <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-200"><Globe className="w-3.5 h-3.5 text-gray-400" />{u.business.website}</div>}
-              {u.business?.phone && <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-200"><Phone className="w-3.5 h-3.5 text-gray-400" />{u.business.phone}</div>}
-              {u.business?.address && <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-200"><MapPin className="w-3.5 h-3.5 text-gray-400" />{u.business.address}</div>}
+              {(u.business as unknown as { phone?: string })?.phone && <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-200"><Phone className="w-3.5 h-3.5 text-gray-400" />{(u.business as unknown as { phone?: string }).phone}</div>}
+              {(u.business as unknown as { address?: string })?.address && <div className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-200"><MapPin className="w-3.5 h-3.5 text-gray-400" />{(u.business as unknown as { address?: string }).address}</div>}
             </div>
 
             {/* Wallet */}

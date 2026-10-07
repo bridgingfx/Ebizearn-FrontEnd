@@ -52,6 +52,10 @@ export const adminApi = {
     api.get(`/admin/users/${userId}`).then((r) => r.data as { success: boolean; message?: string; data: AdminUserDetail }),
   updateUserStatus: (userId: number | string, status: 'active' | 'suspended' | 'pending_verification') =>
     api.patch(`/admin/users/${userId}/status`, { status }).then((r) => r.data as { success: boolean; message?: string; data: User }),
+  updateUser: (userId: number | string, payload: { name?: string; email?: string; company_name?: string; industry?: string; website?: string; phone?: string }) =>
+    api.patch(`/admin/users/${userId}`, payload).then((r) => r.data as { success: boolean; message?: string; data: User }),
+  impersonate: (userId: number | string) =>
+    api.post(`/admin/users/${userId}/impersonate`, {}).then((r) => r.data as { success: boolean; message?: string; data: { token: string } }),
   health: () => api.get('/admin/health').then((r) => r.data),
   paymentGateways: () => api.get('/admin/payments/gateways').then((r) => r.data),
   createPaymentGateway: (payload: unknown) => api.post('/admin/payments/gateways', payload).then((r) => r.data),

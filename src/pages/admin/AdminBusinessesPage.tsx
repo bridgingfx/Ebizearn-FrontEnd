@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Building2, Loader2, AlertCircle, Ban, CheckCircle2, Plus } from 'lucide-react';
+import { Building2, Loader2, AlertCircle, Ban, CheckCircle2, Plus, Eye, Pencil, LogIn, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { User } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { CreateBusinessUserModal } from '../../components/admin/CreateBusinessUserModal';
+import { BusinessDetailDrawer } from '../../components/admin/BusinessDetailDrawer';
+import { EditBusinessModal } from '../../components/admin/EditBusinessModal';
 import { useAuth } from '../../context/AuthContext';
 import { can } from '../../utils/can';
 import { toast } from '../../utils/toast';
@@ -21,6 +23,8 @@ export const AdminBusinessesPage: React.FC = () => {
   const [actionId, setActionId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [viewId, setViewId] = useState<number | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
   const { user } = useAuth();
   const canCreate = can(user, 'create_business_users');
 
@@ -59,6 +63,41 @@ export const AdminBusinessesPage: React.FC = () => {
       setActionError(getApiError(e, 'Could not update account status.'));
     } finally {
       setActionId(null);
+    }
+  };
+
+  const handleLoginAs = async (u: User) => {
+    if (!confirm(`Log in as ${u.business?.company_name || u.name}? Your admin session will be replaced.`)) return;
+    try {
+      const res = await adminApi.impersonate(u.id);
+      if (res.success && res.data?.token) {
+        localStorage.setItem('ebizearn_token', res.data.token);
+        localStorage.setItem('ebizearn_active_role', 'business');
+        window.location.href = '/business';
+      } else {
+        toast.error(res.message || 'Could not log in as this business.');
+      }
+    } catch (e) {
+      toast.error(getApiError(e, 'Could not log in as this business.'));
+    }
+  };
+
+  const handlePauseAll = async (u: User) => {
+    if (!confirm(`Pause ALL active campaigns for ${u.business?.company_name || u.name}?`)) return;
+    try {
+      const res = await adminApi.campaigns({ business_id: u.id, status: 'active' });
+      const campaigns = res.success ? (res.data || []) : [];
+      let paused = 0;
+      for (const c of campaigns) {
+        try {
+          const r = await adminApi.updateCampaignStatus(c.id, 'paused');
+          if (r.success) paused++;
+        } catch { /* continue */ }
+      }
+      toast.success(`Paused ${paused} campaign${paused === 1 ? '' : 's'}.`);
+      setViewId(null);
+    } catch (e) {
+      toast.error(getApiError(e, 'Could not pause campaigns.'));
     }
   };
 
@@ -144,32 +183,75 @@ export const AdminBusinessesPage: React.FC = () => {
               </div>
               <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100">{u.business?.company_name || u.name}</h3>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1">{u.email}</p>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-4">
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-3">
                 {u.business?.industry ? `${u.business.industry} · ` : ''}
                 joined {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
               </p>
-              {u.status === 'suspended' ? (
+              {/* KYC badge */}
+              <div className="mb-3">
+                <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                  u.kyc_status === 'approved' ? 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                  : u.kyc_status === 'pending' || u.kyc_status === 'under_review' ? 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300'
+                  : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300'
+                }`}>
+                  {u.kyc_status === 'approved' ? <ShieldCheck className="w-3 h-3" /> : <ShieldAlert className="w-3 h-3" />}
+                  KYC: {(u.kyc_status || 'not submitted').replace(/_/g, ' ')}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  disabled={actionId === u.id}
-                  onClick={() => void handleStatus(u, 'active')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/15 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 dark:bg-emerald-500/15 disabled:opacity-50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold transition-colors"
+                  onClick={() => setViewId(u.id)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 text-xs font-bold transition-colors"
                 >
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Reactivate
+                  <Eye className="w-3.5 h-3.5" /> View
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  disabled={actionId === u.id}
-                  onClick={() => void handleStatus(u, 'suspended')}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 dark:bg-red-500/15 disabled:opacity-50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 text-xs font-bold transition-colors"
-                >
-                  <Ban className="w-3.5 h-3.5" /> Suspend
-                </button>
-              )}
+                {u.status === 'suspended' ? (
+                  <button
+                    type="button"
+                    disabled={actionId === u.id}
+                    onClick={() => void handleStatus(u, 'active')}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/15 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 disabled:opacity-50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold transition-colors"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Reactivate
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={actionId === u.id}
+                    onClick={() => void handleStatus(u, 'suspended')}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 disabled:opacity-50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 text-xs font-bold transition-colors"
+                  >
+                    <Ban className="w-3.5 h-3.5" /> Suspend
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
+      )}
+
+      {viewId !== null && (
+        <BusinessDetailDrawer
+          userId={viewId}
+          onClose={() => setViewId(null)}
+          onEdit={(u) => { setViewId(null); setEditUser(u); }}
+          onLoginAs={handleLoginAs}
+          onPauseAll={handlePauseAll}
+          onStatusChange={() => void load()}
+        />
+      )}
+
+      {editUser && (
+        <EditBusinessModal
+          user={editUser}
+          onClose={() => setEditUser(null)}
+          onSaved={(updated) => {
+            setUsers((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+            setEditUser(null);
+            toast.success('Business updated.');
+          }}
+        />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Building2, CheckCircle2, Eye, Loader2, Pause, Pencil, Play, Trash2 } from 'lucide-react';
 import type { Campaign } from '../../types';
+import { PlatformMark } from '../task/TaskCard';
 
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
@@ -102,7 +103,14 @@ export const CampaignCard: React.FC<{
         </div>
       </div>
 
-      <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 mb-1 leading-snug">{c.title}</h3>
+      <div className="flex items-start gap-2.5 mb-1">
+        {c.platform && (
+          <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+            <PlatformMark platform={c.platform} className="w-5 h-5" />
+          </div>
+        )}
+        <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 leading-snug flex-1">{c.title}</h3>
+      </div>
       {showBusiness && (
         <p className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-1.5">
           <Building2 className="w-3.5 h-3.5" />

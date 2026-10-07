@@ -50,18 +50,18 @@ export const CampaignCard: React.FC<{
         <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${STATUS_STYLES[c.status] ?? STATUS_STYLES.draft}`}>
           {STATUS_LABELS[c.status] ?? c.status}
         </span>
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1">
           {busy && <Loader2 className="w-4 h-4 animate-spin text-[#168BFF] mr-1" />}
           {canApprove && (
             <button
               type="button"
               disabled={busy}
               onClick={() => onApprove(c)}
-              title="Approve and publish"
+              title="Approve and publish this campaign"
               aria-label={`Approve ${c.title}`}
-              className={`${iconBtn} hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-[11px] font-bold transition-colors"
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-3.5 h-3.5" /> Approve
             </button>
           )}
           {canToggle && (

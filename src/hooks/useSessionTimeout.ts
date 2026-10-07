@@ -19,7 +19,7 @@ export function useSessionTimeout() {
     if (!user) return;
 
     // Fetch the configured timeout once per session.
-    api.get('/v1/config/brand').then((r) => {
+    api.get('/config/brand').then((r) => {
       const mins = Number((r.data as { data?: { sessionTimeoutMinutes?: number } })?.data?.sessionTimeoutMinutes ?? 30);
       timeoutMinutes.current = mins;
       reset();

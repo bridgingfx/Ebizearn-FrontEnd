@@ -24,7 +24,7 @@ export function usePageTracking() {
     const sessionId = getSessionId();
     const path = location.pathname + location.search;
     api
-      .post('/v1/track/page-view', {
+      .post('/track/page-view', {
         path,
         referrer: document.referrer || null,
         session_id: sessionId,

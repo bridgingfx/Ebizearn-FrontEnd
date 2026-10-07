@@ -22,6 +22,8 @@ export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
   traffic: (params?: { from?: string; to?: string }) =>
     api.get('/admin/traffic', { params }).then((r) => r.data),
+  trafficSession: (sessionId: string) =>
+    api.get(`/admin/traffic/sessions/${sessionId}`).then((r) => r.data),
   verificationQueue: (params?: { status?: string; search?: string; business_decision?: 'approved' | 'rejected' | 'none' }) =>
     api.get('/admin/verification-queue', { params }).then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),
   submissionDetail: (submissionId: number | string) =>

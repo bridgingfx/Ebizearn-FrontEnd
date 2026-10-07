@@ -6,6 +6,7 @@ import { fmtMoney } from '../common/ui';
 import { PLATFORM_OPTIONS, PlatformBrandIcon } from '../common/PlatformBrandIcon';
 import { usePlatforms } from '../../api/platforms';
 import { CampaignLivePreview } from './CampaignLivePreview';
+import { GeoTargetSelector, geoTargetToCountries, type GeoTarget } from '../campaign/GeoTargetSelector';
 import {
   deleteDraft,
   emptyDraftData,
@@ -77,26 +78,6 @@ const inputCls =
   'w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]';
 const labelCls = 'block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5';
 
-/** Country options for geographic targeting (ISO codes). */
-const TARGET_COUNTRIES = [
-  { code: 'AE', name: 'United Arab Emirates' },
-  { code: 'SA', name: 'Saudi Arabia' },
-  { code: 'QA', name: 'Qatar' },
-  { code: 'KW', name: 'Kuwait' },
-  { code: 'BH', name: 'Bahrain' },
-  { code: 'OM', name: 'Oman' },
-  { code: 'IN', name: 'India' },
-  { code: 'PK', name: 'Pakistan' },
-  { code: 'PH', name: 'Philippines' },
-  { code: 'BD', name: 'Bangladesh' },
-  { code: 'NP', name: 'Nepal' },
-  { code: 'LK', name: 'Sri Lanka' },
-  { code: 'EG', name: 'Egypt' },
-  { code: 'US', name: 'United States' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'AU', name: 'Australia' },
-];
 
 /**
  * Admin "post a campaign" modal. The admin picks the business the campaign
@@ -136,7 +117,7 @@ export const CreateCampaignModal: React.FC<{
   const [taskTypeKey, setTaskTypeKey] = useState(draftSeed?.taskTypeKey ?? initial?.taskTypeKey ?? '');
   const [platform, setPlatform] = useState(draftSeed?.platform ?? initial?.platform ?? '');
   const [targetUrl, setTargetUrl] = useState(draftSeed?.targetUrl ?? '');
-  const [targetCountries, setTargetCountries] = useState<string[]>(['ALL']);
+  const [geoTarget, setGeoTarget] = useState<GeoTarget>({ mode: 'global' });
   const [rewardUsd, setRewardUsd] = useState(draftSeed?.rewardUsd ?? '1.00');
   const [contributors, setContributors] = useState(draftSeed?.contributors ?? '10');
   const [minLevel, setMinLevel] = useState(draftSeed?.minLevel ?? 'starter');
@@ -266,7 +247,7 @@ export const CreateCampaignModal: React.FC<{
         task_type_key: taskTypeKey,
         target_contributors_count: contributorCount,
         target_url: targetUrl.trim() || undefined,
-        target_countries: targetCountries.includes('ALL') || targetCountries.length === 0 ? ['ALL'] : targetCountries,
+        target_countries: geoTargetToCountries(geoTarget),
         instructions_markdown: instructions.trim(),
         min_contributor_level: minLevel,
       });
@@ -539,49 +520,7 @@ export const CreateCampaignModal: React.FC<{
                   })()}
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={labelCls}>Target region</label>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setTargetCountries(['ALL'])}
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
-                        targetCountries.includes('ALL')
-                          ? 'bg-[#168BFF] text-white border-[#168BFF]'
-                          : 'bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-[#168BFF]'
-                      }`}
-                    >
-                      Global — everyone
-                    </button>
-                    {TARGET_COUNTRIES.map((c) => {
-                      const active = targetCountries.includes(c.code);
-                      return (
-                        <button
-                          key={c.code}
-                          type="button"
-                          onClick={() =>
-                            setTargetCountries((prev) => {
-                              const withoutAll = prev.filter((x) => x !== 'ALL');
-                              return active
-                                ? withoutAll.filter((x) => x !== c.code)
-                                : [...withoutAll, c.code];
-                            })
-                          }
-                          className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
-                            active
-                              ? 'bg-[#168BFF] text-white border-[#168BFF]'
-                              : 'bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-[#168BFF]'
-                          }`}
-                        >
-                          {c.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {targetCountries.includes('ALL') || targetCountries.length === 0
-                      ? 'Visible to contributors everywhere.'
-                      : `Only contributors in ${targetCountries.length} selected ${targetCountries.length === 1 ? 'country' : 'countries'} will see this campaign.`}
-                  </p>
+                  <GeoTargetSelector value={geoTarget} onChange={setGeoTarget} />
                 </div>
                 <div>
                   <label className={labelCls}>Min. contributor level</label>

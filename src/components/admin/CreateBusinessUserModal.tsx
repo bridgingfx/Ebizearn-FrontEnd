@@ -7,6 +7,39 @@ const inputCls =
   'w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]';
 const labelCls = 'block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5';
 
+/** Common business industries offered in the Industry dropdown. */
+const BUSINESS_INDUSTRIES = [
+  'Technology & Software',
+  'E-commerce & Online Retail',
+  'Retail & Consumer Goods',
+  'Food & Beverage',
+  'Hospitality & Hotels',
+  'Healthcare & Medical',
+  'Finance & Banking',
+  'Insurance',
+  'Real Estate',
+  'Education & Training',
+  'Marketing & Advertising',
+  'Media & Entertainment',
+  'Travel & Tourism',
+  'Transportation & Logistics',
+  'Manufacturing',
+  'Construction & Engineering',
+  'Energy & Utilities',
+  'Telecommunications',
+  'Legal Services',
+  'Consulting & Professional Services',
+  'Beauty & Wellness',
+  'Fitness & Sports',
+  'Automotive',
+  'Agriculture & Food Production',
+  'Fashion & Apparel',
+  'Pharmaceuticals',
+  'Nonprofit & NGO',
+  'Government & Public Sector',
+  'Other',
+];
+
 /** Mirrors the backend StrongPassword rule so the form can explain itself. */
 const passwordProblems = (p: string): string[] => {
   const out: string[] = [];
@@ -43,7 +76,8 @@ export const CreateBusinessUserModal: React.FC<{ onClose: () => void; onCreated:
 
   const problems = passwordProblems(password);
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const canSave = name.trim() && emailOk && company.trim() && problems.length === 0 && !saving;
+  // Industry is required: account creation is blocked until one is picked.
+  const canSave = name.trim() && emailOk && company.trim() && industry.trim() && problems.length === 0 && !saving;
 
   const save = async () => {
     if (!canSave) return;
@@ -56,7 +90,7 @@ export const CreateBusinessUserModal: React.FC<{ onClose: () => void; onCreated:
         password,
         company_name: company.trim(),
         website: website.trim() || undefined,
-        industry: industry.trim() || undefined,
+        industry: industry.trim(),
       });
       if (res.success && res.data) {
         onCreated(res.data);
@@ -134,8 +168,13 @@ export const CreateBusinessUserModal: React.FC<{ onClose: () => void; onCreated:
               <input id="biz-website" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://" maxLength={255} className={inputCls} />
             </div>
             <div>
-              <label className={labelCls} htmlFor="biz-industry">Industry</label>
-              <input id="biz-industry" value={industry} onChange={(e) => setIndustry(e.target.value)} maxLength={255} className={inputCls} />
+              <label className={labelCls} htmlFor="biz-industry">Industry *</label>
+              <select id="biz-industry" value={industry} onChange={(e) => setIndustry(e.target.value)} className={inputCls} required>
+                <option value="" disabled>Select industry</option>
+                {BUSINESS_INDUSTRIES.map((ind) => (
+                  <option key={ind} value={ind}>{ind}</option>
+                ))}
+              </select>
             </div>
           </div>
 

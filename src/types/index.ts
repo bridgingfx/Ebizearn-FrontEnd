@@ -524,4 +524,14 @@ export interface AdminDashboardMetrics {
   pending_verification: number;
   pending_payouts: number;
   fraud_alerts_count: number;
+  total_revenue_cents?: number;
+  today_revenue_cents?: number;
+  pending_deposits?: number;
+  pending_deposits_cents?: number;
+}
+
+export interface RevenueChartPoint {
+  day: string;
+  label: string;
+  revenue_cents: number;
 }

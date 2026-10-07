@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -13,6 +13,7 @@ import {
   LogOut,
   MoreHorizontal,
   X,
+  User as UserIcon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -67,6 +68,18 @@ export const BusinessLayout: React.FC = () => {
   };
 
   const companyName = user?.business?.company_name || user?.name || 'Business';
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
   const initials = companyName
     .split(' ')
     .map((w) => w[0])
@@ -174,8 +187,45 @@ export const BusinessLayout: React.FC = () => {
                 <span className="text-xs font-bold text-gray-900 dark:text-gray-100 block leading-tight">{companyName}</span>
                 <span className="text-[10px] text-gray-400 dark:text-gray-500 block leading-none">Business account</span>
               </div>
-              <div className="w-8 h-8 rounded-full bg-[#168BFF] text-white flex items-center justify-center text-xs font-bold shadow-xs">
-                {initials}
+              <div className="relative" ref={profileRef}>
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((v) => !v)}
+                  className="w-8 h-8 rounded-full bg-[#168BFF] text-white flex items-center justify-center text-xs font-bold shadow-xs hover:bg-[#0f7ae5] transition-colors"
+                  aria-label="Account menu"
+                  aria-expanded={profileOpen}
+                >
+                  {initials}
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1a1f2b] rounded-xl shadow-xl border border-gray-100 dark:border-white/10 py-1.5 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100 dark:border-white/10">
+                      <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{companyName}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                    </div>
+                    <Link
+                      to="/business/settings"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    >
+                      <UserIcon className="w-3.5 h-3.5" /> Profile
+                    </Link>
+                    <Link
+                      to="/business/settings"
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    >
+                      <Settings className="w-3.5 h-3.5" /> Settings
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => { setProfileOpen(false); handleLogout(); }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                    >
+                      <LogOut className="w-3.5 h-3.5" /> Sign out
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

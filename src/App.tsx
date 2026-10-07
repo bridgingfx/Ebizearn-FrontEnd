@@ -201,7 +201,7 @@ export const App: React.FC = () => {
           <Route path="/app" element={<RoleGuard allowedRoles={['contributor']}><LazyContributorLayout /></RoleGuard>}>
             <Route index element={<LazyContributorDashboardPage />} />
             <Route path="tasks" element={<LazyTaskFeedPage variant="cards" />} />
-            <Route path="feed" element={<LazyTaskFeedPage variant="feed" />} />
+            <Route path="feed" element={<Navigate to="/app/tasks" replace />} />
             <Route path="tasks/:id" element={<LazyTaskDetailPage />} />
             <Route path="tasks/:id/submit" element={<LazyTaskDetailPage />} />
             <Route path="my-tasks" element={<LazyContributorMyTasksPage />} />

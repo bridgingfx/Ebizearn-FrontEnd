@@ -33,7 +33,6 @@ const TABS = [
   { name: 'My Tasks', path: '/app/my-tasks', icon: ClipboardList },
   { name: 'Wallet', path: '/app/wallet', icon: Wallet },
   { name: 'Referrals', path: '/app/referrals', icon: Users },
-  { name: 'Feed', path: '/app/feed', icon: Zap },
   { name: 'Profile', path: '/app/profile', icon: UserIcon },
 ];
 
@@ -48,7 +47,6 @@ const MOBILE_TABS = [
 
 /** Everything else lives in the mobile "More" sheet. */
 const MORE_TABS = [
-  { name: 'Feed', path: '/app/feed', icon: Zap },
   { name: 'Referrals', path: '/app/referrals', icon: Users },
   { name: 'Notifications', path: '/app/notifications', icon: Bell },
   { name: 'Support', path: '/app/support', icon: HelpCircle },
@@ -87,10 +85,6 @@ export const ContributorLayout: React.FC = () => {
               <p className="text-xs font-black truncate">{user?.name || 'Contributor'}</p>
               <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">{user?.email}</p>
             </div>
-          </div>
-
-          <div className="mb-6 flex justify-start shrink-0">
-            <RegionSelector variant="dark" />
           </div>
 
           <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar -mx-1 px-1 py-1">
@@ -144,6 +138,7 @@ export const ContributorLayout: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 shrink-0 pt-2">
+          <RegionSelector variant="dark" />
           <button
             type="button"
             onClick={() => setLogoutOpen(true)}

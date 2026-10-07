@@ -36,6 +36,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const ACTIVE_ROLE_KEY = 'ebizearn_active_role';
+export { ACTIVE_ROLE_KEY };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
@@ -159,14 +160,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // The API client reports a revoked/expired token: drop the session locally
   // (no logout call — the token is already dead). Route guards then send the
-  // user to their sign-in page.
+  // user to their own role's sign-in page (ACTIVE_ROLE_KEY is kept so the
+  // guard knows which one — a superadmin must land back on the superadmin
+  // login, not the moderator one).
   useEffect(() => {
     const onExpired = () => {
       if (!localStorage.getItem(TOKEN_KEY)) return;
       setUser(null);
       setToken(null);
       localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(ACTIVE_ROLE_KEY);
       toast.error('Your session has expired — please sign in again.');
     };
     window.addEventListener(SESSION_EXPIRED_EVENT, onExpired);

@@ -122,34 +122,31 @@ export const ContributorLayout: React.FC = () => {
             </button>
 
             {profileOpen && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#0e2240] rounded-2xl border border-white/10 shadow-2xl overflow-hidden z-50">
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#0e2240] rounded-xl border border-white/10 shadow-2xl overflow-hidden z-50 py-1">
                 <Link
                   to="/app/profile"
                   onClick={() => setProfileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 text-xs font-bold text-gray-200 hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-2.5 px-3 py-2 text-[11px] font-semibold text-gray-200 hover:bg-white/5 transition-colors"
                 >
-                  <UserIcon className="w-4 h-4 text-[#168BFF]" /> My profile
+                  <UserIcon className="w-3.5 h-3.5 text-[#168BFF]" /> My profile
                 </Link>
-                <div className="px-4 py-3 border-t border-white/10">
-                  <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2">
-                    <Languages className="w-3.5 h-3.5" /> Language
-                  </p>
-                  <RegionSelector variant="dark" />
+                <div className="px-3 py-1.5 border-t border-white/10">
+                  <RegionSelector variant="dark" compact />
                 </div>
                 <button
                   type="button"
                   onClick={() => { toggleTheme(); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-gray-200 hover:bg-white/5 transition-colors border-t border-white/10"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] font-semibold text-gray-200 hover:bg-white/5 transition-colors border-t border-white/10"
                 >
-                  {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-300" />}
+                  {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-indigo-300" />}
                   {theme === 'dark' ? 'Light mode' : 'Dark mode'}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setProfileOpen(false); setLogoutOpen(true); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-red-300 hover:bg-red-500/10 transition-colors border-t border-white/10"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[11px] font-semibold text-red-300 hover:bg-red-500/10 transition-colors border-t border-white/10"
                 >
-                  <LogOut className="w-4 h-4" /> Sign out
+                  <LogOut className="w-3.5 h-3.5" /> Sign out
                 </button>
               </div>
             )}

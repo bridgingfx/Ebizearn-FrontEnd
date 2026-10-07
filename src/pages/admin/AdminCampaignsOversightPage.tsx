@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Building2, CheckSquare, Eye, Megaphone, Plus, Target, Wallet, X, Zap } from 'lucide-react';
+import { Building2, CheckSquare, Eye, Megaphone, Plus, Target, Wallet, X, Zap, FileText, Trash2, Play } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { Campaign } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,7 @@ import { PageHeader, SearchInput, LoadingBlock, ErrorBlock, StatusBadge, fmtMone
 import { CreateCampaignModal } from '../../components/admin/CreateCampaignModal';
 import { CampaignCard, campaignSpent } from '../../components/campaign/CampaignCard';
 import { EditCampaignModal } from '../../components/campaign/EditCampaignModal';
+import { listDrafts, deleteDraft, draftTitle, type CampaignDraft } from '../../lib/campaignDrafts';
 
 type Tab = 'active' | 'pending_review' | 'draft' | 'paused' | 'cancelled' | 'all';
 
@@ -41,6 +42,14 @@ export const AdminCampaignsOversightPage: React.FC = () => {
   const [editing, setEditing] = useState<Campaign | null>(null);
   const [deleting, setDeleting] = useState<Campaign | null>(null);
   const [viewingId, setViewingId] = useState<number | null>(null);
+  const [localDrafts, setLocalDrafts] = useState<CampaignDraft[]>([]);
+  const [resumeDraft, setResumeDraft] = useState<CampaignDraft | null>(null);
+
+  const refreshDrafts = useCallback(() => setLocalDrafts(listDrafts()), []);
+
+  useEffect(() => {
+    refreshDrafts();
+  }, [refreshDrafts, showCreate]);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 350);
@@ -144,7 +153,11 @@ export const AdminCampaignsOversightPage: React.FC = () => {
           canPost ? (
             <button
               type="button"
-              onClick={() => setShowCreate(true)}
+              onClick={() => {
+                const drafts = listDrafts();
+                setResumeDraft(drafts[0] ?? null);
+                setShowCreate(true);
+              }}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#168BFF] hover:bg-[#1275DD] text-white text-xs font-bold rounded-xl shadow-md transition-all"
             >
               <Plus className="w-4 h-4" />
@@ -153,6 +166,46 @@ export const AdminCampaignsOversightPage: React.FC = () => {
           ) : undefined
         }
       />
+
+      {canPost && localDrafts.length > 0 && (
+        <div className="rounded-2xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/60 dark:bg-amber-500/5 p-4">
+          <p className="text-xs font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300 mb-3">
+            Unfinished drafts ({localDrafts.length})
+          </p>
+          <div className="space-y-2">
+            {localDrafts.map((d) => (
+              <div
+                key={d.id}
+                className="flex items-center gap-3 rounded-xl bg-white dark:bg-white/5 border border-amber-100 dark:border-white/10 px-4 py-2.5"
+              >
+                <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{draftTitle(d)}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Last edited {new Date(d.updatedAt).toLocaleString()}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setResumeDraft(d); setShowCreate(true); }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#168BFF] hover:bg-[#0f7ae5] transition-colors"
+                >
+                  <Play className="w-3.5 h-3.5" />
+                  Resume
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { deleteDraft(d.id); refreshDrafts(); }}
+                  className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                  aria-label="Delete draft"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading && campaigns.length === 0 ? (
         <LoadingBlock label="Loading campaigns…" />
@@ -245,7 +298,13 @@ export const AdminCampaignsOversightPage: React.FC = () => {
         </>
       )}
 
-      {showCreate && <CreateCampaignModal onClose={() => setShowCreate(false)} onCreated={() => void load()} />}
+      {showCreate && (
+        <CreateCampaignModal
+          onClose={() => { setShowCreate(false); setResumeDraft(null); refreshDrafts(); }}
+          onCreated={() => void load()}
+          resumeDraft={resumeDraft}
+        />
+      )}
 
       {editing && (
         <EditCampaignModal

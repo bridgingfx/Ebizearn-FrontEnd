@@ -238,6 +238,8 @@ export interface Campaign {
   category_id: number;
   /** Platform chosen in the wizard (Instagram, TikTok, …) — persisted on the campaign row. */
   platform?: string | null;
+  /** The exact link the contributor must engage with (profile, post, page). */
+  target_url?: string | null;
   title: string;
   objective?: string;
   description: string;

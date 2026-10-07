@@ -327,6 +327,17 @@ export const TaskDetailPage: React.FC = () => {
                   {starting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                   <span>{starting ? 'Reserving…' : 'Start task — reserve my slot'}</span>
                 </button>
+                {task.targetUrl && (
+                  <a
+                    href={task.targetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 rounded-2xl font-bold text-sm border-2 border-[#168BFF]/30 text-[#168BFF] hover:bg-[#168BFF]/5 transition-all flex items-center justify-center gap-2"
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    <span>Open task link</span>
+                  </a>
+                )}
                 <p className="text-[10px] text-gray-400 dark:text-gray-500">
                   Reserving holds one of the task's slots under your account while you work.
                 </p>
@@ -339,6 +350,18 @@ export const TaskDetailPage: React.FC = () => {
                     Upload a screenshot of the completed action and/or paste the proof link.
                   </p>
                 </div>
+
+                {task.targetUrl && (
+                  <a
+                    href={task.targetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 rounded-2xl font-bold text-sm border-2 border-[#168BFF]/30 text-[#168BFF] hover:bg-[#168BFF]/5 transition-all flex items-center justify-center gap-2"
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    <span>Open task link</span>
+                  </a>
+                )}
 
                 {submitError && (
                   <div className="p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 text-xs rounded-xl" role="alert">{submitError}</div>

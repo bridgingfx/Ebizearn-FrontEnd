@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User, UserRole } from '../types';
-import { authApi, getApiError, TOKEN_KEY, type LoginPortal } from '../api';
+import { authApi, getApiError, TOKEN_KEY, SESSION_EXPIRED_EVENT, type LoginPortal } from '../api';
+import { toast } from '../utils/toast';
 import type { RegisterPayload, TermsAcceptance } from '../api';
 
 interface AuthContextType {
@@ -155,6 +156,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem(ACTIVE_ROLE_KEY);
     }
   };
+
+  // The API client reports a revoked/expired token: drop the session locally
+  // (no logout call — the token is already dead). Route guards then send the
+  // user to their sign-in page.
+  useEffect(() => {
+    const onExpired = () => {
+      if (!localStorage.getItem(TOKEN_KEY)) return;
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(ACTIVE_ROLE_KEY);
+      toast.error('Your session has expired — please sign in again.');
+    };
+    window.addEventListener(SESSION_EXPIRED_EVENT, onExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
+  }, []);
 
   const refreshMe = async () => {
     const storedToken = localStorage.getItem(TOKEN_KEY);

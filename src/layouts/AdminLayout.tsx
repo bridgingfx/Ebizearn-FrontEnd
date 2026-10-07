@@ -28,6 +28,7 @@ import {
   AtSign,
   MoreHorizontal,
   X,
+  Trophy,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EBizLogo } from '../components/common/EBizLogo';
@@ -74,6 +75,7 @@ export const AdminLayout: React.FC = () => {
     { name: 'Website Traffic', path: '/admin/traffic', icon: Globe, perm: 'view_reports' },
     { name: 'System Health', path: '/admin/health', icon: Activity },
     { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, perm: 'manage_roles' },
+    { name: 'Contributor Ranks', path: '/admin/ranks', icon: Trophy, superOnly: true },
     { name: 'Email & Campaigns', path: '/admin/email', icon: MailCheck, superOnly: true },
     { name: 'Settings', path: '/admin/settings', icon: Settings, perm: 'manage_settings' },
     { name: 'Platforms', path: '/admin/platforms', icon: Globe, superOnly: true },

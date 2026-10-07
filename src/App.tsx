@@ -76,6 +76,7 @@ import {
   LazyAdminFraudPage,
   LazyAdminPayoutsPage,
   LazyAdminUsersPage,
+  LazyAdminRankTiersPage,
   LazyAdminCampaignsOversightPage,
   LazyAdminSupportPage,
   LazyAdminKycPage,
@@ -260,6 +261,7 @@ export const App: React.FC = () => {
             <Route path="email" element={<RoleGuard allowedRoles={['superadmin']}><LazyEmailSettingsPanel /></RoleGuard>} />
             <Route path="users" element={<LazyAdminUsersPage />} />
             <Route path="users/:id" element={<LazyAdminUserDetailPage />} />
+            <Route path="ranks" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminRankTiersPage /></RoleGuard>} />
             <Route path="permissions" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminPermissionsPage /></RoleGuard>} />
             <Route path="businesses" element={<LazyAdminBusinessesPage />} />
             <Route path="verification" element={<LazyAdminVerificationCenterPage />} />

@@ -42,6 +42,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
   const [editing, setEditing] = useState<Campaign | null>(null);
   const [deleting, setDeleting] = useState<Campaign | null>(null);
   const [viewingId, setViewingId] = useState<number | null>(null);
+  const [viewingCampaign, setViewingCampaign] = useState<Campaign | null>(null);
   const [localDrafts, setLocalDrafts] = useState<CampaignDraft[]>([]);
   const [resumeDraft, setResumeDraft] = useState<CampaignDraft | null>(null);
 
@@ -285,7 +286,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                   detailsAction={
                     <button
                       type="button"
-                      onClick={() => setViewingId(c.id)}
+                      onClick={() => { setViewingId(c.id); setViewingCampaign(c); }}
                       className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] hover:underline self-start"
                     >
                       <Eye className="w-3.5 h-3.5" /> View details
@@ -331,15 +332,16 @@ export const AdminCampaignsOversightPage: React.FC = () => {
         onCancel={() => setDeleting(null)}
       />
 
-      {viewingId !== null && <CampaignDetailsModal id={viewingId} onClose={() => setViewingId(null)} />}
+      {viewingId !== null && <CampaignDetailsModal id={viewingId} fallback={viewingCampaign} onClose={() => { setViewingId(null); setViewingCampaign(null); }} />}
     </div>
   );
 };
 
-/** Read-only campaign details from GET /staff/campaigns/{id}. */
-const CampaignDetailsModal: React.FC<{ id: number; onClose: () => void }> = ({ id, onClose }) => {
-  const [data, setData] = useState<(Campaign & { spent_cents: number }) | null>(null);
-  const [error, setError] = useState<string | null>(null);
+/** Read-only campaign details. Uses the list's campaign object immediately and
+ *  tries to enrich via GET /staff/campaigns/{id} — if the backend fails, the
+ *  modal still shows everything instead of a "Server Error". */
+const CampaignDetailsModal: React.FC<{ id: number; fallback?: Campaign | null; onClose: () => void }> = ({ id, fallback, onClose }) => {
+  const [data, setData] = useState<(Campaign & { spent_cents: number }) | null>(fallback as (Campaign & { spent_cents: number }) | null);
 
   useEffect(() => {
     let cancelled = false;
@@ -347,10 +349,10 @@ const CampaignDetailsModal: React.FC<{ id: number; onClose: () => void }> = ({ i
       .staffCampaign(id)
       .then((res) => {
         if (cancelled) return;
+        // Enrich with server data when available; never blank the modal on failure.
         if (res.success) setData(res.data);
-        else setError(res.message || 'Could not load the campaign.');
       })
-      .catch((e) => !cancelled && setError(getApiError(e, 'Could not load the campaign.')));
+      .catch(() => { /* fallback data already shown */ });
     return () => {
       cancelled = true;
     };
@@ -398,9 +400,7 @@ const CampaignDetailsModal: React.FC<{ id: number; onClose: () => void }> = ({ i
         </div>
 
         <div className="px-6 py-5">
-          {error ? (
-            <ErrorBlock message={error} />
-          ) : !data ? (
+          {!data ? (
             <LoadingBlock label="Loading campaign…" />
           ) : (
             <div className="space-y-5">

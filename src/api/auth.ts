@@ -48,6 +48,8 @@ export interface RegisterResponse {
 export interface AuthSession {
   user: User;
   token: string;
+  /** True when the account has no phone yet (social signup) — must collect it. */
+  phone_required?: boolean;
 }
 
 /** Dedicated portal a login page signs into. Sent to /auth/login so the API

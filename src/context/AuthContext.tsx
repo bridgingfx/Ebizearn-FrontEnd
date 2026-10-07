@@ -31,6 +31,9 @@ interface AuthContextType {
   updateWalletBalance: (newBalanceCents: number) => void;
   creditWallet: (amountCents: number) => void;
   updateKycStatus: (status: 'unverified' | 'pending' | 'verified' | 'rejected') => void;
+  /** True when the account has no phone — UI must block until provided. */
+  phoneRequired: boolean;
+  setPhoneRequired: (v: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,6 +53,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
   const [isLoading, setIsLoading] = useState<boolean>(!!localStorage.getItem(TOKEN_KEY));
+  // True when the signed-in account has no phone (social signup) — the UI
+  // must block until the user provides one. Dawood: phone is mandatory.
+  const [phoneRequired, setPhoneRequired] = useState(false);
 
   const role: UserRole = user?.role || 'contributor';
 
@@ -99,6 +105,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setToken(res.data.token);
         localStorage.setItem(TOKEN_KEY, res.data.token);
         localStorage.setItem(ACTIVE_ROLE_KEY, res.data.user.role);
+        // Social signup skips phone collection — block the UI until provided.
+        setPhoneRequired(res.data.phone_required === true || !res.data.user.phone);
         setIsLoading(false);
         return res.data.user.role;
       }
@@ -254,6 +262,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateWalletBalance,
         creditWallet,
         updateKycStatus,
+        phoneRequired,
+        setPhoneRequired,
       }}
     >
       {children}

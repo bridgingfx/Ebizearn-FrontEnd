@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { PhoneRequiredModal } from './components/auth/PhoneRequiredModal';
 import { PlatformDataProvider } from './context/PlatformDataContext';
 import { LiveChatWidget } from './components/common/LiveChatWidget';
 import { CookieConsent } from './components/common/CookieConsent';
@@ -154,6 +155,7 @@ export const App: React.FC = () => {
         <ScrollToTop />
         <PageViewTracker />
         <SessionTimeoutEnforcer />
+        <PhoneRequiredModal />
         <ReapplyTranslation />
         <GTranslateEngine />
         <RouteSeo />

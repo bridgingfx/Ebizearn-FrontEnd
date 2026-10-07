@@ -22,6 +22,8 @@ export const adminApi = {
   dashboard: () => api.get('/admin/dashboard').then((r) => r.data),
   traffic: (params?: { from?: string; to?: string }) =>
     api.get('/admin/traffic', { params }).then((r) => r.data),
+  trafficSession: (sessionId: string) =>
+    api.get(`/admin/traffic/sessions/${sessionId}`).then((r) => r.data),
   verificationQueue: (params?: { status?: string; search?: string; business_decision?: 'approved' | 'rejected' | 'none' }) =>
     api.get('/admin/verification-queue', { params }).then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),
   submissionDetail: (submissionId: number | string) =>
@@ -54,7 +56,7 @@ export const adminApi = {
     api.get(`/admin/users/${userId}`).then((r) => r.data as { success: boolean; message?: string; data: AdminUserDetail }),
   updateUserStatus: (userId: number | string, status: 'active' | 'suspended' | 'pending_verification') =>
     api.patch(`/admin/users/${userId}/status`, { status }).then((r) => r.data as { success: boolean; message?: string; data: User }),
-  updateUser: (userId: number | string, payload: { name?: string; email?: string; company_name?: string; industry?: string; website?: string; phone?: string }) =>
+  updateUser: (userId: number | string, payload: { name?: string; email?: string; company_name?: string; industry?: string; website?: string; phone?: string; country_code?: string }) =>
     api.patch(`/admin/users/${userId}`, payload).then((r) => r.data as { success: boolean; message?: string; data: User }),
   impersonate: (userId: number | string) =>
     api.post(`/admin/users/${userId}/impersonate`, {}).then((r) => r.data as { success: boolean; message?: string; data: { token: string } }),

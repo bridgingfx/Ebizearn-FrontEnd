@@ -119,7 +119,23 @@ type ApiErrorShape = {
 /** Generic API messages that say nothing useful — prefer a field error. */
 const GENERIC_MESSAGES = new Set(['validation error', 'the given data was invalid.', 'server error']);
 
-/** Best human-readable message from a failed request. */
+/** Patterns that indicate a backend internal leaking — never show these to users. */
+const INTERNAL_PATTERNS = [
+  /undefined variable/i,
+  /undefined (array key|index|method|property)/i,
+  /trying to get property/i,
+  /call to (undefined|a member) function/i,
+  /syntax error/i,
+  /sqlstate/i,
+  /pdoexception/i,
+  /queryexception/i,
+  /stack trace/i,
+  /\.php/i,
+  /laravel/i,
+  /exception:/i,
+];
+
+/** Best human-readable message from a failed request. Never leaks backend internals. */
 export function getApiError(error: unknown, fallback = 'Something went wrong. Please try again.'): string {
   const err = error as ApiErrorShape;
   const status = err?.response?.status;
@@ -132,10 +148,20 @@ export function getApiError(error: unknown, fallback = 'Something went wrong. Pl
   if (status === 429) {
     return 'Too many attempts. Please wait a minute and try again.';
   }
+  // 500s: never show the raw backend message — it's an internal, not a user error.
+  if (status && status >= 500) {
+    return 'A server error occurred. Our team has been notified. Please try again shortly.';
+  }
 
   const firstFieldError = data?.errors ? Object.values(data.errors).flat()[0] : undefined;
   const message = data?.message?.trim();
-  if (message && !GENERIC_MESSAGES.has(message.toLowerCase())) return message;
+  if (message && !GENERIC_MESSAGES.has(message.toLowerCase())) {
+    // Block anything that looks like a backend internal leaking through.
+    if (INTERNAL_PATTERNS.some((p) => p.test(message))) return fallback;
+    // Overly long or multi-line messages are almost always debug output.
+    if (message.length > 200 || message.includes('\n')) return fallback;
+    return message;
+  }
   return firstFieldError || message || fallback;
 }
 

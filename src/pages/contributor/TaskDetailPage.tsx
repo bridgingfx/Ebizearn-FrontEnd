@@ -379,7 +379,7 @@ export const TaskDetailPage: React.FC = () => {
                 {/* AI-generated content to copy-paste */}
                 {task.generatedContent && (
                   <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border-2 border-violet-300/40 dark:border-violet-500/30 rounded-2xl p-4 space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
                       <p className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-300 flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5" /> Ready-to-post content
                       </p>
@@ -396,7 +396,11 @@ export const TaskDetailPage: React.FC = () => {
                         {copied ? 'Copied!' : 'Copy'}
                       </button>
                     </div>
+<<<<<<< HEAD
                     <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">{task.generatedContent}</p>
+=======
+                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words leading-relaxed">{task.generatedContent}</p>
+>>>>>>> 73129bd (Mobile responsive fixes across 9 pages)
                     <p className="text-[10px] text-gray-400 dark:text-gray-500">Copy this text and paste it where the task asks — then screenshot and submit below.</p>
                   </div>
                 )}

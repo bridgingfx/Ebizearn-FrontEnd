@@ -277,7 +277,7 @@ export const ContributorMyTasksPage: React.FC = () => {
             {selected.proof_data_json?.text_answer && (
               <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 text-xs">
                 <span className="text-gray-500 dark:text-gray-400 font-bold block mb-0.5">Answer</span>
-                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{selected.proof_data_json.text_answer}</p>
+                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">{selected.proof_data_json.text_answer}</p>
               </div>
             )}
 

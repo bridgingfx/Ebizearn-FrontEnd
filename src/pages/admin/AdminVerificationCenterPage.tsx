@@ -492,7 +492,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
             </div>
 
             {/* Signal Metrics Matrix */}
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-between">
                 <span className="text-[11px] text-gray-500 dark:text-gray-400">Image Quality</span>
                 <span className="font-black text-gray-900 dark:text-gray-100">{currentSubmission.ai.quality}%</span>

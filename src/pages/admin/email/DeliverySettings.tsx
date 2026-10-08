@@ -330,7 +330,7 @@ export const DeliverySettings: React.FC = () => {
             </Field>
           )}
           {selected === 'smtp' && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Port">
                 <input type="number" value={form.port} onChange={(e) => set('port', e.target.value)} className={inputClass} />
               </Field>

@@ -94,7 +94,7 @@ const DecisionPanel: React.FC<{ submission: TaskSubmission; onUpdated: (s: TaskS
             className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0B111D] text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF] focus:ring-2 focus:ring-[#168BFF]/15"
           />
           <div className="flex gap-2">
-            <button type="button" onClick={() => decide('reject')} disabled={busy !== null} className="h-9 px-4 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white disabled:opacity-60 inline-flex items-center gap-1.5">
+            <button type="button" onClick={() => decide('reject')} disabled={busy !== null} className="min-h-[44px] px-4 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white disabled:opacity-60 inline-flex items-center gap-1.5">
               {busy === 'reject' && <Loader2 className="w-3.5 h-3.5 animate-spin" />} Confirm rejection
             </button>
             <button type="button" onClick={() => setRejecting(false)} className="h-9 px-3 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10">
@@ -108,7 +108,7 @@ const DecisionPanel: React.FC<{ submission: TaskSubmission; onUpdated: (s: TaskS
             type="button"
             onClick={() => decide('approve')}
             disabled={busy !== null || submission.business_decision === 'approved'}
-            className="h-10 px-5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-500/20 disabled:opacity-50 inline-flex items-center gap-1.5"
+            className="min-h-[44px] px-5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-500/20 disabled:opacity-50 inline-flex items-center gap-1.5"
           >
             {busy === 'approve' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
             {submission.business_decision === 'approved' ? 'Approved' : 'Approve proof'}
@@ -117,7 +117,7 @@ const DecisionPanel: React.FC<{ submission: TaskSubmission; onUpdated: (s: TaskS
             type="button"
             onClick={() => setRejecting(true)}
             disabled={busy !== null || submission.business_decision === 'rejected'}
-            className="h-10 px-5 rounded-xl text-xs font-bold bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-500/20 disabled:opacity-50 inline-flex items-center gap-1.5"
+            className="min-h-[44px] px-5 rounded-xl text-xs font-bold bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-500/20 disabled:opacity-50 inline-flex items-center gap-1.5"
           >
             <XCircle className="w-4 h-4" />
             {submission.business_decision === 'rejected' ? 'Rejected' : 'Reject proof'}

@@ -334,7 +334,7 @@ export const AdminSupportPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="px-5 py-3 border-b border-gray-100 dark:border-white/10 grid grid-cols-2 gap-3">
+            <div className="px-5 py-3 border-b border-gray-100 dark:border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="space-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Status</span>
                 <select

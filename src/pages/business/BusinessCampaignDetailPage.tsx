@@ -256,7 +256,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
                 key={t.id}
                 className="flex items-center justify-between px-4 py-3 bg-[#F7F9FC] dark:bg-[#0B0F19] border border-[#E7ECF3] dark:border-white/10 rounded-xl"
               >
-                <p className="text-xs font-bold text-gray-900 dark:text-gray-100">{t.title}</p>
+                <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate min-w-0 flex-1 mr-2">{t.title}</p>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">
                   {String(t.status)}
                 </span>

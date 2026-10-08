@@ -2,6 +2,7 @@ import React from 'react';
 import { Building2, CheckCircle2, Eye, Loader2, Pause, Pencil, Play, Trash2 } from 'lucide-react';
 import type { Campaign } from '../../types';
 import { PlatformMark } from '../task/TaskCard';
+import { CreatedBy } from '../common/CreatedBy';
 
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
@@ -117,6 +118,7 @@ export const CampaignCard: React.FC<{
           {c.business?.company_name ?? `Business #${c.business_id}`}
         </p>
       )}
+      <CreatedBy creator={c.creator} className="mb-1.5" />
       <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{c.description}</p>
 
       <div className="grid grid-cols-3 gap-2 text-center mb-3 mt-auto">

@@ -6,6 +6,7 @@ import { PageHeader } from '../../components/common/ui';
 import { METHOD_ICONS } from '../../components/business/DepositModal';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from '../../utils/toast';
+import { CreatedBy } from '../../components/common/CreatedBy';
 
 type Filter = DepositStatus | 'all';
 
@@ -137,6 +138,7 @@ const DepositRequests: React.FC = () => {
                         <p className="text-xs text-gray-600 dark:text-gray-300 truncate">
                           <b>{d.user?.business?.company_name ?? d.user?.name}</b> · {d.user?.email} · {new Date(d.created_at).toLocaleString()}
                         </p>
+                        <CreatedBy creator={d.creator} />
                         {d.reference && <p className="text-[11px] font-mono text-gray-500 dark:text-gray-400 break-all">Ref: {d.reference}</p>}
                         {d.note && <p className="text-[11px] text-gray-500 dark:text-gray-400">Note: {d.note}</p>}
                         {d.status !== 'pending' && (

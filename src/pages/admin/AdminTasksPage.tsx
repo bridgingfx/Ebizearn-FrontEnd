@@ -10,6 +10,7 @@ import { TaskPreview, TaskPreviewSummary } from '../../components/task/TaskPrevi
 import { TaskFormModal } from '../../components/admin/TaskFormModal';
 import { useAuth } from '../../context/AuthContext';
 import { can } from '../../utils/can';
+import { CreatedBy } from '../../components/common/CreatedBy';
 
 /**
  * Staff task management (/staff/tasks). manage_task_templates opens the
@@ -213,6 +214,7 @@ export const AdminTasksPage: React.FC = () => {
                       {t.campaign?.business?.company_name && (
                         <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{t.campaign.business.company_name}</p>
                       )}
+                      <CreatedBy creator={t.creator} className="mt-0.5" />
                     </td>
                     <td className="py-3 px-4 text-xs font-bold text-gray-900 dark:text-gray-100">
                       ${((t.reward_cents || 0) / 100).toFixed(2)}

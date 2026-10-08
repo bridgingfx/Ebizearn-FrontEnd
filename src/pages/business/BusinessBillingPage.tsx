@@ -8,6 +8,7 @@ import type { BusinessDepositsOverview, DepositMethod, DepositStatus } from '../
 import { EmptyState } from '../../components/common/EmptyState';
 import { DepositModal, METHOD_ICONS } from '../../components/business/DepositModal';
 import { toast } from '../../utils/toast';
+import { CreatedBy } from '../../components/common/CreatedBy';
 
 const STATUS_STYLES: Record<DepositStatus, string> = {
   pending: 'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30',
@@ -191,6 +192,7 @@ export const BusinessBillingPage: React.FC = () => {
                             {d.reference && <span className="ml-2 font-mono text-xs font-normal text-gray-500 dark:text-gray-400 break-all">{d.reference}</span>}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400">{date(d.created_at)}</p>
+                          <CreatedBy creator={d.creator} />
                           {d.status === 'rejected' && d.review_note && <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">Reason: {d.review_note}</p>}
                         </div>
                         <div className="flex items-center gap-3 sm:justify-end">

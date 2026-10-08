@@ -1,4 +1,5 @@
 import { api, type ApiResponse } from './client';
+import type { RecordCreator } from '../types';
 
 export type DepositMethodKey = 'card' | 'crypto' | 'bank' | 'email';
 export type DepositStatus = 'pending' | 'approved' | 'rejected';
@@ -22,6 +23,8 @@ export interface DepositRequest {
   id: number;
   uuid: string;
   user_id: number;
+  /** Who submitted it (the owner or a business team member). */
+  creator?: RecordCreator | null;
   method: DepositMethodKey;
   amount_cents: number;
   currency: string;

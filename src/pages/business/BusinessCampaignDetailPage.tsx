@@ -15,6 +15,7 @@ import type { Campaign, Task, TaskSubmission } from '../../types';
 import { useMoney } from '../../hooks/useMoney';
 import { FxNote } from '../../components/common/Money';
 import { EmptyState } from '../../components/common/EmptyState';
+import { CreatedBy } from '../../components/common/CreatedBy';
 
 export const BusinessCampaignDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -142,6 +143,7 @@ export const BusinessCampaignDetailPage: React.FC = () => {
             </span>
           </div>
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">{campaign.title}</h1>
+          <CreatedBy creator={campaign.creator} className="mt-1" />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-2xl">{campaign.description}</p>
           {campaign.instructions_markdown && (
             <details className="mt-3 text-xs text-gray-600 dark:text-gray-400">

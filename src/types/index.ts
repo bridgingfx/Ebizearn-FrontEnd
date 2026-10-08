@@ -274,6 +274,17 @@ export interface Campaign {
   tasks?: Task[];
   /** From StaffCampaignController::index ->withCount('tasks'). */
   tasks_count?: number;
+  /** Who created it (owner, business team member or staff); null on older rows. */
+  creator?: RecordCreator | null;
+}
+
+/** Account that created a campaign / task / deposit (see CreatedBy). */
+export interface RecordCreator {
+  id: number;
+  name: string;
+  role: string;
+  /** Set when a business team member created it. */
+  business_owner_id?: number | null;
 }
 
 /** Fields PATCH /staff/campaigns/{id} and /business/campaigns/{id} accept. */
@@ -290,6 +301,7 @@ export interface Task {
   id: number;
   uuid: string;
   campaign_id: number;
+  creator?: RecordCreator | null;
   category_id: number;
   title: string;
   reward_cents: number;

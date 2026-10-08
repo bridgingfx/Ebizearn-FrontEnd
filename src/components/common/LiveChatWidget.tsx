@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   MessageCircle,
   X,
@@ -185,6 +185,10 @@ export const LiveChatWidget: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  // Portal pages have a fixed bottom tab bar on mobile — lift the launcher
+  // above it so it never covers a tab (e.g. "More").
+  const aboveTabBar = /^\/(app|business|admin)(\/|$)/.test(pathname);
   const { createSupportTicket } = usePlatform();
   const { user } = useAuth();
   const { t } = useRegion();
@@ -483,9 +487,14 @@ Here are key actions you can take right now:
   return (
     <>
       {/* =========================================================================
-          FLOATING LAUNCHER BUTTON: RIGHT SIDE (fixed bottom-5 right-5 z-50)
+          FLOATING LAUNCHER BUTTON: RIGHT SIDE (fixed bottom-5 right-5 z-50;
+          on mobile portal pages it sits above the bottom tab bar)
          ========================================================================= */}
-      <div className="chat-widget-root fixed bottom-5 right-5 z-50 font-sans select-none">
+      <div
+        className={`chat-widget-root fixed right-5 z-50 font-sans select-none ${
+          aboveTabBar ? 'bottom-[calc(5.5rem+env(safe-area-inset-bottom))] md:bottom-5' : 'bottom-5'
+        }`}
+      >
         {!isOpen && (
           <button
             type="button"
@@ -519,7 +528,11 @@ Here are key actions you can take right now:
             LIVE CHAT WINDOW DRAWER (Right Side)
            ========================================================================= */}
         {isOpen && (
-          <div className="w-[calc(100vw-2.5rem)] max-w-[360px] sm:max-w-[430px] max-h-[640px] h-[86vh] bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div
+            className={`w-[calc(100vw-2.5rem)] max-w-[360px] sm:max-w-[430px] max-h-[640px] ${
+              aboveTabBar ? 'h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] md:h-[86vh]' : 'h-[86vh]'
+            } bg-white dark:bg-[#0C1322] rounded-2xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200`}
+          >
             {/* Header */}
             <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950 text-white px-4 py-3.5 flex items-center justify-between border-b border-emerald-500/30 shadow-md">
               <div className="flex items-center gap-3">

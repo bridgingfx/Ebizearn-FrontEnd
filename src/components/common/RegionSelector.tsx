@@ -82,14 +82,17 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({ variant = 'dark'
         <div
           role="listbox"
           aria-label={t('region.languageTitle')}
-          className={`absolute end-0 w-72 bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in ${direction === 'up' ? 'bottom-full mb-2' : 'mt-2'}`}
+          // 'up' is the bottom-of-sidebar placement: the button sits at the
+          // sidebar's left edge, so anchor the menu to its start or it runs
+          // off-screen. Header placements stay right-aligned.
+          className={`absolute w-60 max-w-[calc(100vw-2rem)] bg-white dark:bg-[#0C1322] rounded-2xl border border-slate-200 dark:border-white/10 shadow-2xl shadow-slate-900/10 overflow-hidden z-50 animate-in fade-in ${direction === 'up' ? 'start-0 bottom-full mb-2' : 'end-0 mt-2'}`}
         >
           <div className="p-1.5 max-h-[22rem] overflow-y-auto">
             <p className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 flex items-center gap-1.5">
               <Languages className="w-3 h-3" /> {t('region.languageTitle')}
             </p>
             {/* Native labels must NOT be machine-translated. */}
-            <div className="notranslate grid grid-cols-2 gap-0.5 px-1 pb-1" translate="no">
+            <div className="notranslate flex flex-col gap-0.5 px-1 pb-1" translate="no">
               {GTRANSLATE_LANGS.map((l) => {
                 const active = l.code === lang;
                 return (

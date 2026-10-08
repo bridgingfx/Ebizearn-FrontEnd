@@ -256,6 +256,8 @@ export interface Campaign {
   /** Staff approve post content before the tasks are shown to contributors. */
   content_status?: 'pending' | 'approved' | 'rejected' | null;
   content_review_note?: string | null;
+  /** Image contributors post with the post text. */
+  content_image_url?: string | null;
   title: string;
   objective?: string;
   description: string;

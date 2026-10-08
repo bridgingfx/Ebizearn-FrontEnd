@@ -3,6 +3,7 @@ import { AlertCircle, CheckCircle2, Loader2, Pencil, Save, Sparkles, X, XCircle 
 import { adminApi, getApiError } from '../../api';
 import { useAuth } from '../../context/AuthContext';
 import type { Campaign } from '../../types';
+import { PostImagePicker } from '../campaign/PostImagePicker';
 
 type Mode = 'none' | 'manual' | 'auto';
 
@@ -27,6 +28,26 @@ export const CampaignContentPanel: React.FC<{ campaign: Campaign; onChanged: (c:
   const [note, setNote] = useState('');
   const [rejecting, setRejecting] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [imageBusy, setImageBusy] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+
+  /** Staff image change (approved by them): replace or remove. */
+  const changeImage = async (fn: () => Promise<{ data: { content_image_url: string | null; content_status: string | null } }>) => {
+    setImageBusy(true);
+    setImageError(null);
+    try {
+      const res = await fn();
+      onChanged({
+        ...campaign,
+        content_image_url: res.data.content_image_url,
+        content_status: (res.data.content_status as Campaign['content_status']) ?? campaign.content_status,
+      });
+    } catch (e) {
+      setImageError(getApiError(e, 'Could not update the image.'));
+    } finally {
+      setImageBusy(false);
+    }
+  };
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
@@ -87,9 +108,25 @@ export const CampaignContentPanel: React.FC<{ campaign: Campaign; onChanged: (c:
       {!editing ? (
         <>
           {campaign.content_mode ? (
-            <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words bg-white dark:bg-white/5 rounded-xl p-3">
-              {campaign.generated_content}
-            </p>
+            <>
+              {canEdit ? (
+                <PostImagePicker
+                  currentUrl={campaign.content_image_url}
+                  file={null}
+                  busy={imageBusy}
+                  error={imageError}
+                  onFile={(f) => {
+                    if (f) void changeImage(() => adminApi.uploadCampaignContentImage(campaign.id, f));
+                  }}
+                  onRemoveCurrent={() => void changeImage(() => adminApi.removeCampaignContentImage(campaign.id))}
+                />
+              ) : campaign.content_image_url ? (
+                <img src={campaign.content_image_url} alt="Post image" className="w-full max-h-72 object-contain rounded-xl bg-white dark:bg-white/5" />
+              ) : null}
+              <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words bg-white dark:bg-white/5 rounded-xl p-3">
+                {campaign.generated_content}
+              </p>
+            </>
           ) : (
             <p className="text-xs text-gray-500 dark:text-gray-400">No post text — contributors follow the instructions only.</p>
           )}

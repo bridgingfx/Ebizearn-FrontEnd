@@ -106,6 +106,18 @@ export const adminApi = {
     id: number | string,
     payload: { content_mode: 'manual' | 'auto' | null; generated_content?: string; content_brief?: string | null },
   ) => api.patch(`/staff/campaigns/${id}/content`, payload).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  // Post image (staff): replace / remove — staff changes are approved.
+  uploadCampaignContentImage: (id: number | string, file: File) => {
+    const body = new FormData();
+    body.append('image', file);
+    return api
+      .post(`/staff/campaigns/${id}/content-image`, body, { headers: { 'Content-Type': 'multipart/form-data' } })
+      .then((r) => r.data as { success: boolean; message?: string; data: { content_image_url: string | null; content_status: string | null } });
+  },
+  removeCampaignContentImage: (id: number | string) =>
+    api
+      .delete(`/staff/campaigns/${id}/content-image`)
+      .then((r) => r.data as { success: boolean; message?: string; data: { content_image_url: string | null; content_status: string | null } }),
   // Approve / reject post content (tasks show only once approved).
   campaignContentDecision: (id: number | string, decision: 'approve' | 'reject', note?: string) =>
     api

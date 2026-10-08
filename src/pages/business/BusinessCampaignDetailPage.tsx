@@ -168,6 +168,9 @@ export const BusinessCampaignDetailPage: React.FC = () => {
               {campaign.content_status === 'rejected' && campaign.content_review_note && (
                 <p className="text-[11px] text-red-600 dark:text-red-400 mt-1">Reason: {campaign.content_review_note}. Contact support to update the text.</p>
               )}
+              {campaign.content_image_url && (
+                <img src={campaign.content_image_url} alt="Post image" className="mt-2 w-full max-w-sm max-h-60 object-contain rounded-xl bg-white dark:bg-white/5 border border-violet-200/60 dark:border-violet-500/20" />
+              )}
               {campaign.generated_content && (
                 <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-wrap mt-1.5">{campaign.generated_content}</p>
               )}

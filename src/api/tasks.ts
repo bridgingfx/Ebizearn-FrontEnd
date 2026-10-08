@@ -10,7 +10,7 @@ export const tasksApi = {
     api.get(`/tasks/${id}/content`).then((r) => r.data as {
       success: boolean;
       message?: string;
-      data: { mode: 'manual' | 'auto' | null; content: string | null; personal?: boolean };
+      data: { mode: 'manual' | 'auto' | null; content: string | null; personal?: boolean; image_url?: string | null };
     }),
   submit: (id: number | string, payload: { proof_url?: string; proof_screenshot?: string | null; text_answer?: string; note?: string }) =>
     api.post(`/tasks/${id}/submit`, payload).then((r) => r.data),

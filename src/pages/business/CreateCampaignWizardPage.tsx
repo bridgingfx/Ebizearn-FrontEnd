@@ -23,6 +23,7 @@ import { useMoney } from '../../hooks/useMoney';
 import { TaskPreview, TaskPreviewSummary, classifyTaskPreview } from '../../components/task/TaskPreview';
 import type { UiTask, Campaign } from '../../types';
 import { dropdownListsApi, type WizardPreset } from '../../api/dropdownLists';
+import { PostImagePicker } from '../../components/campaign/PostImagePicker';
 import {
   InstagramLogo,
   TikTokLogo,
@@ -179,6 +180,29 @@ export const CreateCampaignWizardPage: React.FC = () => {
   const [generatedContent, setGeneratedContent] = useState('');
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState<string | null>(null);
+  // Post image: chosen file (uploaded once the campaign / draft exists),
+  // the already-uploaded one (draft resume), and a pending removal.
+  const [postImageFile, setPostImageFile] = useState<File | null>(null);
+  const [postImageUrl, setPostImageUrl] = useState<string | null>(null);
+  const [removePostImage, setRemovePostImage] = useState(false);
+
+  /** Upload / remove the post image for a saved campaign. Returns an error text or null. */
+  const syncPostImage = async (campaignId: number | string): Promise<string | null> => {
+    try {
+      if (postImageFile && contentMode !== 'none') {
+        const res = await businessApi.uploadContentImage(campaignId, postImageFile);
+        setPostImageUrl(res.data?.content_image_url ?? null);
+        setPostImageFile(null);
+      } else if (removePostImage && postImageUrl) {
+        await businessApi.removeContentImage(campaignId);
+        setPostImageUrl(null);
+        setRemovePostImage(false);
+      }
+      return null;
+    } catch (e) {
+      return `the post image could not be uploaded: ${getApiError(e, 'please try again')}.`;
+    }
+  };
 
   // Step 5 — Audience
   const [country, setCountry] = useState('GLOBAL');
@@ -284,6 +308,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
         if (d.content_mode) setContentMode(d.content_mode);
         if (d.generated_content) setGeneratedContent(d.generated_content);
         if (d.content_brief) setContentBrief(d.content_brief);
+        if (d.content_image_url) setPostImageUrl(d.content_image_url);
         // Proof chips: fresh wizard posts an array; a saved draft merges the
         // array with the stashed `wizard` answers object — accept both.
         const proof = d.proof_requirements_json as unknown;
@@ -425,6 +450,11 @@ export const CreateCampaignWizardPage: React.FC = () => {
         ? await businessApi.updateCampaignDraft(draftId, draftPayload())
         : await businessApi.saveCampaignDraft(draftPayload());
       if (res.success && res.data) {
+        const imageError = await syncPostImage(res.data.id);
+        if (imageError) {
+          setLaunchError(`Draft saved, but ${imageError}`);
+          return;
+        }
         navigate('/business/campaigns?tab=draft');
       } else {
         setLaunchError(res.message || 'Draft could not be saved. Please try again.');
@@ -451,6 +481,11 @@ export const CreateCampaignWizardPage: React.FC = () => {
         const sync = await businessApi.updateCampaignDraft(draftId, draftPayload());
         if (!sync.success) {
           setLaunchError(sync.message || 'Could not save the draft before launch. Please try again.');
+          return;
+        }
+        const imageError = await syncPostImage(draftId);
+        if (imageError) {
+          setLaunchError(imageError);
           return;
         }
         const res = await businessApi.launchDraft(draftId, idempotencyKey);
@@ -488,6 +523,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
 
       const res = await businessApi.createCampaign(payload);
       if (res.success && res.data) {
+        // The campaign exists now; attach the post image to it.
+        const imageError = await syncPostImage(res.data.id);
+        if (imageError) setLaunchError(`Campaign created, but ${imageError} You can add it from the campaign page.`);
         setLaunchSuccessId(res.data.id);
       } else {
         setLaunchError(res.message || 'Campaign could not be created. Please try again.');
@@ -974,7 +1012,23 @@ export const CreateCampaignWizardPage: React.FC = () => {
               {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {generating ? 'Generating…' : 'Generate with AI'}
             </button>
+            {!contentBrief.trim() && !generating && (
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">Type what the post is for above, then tap Generate with AI.</p>
+            )}
             {genError && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{genError}</p>}
+            <div>
+              <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">Post image <span className="font-normal text-gray-400">(optional)</span></label>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">Contributors see this image above the post text and can download it to post with it.</p>
+              <PostImagePicker
+                currentUrl={removePostImage ? null : postImageUrl}
+                file={postImageFile}
+                onFile={(f) => {
+                  setPostImageFile(f);
+                  if (f) setRemovePostImage(false);
+                }}
+                onRemoveCurrent={() => setRemovePostImage(true)}
+              />
+            </div>
             {(contentMode === 'manual' || generatedContent) && (
               <div>
                 <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">

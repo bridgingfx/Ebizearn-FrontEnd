@@ -7,6 +7,16 @@ export const businessApi = {
   createCampaign: (payload: Record<string, unknown>) => api.post('/business/campaigns', payload).then((r) => r.data),
   generateContent: (platform: string, brief: string) =>
     api.post('/business/campaigns/generate-content', { platform, brief }).then((r) => r.data as { success: boolean; message?: string; content: string | null }),
+  /** Image contributors post with the post text (JPG/PNG/WebP, max 5 MB). */
+  uploadContentImage: (id: number | string, file: File) => {
+    const body = new FormData();
+    body.append('image', file);
+    return api
+      .post(`/business/campaigns/${id}/content-image`, body, { headers: { 'Content-Type': 'multipart/form-data' } })
+      .then((r) => r.data as { success: boolean; message?: string; data: { content_image_url: string | null; content_status: string | null } });
+  },
+  removeContentImage: (id: number | string) =>
+    api.delete(`/business/campaigns/${id}/content-image`).then((r) => r.data as { success: boolean; message?: string }),
   saveCampaignDraft: (payload: Record<string, unknown>) =>
     api.post('/business/campaigns/wizard/draft', payload).then((r) => r.data),
   updateCampaignDraft: (id: number | string, payload: Record<string, unknown>) =>

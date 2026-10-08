@@ -28,6 +28,7 @@ import { VerificationTimeline } from '../../components/task/VerificationTimeline
 import { humanizeRetention, initials, proofRequirementLabels } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
 import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification';
+import { ReadyToPostCard } from '../../components/task/ReadyToPostCard';
 
 /**
  * Phase 5 — split-screen task execution.
@@ -94,9 +95,10 @@ export const TaskDetailPage: React.FC = () => {
   }, [id]);
 
   // Post text for this contributor — fetched once the task is reserved.
-  const [postContent, setPostContent] = useState<{ loading: boolean; text: string | null; personal: boolean; error: string | null }>({
+  const [postContent, setPostContent] = useState<{ loading: boolean; text: string | null; imageUrl: string | null; personal: boolean; error: string | null }>({
     loading: false,
     text: null,
+    imageUrl: null,
     personal: false,
     error: null,
   });
@@ -110,9 +112,9 @@ export const TaskDetailPage: React.FC = () => {
       .content(taskKey)
       .then((res) => {
         if (!alive) return;
-        setPostContent({ loading: false, text: res.data?.content ?? null, personal: !!res.data?.personal, error: null });
+        setPostContent({ loading: false, text: res.data?.content ?? null, imageUrl: res.data?.image_url ?? null, personal: !!res.data?.personal, error: null });
       })
-      .catch((err) => alive && setPostContent({ loading: false, text: null, personal: false, error: getApiError(err, 'Could not load the post text.') }));
+      .catch((err) => alive && setPostContent({ loading: false, text: null, imageUrl: null, personal: false, error: getApiError(err, 'Could not load the post text.') }));
     return () => {
       alive = false;
     };
@@ -421,37 +423,13 @@ export const TaskDetailPage: React.FC = () => {
 
                 {/* Post text to copy-paste — provided by the platform (own version in auto mode). */}
                 {task.hasPostContent && (
-                  <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border-2 border-violet-300/40 dark:border-violet-500/30 rounded-2xl p-4 space-y-3">
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <p className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-300 flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" /> {postContent.personal ? 'Your ready-to-post text' : 'Ready-to-post text'}
-                      </p>
-                      {postContent.text && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(postContent.text || '');
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 2000);
-                          }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white transition-colors"
-                        >
-                          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                          {copied ? 'Copied!' : 'Copy'}
-                        </button>
-                      )}
-                    </div>
-                    {postContent.loading ? (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Preparing your text…
-                      </p>
-                    ) : postContent.text ? (
-                      <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">{postContent.text}</p>
-                    ) : (
-                      <p className="text-xs text-red-600 dark:text-red-400">{postContent.error || 'The post text is not available right now.'}</p>
-                    )}
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500">Copy this text and paste it where the task asks — then screenshot and submit below.</p>
-                  </div>
+                  <ReadyToPostCard
+                    personal={postContent.personal}
+                    loading={postContent.loading}
+                    text={postContent.text}
+                    imageUrl={postContent.imageUrl}
+                    error={postContent.error}
+                  />
                 )}
 
                 {task.targetUrl && (

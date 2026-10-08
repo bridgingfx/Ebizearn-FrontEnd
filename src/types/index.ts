@@ -11,6 +11,8 @@ export interface User {
   email: string;
   /** Staff account Super Admin assigned this user to (admin user list only). */
   manager?: { id: number; name: string; role: string } | null;
+  /** Set on business team members: the owner whose business they work on. */
+  business_owner_id?: number | null;
   role: UserRole;
   status: UserStatus;
   referral_code?: string;

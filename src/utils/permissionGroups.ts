@@ -47,6 +47,29 @@ export const ADMIN_SECTIONS: { label: string; path: string; perms: string[] }[] 
   { label: 'Audit Logs', path: '/admin/audit', perms: ['view_audit_logs'] },
 ];
 
+/**
+ * Business sidebar sections (Dashboard and Settings are always open). Same
+ * rule: the FIRST permission opens the page. Used by the business sidebar,
+ * the Roles & Permissions matrix and the business Team Access page.
+ */
+export const BUSINESS_SECTIONS: { label: string; path: string; perms: string[] }[] = [
+  {
+    label: 'Campaigns',
+    path: '/business/campaigns',
+    perms: ['view_own_campaigns', 'create_campaigns', 'edit_own_campaigns', 'delete_own_campaigns', 'fund_campaigns'],
+  },
+  { label: 'Task Library', path: '/business/tasks', perms: ['view_task_library', 'manage_business_tasks'] },
+  { label: 'Proof Gallery', path: '/business/submissions', perms: ['review_campaign_proofs'] },
+  { label: 'Analytics', path: '/business/reports', perms: ['view_business_analytics'] },
+  { label: 'Billing & Invoices', path: '/business/billing', perms: ['view_billing'] },
+  { label: 'Team Access', path: '/business/team', perms: ['manage_team'] },
+  { label: 'Support', path: '/business/support', perms: ['open_support_tickets'] },
+];
+
+/** Permission that opens a business sidebar page, by path. */
+export const businessSectionPermission = (path: string): string | undefined =>
+  BUSINESS_SECTIONS.find((s) => s.path === path)?.perms[0];
+
 /** Sidebar sections that stay Super Admin only (not grantable). */
 export const SUPER_ADMIN_ONLY_SECTIONS = ['Contributor Ranks', 'Email & Campaigns', 'Platforms', 'Payment Gateways'];
 
@@ -69,18 +92,22 @@ export function groupPermissionsForRole(
   const placed = new Set<string>();
 
   const staffFirst = relevant.includes('staff');
-  const addSections = () => {
-    ADMIN_SECTIONS.forEach((s) => {
-      const perms = s.perms.map((n) => byName.get(n)).filter((p): p is PermissionDef => !!p);
+  const pushSections = (sections: typeof ADMIN_SECTIONS, prefix: string) =>
+    sections.forEach((s) => {
+      const perms = s.perms.map((n) => byName.get(n)).filter((p): p is PermissionDef => !!p && !placed.has(p.name));
       perms.forEach((p) => placed.add(p.name));
-      if (perms.length) blocks.push({ key: `section:${s.path}`, title: `Sidebar · ${s.label}`, perms });
+      if (perms.length) blocks.push({ key: `section:${s.path}`, title: `${prefix} · ${s.label}`, perms });
     });
+  const addSections = () => {
+    pushSections(ADMIN_SECTIONS, 'Sidebar');
     const leftover = catalog.filter((p) => p.group === 'staff' && !placed.has(p.name));
     leftover.forEach((p) => placed.add(p.name));
     if (leftover.length) blocks.push({ key: 'staff:other', title: 'Other staff permissions', perms: leftover });
   };
 
   if (staffFirst) addSections();
+  // Business accounts: one block per business sidebar section first.
+  if (role === 'business') pushSections(BUSINESS_SECTIONS, 'Business sidebar');
 
   const groups: PermissionGroup[] = ['contributor', 'business', 'account', 'other', 'staff'];
   groups

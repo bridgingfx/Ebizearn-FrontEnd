@@ -262,7 +262,8 @@ export const App: React.FC = () => {
             <Route path="users" element={<LazyAdminUsersPage />} />
             <Route path="users/:id" element={<LazyAdminUserDetailPage />} />
             <Route path="ranks" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminRankTiersPage /></RoleGuard>} />
-            <Route path="permissions" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminPermissionsPage /></RoleGuard>} />
+            {/* Admins / moderators reach it with manage_roles (sidebar + API enforce it). */}
+            <Route path="permissions" element={<RoleGuard allowedRoles={['superadmin', 'admin', 'moderator']}><LazyAdminPermissionsPage /></RoleGuard>} />
             <Route path="businesses" element={<LazyAdminBusinessesPage />} />
             <Route path="verification" element={<LazyAdminVerificationCenterPage />} />
             <Route path="payouts" element={<LazyAdminPayoutsPage />} />

@@ -10,6 +10,8 @@ export { opsApi, opsWalletsApi, departmentsApi } from './ops';
 export { tasksApi } from './tasks';
 export { walletApi } from './wallet';
 export { businessApi } from './business';
+export { businessTeamApi } from './businessTeam';
+export type { BusinessTeam, TeamMember, TeamPermission } from './businessTeam';
 export { adminApi } from './admin';
 export { taskTemplatesApi } from './taskTemplates';
 export { emailApi } from './email';

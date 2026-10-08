@@ -16,6 +16,7 @@ import {
   User as UserIcon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { businessSectionPermission } from '../utils/permissionGroups';
 
 import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
@@ -28,6 +29,17 @@ export const BusinessLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Each section shows only with its permission (BUSINESS_SECTIONS — the
+  // same list Super Admin / admins switch in Roles & Permissions, and the
+  // owner switches per team member). Team Access is for owners only.
+  const isTeamMember = !!user?.business_owner_id;
+  const canSee = (item: { path: string }) => {
+    if (item.path === '/business/team' && isTeamMember) return false;
+    const perm = businessSectionPermission(item.path);
+    if (!perm || !user?.permissions) return true;
+    return user.permissions.includes(perm);
+  };
+
   const navItems = [
     { name: 'Dashboard', path: '/business', icon: LayoutDashboard, exact: true },
     { name: 'Campaigns', path: '/business/campaigns', icon: Megaphone },
@@ -38,7 +50,7 @@ export const BusinessLayout: React.FC = () => {
     { name: 'Team Access', path: '/business/team', icon: Users },
     { name: 'Settings', path: '/business/settings', icon: Settings },
     { name: 'Support', path: '/business/support', icon: HelpCircle },
-  ];
+  ].filter(canSee);
 
   const [logoutOpen, setLogoutOpen] = React.useState(false);
   const [moreOpen, setMoreOpen] = React.useState(false);
@@ -51,13 +63,13 @@ export const BusinessLayout: React.FC = () => {
     { name: 'Tasks', path: '/business/tasks', icon: BookOpen },
     { name: 'Proof', path: '/business/submissions', icon: CheckSquare },
     { name: 'Reports', path: '/business/reports', icon: BarChart3 },
-  ];
+  ].filter(canSee);
   const moreItems = [
     { name: 'Billing & Invoices', path: '/business/billing', icon: CreditCard },
     { name: 'Team Access', path: '/business/team', icon: Users },
     { name: 'Settings', path: '/business/settings', icon: Settings },
     { name: 'Support', path: '/business/support', icon: HelpCircle },
-  ];
+  ].filter(canSee);
   const tabActive = (tab: { path: string; exact?: boolean }) =>
     tab.exact ? location.pathname === tab.path : location.pathname.startsWith(tab.path);
   const moreActive = moreItems.some((item) => location.pathname.startsWith(item.path));

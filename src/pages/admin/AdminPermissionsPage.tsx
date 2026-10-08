@@ -39,7 +39,9 @@ const ROLE_META: Record<RolePermissions['name'], { icon: React.ElementType; blur
 export const AdminPermissionsPage: React.FC = () => {
   const { user } = useAuth();
   const isSuperAdmin = user?.role === 'superadmin';
-  const [tab, setTab] = useState<'roles' | 'users' | 'departments'>('roles');
+  // Moderators set access per user only (no role-wide matrix).
+  const isModerator = user?.role === 'moderator';
+  const [tab, setTab] = useState<'roles' | 'users' | 'departments'>(isModerator ? 'users' : 'roles');
   const [roles, setRoles] = useState<RolePermissions[]>([]);
   const [catalog, setCatalog] = useState<PermissionDef[]>([]);
   const [active, setActive] = useState<RolePermissions['name']>('admin');
@@ -130,13 +132,14 @@ export const AdminPermissionsPage: React.FC = () => {
 
       {!isSuperAdmin && (
         <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-2xl p-4 text-sm text-blue-700 dark:text-blue-300">
-          You can manage moderator, contributor and business roles, and view departments. The admin role
-          itself and admin accounts are managed by Super Admin only.
+          {isModerator
+            ? 'You can set access for the businesses and contributors you look after — only access you have yourself.'
+            : 'You can manage moderator, contributor and business roles and accounts, and view departments — only with access you have yourself. The admin role itself and admin accounts are managed by Super Admin only.'}
         </div>
       )}
 
       <div className="flex gap-2">
-        {(['roles', 'users', 'departments'] as const).map((t) => (
+        {(isModerator ? (['users'] as const) : (['roles', 'users', 'departments'] as const)).map((t) => (
           <button
             key={t}
             type="button"
@@ -155,7 +158,7 @@ export const AdminPermissionsPage: React.FC = () => {
       {tab === 'departments' ? (
         <DepartmentsSection isSuperAdmin={isSuperAdmin} />
       ) : tab === 'users' ? (
-        <UsersPermissionsSection isSuperAdmin={isSuperAdmin} currentUserId={user?.id} />
+        <UsersPermissionsSection isSuperAdmin={isSuperAdmin} actorRole={user?.role ?? ''} currentUserId={user?.id} />
       ) : (
         <>
           {error && (
@@ -357,7 +360,17 @@ const ROLE_BADGE: Record<string, string> = {
  * one to see exactly which permissions they hold and allow / deny any
  * permission in the catalog for that account alone.
  */
-const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; currentUserId?: number }> = ({ isSuperAdmin, currentUserId }) => {
+/** Roles each staff role may set permissions for (mirrors StaffScope on the API). */
+const MANAGEABLE_ROLES: Record<string, string[]> = {
+  admin: ['contributor', 'business', 'moderator'],
+  moderator: ['contributor', 'business'],
+};
+
+const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; actorRole: string; currentUserId?: number }> = ({
+  isSuperAdmin,
+  actorRole,
+  currentUserId,
+}) => {
   const [role, setRole] = useState('');
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
@@ -398,9 +411,16 @@ const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; currentUserId?:
   const lockedReason = (u: User): string | null => {
     if (u.role === 'superadmin') return null; // the editor explains this itself
     if (u.id === currentUserId) return 'You cannot change your own permissions.';
-    if (!isSuperAdmin && u.role === 'admin') return 'Only Super Admin can change permissions of admin accounts.';
+    if (!isSuperAdmin && !(MANAGEABLE_ROLES[actorRole] ?? []).includes(u.role)) {
+      return u.role === 'admin'
+        ? 'Only Super Admin can change permissions of admin accounts.'
+        : 'You can only change permissions of accounts below your own role.';
+    }
     return null;
   };
+  const filters = isSuperAdmin
+    ? USER_ROLE_FILTERS
+    : USER_ROLE_FILTERS.filter((f) => f.key === '' || (MANAGEABLE_ROLES[actorRole] ?? []).includes(f.key));
 
   return (
     <div className="grid lg:grid-cols-[380px_minmax(0,1fr)] gap-4 items-start">
@@ -416,7 +436,7 @@ const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; currentUserId?:
           />
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {USER_ROLE_FILTERS.map((f) => (
+          {filters.map((f) => (
             <button
               key={f.key}
               type="button"
@@ -463,6 +483,9 @@ const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; currentUserId?:
                       <span className="block text-[11px] text-gray-500 dark:text-gray-400 truncate">{u.email}</span>
                       {u.manager && (
                         <span className="block text-[10px] text-[#168BFF] truncate">Managed by {u.manager.name}</span>
+                      )}
+                      {u.business_owner_id && (
+                        <span className="block text-[10px] text-gray-400 dark:text-gray-500 truncate">Business team member</span>
                       )}
                     </span>
                     <span className={`shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold capitalize ${ROLE_BADGE[u.role] ?? ROLE_BADGE.contributor}`}>

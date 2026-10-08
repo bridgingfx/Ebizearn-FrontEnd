@@ -1,6 +1,12 @@
 import { api, type ApiResponse } from './client';
 import type { PermissionDef, RolePermissions, UserPermissionOverrides, Wallet } from '../types';
 
+export interface StaffAssignments {
+  staff: { id: number; name: string; email: string; role: string };
+  assignable_roles: string[];
+  users: { id: number; name: string; email: string; role: string; status: string }[];
+}
+
 /** Super Admin permission management (/ops, superadmin only). */
 export const opsApi = {
   roles: () =>
@@ -17,6 +23,11 @@ export const opsApi = {
     api
       .put<ApiResponse<UserPermissionOverrides>>(`/ops/users/${userId}/permissions`, { grants, denies })
       .then((r) => r.data),
+  /** Super Admin: users assigned to an admin / moderator (who then sees only them). */
+  staffAssignments: (staffId: number) =>
+    api.get<ApiResponse<StaffAssignments>>(`/ops/staff/${staffId}/assignments`).then((r) => r.data),
+  updateStaffAssignments: (staffId: number, userIds: number[]) =>
+    api.put<ApiResponse<StaffAssignments>>(`/ops/staff/${staffId}/assignments`, { user_ids: userIds }).then((r) => r.data),
 };
 
 /** Super Admin wallet operations — directory, inspection, manual credits/debits. */

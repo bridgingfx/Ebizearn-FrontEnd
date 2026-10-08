@@ -36,6 +36,7 @@ import { RegionSelector } from '../components/common/RegionSelector';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { AppFooter } from '../components/common/AppFooter';
+import { sectionPermission } from '../utils/permissionGroups';
 
 export const AdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -45,42 +46,46 @@ export const AdminLayout: React.FC = () => {
   // `perm`: the API permission the page needs — hidden when the signed-in
   // staff account lacks it (Super Admin sees everything). `superOnly` pages
   // are Super Admin tools.
-  type NavItem = { name: string; path: string; icon: React.ElementType; exact?: boolean; perm?: string; superOnly?: boolean };
+  // Each section's permission comes from ADMIN_SECTIONS (utils/permissionGroups),
+  // the same list Super Admin switches in Roles & Permissions. `anyPerm`:
+  // visible with any of them (Wallets: view or adjust).
+  type NavItem = { name: string; path: string; icon: React.ElementType; exact?: boolean; superOnly?: boolean; anyPerm?: string[] };
   const canSee = (item: NavItem) => {
     if (user?.role === 'superadmin') return true;
     if (item.superOnly) return false;
-    if (!item.perm || !user?.permissions) return true;
-    return user.permissions.includes(item.perm);
+    const needed = item.anyPerm ?? (sectionPermission(item.path) ? [sectionPermission(item.path) as string] : []);
+    if (needed.length === 0 || !user?.permissions) return true;
+    return needed.some((p) => user.permissions?.includes(p));
   };
 
   const allNavItems: NavItem[] = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
-    { name: 'Users & KYC', path: '/admin/users', icon: Users, perm: 'manage_users' },
-    { name: 'KYC Review', path: '/admin/kyc', icon: ShieldCheck, perm: 'review_kyc' },
-    { name: 'Social Channels', path: '/admin/social-channels', icon: AtSign, perm: 'review_kyc' },
-    { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
-    { name: 'Verification', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_campaigns' },
-    { name: 'Tasks', path: '/admin/tasks', icon: ClipboardList, perm: 'manage_task_templates' },
-    { name: 'Task Library', path: '/admin/task-library', icon: BookOpen, perm: 'view_task_library' },
-    { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight, perm: 'process_payouts' },
-    { name: 'Deposits', path: '/admin/deposits', icon: Banknote, perm: 'process_payouts' },
-    { name: 'Wallets', path: '/admin/wallets', icon: Wallet },
-    { name: 'Referrals', path: '/admin/referrals', icon: Gift, perm: 'view_reports' },
-    { name: 'Demo Requests', path: '/admin/demo-requests', icon: Mail, perm: 'view_reports' },
-    { name: 'Reports', path: '/admin/reports', icon: BarChart3, perm: 'view_reports' },
-    { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert, perm: 'review_submissions' },
-    { name: 'Support', path: '/admin/support', icon: Headset, perm: 'handle_disputes' },
-    { name: 'Analytics', path: '/admin/analytics', icon: Activity, perm: 'view_reports' },
-    { name: 'Website Traffic', path: '/admin/traffic', icon: Globe, perm: 'view_reports' },
+    { name: 'Users & KYC', path: '/admin/users', icon: Users },
+    { name: 'KYC Review', path: '/admin/kyc', icon: ShieldCheck },
+    { name: 'Social Channels', path: '/admin/social-channels', icon: AtSign },
+    { name: 'Businesses', path: '/admin/businesses', icon: Building2 },
+    { name: 'Verification', path: '/admin/verification', icon: FileCheck },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone },
+    { name: 'Tasks', path: '/admin/tasks', icon: ClipboardList },
+    { name: 'Task Library', path: '/admin/task-library', icon: BookOpen },
+    { name: 'Withdrawals', path: '/admin/withdrawals', icon: ArrowLeftRight },
+    { name: 'Deposits', path: '/admin/deposits', icon: Banknote },
+    { name: 'Wallets', path: '/admin/wallets', icon: Wallet, anyPerm: ['view_wallets', 'adjust_wallets'] },
+    { name: 'Referrals', path: '/admin/referrals', icon: Gift },
+    { name: 'Demo Requests', path: '/admin/demo-requests', icon: Mail },
+    { name: 'Reports', path: '/admin/reports', icon: BarChart3 },
+    { name: 'Fraud & Risk', path: '/admin/fraud', icon: ShieldAlert },
+    { name: 'Support', path: '/admin/support', icon: Headset },
+    { name: 'Analytics', path: '/admin/analytics', icon: Activity },
+    { name: 'Website Traffic', path: '/admin/traffic', icon: Globe },
     { name: 'System Health', path: '/admin/health', icon: Activity },
-    { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound, perm: 'manage_roles' },
+    { name: 'Roles & Permissions', path: '/admin/permissions', icon: KeyRound },
     { name: 'Contributor Ranks', path: '/admin/ranks', icon: Trophy, superOnly: true },
     { name: 'Email & Campaigns', path: '/admin/email', icon: MailCheck, superOnly: true },
-    { name: 'Settings', path: '/admin/settings', icon: Settings, perm: 'manage_settings' },
+    { name: 'Settings', path: '/admin/settings', icon: Settings },
     { name: 'Platforms', path: '/admin/platforms', icon: Globe, superOnly: true },
     { name: 'Payment Gateways', path: '/admin/payment-gateways', icon: CreditCard, superOnly: true },
-    { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText, perm: 'view_reports' },
+    { name: 'Audit Logs', path: '/admin/audit', icon: ScrollText },
   ];
   const navItems = allNavItems.filter(canSee);
 
@@ -108,10 +113,10 @@ export const AdminLayout: React.FC = () => {
   // of the sidebar). Mirrors BusinessLayout's glass bottom-bar style.
   const mobileTabs: NavItem[] = [
     { name: 'Home', path: '/admin', icon: LayoutDashboard, exact: true },
-    { name: 'Users', path: '/admin/users', icon: Users, perm: 'manage_users' },
-    { name: 'Businesses', path: '/admin/businesses', icon: Building2, perm: 'manage_users' },
-    { name: 'Verify', path: '/admin/verification', icon: FileCheck, perm: 'review_submissions' },
-    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone, perm: 'manage_campaigns' },
+    { name: 'Users', path: '/admin/users', icon: Users },
+    { name: 'Businesses', path: '/admin/businesses', icon: Building2 },
+    { name: 'Verify', path: '/admin/verification', icon: FileCheck },
+    { name: 'Campaigns', path: '/admin/campaigns', icon: Megaphone },
   ].filter(canSee);
   const tabPaths = new Set(mobileTabs.map((t) => t.path));
   const moreItems = navItems.filter((item) => !item.exact && !tabPaths.has(item.path));

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Loader2, CheckCircle2, AlertCircle, RotateCcw, Save, Check, X as XIcon } from 'lucide-react';
 import { opsApi, getApiError } from '../../api';
-import type { PermissionDef, PermissionGroup, UserPermissionOverrides as Overrides } from '../../types';
-import { PERMISSION_GROUP_LABELS, RELEVANT_GROUPS } from '../../utils/permissionGroups';
+import type { PermissionDef, UserPermissionOverrides as Overrides } from '../../types';
+import { groupPermissionsForRole } from '../../utils/permissionGroups';
 
 type Mode = 'inherit' | 'allow' | 'deny';
 
@@ -58,18 +58,15 @@ export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () =>
     return Object.keys(modes).some((k) => modes[k] !== base[k]);
   }, [modes, data]);
 
-  const groups = useMemo(() => {
-    if (!data) return [] as [PermissionGroup, PermissionDef[]][];
-    const relevant = RELEVANT_GROUPS[data.user.role] ?? [];
-    const byGroup = new Map<PermissionGroup, PermissionDef[]>();
-    data.permissions.forEach((p) => {
-      if (!showAll && !relevant.includes(p.group)) return;
-      byGroup.set(p.group, [...(byGroup.get(p.group) ?? []), p]);
-    });
-    return [...byGroup.entries()].sort(
-      ([a], [b]) => (relevant.includes(a) ? 0 : 1) - (relevant.includes(b) ? 0 : 1)
-    );
-  }, [data, showAll]);
+  // Staff accounts: one block per admin sidebar section; others by audience.
+  const groups = useMemo(
+    () => (data ? groupPermissionsForRole(data.permissions, data.user.role, showAll) : []),
+    [data, showAll],
+  );
+
+  // Delegation: an admin can only newly Allow what they hold themselves
+  // (the API enforces it too). Grants already on the account may stay.
+  const canAllow = (p: PermissionDef) => !data?.grantable || data.grantable.includes(p.name) || data.grants.includes(p.name);
 
   const save = async () => {
     if (!data) return;
@@ -123,14 +120,16 @@ export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () =>
         </label>
       </div>
 
-      {groups.map(([group, perms]) => (
-        <div key={group} className="space-y-1.5">
+      {groups.map(({ key, title, perms }) => (
+        <div key={key} className="space-y-1.5">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{PERMISSION_GROUP_LABELS[group]}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{title}</p>
             <div className="flex gap-3 text-[11px] font-bold">
               <button
                 type="button"
-                onClick={() => setModes((prev) => ({ ...prev, ...Object.fromEntries(perms.map((p) => [p.name, 'allow' as Mode])) }))}
+                onClick={() =>
+                  setModes((prev) => ({ ...prev, ...Object.fromEntries(perms.filter(canAllow).map((p) => [p.name, 'allow' as Mode])) }))
+                }
                 className="text-emerald-600 dark:text-emerald-400 hover:underline"
               >
                 Allow all
@@ -170,8 +169,10 @@ export const UserPermissionOverrides: React.FC<{ userId: number; onSaved?: () =>
                       <button
                         key={m}
                         type="button"
+                        disabled={m === 'allow' && !canAllow(p)}
+                        title={m === 'allow' && !canAllow(p) ? "You can't give a permission you don't have yourself" : undefined}
                         onClick={() => setModes((prev) => ({ ...prev, [p.name]: m }))}
-                        className={`px-2.5 py-1 rounded-lg transition-colors ${
+                        className={`px-2.5 py-1 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
                           mode === m
                             ? m === 'allow'
                               ? 'bg-emerald-500 text-white'

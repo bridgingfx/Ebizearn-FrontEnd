@@ -5,6 +5,7 @@ import { adminApi, getApiError, opsWalletsApi } from '../../api';
 import type { User } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { toast } from '../../utils/toast';
+import { useAuth } from '../../context/AuthContext';
 
 /**
  * Wallet directory. There is no dedicated admin wallets endpoint — balances
@@ -17,6 +18,9 @@ export const AdminWalletsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [crediting, setCrediting] = useState<{ walletId: number; name: string } | null>(null);
+  // Adding / removing wallet money is its own permission (adjust_wallets).
+  const { user: me } = useAuth();
+  const canAdjust = me?.role === 'superadmin' || !!me?.permissions?.includes('adjust_wallets');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -164,13 +168,15 @@ export const AdminWalletsPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex justify-end items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => w.user.wallet && setCrediting({ walletId: w.user.wallet.id, name: w.user.name || w.user.email || '' })}
-                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#16B364] dark:text-emerald-300 hover:underline"
-                        >
-                          <Coins className="w-3.5 h-3.5" /> Grant credits
-                        </button>
+                        {canAdjust && (
+                          <button
+                            type="button"
+                            onClick={() => w.user.wallet && setCrediting({ walletId: w.user.wallet.id, name: w.user.name || w.user.email || '' })}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#16B364] dark:text-emerald-300 hover:underline"
+                          >
+                            <Coins className="w-3.5 h-3.5" /> Grant credits
+                          </button>
+                        )}
                         <Link
                           to={`/admin/users?search=${encodeURIComponent(w.user.email || '')}`}
                           className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:underline"
@@ -215,13 +221,13 @@ const GrantCreditsModal: React.FC<{
 
   const grant = async () => {
     const value = parseFloat(amount);
-    if (!Number.isFinite(value) || value <= 0 || saving) return;
+    if (!Number.isFinite(value) || value <= 0 || note.trim().length < 3 || saving) return;
     setSaving(true);
     setError(null);
     try {
       const res = await opsWalletsApi.credit(walletId, {
         amount: value,
-        description: note.trim() || undefined,
+        description: note.trim(),
       });
       if (res.success) {
         toast.success(res.message || 'Credits granted.');
@@ -265,7 +271,7 @@ const GrantCreditsModal: React.FC<{
           </div>
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-              Note (optional)
+              Reason * (saved in the audit log)
             </label>
             <input
               value={note}
@@ -288,7 +294,7 @@ const GrantCreditsModal: React.FC<{
           <button
             type="button"
             onClick={() => void grant()}
-            disabled={!parseFloat(amount) || parseFloat(amount) <= 0 || saving}
+            disabled={!parseFloat(amount) || parseFloat(amount) <= 0 || note.trim().length < 3 || saving}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#16B364] hover:bg-[#12995a] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving && <Loader2 className="w-4 h-4 animate-spin" />}

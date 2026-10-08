@@ -9,6 +9,8 @@ export interface User {
   uuid: string;
   name: string;
   email: string;
+  /** Staff account Super Admin assigned this user to (admin user list only). */
+  manager?: { id: number; name: string; role: string } | null;
   role: UserRole;
   status: UserStatus;
   referral_code?: string;
@@ -86,6 +88,8 @@ export interface UserPermissionOverrides {
   denies: string[];
   effective: string[];
   permissions: PermissionDef[];
+  /** Permissions the signed-in staff member may newly Allow; null = all (Super Admin). */
+  grantable?: string[] | null;
 }
 
 /** GET /admin/users/:id */

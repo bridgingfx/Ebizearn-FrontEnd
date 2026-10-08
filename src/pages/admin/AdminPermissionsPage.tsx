@@ -17,10 +17,11 @@ import {
 } from 'lucide-react';
 import { opsApi, adminApi, departmentsApi, getApiError } from '../../api';
 import { useAuth } from '../../context/AuthContext';
-import type { PermissionDef, PermissionGroup, RolePermissions, User } from '../../types';
+import type { PermissionDef, RolePermissions, User } from '../../types';
 import { PageHeader } from '../../components/common/ui';
 import { UserPermissionOverrides } from '../../components/admin/UserPermissionOverrides';
-import { PERMISSION_GROUP_LABELS, RELEVANT_GROUPS } from '../../utils/permissionGroups';
+import { StaffAssignmentsPanel } from '../../components/admin/StaffAssignmentsPanel';
+import { groupPermissionsForRole, SUPER_ADMIN_ONLY_SECTIONS } from '../../utils/permissionGroups';
 
 const ROLE_META: Record<RolePermissions['name'], { icon: React.ElementType; blurb: string }> = {
   admin: { icon: ShieldCheck, blurb: 'Full staff accounts in the admin panel.' },
@@ -84,15 +85,8 @@ export const AdminPermissionsPage: React.FC = () => {
     return saved.size !== draft.size || [...draft].some((p) => !saved.has(p));
   }, [draft, activeRole]);
 
-  const grouped = useMemo(() => {
-    const relevant = RELEVANT_GROUPS[active] ?? [];
-    const map = new Map<PermissionGroup, PermissionDef[]>();
-    catalog.forEach((p) => {
-      if (!showAll && !relevant.includes(p.group)) return;
-      map.set(p.group, [...(map.get(p.group) ?? []), p]);
-    });
-    return [...map.entries()].sort(([a], [b]) => (relevant.includes(a) ? 0 : 1) - (relevant.includes(b) ? 0 : 1));
-  }, [catalog, active, showAll]);
+  // Staff roles: one block per admin sidebar section; others by audience.
+  const grouped = useMemo(() => groupPermissionsForRole(catalog, active, showAll), [catalog, active, showAll]);
 
   const toggle = (name: string) =>
     setDraft((prev) => {
@@ -226,12 +220,18 @@ export const AdminPermissionsPage: React.FC = () => {
             </div>
 
             <div className="p-5 space-y-5">
-              {grouped.map(([group, perms]) => {
+              {(active === 'admin' || active === 'moderator') && (
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 px-3 py-2">
+                  Each sidebar section below has its own switch. Super Admin only (never grantable):{' '}
+                  <b>{SUPER_ADMIN_ONLY_SECTIONS.join(', ')}</b>.
+                </p>
+              )}
+              {grouped.map(({ key, title, perms }) => {
                 const allOn = perms.every((p) => draft.has(p.name));
                 return (
-                  <div key={group}>
+                  <div key={key}>
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{PERMISSION_GROUP_LABELS[group]}</p>
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">{title}</p>
                       <button
                         type="button"
                         onClick={() => setGroup(perms, !allOn)}
@@ -461,6 +461,9 @@ const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; currentUserId?:
                     <span className="min-w-0">
                       <span className="block text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{u.name}</span>
                       <span className="block text-[11px] text-gray-500 dark:text-gray-400 truncate">{u.email}</span>
+                      {u.manager && (
+                        <span className="block text-[10px] text-[#168BFF] truncate">Managed by {u.manager.name}</span>
+                      )}
                     </span>
                     <span className={`shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold capitalize ${ROLE_BADGE[u.role] ?? ROLE_BADGE.contributor}`}>
                       {u.role === 'superadmin' ? 'Super Admin' : u.role}
@@ -519,6 +522,9 @@ const UsersPermissionsSection: React.FC<{ isSuperAdmin: boolean; currentUserId?:
                 <X className="w-4 h-4" />
               </button>
             </div>
+            {isSuperAdmin && (picked.role === 'admin' || picked.role === 'moderator') && (
+              <StaffAssignmentsPanel key={`assign-${picked.id}`} staffId={picked.id} />
+            )}
             {lockedReason(picked) ? (
               <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                 <AlertCircle className="w-4 h-4" /> {lockedReason(picked)}

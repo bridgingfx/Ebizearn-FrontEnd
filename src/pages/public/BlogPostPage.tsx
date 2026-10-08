@@ -193,15 +193,21 @@ export const BlogPostPage: React.FC = () => {
         {/* Hero image or premium gradient hero */}
         <div className="mt-8 rounded-3xl overflow-hidden border border-[#E4EAF2] dark:border-white/10 shadow-lg">
           {post.heroImage && failedImage !== post.heroImage ? (
-            <img
-              src={post.heroImage}
-              alt={post.title}
-              width={1920}
-              height={1280}
-              loading="lazy"
-              onError={() => setFailedImage(post.heroImage ?? null)}
-              className="w-full max-h-[420px] object-cover"
-            />
+            <picture>
+              <source
+                srcSet={post.heroImage.replace(/\.jpe?g$/i, '.webp')}
+                type="image/webp"
+              />
+              <img
+                src={post.heroImage}
+                alt={post.title}
+                width={1920}
+                height={1280}
+                loading="lazy"
+                onError={() => setFailedImage(post.heroImage ?? null)}
+                className="w-full max-h-[420px] object-cover"
+              />
+            </picture>
           ) : (
             <div className={`relative bg-gradient-to-br ${style.gradient} px-8 py-14 sm:py-20`}>
               <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />

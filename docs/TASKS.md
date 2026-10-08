@@ -28,3 +28,11 @@ Derived from git log + repo state (2026-10-08). Status: ✅ done · 🔄 in-prog
 6. Public marketing pages: confirm copy/placeholders (address, phone) are real — some may still be placeholders from the rebrand. TODO: owner to confirm.
 7. Demo metrics block (`SHOW_DEMO_METRICS = true` in brand.ts) — confirm with owner whether these aggregate figures should stay on the public site.
 8. `frontend/public/` legacy directory — confirm it's unused and can be removed (root `public/` is the live one).
+9. **Search Console (owner-UI action, not repo work):** the GSC HTML verification file is deployed (`public/f6d8623d0af2587029827261961637a7.txt` → served at `https://ebizearn.com/f6d8623d0af2587029827261961637a7.txt`); confirm the property is verified in Search Console, submit `https://ebizearn.com/sitemap.xml`, and check Coverage/Core Web Vitals after the 2026-10-08 SEO sweep deploy.
+10. **Blog prerender smoke check** after each deploy: confirm new daily posts appear in `sitemap.xml` and as prerendered `dist/blog/<slug>/index.html` (the build does both automatically; verify on live once).
+11. **Backlink strategy — earned via content only (never buy/spam links):**
+    - The daily blog engine (3 posts/day) is the link magnet: keep publishing honest, citable guides (scam-awareness, payout-method explainers, platform-policy changes) that other sites naturally reference.
+    - Digital PR angle: trust & safety (fraud prevention, escrowed budgets, AI-verified proof) is the newsworthy differentiator for creator-economy/fintech press.
+    - Legitimate listings only: real startup/marketplace directories with editorial review.
+    - Partner links: businesses running campaigns and contributors sharing referral pages link back organically.
+    - Forbidden: paid links, link farms, PBNs, spam comments, fake reviews/ratings — never.

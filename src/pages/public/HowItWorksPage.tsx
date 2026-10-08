@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PageBreadcrumb } from '../../components/common/PageBreadcrumb';
 import {
   UserPlus,
   Compass,
@@ -398,6 +399,10 @@ export const HowItWorksPage: React.FC = () => {
         <div className="absolute bottom-0 right-10 w-[400px] h-[400px] bg-[#7357FF]/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
+          <PageBreadcrumb
+            tone="onDark"
+            trail={[{ label: 'Home', to: '/' }, { label: 'How It Works' }]}
+          />
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Clear • Transparent • Automated Micro-Tasking</span>

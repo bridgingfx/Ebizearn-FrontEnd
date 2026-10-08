@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { PageBreadcrumb } from '../../components/common/PageBreadcrumb';
 import { faqPageFaqs as faqs } from '../../seo/faqData';
 
 export const FaqPage: React.FC = () => {
@@ -8,6 +9,7 @@ export const FaqPage: React.FC = () => {
   return (
     <div className="pt-24 pb-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-8">
       <div className="text-center max-w-2xl mx-auto space-y-2.5">
+        <PageBreadcrumb trail={[{ label: 'Home', to: '/' }, { label: 'FAQ' }]} />
         <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
           Help Center & Answers
         </span>

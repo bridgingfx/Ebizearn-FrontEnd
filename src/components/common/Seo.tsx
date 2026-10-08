@@ -74,7 +74,9 @@ export const RouteSeo: React.FC = () => {
       const post = getPostBySlug(path.slice('/blog/'.length));
       if (post) {
         page = {
-          title: `${post.title} | eBizEarn Blog`,
+          // Blog post titles are writer-contract-capped at 60 chars; used
+          // verbatim so the <title> stays unique and never exceeds 60 chars.
+          title: post.title,
           description: post.excerpt,
           canonical: `/blog/${post.slug}`,
           ogType: 'article',

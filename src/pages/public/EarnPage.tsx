@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PageBreadcrumb } from '../../components/common/PageBreadcrumb';
 import {
   DollarSign,
   ShieldCheck,
@@ -163,6 +164,10 @@ export const EarnPage: React.FC = () => {
           
           {/* Header Title Section */}
           <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
+            <PageBreadcrumb
+              tone="onDark"
+              trail={[{ label: 'Home', to: '/' }, { label: 'Earn' }]}
+            />
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Zero Followers Required • 100% Free Forever</span>

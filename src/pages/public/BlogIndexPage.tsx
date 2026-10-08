@@ -15,6 +15,7 @@ import {
 } from '../../blog/loader';
 import { PostCard } from '../../blog/components/PostCard';
 import { categoryStyle } from '../../blog/components/categoryStyles';
+import { PageBreadcrumb } from '../../components/common/PageBreadcrumb';
 import type { BlogPost } from '../../blog/types';
 
 function EmptyState(): React.ReactElement {
@@ -121,6 +122,7 @@ export const BlogIndexPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page header */}
         <div className="text-center max-w-2xl mx-auto space-y-3 mb-10">
+          <PageBreadcrumb trail={[{ label: 'Home', to: '/' }, { label: 'Blog' }]} />
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
             <Newspaper className="w-3.5 h-3.5" />
             eBizEarn Blog
@@ -159,7 +161,7 @@ export const BlogIndexPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setCategory(null)}
-                    className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                    className={`px-4 py-2 min-h-[44px] inline-flex items-center rounded-full text-xs font-bold transition-all ${
                       category === null
                         ? 'bg-[#07182F] dark:bg-white text-white dark:text-[#07182F]'
                         : 'bg-white dark:bg-white/5 text-gray-600 dark:text-gray-400 border border-[#E4EAF2] dark:border-white/10 hover:border-[#168BFF]/50'
@@ -172,7 +174,7 @@ export const BlogIndexPage: React.FC = () => {
                       key={c}
                       type="button"
                       onClick={() => setCategory(category === c ? null : c)}
-                      className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                      className={`px-4 py-2 min-h-[44px] inline-flex items-center rounded-full text-xs font-bold transition-all ${
                         category === c
                           ? 'bg-[#07182F] dark:bg-white text-white dark:text-[#07182F]'
                           : 'bg-white dark:bg-white/5 text-gray-600 dark:text-gray-400 border border-[#E4EAF2] dark:border-white/10 hover:border-[#168BFF]/50'
@@ -192,7 +194,7 @@ export const BlogIndexPage: React.FC = () => {
                       key={t}
                       type="button"
                       onClick={() => setTag(tag === t ? null : t)}
-                      className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                      className={`px-3 py-1.5 min-h-[44px] inline-flex items-center rounded-lg text-[11px] font-bold transition-all ${
                         tag === t
                           ? 'bg-[#168BFF] text-white'
                           : 'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'

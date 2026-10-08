@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PageBreadcrumb } from '../../components/common/PageBreadcrumb';
 import {
   Search,
   Clock,
@@ -183,6 +184,11 @@ export const PublicTasksPage: React.FC = () => {
         <div className="max-w-7xl mx-auto relative z-10 space-y-5">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2.5 max-w-2xl">
+              <PageBreadcrumb
+                tone="onDark"
+                align="left"
+                trail={[{ label: 'Home', to: '/' }, { label: 'Tasks' }]}
+              />
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
                 <Flame className="w-3.5 h-3.5 fill-[#20C4E8]" />
                 <span>{heroStatus}</span>

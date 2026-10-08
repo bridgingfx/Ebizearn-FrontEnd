@@ -53,7 +53,7 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2.5 text-xs">
               {quickLinks.map((l) => (
-                <li key={l.to + l.label}><Link to={l.to} className="hover:text-white transition-colors">{l.label}</Link></li>
+                <li key={l.to + l.label}><Link to={l.to} className="inline-block py-1.5 hover:text-white transition-colors">{l.label}</Link></li>
               ))}
             </ul>
           </div>
@@ -63,7 +63,7 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">{t('footer.support')}</h4>
             <ul className="space-y-2.5 text-xs">
               {supportLinks.map((l) => (
-                <li key={l.to + l.label}><Link to={l.to} className="hover:text-white transition-colors">{l.label}</Link></li>
+                <li key={l.to + l.label}><Link to={l.to} className="inline-block py-1.5 hover:text-white transition-colors">{l.label}</Link></li>
               ))}
             </ul>
           </div>
@@ -73,7 +73,7 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">{t('footer.legal')}</h4>
             <ul className="space-y-2.5 text-xs">
               {legalLinks.map((l) => (
-                <li key={l.to + l.label}><Link to={l.to} className="hover:text-white transition-colors">{l.label}</Link></li>
+                <li key={l.to + l.label}><Link to={l.to} className="inline-block py-1.5 hover:text-white transition-colors">{l.label}</Link></li>
               ))}
             </ul>
           </div>

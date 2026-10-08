@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PageBreadcrumb } from '../../components/common/PageBreadcrumb';
 import {
   Building2,
   Users,
@@ -118,6 +119,7 @@ export const ForBusinessesPage: React.FC = () => {
               alt=""
               className="w-full h-full object-cover"
               loading="eager"
+              fetchPriority="high"
             />
           </picture>
           {/* Navy cinematic grade: image melts into the page, text stays readable */}
@@ -134,7 +136,11 @@ export const ForBusinessesPage: React.FC = () => {
             
             {/* Left Column: B2B Authority Messaging */}
             <div className="lg:col-span-7 space-y-6">
-              
+              <PageBreadcrumb
+                tone="onDark"
+                align="left"
+                trail={[{ label: 'Home', to: '/' }, { label: 'For Businesses' }]}
+              />
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
                 <Building2 className="w-3.5 h-3.5" />
                 <span>Enterprise Brand Protection & Social Distribution</span>

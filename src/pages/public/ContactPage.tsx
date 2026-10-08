@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PageBreadcrumb } from '../../components/common/PageBreadcrumb';
 import {
   Mail,
   Phone,
@@ -48,6 +49,10 @@ export const ContactPage: React.FC = () => {
       <section className="relative bg-[#07182F] text-white pt-24 pb-14 sm:pt-28 sm:pb-16 overflow-hidden border-b border-white/10">
         <div className="absolute top-10 left-1/4 w-[400px] h-[400px] bg-[#168BFF]/15 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4">
+          <PageBreadcrumb
+            tone="onDark"
+            trail={[{ label: 'Home', to: '/' }, { label: 'Contact' }]}
+          />
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-[#20C4E8]">
             <Sparkles className="w-3.5 h-3.5" />
             <span>24/7 Support Network</span>

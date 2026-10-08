@@ -129,7 +129,7 @@ export const Navbar: React.FC = () => {
               key={link.name}
               to={link.path}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-medium text-gray-200 hover:text-white border-b border-white/5"
+              className="flex items-center py-3 text-base font-medium text-gray-200 hover:text-white border-b border-white/5"
             >
               {link.name}
             </Link>

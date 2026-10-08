@@ -99,6 +99,34 @@ export function faqPageSchema(faqs: FaqItem[]): Record<string, unknown> {  retur
   };
 }
 
+/**
+ * Generic BreadcrumbList schema for public pages. The crumb trail must match
+ * the visible <PageBreadcrumb> on the page — schema mirrors content, never
+ * invents it.
+ */
+export function breadcrumbSchemaFor(
+  crumbs: { name: string; path?: string }[],
+): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.name,
+      ...(c.path ? { item: `${SITE_URL}${c.path}` } : {}),
+    })),
+  };
+}
+
+/** Shorthand: Home / Page breadcrumb for top-level public pages. */
+export function homeBreadcrumb(pageName: string): Record<string, unknown> {
+  return breadcrumbSchemaFor([
+    { name: 'Home', path: '/' },
+    { name: pageName },
+  ]);
+}
+
 export const SEO_BY_PATH: Record<string, PageSeo> = {
   /* ── Public marketing pages ─────────────────────────────────────── */
   '/': {
@@ -110,17 +138,19 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
     title: 'Browse Open Tasks — Verified Social Media Gigs | eBizEarn',
     description:
       'Browse open eBizEarn tasks: verified social media gigs from real businesses. Pick a task, complete it, submit proof, and get paid. Free to join.',
+    jsonLd: [homeBreadcrumb('Tasks')],
   },
   '/earn': {
     title: 'How Earning Works — Tasks, Rewards & $50 Payouts | eBizEarn',
     description:
       'How earning on eBizEarn works: complete verified social tasks, earn wallet rewards, and withdraw from $50 via PayPal, Wise, bank, or mobile money.',
-    jsonLd: [faqPageSchema(earnFaqs)],
+    jsonLd: [faqPageSchema(earnFaqs), homeBreadcrumb('Earn')],
   },
   '/for-businesses': {
     title: 'For Businesses — Launch Verified Social Campaigns | eBizEarn',
     description:
       'Run verified social-media campaigns on eBizEarn: self-serve campaign wizard, escrowed budgets, AI-verified proof, and real human engagement.',
+    jsonLd: [homeBreadcrumb('For Businesses')],
   },
   '/pricing': {
     title: 'Pricing — Business Campaign Plans | eBizEarn',
@@ -132,17 +162,19 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
     title: 'How It Works — Pick a Task, Verify, Get Paid | eBizEarn',
     description:
       'How eBizEarn works: pick a verified task, complete it on your social accounts, submit proof — AI verification credits your wallet in seconds.',
+    jsonLd: [homeBreadcrumb('How It Works')],
   },
   '/about': {
     title: 'About eBizEarn — The Social Task Marketplace | eBizEarn',
     description:
       'About eBizEarn: the social-media task marketplace connecting contributors with businesses running promotional campaigns. Based in Georgia, open worldwide.',
+    jsonLd: [homeBreadcrumb('About')],
   },
   '/faq': {
     title: 'FAQ — Tasks, Earnings & Payouts | eBizEarn',
     description:
       'Frequently asked questions about eBizEarn: is it free, how tasks work, how much you can earn, the $50 withdrawal threshold, verification, and fraud prevention.',
-    jsonLd: [faqPageSchema(faqPageFaqs)],
+    jsonLd: [faqPageSchema(faqPageFaqs), homeBreadcrumb('FAQ')],
   },
   '/payments': {
     title: 'Payments & Withdrawals FAQ | eBizEarn',
@@ -154,17 +186,19 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
     title: 'Blog — Guides on Tasks, Rewards & Payouts | eBizEarn',
     description:
       'The eBizEarn blog: practical guides on how social-media tasks work, how rewards and payouts work, and how to stay safe online. Honest, no hype.',
-    jsonLd: [blogListingSchema()],
+    jsonLd: [blogListingSchema(), homeBreadcrumb('Blog')],
   },
   '/trust-safety': {
     title: 'Trust & Safety — Fraud Prevention & Escrow | eBizEarn',
     description:
       'How eBizEarn keeps the marketplace fair: AI-assisted proof verification, duplicate detection, escrowed brand budgets, human appeals, and no fake reviews.',
+    jsonLd: [homeBreadcrumb('Trust & Safety')],
   },
   '/contact': {
     title: 'Contact eBizEarn — Support & Business Inquiries | eBizEarn',
     description:
       'Contact eBizEarn support: contributor help, business and campaign inquiries, and compliance. Reach us at support@ebizearn.com.',
+    jsonLd: [homeBreadcrumb('Contact')],
   },
   /* ── Legal ─────────────────────────────────────────────────────── */
   '/terms': {

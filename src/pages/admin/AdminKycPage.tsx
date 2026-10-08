@@ -4,6 +4,7 @@ import { staffKycApi, getApiError } from '../../api';
 import type { KycDocumentSide, KycDocumentType, KycStatus, KycSubmission } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PageHeader } from '../../components/common/ui';
+import { CountryChangeQueue } from '../../components/admin/CountryChangeQueue';
 import { useHideChatWidget } from '../../utils/useHideChatWidget';
 import { Link } from 'react-router-dom';
 
@@ -40,6 +41,8 @@ interface LoadedDoc {
  * private and fetched with the staff auth token as blobs.
  */
 export const AdminKycPage: React.FC = () => {
+  const [view, setView] = useState<'documents' | 'country'>('documents');
+  const [countryPending, setCountryPending] = useState(0);
   const [rows, setRows] = useState<KycSubmission[]>([]);
   const [pendingCount, setPendingCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -159,7 +162,29 @@ export const AdminKycPage: React.FC = () => {
         }
       />
 
-      <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs overflow-hidden">
+      <div className="flex gap-2">
+        {([
+          ['documents', 'Identity documents'],
+          ['country', `Country changes${countryPending ? ` (${countryPending})` : ''}`],
+        ] as const).map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setView(key)}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+              view === key
+                ? 'bg-[#07182F] dark:bg-[#168BFF] text-white'
+                : 'bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'country' && <CountryChangeQueue onPendingCount={setCountryPending} />}
+
+      <div className={`bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 shadow-xs overflow-hidden ${view === 'country' ? 'hidden' : ''}`}>
         <div className="p-4 border-b border-gray-100 dark:border-white/10 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 flex-wrap">
             {(['pending', 'verified', 'rejected', 'all'] as Filter[]).map((f) => (

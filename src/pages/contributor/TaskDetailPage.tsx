@@ -186,7 +186,7 @@ export const TaskDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 h-96 animate-pulse" />
         <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 h-96 animate-pulse" />
       </div>
@@ -219,9 +219,9 @@ export const TaskDetailPage: React.FC = () => {
         <span className="text-[11px] font-mono text-gray-400 dark:text-gray-500">#{task.uuid?.slice(0, 8) || task.id}</span>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* LEFT — platform preview + task facts */}
-        <div className="space-y-5">
+        <div className="space-y-5 min-w-0">
           <PlatformPreview task={task} />
 
           {/* Download creative → copy caption → open platform → post → submit proof */}
@@ -288,7 +288,7 @@ export const TaskDetailPage: React.FC = () => {
         </div>
 
         {/* RIGHT — action panel */}
-        <div className="lg:sticky lg:top-6 space-y-5">
+        <div className="lg:sticky lg:top-6 space-y-5 min-w-0">
           <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 p-5 sm:p-6 shadow-xs">
             {submission ? (
               <div className="space-y-4">
@@ -396,7 +396,7 @@ export const TaskDetailPage: React.FC = () => {
                         {copied ? 'Copied!' : 'Copy'}
                       </button>
                     </div>
-                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{task.generatedContent}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">{task.generatedContent}</p>
                     <p className="text-[10px] text-gray-400 dark:text-gray-500">Copy this text and paste it where the task asks — then screenshot and submit below.</p>
                   </div>
                 )}

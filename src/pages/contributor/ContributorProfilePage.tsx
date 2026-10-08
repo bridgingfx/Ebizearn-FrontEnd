@@ -27,7 +27,7 @@ import { Link } from 'react-router-dom';
 import { AvatarUploadControl } from '../../components/common/AvatarUploadControl';
 import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 import { SocialChannelsCard } from '../../components/account/SocialChannelsCard';
-import { profileApi, getApiError } from '../../api';
+import { profileApi, getApiError, type CountryChangeRequest } from '../../api';
 import { PAYOUT_RAILS, PayoutRailIcon, type PayoutRailId } from '../../components/common/PayoutRailIcon';
 import { CountrySelect } from '../../components/auth/CountrySelect';
 import type { KycDocumentType } from '../../types';
@@ -92,6 +92,27 @@ export const ContributorProfilePage: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
+  // Residence-country changes go to staff for approval.
+  const [countryChange, setCountryChange] = useState<CountryChangeRequest | null>(null);
+  useEffect(() => {
+    profileApi
+      .countryChange()
+      .then((res) => setCountryChange(res.success ? res.data : null))
+      .catch(() => setCountryChange(null));
+  }, [user?.id]);
+
+  const cancelCountryChange = async () => {
+    try {
+      const res = await profileApi.cancelCountryChange();
+      if (res.success) {
+        setCountryChange(null);
+        setCountry(user?.profile?.country_code || '');
+      }
+    } catch (err) {
+      setSaveMsg({ ok: false, text: getApiError(err, 'Could not cancel the request.') });
+    }
+  };
+
   // Re-sync the form when the signed-in user loads or changes.
   useEffect(() => {
     setName(user?.name || '');
@@ -147,15 +168,15 @@ export const ContributorProfilePage: React.FC = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Warn before a country change: it invalidates KYC and locks tasks.
+    // Warn before a country change: it needs admin approval, then new KYC.
     const originalCountry = user?.profile?.country_code || '';
     if (country && country !== originalCountry) {
       const confirmed = window.confirm(
-        'Changing your country of residence will:\n\n' +
-        '• Invalidate your current KYC verification\n' +
-        '• LOCK all tasks until you complete KYC again\n' +
-        '• Require new documents from your new country\n\n' +
-        'Do you want to continue?'
+        'Changing your country of residence:\n\n' +
+        '• Is sent to our team for approval — your country stays the same until then\n' +
+        '• Once approved, your current KYC no longer applies\n' +
+        '• Tasks stay locked until you complete KYC with documents from your new country\n\n' +
+        'Send the request?'
       );
       if (!confirmed) return;
     }
@@ -172,13 +193,10 @@ export const ContributorProfilePage: React.FC = () => {
       });
       if (res.success && res.data?.user) {
         updateUser(res.data.user);
-        // Backend signals when a country change reset KYC.
-        const kycReset = (res.data as { kyc_reset?: boolean; kyc_message?: string });
-        if (kycReset.kyc_reset) {
-          setSaveMsg({
-            ok: false,
-            text: kycReset.kyc_message || 'Your country changed. Complete KYC again with documents from your new country to unlock tasks.',
-          });
+        // A new country comes back as a pending request, not a change.
+        if (res.data.country_change_request) {
+          setCountryChange(res.data.country_change_request);
+          setSaveMsg({ ok: true, text: res.message || 'Country change sent for admin approval.' });
         } else {
           setSaveMsg({ ok: true, text: 'Profile saved.' });
         }
@@ -336,6 +354,24 @@ export const ContributorProfilePage: React.FC = () => {
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-700 dark:text-gray-300">Country of Residence</label>
               <CountrySelect id="residence-country" value={country} onChange={setCountry} />
+              {countryChange?.status === 'pending' ? (
+                <div className="mt-2 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-[11px] text-amber-800 dark:text-amber-200">
+                  Change to <b>{countryChange.to_country}</b> is waiting for admin approval. After approval you'll need to
+                  complete KYC with documents from that country.{' '}
+                  <button type="button" onClick={() => void cancelCountryChange()} className="font-bold underline">
+                    Cancel request
+                  </button>
+                </div>
+              ) : countryChange?.status === 'rejected' ? (
+                <p className="mt-2 text-[11px] text-red-600 dark:text-red-400">
+                  Your change to {countryChange.to_country} was not approved
+                  {countryChange.review_note ? `: ${countryChange.review_note}` : '.'}
+                </p>
+              ) : (
+                <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
+                  Changing your country needs admin approval and new KYC for that country.
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5 sm:col-span-2">

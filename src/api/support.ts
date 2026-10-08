@@ -1,5 +1,6 @@
 import { api, type ApiResponse } from './client';
 import type { KycDocumentSide, KycSubmission, SupportTicket, TicketCategory, TicketPriority, TicketStatus } from '../types';
+import type { CountryChangeRequest } from './profile';
 
 export interface CreateTicketPayload {
   subject: string;
@@ -83,4 +84,17 @@ export const staffKycApi = {
     api.get<Blob>(`/staff/kyc/${userId}/documents/${side}`, { responseType: 'blob' }).then((r) => r.data),
   decide: (userId: number, decision: 'approve' | 'reject', reason?: string) =>
     api.post<ApiResponse<KycSubmission>>(`/staff/kyc/${userId}/decision`, { decision, reason }).then((r) => r.data),
+};
+
+/** Staff review of residence-country changes (review_kyc). Approval resets KYC for the new country. */
+export const staffCountryChangeApi = {
+  list: (params?: { status?: 'pending' | 'approved' | 'rejected' | 'cancelled' | 'all'; page?: number }) =>
+    api
+      .get<ApiResponse<CountryChangeRequest[]> & { meta: { total: number; last_page: number; pending_count: number } }>(
+        '/staff/country-changes',
+        { params },
+      )
+      .then((r) => r.data),
+  decide: (id: number, decision: 'approve' | 'reject', note?: string) =>
+    api.post<ApiResponse<CountryChangeRequest>>(`/staff/country-changes/${id}/decision`, { decision, note }).then((r) => r.data),
 };

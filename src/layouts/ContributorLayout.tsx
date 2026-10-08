@@ -224,7 +224,9 @@ export const ContributorLayout: React.FC = () => {
               </span>
             )}
           </Link>
-          <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} size="sm" />
+          <Link to="/app/profile" aria-label="Profile" className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#168BFF]">
+            <UserAvatar src={user?.profile?.avatar_url} name={user?.name} email={user?.email} size="sm" />
+          </Link>
           <button
             type="button"
             onClick={() => setLogoutOpen(true)}

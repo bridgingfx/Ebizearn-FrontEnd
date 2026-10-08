@@ -9,6 +9,23 @@ export interface ProfileUpdatePayload {
   city?: string | null;
   bio?: string | null;
   preferred_payout_method?: 'paypal' | 'wise' | 'bank' | 'usdt' | null;
+  /** Optional note for staff when requesting a residence-country change. */
+  country_change_reason?: string | null;
+}
+
+/** A residence-country change waiting for (or decided by) staff. */
+export interface CountryChangeRequest {
+  id: number;
+  user_id: number;
+  from_country: string | null;
+  to_country: string;
+  reason: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  review_note: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  user?: { id: number; name: string; email: string; role: string; profile?: { kyc_status: string; country_code: string } | null };
+  reviewer?: { id: number; name: string } | null;
 }
 
 export interface KycSubmitPayload {
@@ -29,8 +46,18 @@ export const profileApi = {
   updatePassword: (payload: ChangePasswordPayload) =>
     api.put<ApiResponse<null>>('/profile/password', payload).then((r) => r.data),
 
+  /** A new country_code is not applied directly: it comes back as a pending request. */
   update: (payload: ProfileUpdatePayload) =>
-    api.put<ApiResponse<{ user: User }>>('/profile', payload).then((r) => r.data),
+    api
+      .put<ApiResponse<{ user: User; country_change_request?: CountryChangeRequest | null }>>('/profile', payload)
+      .then((r) => r.data),
+
+  /** Latest residence-country change request (pending or decided), or null. */
+  countryChange: () =>
+    api.get<ApiResponse<CountryChangeRequest | null>>('/profile/country-change').then((r) => r.data),
+
+  cancelCountryChange: () =>
+    api.delete<ApiResponse<CountryChangeRequest>>('/profile/country-change').then((r) => r.data),
 
   uploadAvatar: (file: File) => {
     const form = new FormData();

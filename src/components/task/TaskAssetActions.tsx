@@ -225,7 +225,7 @@ export const TaskAssetActions: React.FC<{ task: UiTask }> = ({ task }) => {
           <p className="text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">
             Caption to post
           </p>
-          <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3 whitespace-pre-line">
+          <p className="text-[11px] text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3 whitespace-pre-line break-words [overflow-wrap:anywhere]">
             {caption}
           </p>
         </div>

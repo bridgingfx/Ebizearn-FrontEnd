@@ -243,6 +243,9 @@ export const LazyAdminPaymentGatewaysPage = React.lazy(() =>
 export const LazyAdminAuditLogsPage = React.lazy(() =>
   named(import('../pages/admin/AdminAuditLogsPage'), 'AdminAuditLogsPage'),
 );
+export const LazyAdminNotificationsPage = React.lazy(() =>
+  named(import('../pages/admin/AdminNotificationsPage'), 'AdminNotificationsPage'),
+);
 export const LazyAdminBusinessesPage = React.lazy(() =>
   named(import('../pages/admin/AdminBusinessesPage'), 'AdminBusinessesPage'),
 );

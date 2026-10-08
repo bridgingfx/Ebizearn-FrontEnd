@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ShieldCheck, Search, Loader2, X, CheckCircle2, XCircle, AlertCircle, RefreshCw, FileText } from 'lucide-react';
+import { ShieldCheck, Search, Loader2, X, CheckCircle2, XCircle, AlertCircle, RefreshCw, FileText, Eye } from 'lucide-react';
 import { staffKycApi, getApiError } from '../../api';
 import type { KycDocumentSide, KycDocumentType, KycStatus, KycSubmission } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -243,6 +243,7 @@ export const AdminKycPage: React.FC = () => {
                   <th className="py-3 px-4">Files</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4 text-right">Submitted</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-white/10">
@@ -273,6 +274,18 @@ export const AdminKycPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 text-right text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {r.kyc_submitted_at ? new Date(r.kyc_submitted_at).toLocaleString() : '—'}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          open(r);
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#168BFF] hover:bg-[#0f7ae5] text-white text-[11px] font-bold"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> {r.kyc_status === 'pending' ? 'Review' : 'View'}
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -354,8 +367,18 @@ export const AdminKycPage: React.FC = () => {
               ))}
             </div>
 
-            {selected.kyc_status === 'pending' && (
+            {(selected.kyc_documents ?? []).length > 0 && (
               <div className="p-5 border-t border-gray-100 dark:border-white/10 space-y-3">
+                {selected.kyc_status !== 'pending' && (
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                    {selected.kyc_status === 'verified'
+                      ? 'Already approved. You can still reject it if the documents turn out to be invalid.'
+                      : selected.kyc_status === 'rejected'
+                        ? 'Already rejected. You can approve it if the rejection was a mistake.'
+                        : 'Waiting for review.'}
+                  </p>
+                )}
+                {selected.kyc_status !== 'rejected' && (
                 <textarea
                   rows={2}
                   value={reason}
@@ -364,10 +387,11 @@ export const AdminKycPage: React.FC = () => {
                   placeholder="Rejection reason shown to the user (required to reject), e.g. Photo is blurry — please retake."
                   className="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF]"
                 />
+                )}
                 <div className="flex gap-2">
                   <button
                     type="button"
-                    disabled={busy}
+                    disabled={busy || selected.kyc_status === 'rejected'}
                     onClick={() => void decide('reject')}
                     className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 disabled:opacity-50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/30 text-xs font-bold"
                   >
@@ -375,7 +399,7 @@ export const AdminKycPage: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    disabled={busy}
+                    disabled={busy || selected.kyc_status === 'verified'}
                     onClick={() => void decide('approve')}
                     className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#16B364] hover:bg-[#12995a] disabled:opacity-50 text-white text-xs font-bold"
                   >

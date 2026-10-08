@@ -21,6 +21,7 @@ import {
   Trash2,
   Plus,
   Check,
+  Camera,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -31,6 +32,7 @@ import { profileApi, getApiError, type CountryChangeRequest } from '../../api';
 import { PAYOUT_RAILS, PayoutRailIcon, type PayoutRailId } from '../../components/common/PayoutRailIcon';
 import { CountrySelect } from '../../components/auth/CountrySelect';
 import type { KycDocumentType } from '../../types';
+import { SelfieCamera } from '../../components/kyc/SelfieCamera';
 
 type ProfileTab = 'profile' | 'kyc' | 'socials' | 'payouts' | 'security';
 
@@ -129,6 +131,7 @@ export const ContributorProfilePage: React.FC = () => {
   const [kycFront, setKycFront] = useState<File | null>(null);
   const [kycBack, setKycBack] = useState<File | null>(null);
   const [kycSelfie, setKycSelfie] = useState<File | null>(null);
+  const [selfieCameraOpen, setSelfieCameraOpen] = useState(false);
   const [kycSubmitting, setKycSubmitting] = useState(false);
   const [kycMsg, setKycMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -497,7 +500,6 @@ export const ContributorProfilePage: React.FC = () => {
                 {[
                   { label: 'Front side', hint: 'Required', file: kycFront, set: setKycFront, accept: 'image/jpeg,image/png,image/webp,application/pdf' },
                   { label: 'Back side', hint: kycDocType === 'passport' ? 'Optional for passport' : 'Recommended', file: kycBack, set: setKycBack, accept: 'image/jpeg,image/png,image/webp,application/pdf' },
-                  { label: 'Selfie holding ID', hint: 'Optional — speeds up review', file: kycSelfie, set: setKycSelfie, accept: 'image/jpeg,image/png,image/webp' },
                 ].map((slot) => (
                   <label
                     key={slot.label}
@@ -520,7 +522,24 @@ export const ContributorProfilePage: React.FC = () => {
                     />
                   </label>
                 ))}
+                {/* Selfie: taken live with the camera — no gallery upload. */}
+                <button
+                  type="button"
+                  onClick={() => setSelfieCameraOpen(true)}
+                  className={`p-4 rounded-2xl border-2 border-dashed transition-colors flex flex-col items-center text-center gap-1.5 ${
+                    kycSelfie
+                      ? 'border-[#16B364] bg-emerald-50/50 dark:bg-emerald-500/10'
+                      : 'border-gray-200 dark:border-white/15 hover:border-[#168BFF] bg-gray-50 dark:bg-white/5'
+                  }`}
+                >
+                  {kycSelfie ? <CheckCircle2 className="w-6 h-6 text-[#16B364]" /> : <Camera className="w-6 h-6 text-gray-400" />}
+                  <span className="text-xs font-bold text-gray-900 dark:text-gray-100">Selfie holding ID</span>
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                    {kycSelfie ? 'Photo taken — tap to retake' : 'Opens your camera · speeds up review'}
+                  </span>
+                </button>
               </div>
+              <SelfieCamera open={selfieCameraOpen} onClose={() => setSelfieCameraOpen(false)} onCapture={setKycSelfie} />
               <p className="text-[10px] text-gray-400 dark:text-gray-500">JPG, PNG, WebP or PDF, up to 5MB each. Make sure all four corners and text are readable.</p>
 
               <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

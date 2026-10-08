@@ -35,6 +35,7 @@ import { EBizLogo } from '../components/common/EBizLogo';
 import { RegionSelector } from '../components/common/RegionSelector';
 import { ConfirmModal } from '../components/common/ConfirmModal';
 import { ThemeToggle } from '../components/common/ThemeToggle';
+import { StaffNotificationBell } from '../components/admin/StaffNotificationBell';
 import { AppFooter } from '../components/common/AppFooter';
 import { sectionPermission } from '../utils/permissionGroups';
 
@@ -206,6 +207,7 @@ export const AdminLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            {(user?.role === 'admin' || user?.role === 'superadmin') && <StaffNotificationBell />}
             <ThemeToggle />
             <div className="hidden sm:block">
               <RegionSelector variant="light" />

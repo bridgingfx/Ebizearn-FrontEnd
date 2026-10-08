@@ -19,6 +19,7 @@ import {
   Moon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { contributorSectionPermission } from '../utils/permissionGroups';
 import { useTheme } from '../context/ThemeContext';
 import { useRegion } from '../context/RegionContext';
 import { EBizLogo } from '../components/common/EBizLogo';
@@ -93,8 +94,20 @@ export const ContributorLayout: React.FC = () => {
     navigate('/login', { replace: true });
   };
 
-  const isActive = (tab: (typeof TABS)[number]) =>
+  const isActive = (tab: { path: string; exact?: boolean }) =>
     tab.exact ? location.pathname === tab.path : location.pathname.startsWith(tab.path);
+
+  // Each section shows only with its permission (CONTRIBUTOR_SECTIONS — the
+  // same list Super Admin switches per role / per account in Roles &
+  // Permissions). Home, Profile and Notifications are always available.
+  const canSee = (tab: { path: string }) => {
+    const perm = contributorSectionPermission(tab.path);
+    if (!perm || !user?.permissions) return true;
+    return user.permissions.includes(perm);
+  };
+  const tabs = TABS.filter(canSee);
+  const mobileTabs = MOBILE_TABS.filter(canSee);
+  const moreTabs = MORE_TABS.filter(canSee);
 
   return (
     <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0B0F19] flex flex-col md:flex-row text-left font-sans transition-colors">
@@ -138,7 +151,7 @@ export const ContributorLayout: React.FC = () => {
           </div>
 
           <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar -mx-1 px-1 py-1">
-            {TABS.map((tab) => {
+            {tabs.map((tab) => {
               const Icon = tab.icon;
               const active = isActive(tab);
               return (
@@ -250,7 +263,7 @@ export const ContributorLayout: React.FC = () => {
         className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/85 dark:bg-[#0C1322]/85 backdrop-blur-xl border-t border-gray-200 dark:border-white/10 shadow-[0_-4px_24px_rgba(0,0,0,0.08)]"
       >
         <div className="grid grid-cols-6 px-1 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-          {MOBILE_TABS.map((tab) => {
+          {mobileTabs.map((tab) => {
             const Icon = tab.icon;
             const active = isActive(tab);
             return (
@@ -274,14 +287,14 @@ export const ContributorLayout: React.FC = () => {
             aria-label="More options"
             aria-expanded={moreOpen}
             className={`flex flex-col items-center gap-0.5 py-1.5 rounded-xl transition-colors ${
-              MORE_TABS.some((t) => isActive(t))
+              moreTabs.some((t) => isActive(t))
                 ? 'text-[#168BFF]'
                 : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
             }`}
           >
-            <MoreHorizontal className="w-5 h-5" strokeWidth={MORE_TABS.some((t) => isActive(t)) ? 2.5 : 2} />
+            <MoreHorizontal className="w-5 h-5" strokeWidth={moreTabs.some((t) => isActive(t)) ? 2.5 : 2} />
             <span className="text-[9px] font-bold leading-none whitespace-nowrap tracking-tight">More</span>
-            {MORE_TABS.some((t) => isActive(t)) && <span className="w-1 h-1 rounded-full bg-[#168BFF] mt-0.5" />}
+            {moreTabs.some((t) => isActive(t)) && <span className="w-1 h-1 rounded-full bg-[#168BFF] mt-0.5" />}
           </button>
         </div>
       </nav>
@@ -309,7 +322,7 @@ export const ContributorLayout: React.FC = () => {
               </button>
             </div>
             <div className="space-y-1 max-h-[55vh] overflow-y-auto">
-              {MORE_TABS.map((item) => {
+              {moreTabs.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item);
                 return (

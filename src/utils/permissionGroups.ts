@@ -66,6 +66,22 @@ export const BUSINESS_SECTIONS: { label: string; path: string; perms: string[] }
   { label: 'Support', path: '/business/support', perms: ['open_support_tickets'] },
 ];
 
+/**
+ * Contributor sidebar sections (Home, Profile and Notifications are always
+ * open). The FIRST permission opens the page.
+ */
+export const CONTRIBUTOR_SECTIONS: { label: string; path: string; perms: string[] }[] = [
+  { label: 'Tasks', path: '/app/tasks', perms: ['perform_tasks'] },
+  { label: 'My Tasks', path: '/app/my-tasks', perms: ['perform_tasks'] },
+  { label: 'Wallet', path: '/app/wallet', perms: ['request_withdrawals'] },
+  { label: 'Referrals', path: '/app/referrals', perms: ['use_referrals'] },
+  { label: 'Support', path: '/app/support', perms: ['open_support_tickets'] },
+];
+
+/** Permission that opens a contributor sidebar page, by path. */
+export const contributorSectionPermission = (path: string): string | undefined =>
+  CONTRIBUTOR_SECTIONS.find((s) => s.path === path)?.perms[0];
+
 /** Permission that opens a business sidebar page, by path. */
 export const businessSectionPermission = (path: string): string | undefined =>
   BUSINESS_SECTIONS.find((s) => s.path === path)?.perms[0];
@@ -108,6 +124,7 @@ export function groupPermissionsForRole(
   if (staffFirst) addSections();
   // Business accounts: one block per business sidebar section first.
   if (role === 'business') pushSections(BUSINESS_SECTIONS, 'Business sidebar');
+  if (role === 'contributor') pushSections(CONTRIBUTOR_SECTIONS, 'Contributor sidebar');
 
   const groups: PermissionGroup[] = ['contributor', 'business', 'account', 'other', 'staff'];
   groups

@@ -183,6 +183,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
   }, []);
 
+  // Live permissions: when Super Admin / an admin / a business owner changes
+  // a role or this account's access, the sidebar follows without a new
+  // sign-in — re-read on tab focus and every minute. Only the permission
+  // list is replaced; a failed check changes nothing (expiry is handled by
+  // SESSION_EXPIRED_EVENT).
+  const userId = user?.id;
+  useEffect(() => {
+    if (!userId) return;
+    let busy = false;
+    const sync = async () => {
+      if (busy || document.visibilityState !== 'visible' || !localStorage.getItem(TOKEN_KEY)) return;
+      busy = true;
+      try {
+        const res = await authApi.me();
+        const fresh = res.success ? res.data.user : null;
+        if (fresh) {
+          setUser((prev) => {
+            if (!prev || prev.id !== fresh.id) return prev;
+            const a = [...(prev.permissions ?? [])].sort().join(',');
+            const b = [...(fresh.permissions ?? [])].sort().join(',');
+            return a === b ? prev : { ...prev, permissions: fresh.permissions };
+          });
+        }
+      } catch {
+        // Network hiccup — keep the current permissions.
+      } finally {
+        busy = false;
+      }
+    };
+    const timer = window.setInterval(() => void sync(), 60_000);
+    const onVisible = () => void sync();
+    window.addEventListener('focus', onVisible);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', onVisible);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [userId]);
+
   const refreshMe = async () => {
     const storedToken = localStorage.getItem(TOKEN_KEY);
     if (!storedToken) {

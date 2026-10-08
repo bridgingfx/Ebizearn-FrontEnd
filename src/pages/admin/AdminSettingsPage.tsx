@@ -5,6 +5,7 @@ import type { FeatureFlag, SystemSetting } from '../../types';
 import { WITHDRAWAL_THRESHOLD_OPTIONS } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { SocialSignInSettings } from '../../components/admin/SocialSignInSettings';
+import { AiContentSettings } from '../../components/admin/AiContentSettings';
 import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 import { useAuth } from '../../context/AuthContext';
 
@@ -196,6 +197,9 @@ export const AdminSettingsPage: React.FC = () => {
 
       {/* Google / Apple sign-in (Super Admin only) */}
       {isSuperAdmin && <SocialSignInSettings />}
+
+      {/* AI content generator: provider + encrypted API key (Super Admin only) */}
+      {isSuperAdmin && <AiContentSettings />}
 
       {/* Withdrawal threshold */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">

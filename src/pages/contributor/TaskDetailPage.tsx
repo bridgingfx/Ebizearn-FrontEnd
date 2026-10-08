@@ -396,11 +396,7 @@ export const TaskDetailPage: React.FC = () => {
                         {copied ? 'Copied!' : 'Copy'}
                       </button>
                     </div>
-<<<<<<< HEAD
                     <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">{task.generatedContent}</p>
-=======
-                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words leading-relaxed">{task.generatedContent}</p>
->>>>>>> 73129bd (Mobile responsive fixes across 9 pages)
                     <p className="text-[10px] text-gray-400 dark:text-gray-500">Copy this text and paste it where the task asks — then screenshot and submit below.</p>
                   </div>
                 )}

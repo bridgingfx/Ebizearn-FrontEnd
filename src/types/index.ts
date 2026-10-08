@@ -127,6 +127,8 @@ export interface Profile {
   language: string;
   bio?: string;
   contributor_level: ContributorLevel;
+  /** Set by staff and locked: completed tasks no longer change the level. */
+  level_locked?: boolean;
   fraud_score: number;
   completed_tasks_count: number;
   approval_rate: number;
@@ -249,6 +251,11 @@ export interface Campaign {
   /** AI-generated post content for contributors to copy-paste. */
   generated_content?: string | null;
   content_brief?: string | null;
+  /** manual = one approved text; auto = each contributor gets their own AI rewording. */
+  content_mode?: 'manual' | 'auto' | null;
+  /** Staff approve post content before the tasks are shown to contributors. */
+  content_status?: 'pending' | 'approved' | 'rejected' | null;
+  content_review_note?: string | null;
   title: string;
   objective?: string;
   description: string;
@@ -507,7 +514,8 @@ export interface UiTask extends Task {
   postCopy: string;
   hashtags?: string;
   flyerUrl?: string;
-  generatedContent?: string;
+  /** The campaign provides post text — fetched per contributor after they start (tasksApi.content). */
+  hasPostContent?: boolean;
   badgeColor?: string;
 }
 

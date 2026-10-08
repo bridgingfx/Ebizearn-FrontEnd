@@ -119,6 +119,17 @@ export const CampaignCard: React.FC<{
         </p>
       )}
       <CreatedBy creator={c.creator} className="mb-1.5" />
+      {c.content_mode && c.content_status !== 'approved' && (
+        <p
+          className={`text-[11px] font-bold mb-1.5 ${
+            c.content_status === 'rejected' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'
+          }`}
+        >
+          {c.content_status === 'rejected'
+            ? `Post content rejected${c.content_review_note ? `: ${c.content_review_note}` : ''}`
+            : 'Post content waiting for approval — tasks hidden until approved'}
+        </p>
+      )}
       <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{c.description}</p>
 
       <div className="grid grid-cols-3 gap-2 text-center mb-3 mt-auto">

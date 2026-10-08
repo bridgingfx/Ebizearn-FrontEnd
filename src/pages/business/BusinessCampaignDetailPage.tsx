@@ -145,6 +145,34 @@ export const BusinessCampaignDetailPage: React.FC = () => {
           <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">{campaign.title}</h1>
           <CreatedBy creator={campaign.creator} className="mt-1" />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-2xl">{campaign.description}</p>
+          {campaign.content_mode && (
+            <div className="mt-3 rounded-xl border border-violet-200 dark:border-violet-500/25 bg-violet-500/5 p-3 max-w-2xl">
+              <p className="text-[11px] font-bold text-gray-700 dark:text-gray-200">
+                Post content ({campaign.content_mode === 'auto' ? 'Auto — each contributor gets their own version' : 'Manual — same text for everyone'}) ·{' '}
+                <span
+                  className={
+                    campaign.content_status === 'approved'
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : campaign.content_status === 'rejected'
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-amber-600 dark:text-amber-400'
+                  }
+                >
+                  {campaign.content_status === 'approved'
+                    ? 'Approved'
+                    : campaign.content_status === 'rejected'
+                      ? 'Rejected'
+                      : 'Waiting for our team to approve — tasks go live after approval'}
+                </span>
+              </p>
+              {campaign.content_status === 'rejected' && campaign.content_review_note && (
+                <p className="text-[11px] text-red-600 dark:text-red-400 mt-1">Reason: {campaign.content_review_note}. Contact support to update the text.</p>
+              )}
+              {campaign.generated_content && (
+                <p className="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-wrap mt-1.5">{campaign.generated_content}</p>
+              )}
+            </div>
+          )}
           {campaign.instructions_markdown && (
             <details className="mt-3 text-xs text-gray-600 dark:text-gray-400">
               <summary className="font-bold cursor-pointer text-[#168BFF]">Contributor instructions</summary>

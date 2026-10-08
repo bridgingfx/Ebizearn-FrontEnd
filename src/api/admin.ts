@@ -101,6 +101,21 @@ export const adminApi = {
   // Edit copy / targeting only (edit_campaigns). Money fields are not editable.
   updateStaffCampaign: (id: number | string, payload: CampaignEditInput) =>
     api.patch(`/staff/campaigns/${id}`, payload).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  // Post content: staff override (edit_campaigns) — saved text is approved.
+  updateCampaignContent: (
+    id: number | string,
+    payload: { content_mode: 'manual' | 'auto' | null; generated_content?: string; content_brief?: string | null },
+  ) => api.patch(`/staff/campaigns/${id}/content`, payload).then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  // Approve / reject post content (tasks show only once approved).
+  campaignContentDecision: (id: number | string, decision: 'approve' | 'reject', note?: string) =>
+    api
+      .post(`/staff/campaigns/${id}/content/decision`, { decision, note })
+      .then((r) => r.data as { success: boolean; message?: string; data: Campaign }),
+  // Contributor level: set by hand + lock, or follow completed tasks.
+  setContributorLevel: (userId: number, level: string, locked: boolean) =>
+    api
+      .patch(`/admin/users/${userId}/level`, { level, locked })
+      .then((r) => r.data as { success: boolean; message?: string; data: { level: string; locked: boolean } }),
   // Safe delete (delete_campaigns): refused once contributors worked on it;
   // outstanding escrow goes back to the business wallet first.
   deleteStaffCampaign: (id: number | string) =>

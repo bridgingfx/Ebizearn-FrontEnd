@@ -93,6 +93,31 @@ export const TaskDetailPage: React.FC = () => {
       .catch(() => undefined);
   }, [id]);
 
+  // Post text for this contributor — fetched once the task is reserved.
+  const [postContent, setPostContent] = useState<{ loading: boolean; text: string | null; personal: boolean; error: string | null }>({
+    loading: false,
+    text: null,
+    personal: false,
+    error: null,
+  });
+  const taskKey = task ? task.uuid || task.id : null;
+  const hasPostContent = !!task?.hasPostContent;
+  useEffect(() => {
+    if (!started || !hasPostContent || !taskKey) return;
+    let alive = true;
+    setPostContent((p) => ({ ...p, loading: true, error: null }));
+    tasksApi
+      .content(taskKey)
+      .then((res) => {
+        if (!alive) return;
+        setPostContent({ loading: false, text: res.data?.content ?? null, personal: !!res.data?.personal, error: null });
+      })
+      .catch((err) => alive && setPostContent({ loading: false, text: null, personal: false, error: getApiError(err, 'Could not load the post text.') }));
+    return () => {
+      alive = false;
+    };
+  }, [started, hasPostContent, taskKey]);
+
   const handleStart = async () => {
     if (!task) return;
     setStarting(true);
@@ -376,29 +401,10 @@ export const TaskDetailPage: React.FC = () => {
                   </div>
                 )}
 
-                {/* AI-generated content to copy-paste */}
-                {task.generatedContent && (
-                  <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border-2 border-violet-300/40 dark:border-violet-500/30 rounded-2xl p-4 space-y-3">
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <p className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-300 flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" /> Ready-to-post content
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(task.generatedContent || '');
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 2000);
-                        }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white transition-colors"
-                      >
-                        {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                        {copied ? 'Copied!' : 'Copy'}
-                      </button>
-                    </div>
-                    <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">{task.generatedContent}</p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500">Copy this text and paste it where the task asks — then screenshot and submit below.</p>
-                  </div>
+                {task.hasPostContent && (
+                  <p className="text-[11px] text-violet-700 dark:text-violet-300 bg-violet-500/10 border border-violet-300/40 dark:border-violet-500/30 rounded-xl px-3 py-2 flex items-center gap-1.5 justify-center">
+                    <Sparkles className="w-3.5 h-3.5 shrink-0" /> Your ready-to-post text appears here after you reserve the task.
+                  </p>
                 )}
                 <p className="text-[10px] text-gray-400 dark:text-gray-500">
                   Reserving holds one of the task's slots under your account while you work.
@@ -412,6 +418,41 @@ export const TaskDetailPage: React.FC = () => {
                     Upload a screenshot of the completed action and/or paste the proof link.
                   </p>
                 </div>
+
+                {/* Post text to copy-paste — provided by the platform (own version in auto mode). */}
+                {task.hasPostContent && (
+                  <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border-2 border-violet-300/40 dark:border-violet-500/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <p className="text-xs font-black uppercase tracking-wider text-violet-600 dark:text-violet-300 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" /> {postContent.personal ? 'Your ready-to-post text' : 'Ready-to-post text'}
+                      </p>
+                      {postContent.text && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(postContent.text || '');
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-violet-600 hover:bg-violet-700 text-white transition-colors"
+                        >
+                          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copied ? 'Copied!' : 'Copy'}
+                        </button>
+                      )}
+                    </div>
+                    {postContent.loading ? (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" /> Preparing your text…
+                      </p>
+                    ) : postContent.text ? (
+                      <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">{postContent.text}</p>
+                    ) : (
+                      <p className="text-xs text-red-600 dark:text-red-400">{postContent.error || 'The post text is not available right now.'}</p>
+                    )}
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500">Copy this text and paste it where the task asks — then screenshot and submit below.</p>
+                  </div>
+                )}
 
                 {task.targetUrl && (
                   <a

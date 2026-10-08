@@ -173,6 +173,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
   const [proofRequirements, setProofRequirements] = useState<string[]>(['Screenshot']);
 
   // AI-generated post content (for copy-paste tasks: comments, reviews, captions)
+  const [contentMode, setContentMode] = useState<'none' | 'manual' | 'auto'>('none');
   const [contentBrief, setContentBrief] = useState('');
   const [generatedContent, setGeneratedContent] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -265,6 +266,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
         if (d.reward_per_task_cents) setRewardUsd(String(d.reward_per_task_cents / 100));
         if (d.target_contributors_count) setContributors(String(d.target_contributors_count));
         if (d.instructions_markdown) setInstructions(d.instructions_markdown);
+        if (d.content_mode) setContentMode(d.content_mode);
+        if (d.generated_content) setGeneratedContent(d.generated_content);
+        if (d.content_brief) setContentBrief(d.content_brief);
         // Proof chips: fresh wizard posts an array; a saved draft merges the
         // array with the stashed `wizard` answers object — accept both.
         const proof = d.proof_requirements_json as unknown;
@@ -377,6 +381,12 @@ export const CreateCampaignWizardPage: React.FC = () => {
       countries: [country === 'GLOBAL' ? 'ALL' : country],
     };
     if (objective.trim()) p.objective = objective.trim();
+    // Post content travels with the draft (staff approve it after launch).
+    p.content_mode = contentMode === 'none' ? null : contentMode;
+    if (contentMode !== 'none') {
+      p.generated_content = generatedContent.trim();
+      if (contentBrief.trim()) p.content_brief = contentBrief.trim();
+    }
     if (country !== 'GLOBAL') p.country_code = country;
     if (minLevel) p.min_contributor_level = minLevel;
     if (retentionHours && parseInt(retentionHours, 10) >= 0)
@@ -448,9 +458,14 @@ export const CreateCampaignWizardPage: React.FC = () => {
         proof_requirements_json: proofRequirements,
         target_countries: [country === 'GLOBAL' ? 'ALL' : country],
         idempotency_key: idempotencyKey,
-        // AI-generated post content for contributors to copy-paste.
-        ...(generatedContent.trim() ? { generated_content: generatedContent.trim() } : {}),
-        ...(contentBrief.trim() ? { content_brief: contentBrief.trim() } : {}),
+        // Post content contributors copy-paste (staff approve it first).
+        ...(contentMode !== 'none'
+          ? {
+              content_mode: contentMode,
+              generated_content: generatedContent.trim(),
+              ...(contentBrief.trim() ? { content_brief: contentBrief.trim() } : {}),
+            }
+          : {}),
       };
       if (objective.trim()) payload.objective = objective.trim();
       if (minLevel) payload.min_contributor_level = minLevel;
@@ -870,17 +885,46 @@ export const CreateCampaignWizardPage: React.FC = () => {
             {err('instructions') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400 mt-1">{err('instructions')}</p>}
           </div>
 
-          {/* AI content generator — ready-to-post text contributors copy-paste */}
+          {/* Post content contributors copy-paste: manual (one approved text)
+              or auto (each contributor gets their own AI rewording of the
+              approved sample). Staff approve it before the tasks go live. */}
           <div className="bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border-2 border-violet-200 dark:border-violet-500/25 rounded-2xl p-5 space-y-4">
             <div>
               <h4 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-300" />
-                AI post content <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300">optional</span>
+                Post content for contributors
               </h4>
               <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-                Describe what the post is for — AI writes creative, platform-ready text (hashtags, keywords, proper length) that contributors copy and paste.
+                The text contributors copy and paste. Our team reviews it before the tasks go live.
               </p>
             </div>
+            <div className="grid sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Post content">
+              {(
+                [
+                  { key: 'none', title: 'No post text', hint: 'Contributors follow the instructions only.' },
+                  { key: 'manual', title: 'Manual', hint: 'One text you write (or generate) — everyone copies the same.' },
+                  { key: 'auto', title: 'Auto (AI)', hint: 'You approve a sample; each contributor gets their own reworded version.' },
+                ] as const
+              ).map((o) => (
+                <button
+                  key={o.key}
+                  type="button"
+                  role="radio"
+                  aria-checked={contentMode === o.key}
+                  onClick={() => setContentMode(o.key)}
+                  className={`text-left p-3 rounded-xl border-2 transition-all ${
+                    contentMode === o.key
+                      ? 'border-violet-500 bg-white dark:bg-violet-500/10'
+                      : 'border-gray-200 dark:border-white/10 bg-white/60 dark:bg-white/5 hover:border-violet-300'
+                  }`}
+                >
+                  <span className="block text-xs font-black text-gray-900 dark:text-gray-100">{o.title}</span>
+                  <span className="block text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{o.hint}</span>
+                </button>
+              ))}
+            </div>
+            {contentMode !== 'none' && (
+            <>
             <div>
               <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">What is this post for?</label>
               <input
@@ -916,20 +960,31 @@ export const CreateCampaignWizardPage: React.FC = () => {
               {generating ? 'Generating…' : 'Generate with AI'}
             </button>
             {genError && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{genError}</p>}
-            {generatedContent && (
+            {(contentMode === 'manual' || generatedContent) && (
               <div>
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">Generated content — contributors will copy this</label>
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">
+                  {contentMode === 'auto' ? 'Approved sample — each contributor gets their own version of this *' : 'Post text — contributors copy this *'}
+                </label>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
-                  You can edit it. Keep the language clean and respectful — offensive or inappropriate words are blocked.
+                  {contentMode === 'manual' ? 'Write it yourself or generate it above, then edit. ' : 'You can edit it. '}
+                  Keep the language clean and respectful — offensive or inappropriate words are blocked.
                 </p>
                 <textarea
                   value={generatedContent}
                   onChange={(e) => setGeneratedContent(e.target.value)}
                   rows={6}
+                  maxLength={2000}
                   className="w-full px-4 py-3 border border-violet-200 dark:border-violet-500/25 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 resize-none bg-white dark:bg-white/5"
                 />
-                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">You can edit it before launching. This exact text appears on the task with a copy button.</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
+                  {contentMode === 'auto'
+                    ? 'Rewordings keep the same meaning, brand, links and hashtags — nothing new is added.'
+                    : 'This exact text appears on the task with a copy button.'}
+                </p>
               </div>
+            )}
+            {err('generated_content') && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{err('generated_content')}</p>}
+            </>
             )}
           </div>
 

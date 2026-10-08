@@ -34,6 +34,7 @@ import { CountrySelect } from '../../components/auth/CountrySelect';
 import { UserPermissionOverrides } from '../../components/admin/UserPermissionOverrides';
 import { TICKET_STATUS_LABELS, TICKET_STATUS_STYLES, formatTicketTime } from '../../utils/supportTickets';
 import { auditPage, humanizeAction } from '../../utils/auditLabels';
+import { ContributorLevelControl } from '../../components/admin/ContributorLevelControl';
 
 const DOC_LABELS: Record<KycDocumentType, string> = {
   emirates_id: 'National ID',
@@ -531,6 +532,23 @@ export const AdminUserDetailPage: React.FC = () => {
                   <Field label="Approval rate" value={profile ? `${profile.approval_rate}%` : '—'} />
                   <Field label="Completed tasks" value={profile?.completed_tasks_count ?? 0} />
                   <Field label="Fraud score" value={profile ? `${profile.fraud_score} / 100` : '—'} />
+                  {profile && (
+                    <div className="col-span-2 md:col-span-3">
+                      <ContributorLevelControl
+                        key={`${profile.contributor_level}-${profile.level_locked ? 1 : 0}`}
+                        userId={user.id}
+                        level={profile.contributor_level ?? 'starter'}
+                        locked={!!profile.level_locked}
+                        onSaved={(level, locked) => {
+                          if (data && data.user.profile) {
+                            data.user.profile.contributor_level = level as typeof profile.contributor_level;
+                            data.user.profile.level_locked = locked;
+                            setData({ ...data });
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
                 </>
               )}
               <div className="col-span-2 md:col-span-3">

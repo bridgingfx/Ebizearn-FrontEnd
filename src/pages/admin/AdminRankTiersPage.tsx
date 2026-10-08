@@ -73,7 +73,8 @@ export const AdminRankTiersPage: React.FC = () => {
           <Trophy className="w-6 h-6 text-amber-500" /> Contributor Ranks
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Set how many tasks and earnings promote a contributor to the next rank, and the bonus % each rank earns on top of every task reward. Contributors auto-promote when both thresholds are met.
+          Set how many completed (approved) tasks move a contributor up to each level, and the bonus % each level earns on top of every task reward.
+          Contributors move up automatically as they complete tasks. To set one contributor's level by hand, open them in Users &amp; KYC.
         </p>
       </div>
 
@@ -86,18 +87,14 @@ export const AdminRankTiersPage: React.FC = () => {
                 <RankBadge level={tier.level} size="lg" />
                 <span className="text-xs text-gray-400">Rank #{tier.sort_order}</span>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Display name</label>
                   <input value={getVal(tier, 'display_name')} onChange={(e) => setDraft(tier.id, { display_name: e.target.value })} className={inputCls} disabled={tier.sort_order === 1} />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Tasks to promote</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Completed tasks needed</label>
                   <input type="number" min={0} value={getVal(tier, 'required_tasks')} onChange={(e) => setDraft(tier.id, { required_tasks: Math.max(0, parseInt(e.target.value) || 0) })} className={inputCls} disabled={tier.sort_order === 1} />
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Earnings to promote ($)</label>
-                  <input type="number" min={0} step="0.01" value={(Number(getVal(tier, 'required_earnings_cents')) / 100).toFixed(2)} onChange={(e) => setDraft(tier.id, { required_earnings_cents: Math.max(0, Math.round(parseFloat(e.target.value) * 100) || 0) })} className={inputCls} disabled={tier.sort_order === 1} />
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Bonus %</label>
@@ -110,7 +107,7 @@ export const AdminRankTiersPage: React.FC = () => {
                 <p className="text-[11px] text-gray-400 mt-3">Starter is the entry rank — everyone starts here with no bonus.</p>
               ) : (
                 <p className="text-[11px] text-gray-400 mt-3">
-                  Promotes at <b>{getVal(tier, 'required_tasks')} tasks</b> + <b>${(Number(getVal(tier, 'required_earnings_cents')) / 100).toFixed(2)} earned</b> → earns <b>+{getVal(tier, 'bonus_percent')}%</b> on every task.
+                  Reached at <b>{getVal(tier, 'required_tasks')} completed tasks</b> → earns <b>+{getVal(tier, 'bonus_percent')}%</b> on every task.
                 </p>
               )}
               {dirty && (

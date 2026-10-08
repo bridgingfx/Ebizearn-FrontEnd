@@ -12,6 +12,7 @@ import { CreateCampaignModal } from '../../components/admin/CreateCampaignModal'
 import { CampaignCard, campaignSpent } from '../../components/campaign/CampaignCard';
 import { EditCampaignModal } from '../../components/campaign/EditCampaignModal';
 import { listDrafts, deleteDraft, draftTitle, type CampaignDraft } from '../../lib/campaignDrafts';
+import { CampaignContentPanel } from '../../components/admin/CampaignContentPanel';
 
 type Tab = 'active' | 'pending_review' | 'draft' | 'paused' | 'cancelled' | 'all';
 
@@ -421,6 +422,7 @@ const CampaignDetailsModal: React.FC<{ id: number; fallback?: Campaign | null; o
                   </p>
                 </div>
               )}
+              <CampaignContentPanel campaign={data} onChanged={(c) => setData((prev) => (prev ? { ...prev, ...c } : prev))} />
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">
                   Tasks ({data.tasks?.length ?? 0})

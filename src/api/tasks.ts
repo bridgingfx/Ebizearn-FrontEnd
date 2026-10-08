@@ -5,6 +5,13 @@ export const tasksApi = {
   list: (params?: Record<string, unknown>) => api.get('/tasks', { params }).then((r) => r.data as { success: boolean; message?: string; data: Task[]; meta?: unknown }),
   get: (id: number | string) => api.get(`/tasks/${id}`).then((r) => r.data as { success: boolean; data: Task }),
   start: (id: number | string) => api.post(`/tasks/${id}/start`).then((r) => r.data),
+  /** The post text this contributor copies (their own version in auto mode). Requires a started task. */
+  content: (id: number | string) =>
+    api.get(`/tasks/${id}/content`).then((r) => r.data as {
+      success: boolean;
+      message?: string;
+      data: { mode: 'manual' | 'auto' | null; content: string | null; personal?: boolean };
+    }),
   submit: (id: number | string, payload: { proof_url?: string; proof_screenshot?: string | null; text_answer?: string; note?: string }) =>
     api.post(`/tasks/${id}/submit`, payload).then((r) => r.data),
   contributorDashboard: () => api.get('/contributor/dashboard').then((r) => r.data),

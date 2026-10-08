@@ -12,6 +12,7 @@ import { ErrorBlock, FilterPills, LoadingBlock, PageHeader } from '../../compone
 import { TaskTemplateCard } from '../../components/task/TaskTemplateCard';
 import { TaskTemplateFormModal } from '../../components/admin/TaskTemplateFormModal';
 import { CreateCampaignModal, type CampaignPrefill } from '../../components/admin/CreateCampaignModal';
+import { ManageListsMenu } from '../../components/admin/ManageListsMenu';
 
 type Filter = 'all' | 'business' | 'admin' | 'inactive';
 
@@ -119,6 +120,7 @@ export const AdminTaskLibraryPage: React.FC = () => {
                   <KeyRound className="w-4 h-4" /> Role permissions
                 </Link>
               )}
+              {user?.role === 'superadmin' && <ManageListsMenu />}
               <button
                 type="button"
                 onClick={() => setEditing(null)}

@@ -90,6 +90,7 @@ import {
   LazyAdminSettingsPage,
   LazyAdminAuditLogsPage,
   LazyAdminNotificationsPage,
+  LazyAdminDropdownListsPage,
   LazyAdminPlatformsPage,
   LazyAdminPaymentGatewaysPage,
   LazyAdminBusinessesPage,
@@ -290,6 +291,7 @@ export const App: React.FC = () => {
             <Route path="audit" element={<LazyAdminAuditLogsPage />} />
             <Route path="audit-logs" element={<LazyAdminAuditLogsPage />} />
             <Route path="notifications" element={<RoleGuard allowedRoles={['admin', 'superadmin']}><LazyAdminNotificationsPage /></RoleGuard>} />
+            <Route path="dropdown-lists" element={<RoleGuard allowedRoles={['superadmin']}><LazyAdminDropdownListsPage /></RoleGuard>} />
           </Route>
 
           {/* SuperAdmin alias */}

@@ -3,13 +3,17 @@ import { Loader2, X } from 'lucide-react';
 import { api, getApiError, taskTemplatesApi } from '../../api';
 import type { TaskTemplate, TaskTemplateIcon, TaskTemplateInput } from '../../types';
 import { TEMPLATE_ICONS } from '../task/TaskTemplateCard';
+import { dropdownListsApi } from '../../api/dropdownLists';
 
 const inputCls =
   'w-full px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]';
 const labelCls = 'block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5';
 
-/** Hints the business campaign wizard understands (?template=…). */
-const WIZARD_HINTS = [
+/**
+ * Fallback wizard presets when the API list can't be loaded. The real list
+ * is managed by Super Admin (Task Library → Manage → Wizard presets).
+ */
+const FALLBACK_HINTS = [
   { value: 'share', label: 'Share / repost' },
   { value: 'tiktok', label: 'Short video (TikTok)' },
   { value: 'comment', label: 'Comment / engagement' },
@@ -50,11 +54,17 @@ export const TaskTemplateFormModal: React.FC<{
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [hints, setHints] = useState(FALLBACK_HINTS);
+
   useEffect(() => {
     api
       .get('/task-types')
       .then((r) => setTaskTypes((r.data?.data ?? r.data ?? []) as TaskTypeOption[]))
       .catch(() => setTaskTypes([]));
+    dropdownListsApi
+      .publicPresets()
+      .then((r) => r.success && r.data.length && setHints(r.data.map((p) => ({ value: p.key, label: p.label }))))
+      .catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -171,7 +181,7 @@ export const TaskTemplateFormModal: React.FC<{
               <label className={labelCls}>Wizard preset</label>
               <select value={hint} onChange={(e) => setHint(e.target.value)} className={`${inputCls} appearance-none`}>
                 <option value="">None</option>
-                {WIZARD_HINTS.map((h) => (
+                {hints.map((h) => (
                   <option key={h.value} value={h.value}>
                     {h.label}
                   </option>

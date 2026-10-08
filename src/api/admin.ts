@@ -150,7 +150,7 @@ export const adminApi = {
     api.post('/admin/businesses', payload).then((r) => r.data as { success: boolean; message?: string; data: User }),
   // Restore the canonical task-type catalog when the table is empty (superadmin).
   seedTaskTypes: () =>
-    api.post('/admin/ops/task-types/seed').then((r) => r.data as { success: boolean; message?: string; data: { created: number; updated: number; total: number } }),
+    api.post('/ops/task-types/seed').then((r) => r.data as { success: boolean; message?: string; data: { created: number; updated: number; total: number } }),
   updateStaffTask: (id: number | string, payload: Record<string, unknown>) =>
     api.patch(`/staff/tasks/${id}`, payload).then((r) => r.data as { success: boolean; message?: string; data: Task }),
   deleteStaffTask: (id: number | string) =>

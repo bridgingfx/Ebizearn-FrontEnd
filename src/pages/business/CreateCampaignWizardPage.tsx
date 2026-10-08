@@ -22,6 +22,7 @@ import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification
 import { useMoney } from '../../hooks/useMoney';
 import { TaskPreview, TaskPreviewSummary, classifyTaskPreview } from '../../components/task/TaskPreview';
 import type { UiTask, Campaign } from '../../types';
+import { dropdownListsApi, type WizardPreset } from '../../api/dropdownLists';
 import {
   InstagramLogo,
   TikTokLogo,
@@ -193,6 +194,18 @@ export const CreateCampaignWizardPage: React.FC = () => {
   const [savingDraft, setSavingDraft] = useState(false);
 
   useEffect(() => {
+    // Wizard preset for ?template=… (Super Admin → Task Library → Wizard
+    // presets); the built-in mapping below is only a fallback.
+    let preset: WizardPreset | undefined;
+    const fetchPreset = async () => {
+      if (!templateHint) return;
+      try {
+        const res = await dropdownListsApi.publicPresets();
+        preset = res.data.find((p) => p.key === templateHint.toLowerCase());
+      } catch {
+        preset = undefined;
+      }
+    };
     const fetchCategories = async () => {
       setCategoriesLoading(true);
       setCategoriesError(null);
@@ -202,9 +215,9 @@ export const CreateCampaignWizardPage: React.FC = () => {
         const cats = Array.isArray(list) ? list : [];
         setCategories(cats);
         if (templateHint && cats.length > 0) {
-          const match = TEMPLATE_TO_CATEGORY(templateHint, cats);
+          const match = (preset?.category_id && cats.find((c) => c.id === preset?.category_id)) || TEMPLATE_TO_CATEGORY(templateHint, cats);
           if (match) setCategoryId(match.id);
-          const plat = TEMPLATE_TO_PLATFORM[templateHint.toLowerCase()];
+          const plat = preset?.platform || TEMPLATE_TO_PLATFORM[templateHint.toLowerCase()];
           if (plat) setPlatform(plat);
         }
       } catch (e) {
@@ -222,7 +235,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
         const types = (Array.isArray(list) ? list : []).filter((t) => t.is_allowed !== false);
         setTaskTypes(types);
         if (templateHint) {
-          const key = TEMPLATE_TO_TASK_TYPE[templateHint.toLowerCase()];
+          const key = preset?.task_type_key || TEMPLATE_TO_TASK_TYPE[templateHint.toLowerCase()];
           if (key && types.some((t) => t.key === key)) setTaskTypeKey(key);
         }
       } catch (e) {
@@ -231,8 +244,10 @@ export const CreateCampaignWizardPage: React.FC = () => {
         setTaskTypesLoading(false);
       }
     };
-    void fetchCategories();
-    void fetchTaskTypes();
+    void fetchPreset().then(() => {
+      void fetchCategories();
+      void fetchTaskTypes();
+    });
   }, [templateHint]);
 
   // Resume mode: ?draft=<id> pre-fills the wizard from a saved draft so the

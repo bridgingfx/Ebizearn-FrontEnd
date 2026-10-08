@@ -990,7 +990,7 @@ export const CreateCampaignWizardPage: React.FC = () => {
             </div>
             <button
               type="button"
-              disabled={!contentBrief.trim() || generating}
+              disabled={contentBrief.trim().length < 10 || generating}
               onClick={async () => {
                 setGenerating(true);
                 setGenError(null);
@@ -1012,8 +1012,12 @@ export const CreateCampaignWizardPage: React.FC = () => {
               {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {generating ? 'Generating…' : 'Generate with AI'}
             </button>
-            {!contentBrief.trim() && !generating && (
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Type what the post is for above, then tap Generate with AI.</p>
+            {contentBrief.trim().length < 10 && !generating && (
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                {contentBrief.trim()
+                  ? `Add a little more detail (${contentBrief.trim().length}/10 characters), e.g. “Promote our new coffee shop in Dubai Marina”.`
+                  : 'Type what the post is for above (at least 10 characters), then tap Generate with AI.'}
+              </p>
             )}
             {genError && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{genError}</p>}
             <div>

@@ -232,6 +232,74 @@ export const AiContentSettings: React.FC = () => {
           {saved.has_key ? `Key saved (${saved.key_hint}) · encrypted, never shown again` : 'No key saved'}
         </span>
       </div>
+
+      {saved.has_key && <TrySamplePost />}
+    </div>
+  );
+};
+
+/**
+ * Runs exactly what businesses get from "Generate with AI" — including the
+ * safety checks — and shows the technical reason when it fails.
+ */
+const TrySamplePost: React.FC = () => {
+  const [brief, setBrief] = useState('Promote our new coffee shop in Dubai Marina, fresh coffee and pastries');
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; text: string; detail?: string | null } | null>(null);
+
+  const run = async () => {
+    setBusy(true);
+    setResult(null);
+    try {
+      const res = await aiSettingsApi.tryGenerate(brief.trim(), 'instagram');
+      setResult({ ok: true, text: res.data.content || '', detail: res.message });
+    } catch (e) {
+      const data = (e as { response?: { data?: { message?: string; data?: { detail?: string | null } } } }).response?.data;
+      setResult({ ok: false, text: data?.message || getApiError(e, 'Generation failed.'), detail: data?.data?.detail });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="rounded-2xl border border-violet-200 dark:border-violet-500/25 bg-violet-500/5 p-4 space-y-3">
+      <div>
+        <p className="text-xs font-black text-gray-900 dark:text-gray-100">Try a sample post</p>
+        <p className="text-[11px] text-gray-500 dark:text-gray-400">
+          Runs exactly what businesses get from “Generate with AI”, including the safety checks. If it fails, the exact reason is shown here.
+        </p>
+      </div>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input value={brief} onChange={(e) => setBrief(e.target.value)} maxLength={500} className={`${inputClass} font-sans`} />
+        <button
+          type="button"
+          disabled={busy || brief.trim().length < 10}
+          onClick={() => void run()}
+          className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 h-10 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold disabled:opacity-50"
+        >
+          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />} Generate
+        </button>
+      </div>
+      {result &&
+        (result.ok ? (
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" /> Works — {result.detail}
+            </p>
+            <p className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap bg-white dark:bg-white/5 rounded-xl p-3">{result.text}</p>
+          </div>
+        ) : (
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1.5">
+              <XCircle className="w-4 h-4" /> Businesses see: “{result.text}”
+            </p>
+            {result.detail && (
+              <p className="text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-white/5 rounded-xl p-3">
+                <b>Reason:</b> {result.detail}
+              </p>
+            )}
+          </div>
+        ))}
     </div>
   );
 };

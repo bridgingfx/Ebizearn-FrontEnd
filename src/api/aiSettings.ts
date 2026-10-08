@@ -29,4 +29,12 @@ export const aiSettingsApi = {
   update: (input: AiSettingsInput) => unwrap(api.put<ApiResponse<AiSettingsAdmin>>('/admin/ai-settings', input)),
   test: () => unwrap(api.post<ApiResponse<{ reply: string; ms: number }>>('/admin/ai-settings/test')),
   removeKey: () => unwrap(api.delete<ApiResponse<AiSettingsAdmin>>('/admin/ai-settings/key')),
+  /** Runs exactly what "Generate with AI" runs; `detail` explains a failure. */
+  tryGenerate: (brief: string, platform?: string) =>
+    unwrap(
+      api.post<ApiResponse<{ content: string | null; detail: string | null; provider: string; model: string; ms: number }>>('/admin/ai-settings/try', {
+        brief,
+        platform,
+      }),
+    ),
 };

@@ -918,7 +918,10 @@ export const CreateCampaignWizardPage: React.FC = () => {
             {genError && <p className="text-[11px] font-bold text-red-600 dark:text-red-400">{genError}</p>}
             {generatedContent && (
               <div>
-                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Generated content — contributors will copy this</label>
+                <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1">Generated content — contributors will copy this</label>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-1.5">
+                  You can edit it. Keep the language clean and respectful — offensive or inappropriate words are blocked.
+                </p>
                 <textarea
                   value={generatedContent}
                   onChange={(e) => setGeneratedContent(e.target.value)}

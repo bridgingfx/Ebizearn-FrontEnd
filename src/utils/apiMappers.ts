@@ -70,6 +70,8 @@ export const mapTaskForUi = (task: Task): UiTask => {
     // Post text to copy-paste is handed out per contributor after they start
     // the task (own AI version in auto mode) — see tasksApi.content.
     hasPostContent: !!campaign?.content_mode,
+    // The post image is the same for everyone — shown before starting too.
+    postImageUrl: campaign?.content_image_url || undefined,
   };
 };
 

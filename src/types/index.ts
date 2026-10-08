@@ -518,6 +518,8 @@ export interface UiTask extends Task {
   flyerUrl?: string;
   /** The campaign provides post text — fetched per contributor after they start (tasksApi.content). */
   hasPostContent?: boolean;
+  /** Image contributors post with the text (shown before starting too). */
+  postImageUrl?: string;
   badgeColor?: string;
 }
 

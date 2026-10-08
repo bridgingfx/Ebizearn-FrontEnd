@@ -29,6 +29,7 @@ import { humanizeRetention, initials, proofRequirementLabels } from '../../compo
 import { EmptyState } from '../../components/common/EmptyState';
 import { useRequireVerifiedEmail } from '../../components/auth/EmailVerification';
 import { ReadyToPostCard } from '../../components/task/ReadyToPostCard';
+import { PostImagePlaceholder } from '../../components/campaign/PostImagePicker';
 
 /**
  * Phase 5 — split-screen task execution.
@@ -404,9 +405,17 @@ export const TaskDetailPage: React.FC = () => {
                 )}
 
                 {task.hasPostContent && (
-                  <p className="text-[11px] text-violet-700 dark:text-violet-300 bg-violet-500/10 border border-violet-300/40 dark:border-violet-500/30 rounded-xl px-3 py-2 flex items-center gap-1.5 justify-center">
-                    <Sparkles className="w-3.5 h-3.5 shrink-0" /> Your ready-to-post text appears here after you reserve the task.
-                  </p>
+                  <div className="rounded-2xl border border-violet-300/40 dark:border-violet-500/30 bg-violet-500/5 p-3 space-y-2 text-left">
+                    <p className="text-[11px] font-black uppercase tracking-wider text-violet-600 dark:text-violet-300 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 shrink-0" /> What you will post
+                    </p>
+                    {task.postImageUrl ? (
+                      <img src={task.postImageUrl} alt="Image to post" loading="lazy" className="w-full max-h-72 object-contain rounded-xl bg-white dark:bg-black/30" />
+                    ) : (
+                      <PostImagePlaceholder label="No image for this post" />
+                    )}
+                    <p className="text-[11px] text-violet-700 dark:text-violet-300">Your ready-to-post text appears after you reserve the task.</p>
+                  </div>
                 )}
                 <p className="text-[10px] text-gray-400 dark:text-gray-500">
                   Reserving holds one of the task's slots under your account while you work.

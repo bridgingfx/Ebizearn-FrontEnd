@@ -2,6 +2,7 @@ import { api, type ApiResponse } from './client';
 
 export type SocialPlatform = 'instagram' | 'tiktok' | 'youtube' | 'facebook' | 'x';
 export type SocialChannelStatus = 'unverified' | 'pending' | 'verified' | 'rejected';
+export type SocialChannelConnectedVia = 'manual' | 'oauth';
 
 export interface SocialChannel {
   id: number;
@@ -16,6 +17,13 @@ export interface SocialChannel {
   submitted_at: string | null;
   verified_at: string | null;
   created_at: string;
+  /** How the channel was connected — oauth channels are auto-verified; the robo re-checks them. */
+  connected_via: SocialChannelConnectedVia;
+  /** Username reported by the OAuth provider (oauth channels). */
+  oauth_username: string | null;
+  /** Last automatic robo re-check (oauth channels). */
+  last_robo_check_at: string | null;
+  robo_check_note: string | null;
   user?: { id: number; uuid: string; name: string; email: string; role: string; status: string };
 }
 

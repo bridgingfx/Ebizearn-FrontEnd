@@ -5,6 +5,7 @@ import type { FeatureFlag, SystemSetting } from '../../types';
 import { WITHDRAWAL_THRESHOLD_OPTIONS } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { SocialSignInSettings } from '../../components/admin/SocialSignInSettings';
+import { SocialConnectSettings } from '../../components/admin/SocialConnectSettings';
 import { AiContentSettings } from '../../components/admin/AiContentSettings';
 import { ChangePasswordCard } from '../../components/account/ChangePasswordCard';
 import { useAuth } from '../../context/AuthContext';
@@ -197,6 +198,9 @@ export const AdminSettingsPage: React.FC = () => {
 
       {/* Google / Apple sign-in (Super Admin only) */}
       {isSuperAdmin && <SocialSignInSettings />}
+
+      {/* Contributor "Connect with …" OAuth for social channels (Super Admin only) */}
+      {isSuperAdmin && <SocialConnectSettings />}
 
       {/* AI content generator: provider + encrypted API key (Super Admin only) */}
       {isSuperAdmin && <AiContentSettings />}

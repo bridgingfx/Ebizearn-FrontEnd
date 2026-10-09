@@ -33,8 +33,14 @@ import { PAYOUT_RAILS, PayoutRailIcon, type PayoutRailId } from '../../component
 import { CountrySelect } from '../../components/auth/CountrySelect';
 import type { KycDocumentType } from '../../types';
 import { SelfieCamera } from '../../components/kyc/SelfieCamera';
+import { toast } from '../../utils/toast';
 
 type ProfileTab = 'profile' | 'kyc' | 'socials' | 'payouts' | 'security';
+
+const TABS: ProfileTab[] = ['profile', 'kyc', 'socials', 'payouts', 'security'];
+
+/** Backend social-connect platform key → display label for callback toasts. */
+const SC_LABELS: Record<string, string> = { tiktok: 'TikTok', x: 'X', facebook: 'Facebook', google: 'YouTube' };
 
 const KYC_DOC_LABELS: Record<KycDocumentType, string> = {
   emirates_id: 'National ID',
@@ -53,6 +59,50 @@ export const ContributorProfilePage: React.FC = () => {
   );
   const [payoutSaving, setPayoutSaving] = useState(false);
   const [payoutMsg, setPayoutMsg] = useState<string | null>(null);
+  /** Bumped when the OAuth callback lands so the social card reloads immediately. */
+  const [socialRefresh, setSocialRefresh] = useState(0);
+
+  /**
+   * Deep-link + OAuth callback handling.
+   * The social OAuth callback lands at /app/profile?tab=socials&sc_connected={platform}
+   * (or sc_error=denied|taken|failed|invalid|unavailable).
+   */
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      if (tab && (TABS as string[]).includes(tab)) setActiveTab(tab as ProfileTab);
+      const connected = params.get('sc_connected');
+      const errCode = params.get('sc_error');
+      if (connected || errCode) {
+        if (connected) {
+          const label = SC_LABELS[connected] ?? connected;
+          toast.success(`${label} connected and verified by our robo.`);
+          setSocialRefresh((n) => n + 1);
+        } else {
+          switch (errCode) {
+            case 'denied':
+              toast.error('You cancelled the login. Nothing was connected.');
+              break;
+            case 'taken':
+              toast.error('That account is already linked to another eBizEarn account.');
+              break;
+            case 'unavailable':
+              toast.error('Social login is not set up yet.');
+              break;
+            default:
+              toast.error('Connection failed, please try again.');
+          }
+        }
+        params.delete('sc_connected');
+        params.delete('sc_error');
+        const qs = params.toString();
+        window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`);
+      }
+    } catch {
+      /* non-critical: ignore malformed query strings */
+    }
+  }, []);
 
   /** Select a payout rail — saved to the profile as the withdrawal default. */
   const selectPayoutMethod = async (id: PayoutRailId) => {
@@ -577,7 +627,7 @@ export const ContributorProfilePage: React.FC = () => {
       )}
 
       {/* TAB 2: CONNECTED SOCIAL ACCOUNTS */}
-      {activeTab === 'socials' && <SocialChannelsCard />}
+      {activeTab === 'socials' && <SocialChannelsCard refreshKey={socialRefresh} />}
 
       {/* TAB 3: PAYOUT METHODS */}
       {activeTab === 'payouts' && (

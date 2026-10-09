@@ -1,9 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, Check, CheckCircle2, Clock, Copy, ExternalLink, Loader2, Pencil, Plus, Trash2, X, XCircle } from 'lucide-react';
-import { socialChannelsApi, getApiError, getApiFieldErrors } from '../../api';
-import type { SocialChannel, SocialPlatform } from '../../api';
+import { AlertCircle, Check, CheckCircle2, Clock, Copy, ExternalLink, Loader2, Pencil, Plus, Trash2, X, XCircle, ShieldCheck } from 'lucide-react';
+import { socialChannelsApi, socialConnectApi, getApiError, getApiFieldErrors } from '../../api';
+import type { SocialChannel, SocialPlatform, SocialConnectConfigKey, SocialConnectPublicConfig } from '../../api';
 import { InstagramLogo, TikTokLogo, YouTubeLogo, FacebookLogo, XTwitterLogo } from '../common/PlatformIcons';
 import { toast } from '../../utils/toast';
+
+/** Frontend platform id → backend social-connect config key (google = YouTube; instagram has no OAuth). */
+const OAUTH_CONFIG_KEY: Partial<Record<SocialPlatform, SocialConnectConfigKey>> = {
+  tiktok: 'tiktok',
+  youtube: 'google',
+  facebook: 'facebook',
+  x: 'x',
+};
 
 const PLATFORMS: { id: SocialPlatform; name: string; icon: React.FC<{ className?: string }>; placeholder: string }[] = [
   { id: 'instagram', name: 'Instagram', icon: InstagramLogo, placeholder: 'instagram.com/yourname or @yourname' },
@@ -34,8 +42,14 @@ const StatusBadge: React.FC<{ channel?: SocialChannel }> = ({ channel }) => {
 const inputClass =
   'w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0B111D] text-sm text-slate-900 dark:text-gray-100 placeholder:text-slate-400 focus:outline-none focus:border-[#168BFF] focus:ring-2 focus:ring-[#168BFF]/15';
 
-/** Profile → Connected Social Accounts: link channels and verify them with a bio code. */
-export const SocialChannelsCard: React.FC = () => {
+const OAuthBadge: React.FC<{ label: string }> = ({ label }) => (
+  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-500/30">
+    <ShieldCheck className="w-3 h-3" />Connected via {label}
+  </span>
+);
+
+/** Profile → Connected Social Accounts: link channels manually (bio code) or with official OAuth login. */
+export const SocialChannelsCard: React.FC<{ refreshKey?: number }> = ({ refreshKey }) => {
   const [channels, setChannels] = useState<SocialChannel[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<SocialPlatform | null>(null);
@@ -44,6 +58,7 @@ export const SocialChannelsCard: React.FC = () => {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [copied, setCopied] = useState<number | null>(null);
+  const [oauthConfig, setOauthConfig] = useState<SocialConnectPublicConfig | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -58,7 +73,14 @@ export const SocialChannelsCard: React.FC = () => {
 
   useEffect(() => {
     load();
+    // Which "Connect with …" buttons are available — fails silently, manual flow always works.
+    socialConnectApi.publicConfig().then((res) => setOauthConfig(res.data)).catch(() => {});
   }, [load]);
+
+  // Parent (profile page) bumps this after the OAuth callback lands, so the new channel shows immediately.
+  useEffect(() => {
+    if (refreshKey) load();
+  }, [refreshKey, load]);
 
   const replace = (c: SocialChannel) => setChannels((list) => [...list.filter((x) => x.platform !== c.platform), c]);
 
@@ -126,7 +148,39 @@ export const SocialChannelsCard: React.FC = () => {
     }
   };
 
+  /** Official OAuth login in a centered popup; the backend calls back to /app/profile?tab=socials. */
+  const connectOAuth = async (platform: SocialPlatform) => {
+    const key = OAUTH_CONFIG_KEY[platform];
+    if (!key) return;
+    setBusy(`oauth-${platform}`);
+    try {
+      const res = await socialConnectApi.redirectUrl(key);
+      const url = res.data?.url;
+      if (!url) throw new Error('No redirect URL');
+      const w = 600;
+      const h = 700;
+      const left = window.screenX + Math.max(0, (window.outerWidth - w) / 2);
+      const top = window.screenY + Math.max(0, (window.outerHeight - h) / 2);
+      const popup = window.open(url, `ebizearn-oauth-${key}`, `width=${w},height=${h},left=${left},top=${top},noopener`);
+      if (!popup) {
+        toast.info('Please allow popups for this site, then try connecting again.');
+        return;
+      }
+      const timer = window.setInterval(() => {
+        if (popup.closed) {
+          window.clearInterval(timer);
+          load();
+        }
+      }, 500);
+    } catch (err) {
+      toast.error(getApiError(err, 'Could not start the connection.'));
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const verifiedCount = channels.filter((c) => c.status === 'verified').length;
+  const anyOAuthEnabled = !!oauthConfig && (['tiktok', 'x', 'facebook', 'google'] as const).some((k) => oauthConfig[k].enabled);
 
   return (
     <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] dark:border-white/10 shadow-xs space-y-6">
@@ -135,6 +189,7 @@ export const SocialChannelsCard: React.FC = () => {
           <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Verified Social Media Channels</h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-xl">
             Link the accounts you complete tasks with. To prove each one is yours, add the code we give you to that profile’s bio — our team checks it and marks the channel verified.
+            {anyOAuthEnabled && ' Or connect instantly with your official platform login — no bio code needed.'}
           </p>
         </div>
         <span className="text-xs font-bold text-[#168BFF] bg-blue-50 dark:bg-blue-500/10 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-500/25 self-start sm:self-auto whitespace-nowrap">
@@ -153,6 +208,12 @@ export const SocialChannelsCard: React.FC = () => {
             const c = channels.find((x) => x.platform === p.id);
             const followerText = c ? formatFollowers(c.followers) : null;
             const isEditing = editing === p.id;
+            const oauthKey = OAUTH_CONFIG_KEY[p.id];
+            const oauthEnabled = !!oauthKey && !!oauthConfig && oauthConfig[oauthKey].enabled;
+            const oauthLabel = oauthKey && oauthConfig ? oauthConfig[oauthKey].label : '';
+            const isOAuth = c?.connected_via === 'oauth';
+            const showOAuthButton = oauthEnabled && (!c || c.connected_via === 'manual');
+            const displayHandle = isOAuth && c?.oauth_username ? c.oauth_username : c?.handle;
 
             return (
               <div key={p.id} className="rounded-2xl bg-gray-50/80 dark:bg-white/[0.03] border border-gray-200/80 dark:border-white/10 p-4">
@@ -165,21 +226,33 @@ export const SocialChannelsCard: React.FC = () => {
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-black text-gray-900 dark:text-gray-100">{p.name}</span>
                         <StatusBadge channel={c} />
+                        {isOAuth && <OAuthBadge label={oauthLabel} />}
                       </div>
                       {c ? (
                         <a href={c.profile_url} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 dark:text-gray-400 hover:text-[#168BFF] inline-flex items-center gap-1 mt-0.5 max-w-full">
-                          <span className="truncate">@{c.handle}</span>
+                          <span className="truncate">@{displayHandle}</span>
                           {followerText && <span className="shrink-0">· {followerText} followers</span>}
                           <ExternalLink className="w-3 h-3 shrink-0" />
                         </a>
                       ) : (
                         <p className="text-xs text-slate-400 mt-0.5">Not connected</p>
                       )}
+                      {(c?.last_robo_check_at || c?.robo_check_note) && (
+                        <p className="text-[11px] text-slate-400 dark:text-gray-500 mt-0.5 truncate max-w-full">
+                          Robo checked{c.last_robo_check_at ? ` ${new Date(c.last_robo_check_at).toLocaleDateString()}` : ''}{c.robo_check_note ? ` — ${c.robo_check_note}` : ''}
+                        </p>
+                      )}
                     </div>
                   </div>
 
                   {!isEditing && (
-                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                    <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto sm:justify-end">
+                      {showOAuthButton && (
+                        <button type="button" onClick={() => connectOAuth(p.id)} disabled={busy === `oauth-${p.id}`} className="min-h-[44px] px-4 rounded-xl text-xs font-bold bg-white dark:bg-white/10 border-2 border-[#168BFF]/40 dark:border-[#168BFF]/50 text-[#0B6CD6] dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 disabled:opacity-60 inline-flex items-center gap-1.5">
+                          {busy === `oauth-${p.id}` ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Icon className="w-4 h-4" />}
+                          Connect with {oauthLabel}
+                        </button>
+                      )}
                       {c ? (
                         <>
                           <button type="button" onClick={() => openForm(p.id)} className="h-8 px-3 rounded-lg text-xs font-bold bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-200 hover:border-slate-300 inline-flex items-center gap-1.5">
@@ -221,8 +294,8 @@ export const SocialChannelsCard: React.FC = () => {
                   </form>
                 )}
 
-                {/* Verification steps */}
-                {c && !isEditing && c.status !== 'verified' && (
+                {/* Verification steps — hidden for OAuth channels: they are auto-verified, the robo re-checks them. */}
+                {c && !isEditing && !isOAuth && c.status !== 'verified' && (
                   <div className="mt-4 rounded-xl border border-dashed border-slate-300 dark:border-white/15 bg-white dark:bg-[#0B111D] p-4">
                     {c.status === 'rejected' && c.rejection_reason && (
                       <p className="mb-3 text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-500/10 rounded-lg px-3 py-2">

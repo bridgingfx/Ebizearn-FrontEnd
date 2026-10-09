@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { X, Building2, Mail, Globe, Phone, MapPin, ShieldCheck, ShieldAlert, Wallet, Activity, Pencil, PauseCircle, LogIn, Loader2 } from 'lucide-react';
-import { adminApi, getApiError } from '../../api';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { X, Building2, Mail, Globe, Phone, MapPin, ShieldCheck, ShieldAlert, Wallet, Activity, Pencil, PauseCircle, LogIn, Loader2, Megaphone, Users, UserPlus, ExternalLink } from 'lucide-react';
+import { adminApi, staffFollowApi, getApiError } from '../../api';
+import { FollowListModal } from '../account/FollowListModal';
 import type { User } from '../../types';
 import { toast } from '../../utils/toast';
 
@@ -9,6 +11,8 @@ interface BusinessDetail {
   kyc?: { status?: string } | null;
   wallet?: { available_balance_cents?: number; pending_balance_cents?: number } | null;
   recent_logs?: Array<{ id: number; action: string; created_at: string; description?: string }>;
+  /** Tasks posted, followers, following (GET /admin/users/{id}). */
+  social?: { posts: number | null; followers: number; following: number };
 }
 
 interface Props {
@@ -23,6 +27,10 @@ interface Props {
 export const BusinessDetailDrawer: React.FC<Props> = ({ userId, onClose, onEdit, onLoginAs, onPauseAll, onStatusChange }) => {
   const [detail, setDetail] = useState<BusinessDetail | null>(null);
   const [loading, setLoading] = useState(false);
+  const [followList, setFollowList] = useState<'followers' | 'following' | null>(null);
+
+  const fetchFollowers = useCallback((page: number, search: string) => staffFollowApi.people(userId ?? 0, 'followers', { page, search }), [userId]);
+  const fetchFollowing = useCallback((page: number, search: string) => staffFollowApi.people(userId ?? 0, 'following', { page, search }), [userId]);
 
   useEffect(() => {
     if (!userId) {
@@ -80,6 +88,41 @@ export const BusinessDetailDrawer: React.FC<Props> = ({ userId, onClose, onEdit,
                 </span>
               </div>
             </div>
+
+            {/* Posts / followers / following — tap a count for the user list */}
+            {detail?.social && (
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    { key: 'posts', label: 'Tasks posted', value: detail.social.posts ?? 0, icon: Megaphone },
+                    { key: 'followers', label: 'Followers', value: detail.social.followers, icon: Users },
+                    { key: 'following', label: 'Following', value: detail.social.following, icon: UserPlus },
+                  ] as const
+                ).map((s) => {
+                  const clickable = s.key !== 'posts';
+                  const body = (
+                    <>
+                      <s.icon className="w-3.5 h-3.5 text-[#168BFF] dark:text-blue-300" />
+                      <p className="mt-1.5 text-base font-extrabold text-gray-900 dark:text-gray-100">{s.value.toLocaleString()}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400">{s.label}</p>
+                    </>
+                  );
+                  const cls = 'rounded-2xl border border-gray-200 dark:border-white/10 p-3 text-left';
+                  return clickable ? (
+                    <button key={s.key} type="button" onClick={() => setFollowList(s.key as 'followers' | 'following')} className={`${cls} hover:border-[#168BFF]/50 hover:bg-blue-50/40 dark:hover:bg-blue-500/10`}>
+                      {body}
+                    </button>
+                  ) : (
+                    <div key={s.key} className={cls}>
+                      {body}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <Link to={`/admin/users/${u.id}`} className="inline-flex items-center gap-1.5 text-xs font-bold text-[#168BFF] dark:text-blue-300 hover:underline">
+              <ExternalLink className="w-3.5 h-3.5" /> Open full account page (KYC, permissions, tickets)
+            </Link>
 
             {/* KYC */}
             <div className="rounded-2xl border border-gray-200 dark:border-white/10 p-4">
@@ -175,6 +218,21 @@ export const BusinessDetailDrawer: React.FC<Props> = ({ userId, onClose, onEdit,
           </div>
         )}
       </div>
+
+      <FollowListModal
+        open={followList === 'followers'}
+        title="Followers"
+        fetchPage={fetchFollowers}
+        personHref={(p) => `/admin/users/${p.id}`}
+        onClose={() => setFollowList(null)}
+      />
+      <FollowListModal
+        open={followList === 'following'}
+        title="Following"
+        fetchPage={fetchFollowing}
+        personHref={(p) => `/admin/users/${p.id}`}
+        onClose={() => setFollowList(null)}
+      />
     </div>
   );
 };

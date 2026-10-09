@@ -25,8 +25,12 @@ import {
   Globe,
   ScrollText,
   Pencil,
+  Users,
+  UserPlus,
+  Megaphone,
 } from 'lucide-react';
-import { adminApi, staffKycApi, getApiError } from '../../api';
+import { adminApi, staffKycApi, staffFollowApi, getApiError } from '../../api';
+import { FollowListModal } from '../../components/account/FollowListModal';
 import { toast } from '../../utils/toast';
 import type { AdminUserDetail, KycDocumentSide, KycDocumentType, KycStatus } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -284,6 +288,7 @@ export const AdminUserDetailPage: React.FC = () => {
   const { user: me } = useAuth();
   const isSuper = me?.role === 'superadmin';
   const canReviewKyc = isSuper || (me?.permissions?.includes('review_kyc') ?? true);
+  const canManualKyc = isSuper || !!me?.permissions?.includes('manual_kyc_approve');
 
   const [data, setData] = useState<AdminUserDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -294,6 +299,11 @@ export const AdminUserDetailPage: React.FC = () => {
   const [docs, setDocs] = useState<{ side: KycDocumentSide; url: string; isPdf: boolean }[]>([]);
   const [docsState, setDocsState] = useState<'idle' | 'loading' | 'denied'>('idle');
   const [reason, setReason] = useState('');
+  const [manualNote, setManualNote] = useState('');
+  const [followList, setFollowList] = useState<'followers' | 'following' | null>(null);
+
+  const fetchFollowers = useCallback((page: number, search: string) => staffFollowApi.people(Number(id), 'followers', { page, search }), [id]);
+  const fetchFollowing = useCallback((page: number, search: string) => staffFollowApi.people(Number(id), 'following', { page, search }), [id]);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -386,6 +396,26 @@ export const AdminUserDetailPage: React.FC = () => {
       }
     } catch (e) {
       setActionMsg({ ok: false, text: getApiError(e, 'Could not record the decision.') });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const approveKycManually = async () => {
+    if (!data) return;
+    if (manualNote.trim().length < 5) {
+      setActionMsg({ ok: false, text: 'Say how this identity was verified (kept in the audit log).' });
+      return;
+    }
+    setBusy(true);
+    setActionMsg(null);
+    try {
+      await staffKycApi.manualApprove(data.user.id, manualNote.trim());
+      setManualNote('');
+      setActionMsg({ ok: true, text: 'KYC approved manually.' });
+      void load();
+    } catch (e) {
+      setActionMsg({ ok: false, text: getApiError(e, 'Could not approve KYC.') });
     } finally {
       setBusy(false);
     }
@@ -509,6 +539,55 @@ export const AdminUserDetailPage: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {data.social && (
+        <div className="grid grid-cols-3 gap-3">
+          {(
+            [
+              { key: 'posts', label: user.business ? 'Tasks posted' : 'Posts', value: data.social.posts, icon: Megaphone },
+              { key: 'followers', label: 'Followers', value: data.social.followers, icon: Users },
+              { key: 'following', label: 'Following', value: data.social.following, icon: UserPlus },
+            ] as const
+          ).map((s) => {
+            const clickable = s.key !== 'posts';
+            const body = (
+              <>
+                <s.icon className="w-4 h-4 text-[#168BFF] dark:text-blue-300" />
+                <p className="mt-2 text-base font-black text-gray-900 dark:text-gray-100">{s.value ?? '—'}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  {s.label}
+                  {clickable && <span className="text-[#168BFF] dark:text-blue-300 font-bold"> · view</span>}
+                </p>
+              </>
+            );
+            const cls = 'p-4 rounded-2xl bg-white dark:bg-[#0C1322] border border-[#E7ECF3] dark:border-white/10 shadow-xs text-left';
+            return clickable ? (
+              <button key={s.key} type="button" onClick={() => setFollowList(s.key as 'followers' | 'following')} className={`${cls} hover:border-[#168BFF]/40`}>
+                {body}
+              </button>
+            ) : (
+              <div key={s.key} className={cls}>
+                {body}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <FollowListModal
+        open={followList === 'followers'}
+        title={`${user.name} — followers`}
+        fetchPage={fetchFollowers}
+        personHref={(p) => `/admin/users/${p.id}`}
+        onClose={() => setFollowList(null)}
+      />
+      <FollowListModal
+        open={followList === 'following'}
+        title={`${user.name} — following`}
+        fetchPage={fetchFollowing}
+        personHref={(p) => `/admin/users/${p.id}`}
+        onClose={() => setFollowList(null)}
+      />
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
@@ -658,6 +737,31 @@ export const AdminUserDetailPage: React.FC = () => {
                     </div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {canManualKyc && kycStatus !== 'verified' && (user.role === 'contributor' || user.role === 'business') && (
+              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/10 space-y-2">
+                <p className="text-[11px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">Manual approval</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  Verified this person another way (video call, in person, documents by email)? Approve KYC here without uploaded documents. Your note is saved in the audit log.
+                </p>
+                <textarea
+                  rows={2}
+                  value={manualNote}
+                  onChange={(e) => setManualNote(e.target.value)}
+                  maxLength={500}
+                  placeholder="How was this identity verified? (required)"
+                  className="w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:border-[#168BFF]"
+                />
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void approveKycManually()}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#16B364] hover:bg-[#12995a] text-white text-xs font-bold disabled:opacity-50"
+                >
+                  {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />} Approve KYC manually
+                </button>
               </div>
             )}
           </Card>

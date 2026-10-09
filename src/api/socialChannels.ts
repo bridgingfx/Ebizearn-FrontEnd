@@ -29,15 +29,22 @@ export interface SocialChannel {
 
 const unwrap = <T>(p: Promise<{ data: ApiResponse<T> }>) => p.then((r) => r.data);
 
-/** Contributor: profile → Connected Social Accounts. */
-export const socialChannelsApi = {
-  list: () => unwrap(api.get<ApiResponse<SocialChannel[]>>('/contributor/social-channels')),
+const channelsApiFor = (base: '/contributor' | '/business') => ({
+  list: () => unwrap(api.get<ApiResponse<SocialChannel[]>>(`${base}/social-channels`)),
   /** Add or replace the channel for a platform; returns it with a bio code. */
   save: (input: { platform: SocialPlatform; profile_url: string; followers?: number | null }) =>
-    unwrap(api.post<ApiResponse<SocialChannel>>('/contributor/social-channels', input)),
-  submit: (id: number) => unwrap(api.post<ApiResponse<SocialChannel>>(`/contributor/social-channels/${id}/submit`)),
-  remove: (id: number) => unwrap(api.delete<ApiResponse<null>>(`/contributor/social-channels/${id}`)),
-};
+    unwrap(api.post<ApiResponse<SocialChannel>>(`${base}/social-channels`, input)),
+  submit: (id: number) => unwrap(api.post<ApiResponse<SocialChannel>>(`${base}/social-channels/${id}/submit`)),
+  remove: (id: number) => unwrap(api.delete<ApiResponse<null>>(`${base}/social-channels/${id}`)),
+});
+
+export type SocialChannelsApi = ReturnType<typeof channelsApiFor>;
+
+/** Contributor: profile → Connected Social Accounts. */
+export const socialChannelsApi = channelsApiFor('/contributor');
+
+/** Business: profile → social links (bio code, checked by staff in Social Channels). */
+export const businessSocialChannelsApi = channelsApiFor('/business');
 
 /** Staff (review_kyc): social channel review queue. */
 export const staffSocialChannelsApi = {

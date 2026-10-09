@@ -63,7 +63,7 @@ export const AdminSocialChannelsPage: React.FC = () => {
 
   const decide = async (c: SocialChannel, decision: 'approve' | 'reject') => {
     if (decision === 'reject' && !reason.trim()) {
-      toast.error('Give the contributor a reason.');
+      toast.error('Give the account owner a reason.');
       return;
     }
     setBusy(c.id);
@@ -88,7 +88,7 @@ export const AdminSocialChannelsPage: React.FC = () => {
     <div className="space-y-6">
       <PageHeader
         title="Social Channels"
-        subtitle="Contributors prove each channel is theirs by adding a code to its bio. Open the profile, check the code is there, then verify."
+        subtitle="Contributors and businesses prove each channel is theirs by adding a code to its bio. Open the profile, check the code is there, then verify."
         actions={
           <button
             type="button"
@@ -165,6 +165,11 @@ export const AdminSocialChannelsPage: React.FC = () => {
                           {c.user ? (
                             <Link to={`/admin/users/${c.user.id}`} className="hover:text-[#168BFF]">
                               {c.user.name} · {c.user.email}
+                              {c.user.role === 'business' && (
+                                <span className="ml-1.5 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-50 dark:bg-violet-500/15 text-violet-700 dark:text-violet-300">
+                                  Business
+                                </span>
+                              )}
                             </Link>
                           ) : (
                             '—'

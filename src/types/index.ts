@@ -103,6 +103,8 @@ export interface AdminUserDetail {
     referrals: number;
     tickets_open: number;
   };
+  /** Followers / following; posts = tasks created (business accounts only, else null). */
+  social?: { posts: number | null; followers: number; following: number };
   withdrawals: {
     id: number;
     amount_cents: number;

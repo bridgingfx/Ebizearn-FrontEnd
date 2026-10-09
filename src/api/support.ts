@@ -84,6 +84,9 @@ export const staffKycApi = {
     api.get<Blob>(`/staff/kyc/${userId}/documents/${side}`, { responseType: 'blob' }).then((r) => r.data),
   decide: (userId: number, decision: 'approve' | 'reject', reason?: string) =>
     api.post<ApiResponse<KycSubmission>>(`/staff/kyc/${userId}/decision`, { decision, reason }).then((r) => r.data),
+  /** Approve without documents (manual_kyc_approve); the note goes to the audit log. */
+  manualApprove: (userId: number, note: string) =>
+    api.post<ApiResponse<unknown>>(`/staff/kyc/${userId}/manual-approve`, { note }).then((r) => r.data),
 };
 
 /** Staff review of residence-country changes (review_kyc). Approval resets KYC for the new country. */

@@ -172,6 +172,12 @@ export const LazyBusinessBillingPage = React.lazy(() =>
 export const LazyBusinessSettingsPage = React.lazy(() =>
   named(import('../pages/business/BusinessSettingsPage'), 'BusinessSettingsPage'),
 );
+export const LazyBusinessProfilePage = React.lazy(() =>
+  named(import('../pages/business/BusinessProfilePage'), 'BusinessProfilePage'),
+);
+export const LazyBusinessNotificationsPage = React.lazy(() =>
+  named(import('../pages/business/BusinessNotificationsPage'), 'BusinessNotificationsPage'),
+);
 export const LazyBusinessSupportPage = React.lazy(() =>
   named(import('../pages/business/BusinessSupportPage'), 'BusinessSupportPage'),
 );

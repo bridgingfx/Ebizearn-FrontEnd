@@ -1,5 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
+  BellRing,
+  Loader2,
+  Ticket,
+  UserCheck,
   Heart,
   MessageCircle,
   Share2,
@@ -16,6 +21,8 @@ import {
   MessageSquareText,
 } from 'lucide-react';
 import type { UiTask } from '../../types';
+import { businessProfileApi } from '../../api';
+import type { BusinessProfile } from '../../api';
 import { initials, humanizeRetention, proofRequirementLabels } from './TaskCard';
 
 export type TaskPreviewVariant =
@@ -57,16 +64,16 @@ export function classifyTaskPreview(task: Pick<UiTask, 'platform' | 'title' | 'c
 /* Shared bits                                                         */
 /* ------------------------------------------------------------------ */
 
-const Shell: React.FC<{ children: React.ReactNode; label: string }> = ({ children, label }) => (
+const Shell: React.FC<{ children: React.ReactNode; label: string; badge?: string; footer?: string }> = ({ children, label, badge, footer }) => (
   <div className="relative rounded-3xl border border-[#E7ECF3] dark:border-white/10 bg-white dark:bg-[#0C1322] shadow-sm overflow-hidden">
     <div className="absolute top-3 left-3 z-10">
       <span className="text-[10px] font-black uppercase tracking-wider bg-[#07182F]/85 text-white px-2.5 py-1 rounded-full backdrop-blur">
-        Illustrative preview
+        {badge ?? 'Illustrative preview'}
       </span>
     </div>
     <div className="pt-12">{children}</div>
     <p className="px-4 py-2.5 text-[10px] text-gray-400 dark:text-gray-500 border-t border-gray-100 dark:border-white/10">
-      {label} — mock layout for guidance only. Complete the real action on the actual platform.
+      {footer ?? `${label} — mock layout for guidance only. Complete the real action on the actual platform.`}
     </p>
   </div>
 );
@@ -85,68 +92,199 @@ const handle = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '_').
 /* Instagram — profile / follow mock                                   */
 /* ------------------------------------------------------------------ */
 
-const InstagramFollowMockup: React.FC<{ task: UiTask }> = ({ task }) => (
-  <Shell label={task.platform}>
-    <div className="p-4">
-      <div className="flex items-center gap-4">
-        <div className="rounded-full p-[3px] bg-gradient-to-tr from-amber-400 via-pink-500 to-violet-600 shrink-0">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#168BFF] to-[#7357FF] text-white flex items-center justify-center text-lg font-black border-2 border-white">
-            {initials(task.brandName)}
+const compact = (n: number) => new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
+
+/**
+ * The business's real eBizEarn profile: tasks posted, followers, following,
+ * Follow (notifies the business), Tickets (support), the bell (new-task
+ * alerts from this business) and its campaign images, newest first.
+ */
+const BusinessProfileCard: React.FC<{ task: UiTask }> = ({ task }) => {
+  const businessId = task.campaign?.business?.uuid || task.campaign?.business_id || null;
+  const [profile, setProfile] = useState<BusinessProfile | null>(null);
+  const [loading, setLoading] = useState(!!businessId);
+  const [busy, setBusy] = useState<'follow' | 'bell' | null>(null);
+
+  useEffect(() => {
+    if (!businessId) return;
+    let alive = true;
+    businessProfileApi
+      .get(businessId)
+      .then((res) => alive && setProfile(res.data))
+      .catch(() => undefined)
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, [businessId]);
+
+  const name = profile?.name || task.brandName;
+  const viewer = profile?.viewer;
+
+  const toggleFollow = async () => {
+    if (!businessId || !profile || busy) return;
+    setBusy('follow');
+    try {
+      // The API client toasts the result (success message or error).
+      const res = viewer?.is_following ? await businessProfileApi.unfollow(businessId) : await businessProfileApi.follow(businessId);
+      setProfile(res.data);
+    } catch {
+      /* toasted by the API client */
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const toggleBell = async () => {
+    if (!businessId || !profile || busy) return;
+    setBusy('bell');
+    try {
+      const res = await businessProfileApi.setAlerts(businessId, !viewer?.alerts_on);
+      setProfile(res.data);
+    } catch {
+      /* toasted by the API client */
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const stat = (value: number | undefined) => (loading ? '…' : value === undefined ? '—' : compact(value));
+  const images = profile?.images ?? [];
+
+  return (
+    <Shell
+      label={task.platform}
+      badge="Business profile"
+      footer={`${name} on eBizEarn. Complete the task itself on ${task.platform}.`}
+    >
+      <div className="p-4">
+        <div className="flex items-center gap-4">
+          <div className="rounded-full p-[3px] bg-gradient-to-tr from-amber-400 via-pink-500 to-violet-600 shrink-0">
+            {profile?.avatar_url ? (
+              <img src={profile.avatar_url} alt={name} className="w-16 h-16 rounded-full object-cover border-2 border-white bg-white" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#168BFF] to-[#7357FF] text-white flex items-center justify-center text-lg font-black border-2 border-white">
+                {initials(name)}
+              </div>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-1 truncate">
+              <span className="truncate">{name}</span>
+              {profile?.verified && <BadgeCheck className="w-4 h-4 text-[#168BFF] shrink-0" />}
+            </p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+              @{profile?.handle || handle(name)}
+              {profile?.industry ? ` · ${profile.industry}` : ''}
+            </p>
+            {viewer?.follows_you && (
+              <span className="inline-block mt-1 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400">
+                Follows you
+              </span>
+            )}
           </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-gray-900 dark:text-gray-100 flex items-center gap-1 truncate">
-            {handle(task.brandName)}
-            <BadgeCheck className="w-4 h-4 text-[#168BFF] shrink-0" />
-          </p>
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{task.brandName}</p>
+
+        <div className="flex gap-6 my-4 text-center justify-center">
+          {(
+            [
+              ['Posts', profile?.stats.posts],
+              ['Followers', profile?.stats.followers],
+              ['Following', profile?.stats.following],
+            ] as const
+          ).map(([label, value]) => (
+            <div key={label} className="min-w-[64px]">
+              <p className="text-sm font-black text-gray-900 dark:text-gray-100">{stat(value)}</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">{label}</p>
+            </div>
+          ))}
         </div>
-        <MoreVertical className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
-      </div>
 
-      <div className="flex gap-6 my-4 text-center justify-center">
-        {[
-          ['Posts', '128'],
-          ['Followers', '45.2K'],
-          ['Following', '312'],
-        ].map(([label, value]) => (
-          <div key={label} className="min-w-[64px]">
-            <p className="text-sm font-black text-gray-900 dark:text-gray-100">{value}</p>
-            <p className="text-[10px] text-gray-500 dark:text-gray-400">{label}</p>
-          </div>
-        ))}
-      </div>
+        <p className="text-[11px] text-gray-700 dark:text-gray-300 leading-snug mb-3">
+          {task.postCopy.slice(0, 120)}
+          {task.postCopy.length > 120 ? '…' : ''}
+        </p>
 
-      <p className="text-[11px] text-gray-700 dark:text-gray-300 leading-snug mb-3">
-        {task.postCopy.slice(0, 120)}
-        {task.postCopy.length > 120 ? '…' : ''}
-      </p>
-
-      <div className="flex gap-2">
-        <span className="flex-1 text-center py-2.5 rounded-xl bg-[#168BFF] text-white text-xs font-black shadow-sm shadow-blue-500/25">
-          Follow
-        </span>
-        <span className="flex-1 text-center py-2.5 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 text-xs font-bold">
-          Message
-        </span>
-        <span className="px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 flex items-center justify-center">
-          <Bell className="w-4 h-4" />
-        </span>
-      </div>
-
-      <div className="grid grid-cols-3 gap-1 mt-3">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="aspect-square rounded-lg bg-gradient-to-br from-[#0D2342]/70 via-[#168BFF]/25 to-[#7357FF]/25 flex items-center justify-center"
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={toggleFollow}
+            disabled={!profile || busy !== null}
+            className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-black transition-colors disabled:opacity-60 ${
+              viewer?.is_following
+                ? 'bg-gray-100 dark:bg-white/10 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/15'
+                : 'bg-[#168BFF] hover:bg-[#2F80FF] text-white shadow-sm shadow-blue-500/25'
+            }`}
           >
-            <span className="text-white/70 text-sm font-black">{initials(task.brandName)}</span>
-          </div>
-        ))}
+            {busy === 'follow' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            {viewer?.is_following ? (
+              <>
+                <UserCheck className="w-3.5 h-3.5" /> Following
+              </>
+            ) : viewer?.follows_you ? (
+              'Follow back'
+            ) : (
+              'Follow'
+            )}
+          </button>
+          <Link
+            to="/app/support"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-gray-700 dark:text-gray-300 text-xs font-bold transition-colors"
+          >
+            <Ticket className="w-3.5 h-3.5" /> Tickets
+          </Link>
+          <button
+            type="button"
+            onClick={toggleBell}
+            disabled={!profile || busy !== null}
+            aria-pressed={!!viewer?.alerts_on}
+            aria-label={viewer?.alerts_on ? 'Turn off new-task notifications' : 'Turn on new-task notifications'}
+            title={viewer?.alerts_on ? `Notifications on for ${name}` : `Notify me when ${name} posts a task`}
+            className={`px-3 py-2.5 rounded-xl flex items-center justify-center transition-colors disabled:opacity-60 ${
+              viewer?.alerts_on
+                ? 'bg-[#168BFF]/10 text-[#168BFF] hover:bg-[#168BFF]/15'
+                : 'bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/15'
+            }`}
+          >
+            {busy === 'bell' ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : viewer?.alerts_on ? (
+              <BellRing className="w-4 h-4" />
+            ) : (
+              <Bell className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-1 mt-3">
+          {images.length > 0
+            ? images.map((img) => (
+                <a
+                  key={`${img.campaign_uuid}-${img.url}`}
+                  href={img.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={img.title}
+                  className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-white/5"
+                >
+                  <img src={img.url} alt={img.title} loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                </a>
+              ))
+            : [0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="aspect-square rounded-lg bg-gradient-to-br from-[#0D2342]/70 via-[#168BFF]/25 to-[#7357FF]/25 flex items-center justify-center"
+                >
+                  <span className="text-white/70 text-sm font-black">{initials(name)}</span>
+                </div>
+              ))}
+        </div>
       </div>
-    </div>
-  </Shell>
-);
+    </Shell>
+  );
+};
+
+const InstagramFollowMockup = BusinessProfileCard;
 
 /* ------------------------------------------------------------------ */
 /* Instagram — post mock                                               */

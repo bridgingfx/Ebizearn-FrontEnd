@@ -12,7 +12,8 @@ import {
   Inbox,
   Sparkles,
 } from 'lucide-react';
-import { walletApi, tasksApi, getApiError } from '../../api';
+import { walletApi, tasksApi, notificationsApi, getApiError } from '../../api';
+import type { AppNotification } from '../../api';
 import { mapTaskForUi } from '../../utils/apiMappers';
 import type { WalletTransaction, TaskSubmission, Task } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -115,16 +116,37 @@ export const ContributorNotificationsPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const [txRes, myRes, refRes, newTasks] = await Promise.all([
+        const [txRes, myRes, refRes, newTasks, serverRes] = await Promise.all([
           walletApi.transactions().catch(() => ({ success: false as const, data: [] })),
           tasksApi.myTasks().catch(() => ({ success: false as const, data: [] as TaskSubmission[] })),
           tasksApi.referrals().catch(() => ({ success: false as const, data: null })),
           fetchNewTasks(user?.created_at),
+          notificationsApi.list({ per_page: 50 }).catch(() => null),
         ]);
 
         const out: NotificationItem[] = [];
 
+        // Server notifications: follow back, new task from a business whose bell is on.
+        const server: AppNotification[] = serverRes?.data ?? [];
+        const alertedTaskIds = new Set<number>();
+        const serverRead: string[] = [];
+        for (const n of server) {
+          const taskId = (n.data?.task as { id?: number } | undefined)?.id;
+          if (taskId) alertedTaskIds.add(taskId);
+          if (n.read_at) serverRead.push(`db-${n.id}`);
+          out.push({
+            id: `db-${n.id}`,
+            kind: n.kind === 'new_task' ? 'new_task' : n.kind === 'followed_back' ? 'referral' : 'info',
+            title: n.title,
+            description: n.body,
+            createdAt: n.created_at,
+            link: n.link || undefined,
+          });
+        }
+        if (serverRead.length) setReadIds((prev) => new Set([...prev, ...serverRead]));
+
         for (const t of newTasks) {
+          if (alertedTaskIds.has(t.id)) continue;
           const task = mapTaskForUi(t);
           out.push({
             id: `task-new-${t.id}`,
@@ -255,6 +277,7 @@ export const ContributorNotificationsPage: React.FC = () => {
     items.forEach((i) => next.add(i.id));
     setReadIds(next);
     saveReadSet(user?.id, next);
+    if (items.some((i) => i.id.startsWith('db-'))) notificationsApi.markRead().catch(() => undefined);
   };
 
   const markOneRead = (id: string) => {
@@ -263,6 +286,7 @@ export const ContributorNotificationsPage: React.FC = () => {
     next.add(id);
     setReadIds(next);
     saveReadSet(user?.id, next);
+    if (id.startsWith('db-')) notificationsApi.markRead([id.slice(3)]).catch(() => undefined);
   };
 
   if (loading) {
@@ -395,7 +419,8 @@ export function useUnreadNotifications(): number | null {
         const refData = (refRes as { data?: { referrals?: { id: number }[] } }).data;
         refData?.referrals?.forEach((r) => ids.push(`ref-${r.id}`));
         const read = getReadSet(user?.id);
-        setCount(ids.filter((id) => !read.has(id)).length);
+        const server = await notificationsApi.unread().catch(() => null);
+        setCount(ids.filter((id) => !read.has(id)).length + (server?.data.unread ?? 0));
       } catch {
         setCount(null);
       }

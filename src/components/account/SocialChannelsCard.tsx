@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { AlertCircle, Check, CheckCircle2, Clock, Copy, ExternalLink, Loader2, Pencil, Plus, Trash2, X, XCircle, ShieldCheck } from 'lucide-react';
 import { socialChannelsApi, socialConnectApi, getApiError, getApiFieldErrors } from '../../api';
 import type { SocialChannel, SocialPlatform, SocialConnectConfigKey, SocialConnectPublicConfig } from '../../api';
+import type { SocialChannelsApi } from '../../api/socialChannels';
 import { InstagramLogo, TikTokLogo, YouTubeLogo, FacebookLogo, XTwitterLogo } from '../common/PlatformIcons';
 import { toast } from '../../utils/toast';
 
@@ -49,7 +50,14 @@ const OAuthBadge: React.FC<{ label: string }> = ({ label }) => (
 );
 
 /** Profile → Connected Social Accounts: link channels manually (bio code) or with official OAuth login. */
-export const SocialChannelsCard: React.FC<{ refreshKey?: number }> = ({ refreshKey }) => {
+export const SocialChannelsCard: React.FC<{
+  refreshKey?: number;
+  /** Which account the channels belong to (contributor by default, or a business). */
+  api?: SocialChannelsApi;
+  /** "Connect with …" OAuth buttons — the OAuth callback lands on the contributor profile, so businesses use the bio-code flow. */
+  allowOAuth?: boolean;
+  description?: string;
+}> = ({ refreshKey, api = socialChannelsApi, allowOAuth = true, description }) => {
   const [channels, setChannels] = useState<SocialChannel[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<SocialPlatform | null>(null);
@@ -62,20 +70,20 @@ export const SocialChannelsCard: React.FC<{ refreshKey?: number }> = ({ refreshK
 
   const load = useCallback(async () => {
     try {
-      const res = await socialChannelsApi.list();
+      const res = await api.list();
       setChannels(res.data);
     } catch (err) {
       toast.error(getApiError(err, 'Could not load your social channels.'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [api]);
 
   useEffect(() => {
     load();
     // Which "Connect with …" buttons are available — fails silently, manual flow always works.
-    socialConnectApi.publicConfig().then((res) => setOauthConfig(res.data)).catch(() => {});
-  }, [load]);
+    if (allowOAuth) socialConnectApi.publicConfig().then((res) => setOauthConfig(res.data)).catch(() => {});
+  }, [load, allowOAuth]);
 
   // Parent (profile page) bumps this after the OAuth callback lands, so the new channel shows immediately.
   useEffect(() => {
@@ -98,7 +106,7 @@ export const SocialChannelsCard: React.FC<{ refreshKey?: number }> = ({ refreshK
     setBusy('save');
     setFieldError(null);
     try {
-      const res = await socialChannelsApi.save({ platform: editing, profile_url: link.trim(), followers: followers === '' ? null : Number(followers) });
+      const res = await api.save({ platform: editing, profile_url: link.trim(), followers: followers === '' ? null : Number(followers) });
       replace(res.data);
       setEditing(null);
       toast.success(res.data.status === 'verified' ? 'Channel updated.' : 'Channel added. Now add your code to your bio.');
@@ -113,7 +121,7 @@ export const SocialChannelsCard: React.FC<{ refreshKey?: number }> = ({ refreshK
   const submit = async (c: SocialChannel) => {
     setBusy(`submit-${c.id}`);
     try {
-      const res = await socialChannelsApi.submit(c.id);
+      const res = await api.submit(c.id);
       replace(res.data);
       toast.success('Submitted for review. Keep the code in your bio until it is verified.');
     } catch (err) {
@@ -128,7 +136,7 @@ export const SocialChannelsCard: React.FC<{ refreshKey?: number }> = ({ refreshK
     if (!window.confirm(`Remove your ${name} channel @${c.handle}?`)) return;
     setBusy(`remove-${c.id}`);
     try {
-      await socialChannelsApi.remove(c.id);
+      await api.remove(c.id);
       setChannels((list) => list.filter((x) => x.id !== c.id));
       toast.success('Channel removed.');
     } catch (err) {
@@ -188,7 +196,7 @@ export const SocialChannelsCard: React.FC<{ refreshKey?: number }> = ({ refreshK
         <div>
           <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Verified Social Media Channels</h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-xl">
-            Link the accounts you complete tasks with. To prove each one is yours, add the code we give you to that profile’s bio — our team checks it and marks the channel verified.
+            {description ?? 'Link the accounts you complete tasks with. To prove each one is yours, add the code we give you to that profile’s bio — our team checks it and marks the channel verified.'}
             {anyOAuthEnabled && ' Or connect instantly with your official platform login — no bio code needed.'}
           </p>
         </div>

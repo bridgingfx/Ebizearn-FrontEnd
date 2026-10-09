@@ -14,7 +14,9 @@ import {
   MoreHorizontal,
   X,
   User as UserIcon,
+  Bell,
 } from 'lucide-react';
+import { notificationsApi } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { businessSectionPermission } from '../utils/permissionGroups';
 
@@ -48,6 +50,8 @@ export const BusinessLayout: React.FC = () => {
     { name: 'Analytics', path: '/business/reports', icon: BarChart3 },
     { name: 'Billing & Invoices', path: '/business/billing', icon: CreditCard },
     { name: 'Team Access', path: '/business/team', icon: Users },
+    { name: 'Profile', path: '/business/profile', icon: UserIcon },
+    { name: 'Notifications', path: '/business/notifications', icon: Bell },
     { name: 'Settings', path: '/business/settings', icon: Settings },
     { name: 'Support', path: '/business/support', icon: HelpCircle },
   ].filter(canSee);
@@ -67,6 +71,8 @@ export const BusinessLayout: React.FC = () => {
   const moreItems = [
     { name: 'Billing & Invoices', path: '/business/billing', icon: CreditCard },
     { name: 'Team Access', path: '/business/team', icon: Users },
+    { name: 'Profile', path: '/business/profile', icon: UserIcon },
+    { name: 'Notifications', path: '/business/notifications', icon: Bell },
     { name: 'Settings', path: '/business/settings', icon: Settings },
     { name: 'Support', path: '/business/support', icon: HelpCircle },
   ].filter(canSee);
@@ -81,6 +87,15 @@ export const BusinessLayout: React.FC = () => {
 
   const companyName = user?.business?.company_name || user?.name || 'Business';
   const [profileOpen, setProfileOpen] = useState(false);
+
+  // Unread in-app notifications (new followers…) for the top-bar bell.
+  const [unread, setUnread] = useState(0);
+  useEffect(() => {
+    const refresh = () => notificationsApi.unread().then((r) => setUnread(r.data.unread)).catch(() => undefined);
+    refresh();
+    window.addEventListener('ebiz:notifications-read', refresh);
+    return () => window.removeEventListener('ebiz:notifications-read', refresh);
+  }, [location.pathname]);
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -190,6 +205,18 @@ export const BusinessLayout: React.FC = () => {
           </Link>
 
           <div className="flex items-center gap-3 ml-auto">
+            <Link
+              to="/business/notifications"
+              aria-label={unread > 0 ? `Notifications (${unread} unread)` : 'Notifications'}
+              className="relative p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+            >
+              <Bell className="w-4 h-4" />
+              {unread > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">
+                  {unread > 9 ? '9+' : unread}
+                </span>
+              )}
+            </Link>
             <ThemeToggle />
             <div className="hidden md:block">
               <RegionSelector variant="light" />
@@ -216,7 +243,7 @@ export const BusinessLayout: React.FC = () => {
                       <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
                     </div>
                     <Link
-                      to="/business/settings"
+                      to="/business/profile"
                       onClick={() => setProfileOpen(false)}
                       className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                     >

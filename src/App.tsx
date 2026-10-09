@@ -69,6 +69,8 @@ import {
   LazyBusinessBillingPage,
   LazyBusinessSettingsPage,
   LazyBusinessSupportPage,
+  LazyBusinessProfilePage,
+  LazyBusinessNotificationsPage,
   LazyCreateCampaignWizardPage,
   LazyBusinessTeamPage,
   LazyAdminOverviewPage,
@@ -250,6 +252,8 @@ export const App: React.FC = () => {
             <Route path="team" element={<LazyBusinessTeamPage />} />
             <Route path="settings" element={<LazyBusinessSettingsPage />} />
             <Route path="support" element={<LazyBusinessSupportPage />} />
+            <Route path="profile" element={<LazyBusinessProfilePage />} />
+            <Route path="notifications" element={<LazyBusinessNotificationsPage />} />
           </Route>
 
           {/* Admin & Super Admin Command Center Routes. Moderators share the

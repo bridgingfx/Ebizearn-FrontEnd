@@ -227,6 +227,8 @@ export interface WalletTransaction {
   description: string;
   metadata_json?: Record<string, any>;
   created_at: string;
+  /** Live status of the withdrawal request this row belongs to. */
+  withdrawal_status?: WithdrawalRequest['status'] | null;
 }
 
 export interface TaskCategory {
@@ -424,6 +426,7 @@ export interface WithdrawalRequest {
   created_at: string;
   processed_at?: string;
   provider_transaction_id?: string;
+  admin_notes?: string;
   user?: User;
 }
 

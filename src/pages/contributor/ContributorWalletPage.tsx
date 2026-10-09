@@ -59,6 +59,17 @@ type TxnTab = 'all' | 'earnings' | 'withdrawals';
 const EARNING_TYPES = ['task_reward', 'referral_reward', 'bonus', 'withdrawal_reversal', 'admin_adjustment'];
 const WITHDRAWAL_TYPES = ['withdrawal'];
 
+// Where a withdrawal request stands; a rejected one is refunded (see the reversal row).
+const WITHDRAWAL_STATUS: Record<string, { label: string; tint: string }> = {
+  requested: { label: 'Pending approval', tint: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300' },
+  compliance_check: { label: 'Pending approval', tint: 'bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300' },
+  processing: { label: 'Approved · payout on the way', tint: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300' },
+  paid: { label: 'Paid', tint: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' },
+  rejected: { label: 'Rejected · refunded to wallet', tint: 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300' },
+  failed: { label: 'Failed', tint: 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300' },
+  cancelled: { label: 'Cancelled', tint: 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-gray-300' },
+};
+
 export const ContributorWalletPage: React.FC = () => {
   const [wallet, setWallet] = useState<WalletState | null>(null);
   const [minWithdrawalCents, setMinWithdrawalCents] = useState(5000);
@@ -432,6 +443,13 @@ export const ContributorWalletPage: React.FC = () => {
                           {' · '}
                           {t.type.replace(/_/g, ' ')}
                         </p>
+                        {t.type === 'withdrawal' && t.withdrawal_status && WITHDRAWAL_STATUS[t.withdrawal_status] && (
+                          <span
+                            className={`inline-block mt-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${WITHDRAWAL_STATUS[t.withdrawal_status].tint}`}
+                          >
+                            {WITHDRAWAL_STATUS[t.withdrawal_status].label}
+                          </span>
+                        )}
                       </div>
                       <div className="text-right shrink-0">
                         <p className={`text-base font-black ${positive ? 'text-emerald-600' : 'text-slate-700 dark:text-gray-300'}`}>

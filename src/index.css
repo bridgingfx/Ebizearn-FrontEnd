@@ -467,3 +467,29 @@ font {
   background: transparent !important;
   color: inherit !important;
 }
+
+/* ── No sideways scrolling on any screen ────────────────────────────────
+   One wide element (long email/URL, a decorative blob, a table) must never
+   make the whole page pan left/right on phones and tablets. `clip` (with
+   `hidden` as the fallback) keeps position: sticky headers working. Wide
+   tables keep their own `overflow-x-auto` wrappers. */
+html {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+body {
+  max-width: 100%;
+  overflow-x: clip;
+  overflow-wrap: break-word;
+}
+
+/* iOS Safari zooms into any field under 16px on focus and stays zoomed —
+   the page then looks shifted sideways (sign-in → dashboard). 16px on iOS
+   only; other devices keep the designed sizes. */
+@supports (-webkit-touch-callout: none) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select,
+  textarea {
+    font-size: max(16px, 1em) !important;
+  }
+}

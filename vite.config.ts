@@ -1,12 +1,27 @@
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
+
+// One id per build: baked into the bundle (import.meta.env.VITE_BUILD_ID) and
+// written to dist/version.json, so open tabs notice a new deploy
+// (see src/utils/appUpdate.ts) instead of running stale cached code.
+const BUILD_ID = process.env.VITE_BUILD_ID || Date.now().toString(36)
+process.env.VITE_BUILD_ID = BUILD_ID
+
+const versionFile = (): Plugin => ({
+  name: 'ebizearn-version-file',
+  apply: 'build',
+  generateBundle() {
+    this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ build: BUILD_ID }) })
+  },
+})
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    versionFile(),
   ],
   server: {
     host: '0.0.0.0',

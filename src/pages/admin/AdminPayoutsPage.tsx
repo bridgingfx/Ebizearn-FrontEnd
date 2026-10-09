@@ -19,6 +19,20 @@ import { EmptyState } from '../../components/common/EmptyState';
  * payouts, no fabricated "variance" banners. The backend processes payouts
  * through its ledger service; this page approves/rejects requests only.
  */
+// Only `requested` is awaiting a decision; `processing` means already approved.
+const STATUS_LABEL: Record<string, string> = {
+  requested: 'Awaiting approval',
+  processing: 'Approved',
+  paid: 'Paid',
+  rejected: 'Rejected · refunded',
+};
+
+const DECIDED_NOTE: Record<string, string> = {
+  processing: 'Approved — send the payout manually.',
+  paid: 'Paid out.',
+  rejected: 'Amount returned to the user’s wallet.',
+};
+
 export const AdminPayoutsPage: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -53,17 +67,32 @@ export const AdminPayoutsPage: React.FC = () => {
     void load();
   }, [load]);
 
+  const [notice, setNotice] = useState<string | null>(null);
+
+  /** Swap in the server's row; drop it when it no longer matches the status filter. */
+  const applyRow = (id: number, row: WithdrawalRequest) =>
+    setPayouts((items) =>
+      items
+        .map((item) => (item.id === id ? { ...item, ...row } : item))
+        .filter((item) => filterStatus === 'all' || item.status === filterStatus),
+    );
+
   const handleAction = async (id: number, action: 'approve' | 'reject', reason?: string, providerTxId?: string) => {
     setProcessingId(id);
     setActionError(null);
+    setNotice(null);
     try {
       const res = await adminApi.processPayout(id, { action, reason, provider_tx_id: providerTxId });
       if (res.success && res.data) {
-        setPayouts((items) => items.map((item) => (item.id === id ? res.data : item)));
+        applyRow(id, res.data);
+        setNotice(res.message || (action === 'approve' ? 'Withdrawal approved.' : 'Withdrawal rejected and refunded.'));
       } else {
         setActionError(res.message || 'Could not process this payout.');
       }
     } catch (e) {
+      // Already decided elsewhere (409): show the current state, not the buttons.
+      const current = (e as { response?: { data?: { data?: WithdrawalRequest } } })?.response?.data?.data;
+      if (current?.id) applyRow(id, current);
       setActionError(getApiError(e, 'Could not process this payout. Nothing was applied.'));
     } finally {
       setProcessingId(null);
@@ -75,7 +104,7 @@ export const AdminPayoutsPage: React.FC = () => {
   };
 
   const handleBatchApprove = async () => {
-    const pending = payouts.filter((p) => p.status === 'requested' || p.status === 'processing');
+    const pending = payouts.filter((p) => p.status === 'requested');
     for (const p of pending) {
       await handleAction(p.id, 'approve');
     }
@@ -97,7 +126,7 @@ export const AdminPayoutsPage: React.FC = () => {
     [payouts, searchQuery],
   );
 
-  const pendingList = payouts.filter((p) => p.status === 'requested' || p.status === 'processing');
+  const pendingList = payouts.filter((p) => p.status === 'requested');
   const pendingCount = pendingList.length;
   const pendingTotalCents = pendingList.reduce((acc, p) => acc + p.amount_cents, 0);
 
@@ -157,7 +186,7 @@ export const AdminPayoutsPage: React.FC = () => {
                 filterStatus === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
               }`}
             >
-              {s}
+              {({ requested: 'Awaiting approval', processing: 'Approved' } as Record<string, string>)[s] || s}
             </button>
           ))}
         </div>
@@ -190,6 +219,11 @@ export const AdminPayoutsPage: React.FC = () => {
           {actionError}
         </div>
       )}
+      {notice && !actionError && (
+        <div role="status" className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-xl px-4 py-3 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+          {notice}
+        </div>
+      )}
 
       {loading && (
         <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
@@ -212,7 +246,7 @@ export const AdminPayoutsPage: React.FC = () => {
       {!loading && filteredPayouts.length > 0 && (
         <div className="space-y-3">
           {filteredPayouts.map((p) => {
-            const isPending = p.status === 'requested' || p.status === 'processing';
+            const isPending = p.status === 'requested';
             return (
               <div
                 key={p.id}
@@ -226,7 +260,7 @@ export const AdminPayoutsPage: React.FC = () => {
                     <span
                       className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${statusStyle(p.status)}`}
                     >
-                      {p.status.replace(/_/g, ' ')}
+                      {STATUS_LABEL[p.status] || p.status.replace(/_/g, ' ')}
                     </span>
                     <span className="text-[11px] text-gray-400 dark:text-gray-500">{new Date(p.created_at).toLocaleString()}</span>
                     {p.user?.profile?.kyc_status === 'verified' && (
@@ -273,6 +307,14 @@ export const AdminPayoutsPage: React.FC = () => {
                     >
                       <XCircle className="w-3.5 h-3.5" /> Reject
                     </button>
+                  </div>
+                )}
+                {!isPending && DECIDED_NOTE[p.status] && (
+                  <div className="shrink-0 lg:max-w-[16rem] text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                    {DECIDED_NOTE[p.status]}
+                    {p.status === 'rejected' && p.admin_notes && (
+                      <span className="block font-normal mt-0.5 break-words">Reason: {p.admin_notes}</span>
+                    )}
                   </div>
                 )}
               </div>

@@ -85,9 +85,13 @@ const extFromContentType = (contentType: string): string => {
   return 'jpg';
 };
 
-export const TaskAssetActions: React.FC<{ task: UiTask }> = ({ task }) => {
+export const TaskAssetActions: React.FC<{ task: UiTask; imageUrl?: string | null }> = ({ task, imageUrl: imageUrlProp }) => {
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  // The creative can live on the campaign post image, the per-contributor content, or the legacy flyer.
+  const creativeUrl = imageUrlProp || task.postImageUrl || task.flyerUrl || '';
 
   const platform = resolvePlatform(task);
   const target = platformTarget(platform, task.postCopy || task.description || '');
@@ -96,7 +100,7 @@ export const TaskAssetActions: React.FC<{ task: UiTask }> = ({ task }) => {
   const caption = [task.postCopy, task.hashtags].filter(Boolean).join('\n\n');
 
   const handleDownload = async () => {
-    const imageUrl = task.flyerUrl;
+    const imageUrl = creativeUrl;
     if (!imageUrl) return;
     setDownloading(true);
     try {
@@ -175,16 +179,29 @@ export const TaskAssetActions: React.FC<{ task: UiTask }> = ({ task }) => {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-2">
-        {task.flyerUrl ? (
-          <button
-            type="button"
-            onClick={handleDownload}
-            disabled={downloading}
-            className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 min-h-[48px] rounded-2xl bg-[#168BFF] hover:bg-[#2F80FF] text-white text-xs font-black transition-all shadow-lg shadow-[#168BFF]/25 disabled:opacity-60"
-          >
-            {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            <span>{downloading ? 'Downloading…' : 'Download image'}</span>
-          </button>
+        {creativeUrl && !imageFailed ? (
+          // Thumbnail cropped to the same tile size as the other actions, whatever the image dimensions.
+          <div className="relative flex-1 min-h-[48px] h-[64px] sm:h-auto rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5">
+            <a href={creativeUrl} target="_blank" rel="noopener noreferrer" className="absolute inset-0" title="View image">
+              <img
+                src={creativeUrl}
+                alt="Task creative"
+                loading="lazy"
+                onError={() => setImageFailed(true)}
+                className="w-full h-full object-cover"
+              />
+            </a>
+            <button
+              type="button"
+              onClick={handleDownload}
+              disabled={downloading}
+              aria-label="Download image"
+              title="Download image"
+              className="absolute bottom-1.5 right-1.5 w-7 h-7 inline-flex items-center justify-center rounded-full bg-black/60 hover:bg-black/75 text-white shadow-md backdrop-blur-sm transition-colors disabled:opacity-60"
+            >
+              {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         ) : (
           <div
             className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 min-h-[48px] rounded-2xl bg-gray-50 dark:bg-white/5 border border-dashed border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-500 text-xs font-bold"

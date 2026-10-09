@@ -253,7 +253,7 @@ export const TaskDetailPage: React.FC = () => {
           <PlatformPreview task={task} />
 
           {/* Download creative → copy caption → open platform → post → submit proof */}
-          <TaskAssetActions task={task} />
+          <TaskAssetActions task={task} imageUrl={postContent.imageUrl || task.postImageUrl || task.flyerUrl} />
 
           <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 p-5 sm:p-6 space-y-4">
             <div className="flex items-start gap-3">

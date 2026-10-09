@@ -10,16 +10,17 @@ import {
   ArrowRight,
   AlertCircle,
   Inbox,
+  Sparkles,
 } from 'lucide-react';
 import { walletApi, tasksApi, getApiError } from '../../api';
 import { mapTaskForUi } from '../../utils/apiMappers';
-import type { WalletTransaction, TaskSubmission } from '../../types';
+import type { WalletTransaction, TaskSubmission, Task } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { EmptyState } from '../../components/common/EmptyState';
 
 interface NotificationItem {
   id: string;
-  kind: 'approved' | 'rejected' | 'action_required' | 'reward' | 'withdrawal' | 'referral' | 'info';
+  kind: 'approved' | 'rejected' | 'action_required' | 'reward' | 'withdrawal' | 'referral' | 'new_task' | 'info';
   title: string;
   description: string;
   amount?: string;
@@ -48,6 +49,16 @@ function saveReadSet(userId: number | string | undefined, set: Set<string>) {
 
 const fmtMoney = (cents: number, currency: string) => `${currency} ${(cents / 100).toFixed(2)}`;
 
+/** Tasks published in the last two weeks (and after the account was created) show as "New task". */
+const NEW_TASK_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+
+const fetchNewTasks = async (userCreatedAt?: string): Promise<Task[]> => {
+  const res = await tasksApi.list({ sort: 'newest', per_page: 20 }).catch(() => null);
+  if (!res?.success || !Array.isArray(res.data)) return [];
+  const since = Math.max(Date.now() - NEW_TASK_WINDOW_MS, userCreatedAt ? new Date(userCreatedAt).getTime() || 0 : 0);
+  return res.data.filter((t) => t.created_at && new Date(t.created_at).getTime() >= since);
+};
+
 const kindIcon = (kind: NotificationItem['kind']) => {
   switch (kind) {
     case 'approved':
@@ -61,6 +72,8 @@ const kindIcon = (kind: NotificationItem['kind']) => {
       return <WalletIcon className="w-5 h-5 text-[#168BFF]" />;
     case 'referral':
       return <Users className="w-5 h-5 text-violet-500" />;
+    case 'new_task':
+      return <Sparkles className="w-5 h-5 text-[#168BFF]" />;
     default:
       return <Bell className="w-5 h-5 text-gray-400 dark:text-gray-500" />;
   }
@@ -102,13 +115,26 @@ export const ContributorNotificationsPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const [txRes, myRes, refRes] = await Promise.all([
+        const [txRes, myRes, refRes, newTasks] = await Promise.all([
           walletApi.transactions().catch(() => ({ success: false as const, data: [] })),
           tasksApi.myTasks().catch(() => ({ success: false as const, data: [] as TaskSubmission[] })),
           tasksApi.referrals().catch(() => ({ success: false as const, data: null })),
+          fetchNewTasks(user?.created_at),
         ]);
 
         const out: NotificationItem[] = [];
+
+        for (const t of newTasks) {
+          const task = mapTaskForUi(t);
+          out.push({
+            id: `task-new-${t.id}`,
+            kind: 'new_task',
+            title: 'New task available',
+            description: `${task.brandName ? `${task.brandName} posted ` : ''}"${task.title}" — earn ${fmtMoney(t.reward_cents, 'USD')}.`,
+            createdAt: t.created_at as string,
+            link: `/app/tasks/${t.uuid || t.id}`,
+          });
+        }
 
         if (myRes.success && Array.isArray(myRes.data)) {
           for (const s of myRes.data) {
@@ -352,11 +378,12 @@ export function useUnreadNotifications(): number | null {
   useEffect(() => {
     const load = async () => {
       try {
-        const [myRes, refRes] = await Promise.all([
+        const [myRes, refRes, newTasks] = await Promise.all([
           tasksApi.myTasks().catch(() => ({ success: false as const, data: [] as TaskSubmission[] })),
           tasksApi.referrals().catch(() => ({ success: false as const, data: null })),
+          fetchNewTasks(user?.created_at),
         ]);
-        const ids: string[] = [];
+        const ids: string[] = newTasks.map((t) => `task-new-${t.id}`);
         if (myRes.success && Array.isArray(myRes.data)) {
           for (const s of myRes.data) {
             if (!s.created_at) continue;

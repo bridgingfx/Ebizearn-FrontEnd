@@ -327,6 +327,7 @@ export interface Task {
   task_type?: { id: number; key: string; name: string } | null;
   platform?: string | null;
   instructions?: string | null;
+  created_at?: string;
 }
 
 /** Icon keys the backend accepts for a Task Library template. */

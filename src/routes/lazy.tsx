@@ -178,6 +178,12 @@ export const LazyBusinessProfilePage = React.lazy(() =>
 export const LazyBusinessNotificationsPage = React.lazy(() =>
   named(import('../pages/business/BusinessNotificationsPage'), 'BusinessNotificationsPage'),
 );
+export const LazyAdminTaskHistoryPage = React.lazy(() =>
+  named(import('../pages/admin/AdminTaskHistoryPage'), 'AdminTaskHistoryPage'),
+);
+export const LazyAdminTaskHistoryDetailPage = React.lazy(() =>
+  named(import('../pages/admin/AdminTaskHistoryDetailPage'), 'AdminTaskHistoryDetailPage'),
+);
 export const LazyBusinessSupportPage = React.lazy(() =>
   named(import('../pages/business/BusinessSupportPage'), 'BusinessSupportPage'),
 );

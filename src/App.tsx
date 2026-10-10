@@ -70,6 +70,8 @@ import {
   LazyBusinessSettingsPage,
   LazyBusinessSupportPage,
   LazyBusinessProfilePage,
+  LazyAdminTaskHistoryPage,
+  LazyAdminTaskHistoryDetailPage,
   LazyBusinessNotificationsPage,
   LazyCreateCampaignWizardPage,
   LazyBusinessTeamPage,
@@ -282,6 +284,8 @@ export const App: React.FC = () => {
             <Route path="campaigns" element={<LazyAdminCampaignsOversightPage />} />
             <Route path="tasks" element={<LazyAdminTasksPage />} />
             <Route path="task-library" element={<LazyAdminTaskLibraryPage />} />
+            <Route path="task-history" element={<LazyAdminTaskHistoryPage />} />
+            <Route path="task-history/:id" element={<LazyAdminTaskHistoryDetailPage />} />
             <Route path="fraud" element={<LazyAdminFraudPage />} />
             <Route path="support" element={<LazyAdminSupportPage />} />
             <Route path="kyc" element={<LazyAdminKycPage />} />

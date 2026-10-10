@@ -100,15 +100,6 @@ export const Footer: React.FC = () => {
             <Globe className="w-3.5 h-3.5 text-[#25C5E8]" />
           </div>
         </div>
-
-        {/* Internal Access — operations only. No public super-admin entry points. */}
-        <div className="pt-6 mt-6 border-t border-white/5 flex items-center justify-center gap-2 text-[11px] text-gray-600 dark:text-gray-400">
-          <span className="uppercase tracking-wider font-semibold">{t('footer.internalAccess')}</span>
-          <span className="text-gray-700 dark:text-gray-300">•</span>
-          <Link to="/moderator/login" className="hover:text-gray-300 transition-colors">
-            {t('footer.moderatorLogin')}
-          </Link>
-        </div>
       </div>
     </footer>
   );

@@ -262,6 +262,8 @@ export interface Campaign {
   content_review_note?: string | null;
   /** Image contributors post with the post text. */
   content_image_url?: string | null;
+  /** Photos & videos staff attached (task detail only). */
+  media?: { id: number; type: 'image' | 'video'; url: string; mime_type: string | null; size_bytes: number; original_name: string | null }[];
   title: string;
   objective?: string;
   description: string;

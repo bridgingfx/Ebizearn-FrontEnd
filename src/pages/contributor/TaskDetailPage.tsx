@@ -24,6 +24,7 @@ import { useMoney } from '../../hooks/useMoney';
 import type { UiTask, TaskSubmission } from '../../types';
 import { PlatformPreview } from '../../components/task/PlatformPreview';
 import { TaskAssetActions } from '../../components/task/TaskAssetActions';
+import { CampaignMediaGallery } from '../../components/task/CampaignMediaGallery';
 import { VerificationTimeline } from '../../components/task/VerificationTimeline';
 import { humanizeRetention, initials, proofRequirementLabels } from '../../components/task/TaskCard';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -254,6 +255,8 @@ export const TaskDetailPage: React.FC = () => {
 
           {/* Download creative → copy caption → open platform → post → submit proof */}
           <TaskAssetActions task={task} imageUrl={postContent.imageUrl || task.postImageUrl || task.flyerUrl} />
+
+          <CampaignMediaGallery media={task.campaign?.media ?? []} taskKey={String(task.uuid || task.id)} />
 
           <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 p-5 sm:p-6 space-y-4">
             <div className="flex items-start gap-3">

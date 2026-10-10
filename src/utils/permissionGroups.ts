@@ -31,6 +31,7 @@ export const ADMIN_SECTIONS: { label: string; path: string; perms: string[] }[] 
   { label: 'Campaigns', path: '/admin/campaigns', perms: ['manage_campaigns', 'post_campaigns', 'edit_campaigns', 'delete_campaigns'] },
   { label: 'Tasks', path: '/admin/tasks', perms: ['manage_task_templates', 'create_tasks', 'edit_tasks', 'delete_tasks'] },
   { label: 'Task Library', path: '/admin/task-library', perms: ['view_task_library', 'manage_task_library'] },
+  { label: 'Task History', path: '/admin/task-history', perms: ['view_task_history'] },
   { label: 'Withdrawals', path: '/admin/withdrawals', perms: ['process_payouts'] },
   { label: 'Deposits', path: '/admin/deposits', perms: ['process_deposits'] },
   { label: 'Wallets', path: '/admin/wallets', perms: ['view_wallets', 'adjust_wallets'] },

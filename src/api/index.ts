@@ -26,3 +26,5 @@ export { socialConnectApi } from './socialConnect';
 export type { SocialConnectConfigKey, SocialConnectPublicConfig, SocialConnectAdminConfig, SocialConnectInput } from './socialConnect';
 export { depositsApi, staffDepositsApi, formatUsd } from './deposits';
 export type { DepositMethod, DepositMethodKey, DepositRequest, DepositStatus, WalletTxn, BusinessDepositsOverview } from './deposits';
+export { taskHistoryApi, campaignMediaApi } from './taskHistory';
+export type { TaskHistoryFilter, TaskHistoryRow, TaskHistoryList, TaskHistoryDetail, ProofFile, CampaignMediaItem } from './taskHistory';

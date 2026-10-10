@@ -240,7 +240,7 @@ export const SocialConnectSettings: React.FC = () => {
             <KeyRound className="w-4 h-4 text-[#168BFF] dark:text-blue-300" /> Social connect (OAuth)
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-xl">
-            Let contributors link TikTok, X, Facebook and YouTube with the official login instead of the bio code. OAuth channels are auto-verified and our robo re-checks them. Instagram has no official login for personal accounts — it always uses the bio code.
+            Let contributors link Instagram, TikTok, X, Facebook and YouTube with the official login instead of the bio code. OAuth channels are auto-verified and our robo re-checks them. Instagram login works for Business / Creator accounts (and is used to verify Instagram post tasks); personal Instagram accounts keep the bio code.
           </p>
         </div>
         <button

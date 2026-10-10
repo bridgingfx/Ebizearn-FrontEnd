@@ -28,3 +28,5 @@ export { depositsApi, staffDepositsApi, formatUsd } from './deposits';
 export type { DepositMethod, DepositMethodKey, DepositRequest, DepositStatus, WalletTxn, BusinessDepositsOverview } from './deposits';
 export { taskHistoryApi, campaignMediaApi } from './taskHistory';
 export type { TaskHistoryFilter, TaskHistoryRow, TaskHistoryList, TaskHistoryDetail, ProofFile, CampaignMediaItem, RewardStatus, PostVerificationRecord } from './taskHistory';
+export { contributorHistoryApi } from './contributorHistory';
+export type { ContributorHistoryFilter, ContributorHistoryRow, ContributorHistoryEvent, ContributorHistoryDetail } from './contributorHistory';

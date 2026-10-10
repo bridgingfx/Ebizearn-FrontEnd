@@ -55,6 +55,8 @@ import {
   LazyContributorWalletPage,
   LazyContributorEarningsPage,
   LazyContributorMyTasksPage,
+  LazyContributorTaskHistoryPage,
+  LazyContributorTaskHistoryDetailPage,
   LazyContributorReferralsPage,
   LazyContributorNotificationsPage,
   LazyContributorProfilePage,
@@ -231,6 +233,8 @@ export const App: React.FC = () => {
             <Route path="tasks/:id" element={<LazyTaskDetailPage />} />
             <Route path="tasks/:id/submit" element={<LazyTaskDetailPage />} />
             <Route path="my-tasks" element={<LazyContributorMyTasksPage />} />
+            <Route path="task-history" element={<LazyContributorTaskHistoryPage />} />
+            <Route path="task-history/:id" element={<LazyContributorTaskHistoryDetailPage />} />
             <Route path="earnings" element={<LazyContributorEarningsPage />} />
             <Route path="wallet" element={<LazyContributorWalletPage />} />
             <Route path="referrals" element={<LazyContributorReferralsPage />} />

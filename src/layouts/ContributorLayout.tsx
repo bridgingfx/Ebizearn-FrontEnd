@@ -4,6 +4,7 @@ import {
   Home,
   Compass,
   ClipboardList,
+  History,
   Wallet,
   Users,
   User as UserIcon,
@@ -38,6 +39,7 @@ const TABS = [
   { name: 'Home', path: '/app', icon: Home, exact: true },
   { name: 'Tasks', path: '/app/tasks', icon: Compass },
   { name: 'My Tasks', path: '/app/my-tasks', icon: ClipboardList },
+  { name: 'Task History', path: '/app/task-history', icon: History },
   { name: 'Wallet', path: '/app/wallet', icon: Wallet },
   { name: 'Referrals', path: '/app/referrals', icon: Users },
   { name: 'Profile', path: '/app/profile', icon: UserIcon },
@@ -54,6 +56,7 @@ const MOBILE_TABS = [
 
 /** Everything else lives in the mobile "More" sheet. */
 const MORE_TABS = [
+  { name: 'Task History', path: '/app/task-history', icon: History },
   { name: 'Referrals', path: '/app/referrals', icon: Users },
   { name: 'Notifications', path: '/app/notifications', icon: Bell },
   { name: 'Support', path: '/app/support', icon: HelpCircle },

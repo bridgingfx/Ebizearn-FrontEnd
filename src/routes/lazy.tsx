@@ -128,6 +128,12 @@ export const LazyContributorWalletPage = React.lazy(() =>
 export const LazyContributorEarningsPage = React.lazy(() =>
   named(import('../pages/contributor/ContributorEarningsPage'), 'ContributorEarningsPage'),
 );
+export const LazyContributorTaskHistoryPage = React.lazy(() =>
+  named(import('../pages/contributor/ContributorTaskHistoryPage'), 'ContributorTaskHistoryPage'),
+);
+export const LazyContributorTaskHistoryDetailPage = React.lazy(() =>
+  named(import('../pages/contributor/ContributorTaskHistoryDetailPage'), 'ContributorTaskHistoryDetailPage'),
+);
 export const LazyContributorMyTasksPage = React.lazy(() =>
   named(import('../pages/contributor/ContributorMyTasksPage'), 'ContributorMyTasksPage'),
 );

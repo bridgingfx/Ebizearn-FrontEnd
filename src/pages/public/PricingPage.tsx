@@ -28,6 +28,7 @@ interface Tier {
   aed: number;
   tasks: number;
   popular?: boolean;
+  image: string;
   icon: React.ReactNode;
   accent: string; // hex
   glow: string; // gradient css
@@ -41,6 +42,7 @@ const TIERS: Tier[] = [
     tagline: 'Get seen. Get followed.',
     aed: 1499,
     tasks: 2000,
+    image: '/images/pricing/tier-launch.webp',
     icon: <Rocket className="w-5 h-5" />,
     accent: '#10B981',
     glow: 'linear-gradient(135deg, #10B981, #34D399)',
@@ -61,6 +63,7 @@ const TIERS: Tier[] = [
     tagline: 'Look bigger, every single week.',
     aed: 2499,
     tasks: 3500,
+    image: '/images/pricing/tier-growth.webp',
     icon: <TrendingUp className="w-5 h-5" />,
     accent: '#168BFF',
     glow: 'linear-gradient(135deg, #168BFF, #38BDF8)',
@@ -78,6 +81,7 @@ const TIERS: Tier[] = [
     aed: 3499,
     tasks: 5000,
     popular: true,
+    image: '/images/pricing/tier-scale.webp',
     icon: <Megaphone className="w-5 h-5" />,
     accent: '#7257FF',
     glow: 'linear-gradient(135deg, #7257FF, #B388FF)',
@@ -95,6 +99,7 @@ const TIERS: Tier[] = [
     tagline: 'Become the voice of your market.',
     aed: 5000,
     tasks: 7500,
+    image: '/images/pricing/tier-dominance.webp',
     icon: <Crown className="w-5 h-5" />,
     accent: '#D4A017',
     glow: 'linear-gradient(135deg, #F5C518, #D4A017)',
@@ -142,51 +147,6 @@ function useReveal<T extends HTMLElement>(threshold = 0.15) {
   }, [threshold]);
   return ref;
 }
-
-/** Count-up number when scrolled into view (runs immediately if already visible). */
-const CountUp: React.FC<{ to: number; className?: string }> = ({ to, className }) => {
-  const [val, setVal] = useState(0);
-  const ref = useRef<HTMLSpanElement | null>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let raf = 0;
-    const run = () => {
-      const t0 = performance.now();
-      const dur = 1200;
-      const tick = (t: number) => {
-        const p = Math.min(1, (t - t0) / dur);
-        const eased = 1 - Math.pow(1 - p, 3);
-        setVal(Math.round(to * eased));
-        if (p < 1) raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
-    };
-    const r = el.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
-      run();
-      return () => cancelAnimationFrame(raf);
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0].isIntersecting) return;
-        io.disconnect();
-        run();
-      },
-      { threshold: 0.4 },
-    );
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      cancelAnimationFrame(raf);
-    };
-  }, [to]);
-  return (
-    <span ref={ref} className={className}>
-      {val.toLocaleString('en-US')}
-    </span>
-  );
-};
 
 /** Word-by-word hero headline reveal. `gradient` paints each word with the gradient (avoids bg-clip-text + filter issues). */
 const RevealWords: React.FC<{ text: string; className?: string; gradient?: boolean }> = ({ text, className, gradient }) => (
@@ -327,20 +287,24 @@ export const PricingPage: React.FC = () => {
                   </div>
                 )}
 
-                <div
-                  className="w-11 h-11 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg"
-                  style={{ background: t.glow }}
-                >
-                  {t.icon}
+                {/* centered 3D tier icon */}
+                <div className="flex justify-center mb-4">
+                  <img
+                    src={t.image}
+                    alt={`${t.name} plan icon`}
+                    className="w-24 h-24 rounded-[28px] object-cover"
+                    style={{ boxShadow: `0 18px 40px -12px ${t.accent}88` }}
+                    loading="lazy"
+                  />
                 </div>
-                <h3 className={`text-xl font-black ${t.popular ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
+                <h3 className={`text-xl font-black text-center ${t.popular ? 'text-white' : 'text-slate-900 dark:text-white'}`}>
                   {t.name}
                 </h3>
-                <p className={`text-sm mt-0.5 mb-4 ${t.popular ? 'text-white/60' : 'text-slate-500 dark:text-slate-400'}`}>
+                <p className={`text-sm text-center mt-0.5 mb-4 ${t.popular ? 'text-white/60' : 'text-slate-500 dark:text-slate-400'}`}>
                   {t.tagline}
                 </p>
 
-                <div className="mb-1">
+                <div className="mb-6 text-center">
                   <span
                     key={currency}
                     className={`price-swap text-3xl sm:text-4xl font-black tracking-tight ${
@@ -350,15 +314,6 @@ export const PricingPage: React.FC = () => {
                     {price(t.aed, currency)}
                   </span>
                   <span className={`text-sm ${t.popular ? 'text-white/50' : 'text-slate-400'}`}> / month</span>
-                </div>
-                <div
-                  className="text-sm font-bold mb-5"
-                  style={{ color: t.popular ? t.accent : undefined }}
-                >
-                  <span className={t.popular ? '' : 'text-slate-700 dark:text-slate-300'}>
-                    <CountUp to={t.tasks} /> managed tasks
-                  </span>
-                  {!t.popular && <span style={{ color: t.accent }}> ●</span>}
                 </div>
 
                 <ul className="space-y-2.5 mb-7 flex-1">
@@ -414,10 +369,15 @@ export const PricingPage: React.FC = () => {
                 <tr className="bg-[#07182F] text-white">
                   <th className="sticky left-0 bg-[#07182F] text-left p-4 font-bold min-w-[220px] z-10">What's included</th>
                   {TIERS.map((t) => (
-                    <th key={t.id} className="p-4 text-center min-w-[150px]">
-                      <div className="flex items-center justify-center gap-1.5 font-black">
-                        <span style={{ color: t.accent }}>{t.icon}</span> {t.name}
-                      </div>
+                    <th key={t.id} className={`p-4 text-center min-w-[150px] ${t.popular ? 'bg-[#7257FF]/20' : ''}`}>
+                      <img
+                        src={t.image}
+                        alt=""
+                        aria-hidden="true"
+                        className="w-11 h-11 rounded-xl object-cover mx-auto mb-2 shadow-lg"
+                        loading="lazy"
+                      />
+                      <div className="font-black">{t.name}</div>
                       <div key={currency} className="price-swap text-xs font-bold text-white/60 mt-1">
                         {price(t.aed, currency)}/mo
                       </div>
@@ -426,6 +386,7 @@ export const PricingPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
+                <ComparisonSection title="Managed growth engine" note="Our team runs it all for you, every month" />
                 <ComparisonRow label="Managed tasks / month" values={['2,000', '3,500', '5,000', '7,500']} bold />
                 <ComparisonRow label="Likes, shares, followers & posting" values={[true, true, true, true]} />
                 <ComparisonRow label="Digital marketing management" values={[true, true, true, true]} />
@@ -433,11 +394,33 @@ export const PricingPage: React.FC = () => {
                 <ComparisonRow label="Referral marketing" values={[true, true, true, true]} />
                 <ComparisonRow label="Organic lead generation" values={[true, true, true, true]} />
                 <ComparisonRow label="Reporting for every project" values={[true, true, true, true]} />
-                <ComparisonRow label="Custom posters (with content)" values={['10 · 1/day', '17 total', '25 total', '25 total']} />
-                <ComparisonRow label="Reels" values={[false, '3', '3', '3']} />
-                <ComparisonRow label="Videos" values={[false, false, '5', '5']} />
-                <ComparisonRow label="Influencer-network posting for max reach" values={[false, false, true, true]} />
-                <ComparisonRow label="Company podcast episode" values={[false, false, false, true]} />
+
+                <ComparisonSection title="Content studio" note="Professionally designed, posted for you" />
+                <ComparisonRow label="Custom posters (with content)" values={['10 · 1 per day', '17 total', '25 total', '25 total']} />
+                <ComparisonRow label="Social media images" values={['—', '7', '7', '7']} />
+                <ComparisonRow label="Reels" values={['—', '3', '3', '3']} />
+                <ComparisonRow label="Videos" values={['—', '—', '5', '5']} />
+
+                <ComparisonSection title="Exclusive extras" note="Go beyond the feed" />
+                <ComparisonRow label="Influencer-network accounts posting your content" values={[false, false, true, true]} />
+                <ComparisonRow label="Company podcast episode — produced for you" values={[false, false, false, true]} />
+
+                <tr className="border-t-2 border-slate-200 dark:border-white/10 bg-slate-50/60 dark:bg-white/[.02]">
+                  <th className="sticky left-0 bg-slate-50 dark:bg-[#141d2e] text-left p-4 font-bold text-slate-900 dark:text-white z-10">
+                    Ready when you are
+                  </th>
+                  {TIERS.map((t) => (
+                    <td key={t.id} className="p-4 text-center">
+                      <Link
+                        to={`/business/register?plan=${t.id}`}
+                        className="inline-block px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md transition-transform active:scale-[.97] hover:brightness-110"
+                        style={{ background: t.glow }}
+                      >
+                        Choose {t.name}
+                      </Link>
+                    </td>
+                  ))}
+                </tr>
               </tbody>
             </table>
           </div>
@@ -484,6 +467,22 @@ export const PricingPage: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
+
+const ComparisonSection: React.FC<{ title: string; note: string }> = ({ title, note }) => (
+  <tr className="bg-slate-100/80 dark:bg-white/[.04]">
+    <th
+      colSpan={5}
+      className="sticky left-0 text-left px-4 py-3 z-10 bg-slate-100 dark:bg-[#161f33] shadow-[1px_0_0_0_rgba(0,0,0,0.06)]"
+    >
+      <span className="text-[11px] font-black tracking-[0.14em] uppercase text-slate-500 dark:text-slate-400">
+        {title}
+      </span>
+      <span className="text-[11px] text-slate-400 dark:text-slate-500 ml-2 font-medium normal-case tracking-normal">
+        · {note}
+      </span>
+    </th>
+  </tr>
+);
 
 const ComparisonRow: React.FC<{ label: string; values: (string | boolean)[]; bold?: boolean }> = ({
   label,

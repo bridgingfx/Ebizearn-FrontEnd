@@ -23,6 +23,8 @@ import {
   ExternalLink,
   Flame,
   Check,
+  Star,
+  Video,
   Smartphone,
   Share2,
   ThumbsUp,
@@ -45,25 +47,28 @@ import { EBizLogo } from '../../components/common/EBizLogo';
 import { RequestDemoModal } from '../../components/common/RequestDemoModal';
 
 export const ForBusinessesPage: React.FC = () => {
-  // Interactive Campaign Simulator State
+  // Interactive Campaign Budget Planner State
+  // NOTE: task pricing is NOT fixed — the business proposes a planned reward and
+  // our team confirms final rates before anything goes live. Never hard-code
+  // guaranteed dollar amounts here.
   const [objective, setObjective] = useState<'reviews' | 'social' | 'testing' | 'survey' | 'ugc'>('reviews');
   const [contributorCount, setContributorCount] = useState<number>(500);
-  const [rewardPerTask, setRewardPerTask] = useState<number>(15.00);
+  const [rewardInput, setRewardInput] = useState<string>('');
   const [demoModalOpen, setDemoModalOpen] = useState(false);
 
   const objectiveConfig = {
-    reviews: { defaultReward: 15.00, minReward: 10.00, label: 'Trustpilot & Google Reviews', badge: 'Reputation Shield' },
-    social: { defaultReward: 2.50, minReward: 1.50, label: 'Social Engagement & Shares', badge: 'Viral Reach' },
-    testing: { defaultReward: 8.00, minReward: 5.00, label: 'App Testing & Store Reviews', badge: 'QA & Installs' },
-    survey: { defaultReward: 4.50, minReward: 3.00, label: 'GCC Consumer Market Surveys', badge: 'Insights' },
-    ugc: { defaultReward: 18.00, minReward: 12.00, label: 'Authentic UGC & Video Clips', badge: 'Creator Assets' },
-  };
+    reviews: { label: 'Trustpilot & Google Reviews', badge: 'Reputation', icon: 'star' },
+    social: { label: 'Social Engagement & Shares', badge: 'Reach', icon: 'share' },
+    testing: { label: 'App Testing & Store Reviews', badge: 'QA', icon: 'phone' },
+    survey: { label: 'GCC Consumer Market Surveys', badge: 'Insights', icon: 'chat' },
+    ugc: { label: 'Authentic UGC & Video Clips', badge: 'Creators', icon: 'video' },
+  } as const;
 
   const handleObjectiveSelect = (key: 'reviews' | 'social' | 'testing' | 'survey' | 'ugc') => {
     setObjective(key);
-    setRewardPerTask(objectiveConfig[key].defaultReward);
   };
 
+  const rewardPerTask = Math.max(0, parseFloat(rewardInput) || 0);
   const contributorBudget = contributorCount * rewardPerTask;
   const platformFee = contributorBudget * 0.15;
   const totalBudget = (contributorBudget + platformFee).toFixed(2);
@@ -328,142 +333,212 @@ export const ForBusinessesPage: React.FC = () => {
       </section>
 
       {/* =========================================================================
-          3. INTERACTIVE CAMPAIGN BUDGET ESTIMATOR (USD)
+          3. CAMPAIGN BUDGET PLANNER (USD) — illustrative only.
+          Task pricing is never guaranteed here; the business proposes a planned
+          reward and our team confirms final rates before launch.
          ========================================================================= */}
-      <section id="simulator" className="py-14 sm:py-16 bg-white dark:bg-[#0C1322]">
+      <section id="simulator" className="py-14 sm:py-20 bg-[#F6F1E7] dark:bg-[#12100C] relative overflow-hidden">
+        <style>{`
+          .ws-slider { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+          .ws-slider::-webkit-slider-runnable-track { height: 10px; border-radius: 999px;
+            background: linear-gradient(to right, #D9622B var(--fill, 20%), #E7DCC4 var(--fill, 20%)); }
+          .ws-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -9px;
+            width: 28px; height: 28px; border-radius: 999px; background: #FFFDF8;
+            border: 3px solid #D9622B; box-shadow: 0 4px 12px rgba(217,98,43,.35); }
+          .ws-slider::-moz-range-track { height: 10px; border-radius: 999px; background: #E7DCC4; }
+          .ws-slider::-moz-range-progress { height: 10px; border-radius: 999px; background: #D9622B; }
+          .ws-slider::-moz-range-thumb { width: 22px; height: 22px; border-radius: 999px; background: #FFFDF8;
+            border: 3px solid #D9622B; box-shadow: 0 4px 12px rgba(217,98,43,.35); }
+          .dark .ws-slider::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #E07B3F var(--fill, 20%), #2A251C var(--fill, 20%)); }
+          .dark .ws-slider::-moz-range-track { background: #2A251C; }
+          .dark .ws-slider::-moz-range-progress { background: #E07B3F; }
+          .receipt-zigzag { height: 14px;
+            background: linear-gradient(-45deg, transparent 10px, #FFFDF8 0) 0 0 / 20px 20px repeat-x,
+                        linear-gradient(45deg, transparent 10px, #FFFDF8 0) 10px 0 / 20px 20px repeat-x; }
+          .dark .receipt-zigzag {
+            background: linear-gradient(-45deg, transparent 10px, #1B1813 0) 0 0 / 20px 20px repeat-x,
+                        linear-gradient(45deg, transparent 10px, #1B1813 0) 10px 0 / 20px 20px repeat-x; }
+          .step-numeral { -webkit-text-stroke: 1.5px #D9622B; color: transparent; }
+          .dark .step-numeral { -webkit-text-stroke: 1.5px #E07B3F; }
+        `}</style>
+
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-50 text-[#168BFF] dark:bg-blue-500/15 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
-              USD Budget Simulator
+
+          <div className="max-w-2xl mx-auto mb-10 text-center">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-[#D9622B]/10 text-[#B34E1F] dark:text-[#E89A63] text-xs font-bold uppercase tracking-[0.18em]">
+              Budget planner
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#101828] dark:text-gray-100 tracking-tight">
-              Interactive Campaign Cost & Turnaround Calculator
+            <h2 className="text-3xl sm:text-4xl font-black text-[#1C1917] dark:text-[#F5EFE3] tracking-tight mt-4">
+              Sketch your campaign budget
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              Customize your campaign parameters and inspect transparent budget breakdowns denominated in US Dollars (USD).
+            <p className="text-sm text-[#78716C] dark:text-[#A8A29E] mt-3 leading-relaxed">
+              Play with the numbers below — contributors, your planned reward, and see the
+              maths work itself out. <span className="font-semibold text-[#57534E] dark:text-[#D6D3D1]">Illustrative only:</span> final
+              task pricing is decided by our team and confirmed with you before anything goes live.
             </p>
           </div>
 
-          <div className="bg-[#F7F9FC] dark:bg-[#0B0F19] rounded-3xl p-6 sm:p-10 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-8">
+          <div className="bg-[#FFFDF8] dark:bg-[#1B1813] rounded-[28px] p-6 sm:p-10 border border-[#E7DCC4] dark:border-white/10 shadow-[0_24px_60px_-24px_rgba(120,80,30,0.25)] space-y-10">
             
-            {/* Objective Pills */}
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-gray-800 dark:text-gray-200 block">
-                1. Select Campaign Objective
-              </label>
+            {/* Step 01 — Objective */}
+            <div>
+              <div className="flex items-baseline gap-3 mb-4">
+                <span className="step-numeral text-4xl font-black leading-none select-none" aria-hidden="true">01</span>
+                <label className="text-sm font-bold text-[#1C1917] dark:text-[#F5EFE3]">
+                  What do you want to achieve?
+                </label>
+              </div>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                {(['reviews', 'social', 'testing', 'survey', 'ugc'] as const).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => handleObjectiveSelect(key)}
-                    className={`p-3.5 rounded-2xl border text-start transition-all cursor-pointer ${
-                      objective === key
-                        ? 'border-[#168BFF] bg-blue-50/60 dark:bg-blue-500/10 shadow-sm ring-2 ring-[#168BFF]/20'
-                        : 'border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 bg-white dark:bg-[#0C1322]'
-                    }`}
-                  >
-                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-200 block mb-1">
-                      {objectiveConfig[key].badge}
-                    </span>
-                    <div className={`text-xs font-bold ${objective === key ? 'text-[#168BFF] dark:text-blue-300' : 'text-gray-900 dark:text-gray-100'} truncate`}>
-                      {objectiveConfig[key].label}
-                    </div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
-                      Rec: ${'$'}{objectiveConfig[key].defaultReward.toFixed(2)}
-                    </div>
-                  </button>
-                ))}
+                {(['reviews', 'social', 'testing', 'survey', 'ugc'] as const).map((key) => {
+                  const Icon = { reviews: Star, social: Share2, testing: Smartphone, survey: MessageSquare, ugc: Video }[key];
+                  const active = objective === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => handleObjectiveSelect(key)}
+                      aria-pressed={active}
+                      className={`p-3.5 rounded-2xl border-2 text-start transition-all cursor-pointer ${
+                        active
+                          ? 'border-[#D9622B] bg-[#D9622B]/[.06] dark:bg-[#D9622B]/10 shadow-[0_8px_20px_-8px_rgba(217,98,43,0.4)]'
+                          : 'border-[#EDE4D2] dark:border-white/10 hover:border-[#D9622B]/50 bg-white dark:bg-[#242019]'
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 mb-2 ${active ? 'text-[#D9622B]' : 'text-[#A8A29E]'}`} />
+                      <div className={`text-xs font-bold leading-snug ${active ? 'text-[#1C1917] dark:text-[#F5EFE3]' : 'text-[#57534E] dark:text-[#D6D3D1]'}`}>
+                        {objectiveConfig[key].label}
+                      </div>
+                      <span className={`inline-block mt-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        active ? 'bg-[#D9622B] text-white' : 'bg-[#F1EAD9] dark:bg-white/10 text-[#78716C] dark:text-[#A8A29E]'
+                      }`}>
+                        {objectiveConfig[key].badge}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Contributor volume slider */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
-                  2. Number of Verified Contributors
+            {/* Step 02 — Contributors */}
+            <div>
+              <div className="flex items-baseline gap-3 mb-4">
+                <span className="step-numeral text-4xl font-black leading-none select-none" aria-hidden="true">02</span>
+                <label className="text-sm font-bold text-[#1C1917] dark:text-[#F5EFE3]">
+                  How many verified contributors?
                 </label>
-                <span className="text-sm font-bold text-[#168BFF] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
-                  {contributorCount.toLocaleString()} Contributors
+              </div>
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="50"
+                  max="3000"
+                  step="50"
+                  value={contributorCount}
+                  onChange={(e) => setContributorCount(parseInt(e.target.value, 10))}
+                  className="ws-slider flex-1 h-7"
+                  style={{ '--fill': `${((contributorCount - 50) / (3000 - 50)) * 100}%` } as React.CSSProperties}
+                  aria-label="Number of verified contributors"
+                />
+                <span className="shrink-0 min-w-[92px] text-center text-lg font-black text-[#1C1917] dark:text-[#F5EFE3] tabular-nums px-3 py-1.5 bg-[#F6F1E7] dark:bg-white/5 border border-[#E7DCC4] dark:border-white/10 rounded-xl">
+                  {contributorCount.toLocaleString()}
                 </span>
               </div>
-              <input
-                type="range"
-                min="50"
-                max="3000"
-                step="50"
-                value={contributorCount}
-                onChange={(e) => setContributorCount(parseInt(e.target.value, 10))}
-                className="w-full accent-[#168BFF] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
-              />
-              <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
-                <span>Pilot (50)</span>
-                <span>Growth (500)</span>
-                <span>Enterprise Scale (3,000)</span>
+              <div className="flex justify-between text-[11px] text-[#A8A29E] font-semibold mt-1.5 px-0.5">
+                <span>Pilot · 50</span>
+                <span>Growth · 500</span>
+                <span>Enterprise · 3,000</span>
               </div>
             </div>
 
-            {/* Reward per Task slider */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
-                  3. Reward Paid Per Verified Task (USD)
+            {/* Step 03 — Planned reward (free input, nothing guaranteed) */}
+            <div>
+              <div className="flex items-baseline gap-3 mb-4">
+                <span className="step-numeral text-4xl font-black leading-none select-none" aria-hidden="true">03</span>
+                <label htmlFor="ws-reward" className="text-sm font-bold text-[#1C1917] dark:text-[#F5EFE3]">
+                  Your planned reward per verified task
                 </label>
-                <span className="text-sm font-bold text-[#16B364] px-3 py-1 bg-white dark:bg-[#0C1322] border border-gray-200 dark:border-white/10 rounded-xl shadow-xs">
-                  ${rewardPerTask.toFixed(2)} USD
-                </span>
               </div>
-              <input
-                type="range"
-                min={objectiveConfig[objective].minReward}
-                max="30.00"
-                step="0.50"
-                value={rewardPerTask}
-                onChange={(e) => setRewardPerTask(parseFloat(e.target.value))}
-                className="w-full accent-[#16B364] h-2.5 bg-gray-200 rounded-lg cursor-pointer"
-              />
-              <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 font-bold">
-                <span>Min (${objectiveConfig[objective].minReward.toFixed(2)})</span>
-                <span>Standard</span>
-                <span>Executive Incentive ($30.00)</span>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="relative sm:max-w-[220px] w-full">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-black text-[#A8A29E]">$</span>
+                  <input
+                    id="ws-reward"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    value={rewardInput}
+                    onChange={(e) => setRewardInput(e.target.value)}
+                    className="w-full pl-9 pr-4 py-3.5 text-xl font-black tabular-nums text-[#1C1917] dark:text-[#F5EFE3] bg-[#F6F1E7] dark:bg-white/5 border-2 border-[#E7DCC4] dark:border-white/10 rounded-2xl outline-none focus:border-[#D9622B] transition-colors placeholder:text-[#D6CDB4] dark:placeholder:text-white/20"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold text-[#A8A29E]">USD</span>
+                </div>
+                <p className="text-xs text-[#78716C] dark:text-[#A8A29E] leading-relaxed flex-1">
+                  Type any amount — <span className="font-semibold text-[#57534E] dark:text-[#D6D3D1]">even $0.15.</span> This
+                  is your planning figure, not a promise: our team decides the final task
+                  pricing and confirms it with you before your campaign goes live.
+                </p>
               </div>
             </div>
 
-            {/* Budget Output */}
-            <div className="p-6 rounded-2xl bg-[#07182F] text-white space-y-4 shadow-lg">
-              <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs">
-                <span className="text-gray-300">Direct Contributor Payout Subtotal</span>
-                <span className="font-bold text-white">USD {contributorBudget.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between pb-3 border-b border-white/10 text-xs">
-                <span className="text-gray-300">Escrow & Moderation Fee (15%)</span>
-                <span className="font-bold text-white">USD {platformFee.toFixed(2)}</span>
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                <div>
-                  <span className="text-xs text-gray-300 block">Total Escrowed Budget (100% Refundable)</span>
-                  <div className="text-xl sm:text-2xl font-extrabold text-[#20C4E8] mt-0.5">
-                    ${totalBudget} <span className="text-xs font-normal text-white">USD</span>
-                  </div>
+            {/* Budget receipt — illustrative estimate, never a quote */}
+            <div className="relative">
+              <div className="relative bg-[#FFFDF8] dark:bg-[#1B1813] rounded-t-2xl border-2 border-b-0 border-dashed border-[#D8C9A8] dark:border-white/15 p-6 sm:p-8 overflow-hidden">
+                {/* stamp */}
+                <div className="absolute top-5 right-5 rotate-[8deg] pointer-events-none select-none" aria-hidden="true">
+                  <span className="block px-3 py-1 text-[11px] font-black tracking-[0.2em] uppercase text-[#D9622B]/70 border-[2.5px] border-[#D9622B]/50 rounded-md">
+                    Estimate
+                  </span>
                 </div>
-                <div className="text-end">
-                  <span className="text-xs text-gray-300 block">Estimated Completion</span>
-                  <div className="text-sm font-bold text-[#16B364] mt-0.5 flex items-center gap-1 justify-end">
-                    <Clock className="w-3.5 h-3.5" />
-                    {deliveryTime}
-                  </div>
+                <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#A8A29E] mb-5">
+                  Your budget slip
                 </div>
+                <dl className="space-y-3.5 text-sm tabular-nums">
+                  <div className="flex items-center justify-between gap-4 pb-3.5 border-b border-dashed border-[#E7DCC4] dark:border-white/10">
+                    <dt className="text-[#57534E] dark:text-[#D6D3D1]">
+                      {contributorCount.toLocaleString()} contributors × ${rewardPerTask.toFixed(2)}
+                    </dt>
+                    <dd className="font-bold text-[#1C1917] dark:text-[#F5EFE3]">USD {contributorBudget.toFixed(2)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4 pb-3.5 border-b border-dashed border-[#E7DCC4] dark:border-white/10">
+                    <dt className="text-[#57534E] dark:text-[#D6D3D1]">Escrow & moderation · 15%</dt>
+                    <dd className="font-bold text-[#1C1917] dark:text-[#F5EFE3]">USD {platformFee.toFixed(2)}</dd>
+                  </div>
+                  <div className="flex items-center justify-between gap-4 pb-3.5 border-b border-dashed border-[#E7DCC4] dark:border-white/10">
+                    <dt className="text-[#57534E] dark:text-[#D6D3D1] flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#A8A29E]" /> Estimated completion
+                    </dt>
+                    <dd className="font-bold text-[#2F7D4F] dark:text-[#7BC98F]">{deliveryTime}</dd>
+                  </div>
+                  <div className="flex flex-wrap items-end justify-between gap-2 pt-1">
+                    <dt className="text-xs text-[#78716C] dark:text-[#A8A29E] leading-snug">
+                      Total held in escrow<br />
+                      <span className="text-[#2F7D4F] dark:text-[#7BC98F] font-semibold">100% refundable</span>
+                    </dt>
+                    <dd className="text-3xl sm:text-4xl font-black text-[#1C1917] dark:text-[#F5EFE3] tracking-tight">
+                      <span className="text-lg align-top font-bold text-[#A8A29E]">$</span>{totalBudget}
+                      <span className="text-xs font-bold text-[#A8A29E] ml-1">USD</span>
+                    </dd>
+                  </div>
+                </dl>
+                <p className="text-[11px] text-[#A8A29E] leading-relaxed mt-5">
+                  Illustrative maths only — not a quote or a guaranteed rate. Final task pricing
+                  is set by our team and confirmed with you before launch.
+                </p>
               </div>
+              <div className="receipt-zigzag" aria-hidden="true" />
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                • Unused funds remain safely in your escrow balance and can be refunded or reused anytime without penalties.
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+              <span className="text-xs text-[#78716C] dark:text-[#A8A29E] leading-relaxed flex items-start gap-2">
+                <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0 text-[#2F7D4F] dark:text-[#7BC98F]" />
+                Unused funds stay safe in your escrow balance — refund or reuse them anytime, no penalties.
               </span>
               <Link
                 to="/business/register"
-                className="px-7 py-3.5 bg-gradient-brand text-white text-xs sm:text-sm font-bold rounded-xl shadow hover:scale-105 transition-all flex items-center gap-2"
+                className="shrink-0 px-7 py-3.5 bg-[#D9622B] hover:bg-[#C0531F] text-white text-xs sm:text-sm font-bold rounded-2xl shadow-[0_12px_28px_-10px_rgba(217,98,43,0.6)] hover:-translate-y-0.5 transition-all flex items-center gap-2"
               >
                 <span>Deploy Campaign to Marketplace</span>
                 <ArrowRight className="w-4 h-4 rtl:rotate-180" />

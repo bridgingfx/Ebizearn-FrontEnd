@@ -30,6 +30,8 @@ import { UserAvatar } from '../../components/common/UserAvatar';
 import { PlatformBrandIcon } from '../../components/common/PlatformBrandIcon';
 import { useAuth } from '../../context/AuthContext';
 import { humanizeAction } from '../../utils/auditLabels';
+import { RewardVerificationPanel } from '../../components/admin/RewardVerificationPanel';
+import { RewardStatusBadge } from '../../components/task/RewardStatusBadge';
 
 type Decision = 'approved' | 'rejected' | 'action_required';
 
@@ -231,7 +233,7 @@ export const AdminTaskHistoryDetailPage: React.FC = () => {
             </div>
             <div className="h-10 w-px bg-white/15" />
             <div className="bg-white rounded-full">
-              <StatusBadge status={data.status} />
+              <RewardStatusBadge status={data.status} rewardStatus={submission?.reward_status} />
             </div>
           </div>
         </div>
@@ -329,6 +331,8 @@ export const AdminTaskHistoryDetailPage: React.FC = () => {
               </div>
             )}
           </Panel>
+
+          <RewardVerificationPanel data={data} assignmentId={assignment.id} canAct={canDecide} onDone={() => void load()} />
 
           {/* AI check */}
           {ai && (

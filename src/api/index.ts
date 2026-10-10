@@ -27,4 +27,4 @@ export type { SocialConnectConfigKey, SocialConnectPublicConfig, SocialConnectAd
 export { depositsApi, staffDepositsApi, formatUsd } from './deposits';
 export type { DepositMethod, DepositMethodKey, DepositRequest, DepositStatus, WalletTxn, BusinessDepositsOverview } from './deposits';
 export { taskHistoryApi, campaignMediaApi } from './taskHistory';
-export type { TaskHistoryFilter, TaskHistoryRow, TaskHistoryList, TaskHistoryDetail, ProofFile, CampaignMediaItem } from './taskHistory';
+export type { TaskHistoryFilter, TaskHistoryRow, TaskHistoryList, TaskHistoryDetail, ProofFile, CampaignMediaItem, RewardStatus, PostVerificationRecord } from './taskHistory';

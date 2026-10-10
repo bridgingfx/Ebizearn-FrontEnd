@@ -18,6 +18,7 @@ import { useMoney } from '../../hooks/useMoney';
 import type { TaskSubmission, UiTask } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { VerificationTimeline } from '../../components/task/VerificationTimeline';
+import { RewardStatusBadge } from '../../components/task/RewardStatusBadge';
 
 interface EnrichedSubmission extends TaskSubmission {
   uiTask: UiTask | null;
@@ -36,9 +37,17 @@ const TABS = [
   { key: 'submitted', label: 'Submitted' },
   { key: 'under_review', label: 'Under review' },
   { key: 'approved', label: 'Approved' },
+  { key: 'pending_duration', label: 'Pending reward' },
+  { key: 'released', label: 'Completed' },
   { key: 'action_required', label: 'Action required' },
   { key: 'rejected', label: 'Rejected' },
 ] as const;
+
+/** Reward tabs filter on the reward status; the rest on the proof status. */
+const matches = (s: TaskSubmission, key: string) =>
+  key === 'pending_duration' ? s.reward_status === 'pending_duration' || s.reward_status === 'reverification_required'
+    : key === 'released' ? s.reward_status === 'released'
+    : s.status === key;
 
 export const ContributorMyTasksPage: React.FC = () => {
   const { fmt } = useMoney();
@@ -58,6 +67,7 @@ export const ContributorMyTasksPage: React.FC = () => {
         setSubmissions(
           (res.data || []).map((s) => ({
             ...s,
+            aiResult: s.aiResult ?? s.ai_result,
             uiTask: s.task ? mapTaskForUi(s.task) : null,
           }))
         );
@@ -79,7 +89,7 @@ export const ContributorMyTasksPage: React.FC = () => {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return submissions.filter((s) => {
-      if (filter !== 'all' && s.status !== filter) return false;
+      if (filter !== 'all' && !matches(s, filter)) return false;
       if (q) {
         const hay = `${s.uiTask?.title || ''} ${s.uiTask?.brandName || ''} ${s.uiTask?.platform || ''}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -88,7 +98,7 @@ export const ContributorMyTasksPage: React.FC = () => {
     });
   }, [submissions, filter, search]);
 
-  const countFor = (key: string) => (key === 'all' ? submissions.length : submissions.filter((s) => s.status === key).length);
+  const countFor = (key: string) => (key === 'all' ? submissions.length : submissions.filter((s) => matches(s, key)).length);
 
   return (
     <div className="space-y-5 text-left">
@@ -189,10 +199,14 @@ export const ContributorMyTasksPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${meta.className}`}>
-                        <Icon className="w-3 h-3" />
-                        {meta.label}
-                      </span>
+                      {s.reward_status ? (
+                        <RewardStatusBadge status={s.status} rewardStatus={s.reward_status} className="!text-[10px] !py-0" />
+                      ) : (
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full border ${meta.className}`}>
+                          <Icon className="w-3 h-3" />
+                          {meta.label}
+                        </span>
+                      )}
                       {task && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">{task.platform}</span>
                       )}
@@ -204,10 +218,18 @@ export const ContributorMyTasksPage: React.FC = () => {
                     {task && <p className="text-[11px] text-gray-500 dark:text-gray-400">{task.brandName}</p>}
                   </div>
                   <div className="text-left sm:text-right shrink-0">
-                    <p className="text-base font-black text-[#16B364]">{task ? fmt(task.reward_cents) : '—'}</p>
+                    <p className={`text-base font-black ${s.reward_status === 'refunded' ? 'text-gray-400 line-through' : 'text-[#16B364]'}`}>{task ? fmt(task.reward_cents) : '—'}</p>
+                    {s.reward_status === 'pending_duration' && (
+                      <p className="text-[10px] font-bold text-blue-600 dark:text-blue-300">
+                        In pending balance{s.final_check_due_at ? ` · final check ${new Date(s.final_check_due_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : ''}
+                      </p>
+                    )}
+                    {s.reward_status === 'reverification_required' && <p className="text-[10px] font-bold text-orange-600">Final check needs review — keep your post up</p>}
+                    {s.reward_status === 'released' && <p className="text-[10px] font-bold text-emerald-600">Paid to your wallet</p>}
+                    {s.reward_status === 'refunded' && <p className="text-[10px] font-bold text-red-600">Reward cancelled</p>}
                     {s.aiResult && (
                       <p className="text-[10px] text-gray-400 dark:text-gray-500">
-                        {s.aiResult.ai_label || (s.aiResult.ai_simulated === false ? 'AI check' : 'Simulated check')}: {Math.round((s.aiResult.confidence_score || 0) * 100)}%
+                        {s.aiResult.ai_label || (s.aiResult.ai_simulated === false ? 'AI check' : 'Simulated check')}: {Math.round(s.aiResult.confidence_score || 0)}%
                       </p>
                     )}
                   </div>

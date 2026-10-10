@@ -1149,17 +1149,40 @@ export const CreateCampaignWizardPage: React.FC = () => {
             </p>
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Retention period, hours (optional)</label>
-            <input
-              type="number"
-              min={0}
-              value={retentionHours}
-              onChange={(e) => setRetentionHours(e.target.value)}
-              placeholder="e.g. 72"
-              className="w-full px-4 py-3 border border-gray-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
-            />
+            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5">Task duration</label>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+              {[
+                { hours: '', label: 'Default' },
+                { hours: '24', label: '1 day' },
+                { hours: '168', label: '7 days' },
+                { hours: '360', label: '15 days' },
+                { hours: '720', label: '30 days' },
+              ].map((o) => (
+                <button
+                  key={o.label}
+                  type="button"
+                  onClick={() => setRetentionHours(o.hours)}
+                  className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-colors ${
+                    retentionHours === o.hours
+                      ? 'bg-[#168BFF] border-[#168BFF] text-white'
+                      : 'border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:border-[#168BFF]/50'
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+              <input
+                type="number"
+                min={0}
+                value={['', '24', '168', '360', '720'].includes(retentionHours) ? '' : retentionHours}
+                onChange={(e) => setRetentionHours(e.target.value)}
+                placeholder="Hours"
+                aria-label="Custom duration in hours"
+                className="px-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#168BFF]/30 focus:border-[#168BFF]"
+              />
+            </div>
             <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">
-              How long the completed action must stay live (e.g. a post stays up for 72 hours). Defaults to 24h.
+              The post must stay live this long. Approved rewards wait in the contributor's pending balance; at the end we check the post again — still live → paid, deleted → the reward comes back to you.
             </p>
           </div>
         </div>

@@ -6,8 +6,9 @@ import type { SocialChannelsApi } from '../../api/socialChannels';
 import { InstagramLogo, TikTokLogo, YouTubeLogo, FacebookLogo, XTwitterLogo } from '../common/PlatformIcons';
 import { toast } from '../../utils/toast';
 
-/** Frontend platform id → backend social-connect config key (google = YouTube; instagram has no OAuth). */
+/** Frontend platform id → backend social-connect config key (google = YouTube; instagram = professional accounts). */
 const OAUTH_CONFIG_KEY: Partial<Record<SocialPlatform, SocialConnectConfigKey>> = {
+  instagram: 'instagram',
   tiktok: 'tiktok',
   youtube: 'google',
   facebook: 'facebook',
@@ -188,7 +189,7 @@ export const SocialChannelsCard: React.FC<{
   };
 
   const verifiedCount = channels.filter((c) => c.status === 'verified').length;
-  const anyOAuthEnabled = !!oauthConfig && (['tiktok', 'x', 'facebook', 'google'] as const).some((k) => oauthConfig[k].enabled);
+  const anyOAuthEnabled = !!oauthConfig && (['tiktok', 'x', 'facebook', 'google', 'instagram'] as const).some((k) => oauthConfig[k].enabled);
 
   return (
     <div className="bg-white dark:bg-[#0C1322] rounded-3xl p-6 sm:p-8 border border-[#E7ECF3] dark:border-white/10 shadow-xs space-y-6">

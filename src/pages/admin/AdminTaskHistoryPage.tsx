@@ -12,10 +12,14 @@ import {
   RefreshCw,
   Video,
   X,
+  Hourglass,
+  CheckCircle2,
+  RotateCcw,
 } from 'lucide-react';
 import { taskHistoryApi, getApiError } from '../../api';
 import type { TaskHistoryFilter, TaskHistoryRow } from '../../api';
-import { PageHeader, SearchInput, StatusBadge, LoadingBlock, ErrorBlock, fmtMoney } from '../../components/common/ui';
+import { PageHeader, SearchInput, LoadingBlock, ErrorBlock, fmtMoney } from '../../components/common/ui';
+import { RewardStatusBadge } from '../../components/task/RewardStatusBadge';
 import { UserAvatar } from '../../components/common/UserAvatar';
 import { PlatformBrandIcon } from '../../components/common/PlatformBrandIcon';
 
@@ -27,6 +31,10 @@ const TABS: { value: TaskHistoryFilter; label: string }[] = [
   { value: 'approved', label: 'Approved' },
   { value: 'rejected', label: 'Rejected' },
   { value: 'expired', label: 'Expired' },
+  { value: 'pending_duration', label: 'Pending duration' },
+  { value: 'reverification_required', label: 'Reverification' },
+  { value: 'released', label: 'Completed' },
+  { value: 'refunded', label: 'Refunded' },
 ];
 
 const PLATFORMS = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'X', 'WhatsApp', 'LinkedIn', 'Google Reviews', 'Trustpilot'];
@@ -76,6 +84,7 @@ const ProofSummary: React.FC<{ row: TaskHistoryRow }> = ({ row }) => {
 export const AdminTaskHistoryPage: React.FC = () => {
   const [rows, setRows] = useState<TaskHistoryRow[]>([]);
   const [counts, setCounts] = useState<Partial<Record<TaskHistoryFilter, number>>>({});
+  const [totals, setTotals] = useState<{ pending_cents: number; released_cents: number; refunded_cents: number } | null>(null);
   const [tab, setTab] = useState<TaskHistoryFilter>('all');
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
@@ -103,6 +112,7 @@ export const AdminTaskHistoryPage: React.FC = () => {
       const res = await taskHistoryApi.list({ status: tab, search: query || undefined, platform: platform || undefined, from: from || undefined, to: to || undefined, page });
       setRows(res.data);
       setCounts(res.meta.counts);
+      setTotals(res.meta.totals ?? null);
       setLastPage(res.meta.last_page);
       setTotal(res.meta.total);
     } catch (e) {
@@ -144,6 +154,30 @@ export const AdminTaskHistoryPage: React.FC = () => {
           </button>
         }
       />
+
+      {/* Rewards held / paid / returned */}
+      {totals && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { key: 'pending_duration' as const, label: 'Held in pending balances', value: totals.pending_cents, icon: Hourglass, tone: 'text-blue-600 bg-blue-50 dark:bg-blue-500/15 dark:text-blue-300' },
+            { key: 'released' as const, label: 'Released to contributors', value: totals.released_cents, icon: CheckCircle2, tone: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-500/15 dark:text-emerald-300' },
+            { key: 'refunded' as const, label: 'Refunded to funders', value: totals.refunded_cents, icon: RotateCcw, tone: 'text-red-600 bg-red-50 dark:bg-red-500/15 dark:text-red-300' },
+          ].map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => { setTab(c.key); setPage(1); }}
+              className={`text-left bg-white dark:bg-[#0C1322] rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${tab === c.key ? 'border-[#168BFF]/50' : 'border-[#E7ECF3] dark:border-white/10'}`}
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">{c.label}</p>
+                <span className={`w-8 h-8 rounded-xl flex items-center justify-center ${c.tone}`}><c.icon className="w-4 h-4" /></span>
+              </div>
+              <p className="mt-1.5 text-2xl font-extrabold text-gray-900 dark:text-white tabular-nums">{fmtMoney(c.value)}</p>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Status tabs with live counts */}
       <div className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
@@ -246,10 +280,14 @@ export const AdminTaskHistoryPage: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3.5"><ProofSummary row={r} /></td>
-                    <td className="px-4 py-3.5"><StatusBadge status={r.status} /></td>
+                    <td className="px-4 py-3.5"><RewardStatusBadge status={r.status} rewardStatus={r.reward_status} /></td>
                     <td className="px-4 py-3.5 text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed whitespace-nowrap">
                       <p>Started {when(r.started_at)}</p>
                       {r.submitted_at && <p>Submitted {when(r.submitted_at)}</p>}
+                      {r.reward_status === 'pending_duration' && r.final_check_due_at && (
+                        <p className="text-blue-600 dark:text-blue-300 font-semibold">Final check {when(r.final_check_due_at)}</p>
+                      )}
+                      {r.auto_verify_status && r.auto_verify_status !== 'done' && <p className="text-amber-600 font-semibold">AI check running…</p>}
                     </td>
                     <td className="px-5 py-3.5 text-right">
                       <Link
@@ -281,7 +319,7 @@ export const AdminTaskHistoryPage: React.FC = () => {
                       <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{r.user?.email}</p>
                     </div>
                   </div>
-                  <StatusBadge status={r.status} />
+                  <RewardStatusBadge status={r.status} rewardStatus={r.reward_status} />
                 </div>
                 <div className="mt-3 flex items-center gap-2.5 min-w-0">
                   {r.task?.platform && <PlatformBrandIcon platform={r.task.platform} className="w-6 h-6 shrink-0" />}

@@ -388,6 +388,14 @@ export interface TaskSubmission {
   business_reviewer?: { id: number; name: string } | null;
   reviewer?: { id: number; name: string } | null;
   review_reason_code?: string | null;
+  /** After approval: held in pending for the task duration, then released or refunded. */
+  reward_status?: 'pending_duration' | 'reverification_required' | 'released' | 'refunded' | null;
+  final_check_due_at?: string | null;
+  final_checked_at?: string | null;
+  platform_post_url?: string | null;
+  auto_verify_status?: string | null;
+  /** API field name (Laravel snake_cases relations). */
+  ai_result?: AiVerificationResult;
 }
 
 export interface SubmissionFile {

@@ -1,7 +1,25 @@
 import { api, type ApiResponse } from './client';
 
 /** Task History filter tabs (GET /staff/task-history?status=). */
-export type TaskHistoryFilter = 'all' | 'in_progress' | 'in_review' | 'action_required' | 'approved' | 'rejected' | 'expired';
+export type TaskHistoryFilter =
+  | 'all' | 'in_progress' | 'in_review' | 'action_required' | 'approved' | 'rejected' | 'expired'
+  | 'pending_duration' | 'reverification_required' | 'released' | 'refunded';
+
+/** Reward after approval: held for the task duration, then released or refunded to the funder. */
+export type RewardStatus = 'pending_duration' | 'reverification_required' | 'released' | 'refunded';
+
+/** One automatic / final / manual verification attempt. */
+export interface PostVerificationRecord {
+  id: number;
+  stage: 'initial' | 'final' | 'manual';
+  outcome: 'verified' | 'failed' | 'inconclusive' | 'skipped';
+  reason: string | null;
+  api_checks_json: { outcome?: string; error?: string | null; account_connected?: boolean; post_found?: boolean; account_match?: boolean; published_after_start?: boolean; caption_score?: number | null; caption_match?: boolean | null } | null;
+  ai_json: { available?: boolean; model?: string | null; is_proof?: boolean | null; confidence?: number; matches_api_post?: boolean | null; looks_fake?: boolean; issues?: string[]; summary?: string; error?: string | null } | null;
+  api_meta_json: { id?: string; permalink?: string; timestamp?: string; username?: string; media_type?: string; caption?: string } | null;
+  checked_at: string;
+  actor?: { id: number; name: string; role: string } | null;
+}
 
 /** One row: a contributor who took a task, and where it stands. */
 export interface TaskHistoryRow {
@@ -15,13 +33,23 @@ export interface TaskHistoryRow {
   user: { id: number; name: string; email: string; country_code: string | null; avatar_url: string | null } | null;
   task: { id: number; uuid: string; title: string; platform: string | null; reward_cents: number; business: string | null } | null;
   submission_id: number | null;
+  reward_status: RewardStatus | null;
+  final_check_due_at: string | null;
+  auto_verify_status: 'pending' | 'running' | 'done' | null;
   proof: { has_link: boolean; images: number; videos: number; thumb: string | null };
 }
 
 export interface TaskHistoryList {
   success: boolean;
   data: TaskHistoryRow[];
-  meta: { current_page: number; last_page: number; per_page: number; total: number; counts: Record<TaskHistoryFilter, number> };
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    counts: Record<TaskHistoryFilter, number>;
+    totals: { pending_cents: number; released_cents: number; refunded_cents: number };
+  };
 }
 
 export interface ProofFile {
@@ -46,6 +74,11 @@ export interface CampaignMediaItem {
 /** GET /staff/task-history/{id} — everything about one taken task. */
 export interface TaskHistoryDetail {
   status: string;
+  /** What staff can do with the reward now. */
+  reward_actions: ('verify' | 'release' | 'refund' | 'recheck')[];
+  funding: { type: string | null; user: { id: number; name: string; email: string; role: string } | null; wallet_id: number | null; reference: string | null } | null;
+  ledger: { id: number; wallet_id: number; type: string; amount_cents: number; description: string | null; created_at: string; wallet_owner: { id: number; name: string; role: string } | null }[];
+  instagram: { handle: string; connected_via: string; status: string; scopes: string | null; expires_at: string | null; token_expired: boolean; last_check_at: string | null; note: string | null } | null;
   next_decisions: ('approved' | 'rejected' | 'action_required')[];
   reason_codes: Record<'approved' | 'rejected' | 'action_required', string[]>;
   assignment: {
@@ -113,6 +146,15 @@ export interface TaskHistoryDetail {
     reviewed_at: string | null;
     bonus_cents: number | null;
     business_decision: 'approved' | 'rejected' | null;
+    reward_status: RewardStatus | null;
+    auto_verify_status: string | null;
+    final_check_due_at: string | null;
+    final_check_attempts: number;
+    final_checked_at: string | null;
+    platform_media_id: string | null;
+    platform_post_url: string | null;
+    platform_posted_at: string | null;
+    post_verifications?: PostVerificationRecord[];
     business_reason: string | null;
     created_at: string;
     files: ProofFile[];
@@ -129,6 +171,9 @@ export const taskHistoryApi = {
       .get<TaskHistoryList>('/staff/task-history', { params: { ...params, status: params.status === 'all' ? undefined : params.status } })
       .then((r) => r.data),
   show: (id: number | string) => api.get<ApiResponse<TaskHistoryDetail>>(`/staff/task-history/${id}`).then((r) => r.data),
+  /** Release / refund / re-check the pending reward, or re-run the automatic proof check. */
+  rewardAction: (assignmentId: number | string, action: 'verify' | 'release' | 'refund' | 'recheck', note?: string) =>
+    api.post<ApiResponse<null>>(`/staff/task-history/${assignmentId}/reward`, { action, note }).then((r) => r.data),
   /** Same endpoint as the Verification Center — rewards and reversals stay on the ledger. */
   decide: (submissionId: number, payload: { decision: 'approved' | 'rejected' | 'action_required'; reason_code: string; notes: string }) =>
     api.post<ApiResponse<unknown>>(`/admin/submissions/${submissionId}/decision`, payload).then((r) => r.data),

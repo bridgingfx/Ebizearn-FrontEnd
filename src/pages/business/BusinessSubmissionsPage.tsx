@@ -20,7 +20,14 @@ type ReviewKey = 'review' | 'you_approved' | 'you_rejected' | 'approved' | 'reje
 
 /** Where a proof is in the two-step review (business first, then eBizEarn staff). */
 const reviewState = (s: TaskSubmission): { key: ReviewKey; label: string; style: string } => {
-  if (s.status === 'approved') return { key: 'approved', label: 'Approved · paid', style: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' };
+  if (s.status === 'approved') {
+    if (s.reward_status === 'pending_duration' || s.reward_status === 'reverification_required') {
+      const due = s.final_check_due_at ? ` · final check ${new Date(s.final_check_due_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : '';
+      return { key: 'approved', label: `Verified · reward pending${due}`, style: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300' };
+    }
+    return { key: 'approved', label: 'Completed · paid', style: 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' };
+  }
+  if (s.status === 'rejected' && s.reward_status === 'refunded') return { key: 'rejected', label: 'Post removed · refunded to you', style: 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300' };
   if (s.status === 'rejected') return { key: 'rejected', label: 'Rejected', style: 'bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300' };
   if (s.business_decision === 'approved') return { key: 'you_approved', label: 'You approved · awaiting confirmation', style: 'bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300' };
   if (s.business_decision === 'rejected') return { key: 'you_rejected', label: 'You rejected · awaiting confirmation', style: 'bg-rose-100 dark:bg-rose-500/15 text-rose-700 dark:text-rose-300' };

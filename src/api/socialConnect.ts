@@ -2,16 +2,18 @@ import { api, type ApiResponse } from './client';
 
 /**
  * "Connect with …" OAuth for contributor social channels.
- * Backend config keys: tiktok, x, facebook, google (google = YouTube).
- * Instagram has no OAuth (personal accounts) — manual bio-code only.
+ * Backend config keys: tiktok, x, facebook, google (google = YouTube),
+ * instagram (Instagram API with Instagram Login — professional accounts;
+ * personal accounts keep the manual bio-code flow).
  */
-export type SocialConnectConfigKey = 'tiktok' | 'x' | 'facebook' | 'google';
+export type SocialConnectConfigKey = 'tiktok' | 'x' | 'facebook' | 'google' | 'instagram';
 
 export interface SocialConnectPublicConfig {
   tiktok: { enabled: boolean; label: string };
   x: { enabled: boolean; label: string };
   facebook: { enabled: boolean; label: string };
   google: { enabled: boolean; label: string };
+  instagram: { enabled: boolean; label: string };
 }
 
 export interface SocialConnectAdminConfig {
@@ -19,6 +21,7 @@ export interface SocialConnectAdminConfig {
   x: { enabled: boolean; client_id: string; has_secret: boolean; label: string };
   facebook: { enabled: boolean; client_id: string; has_secret: boolean; label: string };
   google: { enabled: boolean; client_id: string; has_secret: boolean; label: string };
+  instagram: { enabled: boolean; client_id: string; has_secret: boolean; label: string };
 }
 
 export interface SocialConnectInput {
@@ -26,6 +29,7 @@ export interface SocialConnectInput {
   x: { enabled: boolean; client_id: string; client_secret?: string };
   facebook: { enabled: boolean; client_id: string; client_secret?: string };
   google: { enabled: boolean; client_id: string; client_secret?: string };
+  instagram: { enabled: boolean; client_id: string; client_secret?: string };
 }
 
 const unwrap = <T>(p: Promise<{ data: ApiResponse<T> }>) => p.then((r) => r.data);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckCircle2, ExternalLink, KeyRound, Loader2, Save } from 'lucide-react';
 import { socialConnectApi, getApiError } from '../../api';
 import type { SocialConnectAdminConfig, SocialConnectInput, SocialConnectConfigKey } from '../../api';
-import { TikTokLogo, XTwitterLogo, FacebookLogo, GoogleLogo, YouTubeLogo } from '../common/PlatformIcons';
+import { TikTokLogo, XTwitterLogo, FacebookLogo, GoogleLogo, YouTubeLogo, InstagramLogo } from '../common/PlatformIcons';
 import { toast } from '../../utils/toast';
 
 const inputClass =
@@ -40,6 +40,19 @@ interface ProviderDef {
 const redirectUri = (key: SocialConnectConfigKey) => `${apiOrigin}/oauth/social/${key}/callback`;
 
 const PROVIDERS: ProviderDef[] = [
+  {
+    key: 'instagram',
+    title: 'Instagram (Professional accounts)',
+    subtitle: '“Connect with Instagram” — also used to verify Instagram post tasks',
+    icon: <InstagramLogo className="w-5 h-5" />,
+    consoleUrl: 'https://developers.facebook.com/apps/',
+    consoleLabel: 'Open Meta Developers',
+    help: (
+      <>
+        Meta Developers → create a <b>Business</b> app → add the <b>Instagram</b> product → <b>API setup with Instagram login</b>. Copy the <b>Instagram app ID</b> and <b>Instagram app secret</b> here, register this exact Redirect URI under <b>Business login settings → OAuth redirect URIs</b>, and request the <b>instagram_business_basic</b> permission (Advanced Access needs Meta App Review before real users can connect). Works for Instagram <b>Business / Creator</b> accounts only. Our server reads the contributor’s own posts through the official API to confirm each post — the AI only compares the evidence.{' '}
+      </>
+    ),
+  },
   {
     key: 'tiktok',
     title: 'TikTok',

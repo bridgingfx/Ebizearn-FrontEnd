@@ -48,6 +48,9 @@ export const LazyEarnPage = React.lazy(() => named(import('../pages/public/EarnP
 export const LazyForBusinessesPage = React.lazy(() =>
   named(import('../pages/public/ForBusinessesPage'), 'ForBusinessesPage'),
 );
+export const LazyPricingPage = React.lazy(() =>
+  named(import('../pages/public/PricingPage'), 'PricingPage'),
+);
 export const LazyAboutPage = React.lazy(() => named(import('../pages/public/AboutPage'), 'AboutPage'));
 export const LazyFaqPage = React.lazy(() => named(import('../pages/public/FaqPage'), 'FaqPage'));
 export const LazyBlogIndexPage = React.lazy(() =>

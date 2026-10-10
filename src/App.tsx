@@ -25,6 +25,7 @@ import {
   LazyPublicTasksPage,
   LazyEarnPage,
   LazyForBusinessesPage,
+  LazyPricingPage,
   LazyAboutPage,
   LazyFaqPage,
   LazyBlogIndexPage,
@@ -183,7 +184,7 @@ export const App: React.FC = () => {
             <Route path="/blog" element={<LazyBlogIndexPage />} />
             <Route path="/blog/:slug" element={<LazyBlogPostPage />} />
             <Route path="/trust-safety" element={<LazyTrustSafetyPage />} />
-            <Route path="/pricing" element={<LazyForBusinessesPage />} />
+            <Route path="/pricing" element={<LazyPricingPage />} />
             <Route path="/payments" element={<LazyFaqPage />} />
             <Route path="/contact" element={<LazyContactPage />} />
             <Route path="/legal" element={<Navigate to="/legal/terms" replace />} />

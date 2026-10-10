@@ -509,6 +509,13 @@ export const ForBusinessesPage: React.FC = () => {
                 >
                   Request Demo
                 </button>
+                <Link
+                  to="/pricing"
+                  className="px-7 py-3.5 bg-transparent hover:bg-white/5 text-amber-300 font-bold text-xs sm:text-sm rounded-xl border border-amber-300/40 transition-all flex items-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>View managed packages</span>
+                </Link>
               </div>
             </div>
           </div>

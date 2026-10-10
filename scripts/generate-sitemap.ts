@@ -55,13 +55,14 @@ interface StaticRoute {
   priority: string;
 }
 
-/** Public, indexable routes. Alias routes (/pricing, /payments) canonicalize
- *  elsewhere and are intentionally excluded. */
+/** Public, indexable routes. The /payments alias canonicalizes elsewhere and is
+ *  intentionally excluded. */
 const STATIC_ROUTES: StaticRoute[] = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
   { path: '/tasks', changefreq: 'daily', priority: '0.9' },
   { path: '/earn', changefreq: 'weekly', priority: '0.9' },
   { path: '/for-businesses', changefreq: 'weekly', priority: '0.9' },
+  { path: '/pricing', changefreq: 'weekly', priority: '0.9' },
   { path: '/how-it-works', changefreq: 'monthly', priority: '0.8' },
   { path: '/faq', changefreq: 'monthly', priority: '0.8' },
   { path: '/about', changefreq: 'monthly', priority: '0.7' },

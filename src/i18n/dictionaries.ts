@@ -15,6 +15,7 @@ export const en = {
   'nav.tasks': 'Tasks',
   'nav.earn': 'Earn',
   'nav.forBusinesses': 'For Businesses',
+  'nav.pricing': 'Pricing',
   'nav.blog': 'Blog',
   'nav.about': 'About',
   'nav.login': 'Login',

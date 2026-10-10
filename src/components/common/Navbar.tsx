@@ -36,6 +36,7 @@ export const Navbar: React.FC = () => {
     { name: t('nav.tasks'), path: '/tasks' },
     { name: t('nav.earn'), path: '/earn' },
     { name: t('nav.forBusinesses'), path: '/for-businesses' },
+    { name: t('nav.pricing'), path: '/pricing' },
     { name: t('nav.blog'), path: '/blog' },
     { name: t('nav.about'), path: '/about' },
   ];

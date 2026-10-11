@@ -7,6 +7,8 @@ interface Appeal {
   id: number;
   uuid: string;
   submission_id: number;
+  /** Task History record (proof, AI evidence, risk flags). */
+  assignment_id?: number | null;
   reason: string;
   status: 'open' | 'upheld' | 'denied';
   created_at: string;
@@ -165,6 +167,11 @@ export const AdminAppealsPage: React.FC = () => {
                     >
                       Open submission in verification center →
                     </Link>
+                    {a.assignment_id && (
+                      <Link to={`/admin/task-history/${a.assignment_id}`} className="inline-block ml-4 text-xs font-bold text-[#168BFF] hover:underline">
+                        View proof, AI evidence & risk flags →
+                      </Link>
+                    )}
                     {a.status === 'open' && (
                       <div className="space-y-2">
                         <textarea

@@ -17,7 +17,7 @@ export interface ContributorHistoryRow {
 
 export interface ContributorHistoryEvent {
   at: string;
-  kind: 'started' | 'submitted' | 'evidence' | 'verification' | 'business' | 'decision' | 'payment' | 'scheduled' | 'refund' | 'expired' | 'final';
+  kind: 'started' | 'submitted' | 'evidence' | 'verification' | 'business' | 'decision' | 'payment' | 'scheduled' | 'refund' | 'expired' | 'appeal' | 'final';
   title: string;
   detail: string | null;
   tone: 'info' | 'success' | 'warning' | 'danger' | 'muted';
@@ -39,6 +39,10 @@ export interface ContributorHistoryDetail {
     files: { id: number; url: string; mime_type: string | null; uploaded_at: string | null }[];
     reward_status: string | null; final_check_due_at: string | null; post_url: string | null;
   } | null;
+  /** Your appeal of a rejection, if any: open → upheld (second review) | denied. */
+  appeal: { status: 'open' | 'upheld' | 'denied'; reason: string; review_notes: string | null; created_at: string; decided_at: string | null } | null;
+  can_appeal: boolean;
+  appeal_window_days: number;
   ledger: { type: string; amount_cents: number; description: string | null; created_at: string }[];
   timeline: ContributorHistoryEvent[];
 }

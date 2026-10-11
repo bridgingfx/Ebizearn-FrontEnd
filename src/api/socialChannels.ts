@@ -24,6 +24,8 @@ export interface SocialChannel {
   /** Last automatic robo re-check (oauth channels). */
   last_robo_check_at: string | null;
   robo_check_note: string | null;
+  /** Official connection health: connected | expiring | expired; 'manual' for bio-code channels. */
+  connection_health?: 'connected' | 'expiring' | 'expired' | 'manual';
   user?: { id: number; uuid: string; name: string; email: string; role: string; status: string };
 }
 

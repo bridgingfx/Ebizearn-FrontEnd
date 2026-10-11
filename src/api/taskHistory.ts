@@ -3,7 +3,7 @@ import { api, type ApiResponse } from './client';
 /** Task History filter tabs (GET /staff/task-history?status=). */
 export type TaskHistoryFilter =
   | 'all' | 'in_progress' | 'in_review' | 'action_required' | 'approved' | 'rejected' | 'expired'
-  | 'pending_duration' | 'reverification_required' | 'released' | 'refunded';
+  | 'pending_duration' | 'reverification_required' | 'released' | 'refunded' | 'appeals';
 
 /** Reward after approval: held for the task duration, then released or refunded to the funder. */
 export type RewardStatus = 'pending_duration' | 'reverification_required' | 'released' | 'refunded';
@@ -15,7 +15,13 @@ export interface PostVerificationRecord {
   outcome: 'verified' | 'failed' | 'inconclusive' | 'skipped';
   reason: string | null;
   api_checks_json: { outcome?: string; error?: string | null; account_connected?: boolean; post_found?: boolean; account_match?: boolean; published_after_start?: boolean; caption_score?: number | null; caption_match?: boolean | null } | null;
-  ai_json: { available?: boolean; model?: string | null; is_proof?: boolean | null; confidence?: number; matches_api_post?: boolean | null; looks_fake?: boolean; issues?: string[]; summary?: string; error?: string | null } | null;
+  ai_json: {
+    available?: boolean; model?: string | null; is_proof?: boolean | null; confidence?: number; matches_api_post?: boolean | null; looks_fake?: boolean; issues?: string[]; summary?: string; error?: string | null;
+    /** What the screenshot shows — supporting evidence, not proof. */
+    evidence?: { account_seen?: string | null; url_seen?: string | null; platform_seen?: string | null; visible_action?: string | null; cropped?: boolean; manipulation_signs?: string[] };
+  } | null;
+  /** Fraud & risk engine result for this check. */
+  risk_json?: { score: number; level: 'low' | 'medium' | 'high' | 'critical'; blocks_auto_approval: boolean; flags: { code: string; label: string; detail: string | null }[] } | null;
   api_meta_json: { id?: string; permalink?: string; timestamp?: string; username?: string; media_type?: string; caption?: string } | null;
   checked_at: string;
   actor?: { id: number; name: string; role: string } | null;
@@ -155,6 +161,7 @@ export interface TaskHistoryDetail {
     platform_post_url: string | null;
     platform_posted_at: string | null;
     post_verifications?: PostVerificationRecord[];
+    appeal?: { id: number; status: 'open' | 'upheld' | 'denied'; reason: string; review_notes: string | null; created_at: string; decided_at: string | null; decider?: { id: number; name: string } | null } | null;
     business_reason: string | null;
     created_at: string;
     files: ProofFile[];

@@ -222,6 +222,8 @@ export const SocialChannelsCard: React.FC<{
             const oauthLabel = oauthKey && oauthConfig ? oauthConfig[oauthKey].label : '';
             const isOAuth = c?.connected_via === 'oauth';
             const showOAuthButton = oauthEnabled && (!c || c.connected_via === 'manual');
+            const health = c?.connection_health;
+            const needsReconnect = isOAuth && (health === 'expiring' || health === 'expired');
             const displayHandle = isOAuth && c?.oauth_username ? c.oauth_username : c?.handle;
 
             return (
@@ -236,6 +238,11 @@ export const SocialChannelsCard: React.FC<{
                         <span className="text-sm font-black text-gray-900 dark:text-gray-100">{p.name}</span>
                         <StatusBadge channel={c} />
                         {isOAuth && <OAuthBadge label={oauthLabel} />}
+                        {needsReconnect && (
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold ${health === 'expired' ? 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30' : 'bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30'}`}>
+                            <AlertCircle className="w-3 h-3" />{health === 'expired' ? 'Connection expired' : 'Expires soon'}
+                          </span>
+                        )}
                       </div>
                       {c ? (
                         <a href={c.profile_url} target="_blank" rel="noopener noreferrer" className="text-xs text-slate-500 dark:text-gray-400 hover:text-[#168BFF] inline-flex items-center gap-1 mt-0.5 max-w-full">
@@ -262,13 +269,19 @@ export const SocialChannelsCard: React.FC<{
                           Connect with {oauthLabel}
                         </button>
                       )}
+                      {needsReconnect && oauthEnabled && (
+                        <button type="button" onClick={() => connectOAuth(p.id)} disabled={busy === `oauth-${p.id}`} className="min-h-[44px] px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#168BFF] to-[#7257FF] hover:brightness-105 disabled:opacity-60 inline-flex items-center gap-1.5">
+                          {busy === `oauth-${p.id}` ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Icon className="w-4 h-4" />}
+                          Reconnect
+                        </button>
+                      )}
                       {c ? (
                         <>
                           <button type="button" onClick={() => openForm(p.id)} className="h-8 px-3 rounded-lg text-xs font-bold bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-gray-200 hover:border-slate-300 inline-flex items-center gap-1.5">
                             <Pencil className="w-3.5 h-3.5" /> Edit
                           </button>
-                          <button type="button" onClick={() => remove(c)} disabled={busy === `remove-${c.id}`} title="Remove" className="h-8 w-8 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 inline-flex items-center justify-center disabled:opacity-50">
-                            <Trash2 className="w-4 h-4" />
+                          <button type="button" onClick={() => remove(c)} disabled={busy === `remove-${c.id}`} title={isOAuth ? 'Disconnect (removes our access)' : 'Remove'} className={`h-8 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 inline-flex items-center justify-center gap-1 disabled:opacity-50 ${isOAuth ? 'px-2.5 text-xs font-bold' : 'w-8'}`}>
+                            <Trash2 className="w-4 h-4" />{isOAuth && 'Disconnect'}
                           </button>
                         </>
                       ) : (

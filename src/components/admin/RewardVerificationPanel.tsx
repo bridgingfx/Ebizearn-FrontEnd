@@ -85,6 +85,29 @@ const VerificationRow: React.FC<{ v: PostVerificationRecord }> = ({ v }) => {
           </span>
         </div>
       )}
+      {ai?.evidence && (ai.evidence.visible_action || ai.evidence.account_seen || ai.evidence.cropped || (ai.evidence.manipulation_signs?.length ?? 0) > 0) && (
+        <div className="flex flex-wrap gap-1.5 text-[10px] font-bold">
+          {ai.evidence.visible_action && <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300">Shows: {ai.evidence.visible_action}</span>}
+          {ai.evidence.account_seen && <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300">Account: @{ai.evidence.account_seen.replace(/^@/, '')}</span>}
+          {ai.evidence.url_seen && <span className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 break-all">URL: {ai.evidence.url_seen}</span>}
+          {ai.evidence.cropped && <span className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">Cropped / incomplete</span>}
+          {(ai.evidence.manipulation_signs ?? []).map((m) => (
+            <span key={m} className="px-1.5 py-0.5 rounded bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300">Edit sign: {m}</span>
+          ))}
+        </div>
+      )}
+      {v.risk_json && v.risk_json.flags.length > 0 && (
+        <div className={`rounded-lg p-2 text-[11px] ${v.risk_json.blocks_auto_approval ? 'bg-red-50 text-red-800 dark:bg-red-500/10 dark:text-red-200' : 'bg-amber-50 text-amber-800 dark:bg-amber-500/10 dark:text-amber-200'}`}>
+          <p className="font-black uppercase tracking-wider text-[10px] flex items-center gap-1">
+            <AlertTriangle className="w-3 h-3" /> Risk {v.risk_json.level} · {v.risk_json.score}/100{v.risk_json.blocks_auto_approval ? ' · auto-approval blocked' : ''}
+          </p>
+          <ul className="mt-1 space-y-0.5">
+            {v.risk_json.flags.map((fl) => (
+              <li key={fl.code}>• {fl.label}{fl.detail ? ` — ${fl.detail}` : ''}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       {v.api_meta_json?.permalink && (
         <a href={v.api_meta_json.permalink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[11px] font-bold text-[#168BFF] hover:underline">
           <ExternalLink className="w-3 h-3" /> @{v.api_meta_json.username} · {dt(v.api_meta_json.timestamp)}
@@ -163,6 +186,20 @@ export const RewardVerificationPanel: React.FC<{ data: TaskHistoryDetail; assign
             <p className="mt-0.5 text-sm font-bold text-gray-900 dark:text-gray-100">{dt(sub.final_checked_at)}</p>
           </div>
         </div>
+
+        {sub.appeal && (
+          <div className={`rounded-xl border p-3 text-xs ${sub.appeal.status === 'open' ? 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200' : 'border-gray-200 bg-gray-50 text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300'}`}>
+            <p className="font-bold">
+              Appeal {sub.appeal.status === 'open' ? 'waiting for a decision' : sub.appeal.status === 'upheld' ? 'upheld — sent back for review' : 'denied'}
+              {sub.appeal.decider ? ` · ${sub.appeal.decider.name}` : ''}
+            </p>
+            <p className="mt-1">“{sub.appeal.reason}”</p>
+            {sub.appeal.review_notes && <p className="mt-1 opacity-80">Decision note: {sub.appeal.review_notes}</p>}
+            {sub.appeal.status === 'open' && (
+              <a href="/admin/appeals" className="mt-1.5 inline-block font-bold text-[#168BFF] hover:underline">Decide in Appeals →</a>
+            )}
+          </div>
+        )}
 
         {sub.reward_status === 'reverification_required' && (
           <p className="flex items-start gap-2 text-xs text-orange-800 dark:text-orange-200 bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 rounded-xl p-3">

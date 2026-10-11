@@ -35,6 +35,7 @@ const TABS: { value: TaskHistoryFilter; label: string }[] = [
   { value: 'reverification_required', label: 'Reverification' },
   { value: 'released', label: 'Completed' },
   { value: 'refunded', label: 'Refunded' },
+  { value: 'appeals', label: 'Open appeals' },
 ];
 
 const PLATFORMS = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'X', 'WhatsApp', 'LinkedIn', 'Google Reviews', 'Trustpilot'];

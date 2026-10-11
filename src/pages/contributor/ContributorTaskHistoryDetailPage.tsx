@@ -37,6 +37,7 @@ const ICONS: Record<ContributorHistoryEvent['kind'], React.ElementType> = {
   scheduled: CalendarClock,
   refund: RotateCcw,
   expired: Timer,
+  appeal: Flag,
   final: Flag,
 };
 
@@ -204,7 +205,17 @@ export const ContributorTaskHistoryDetailPage: React.FC = () => {
                     {submission.review_notes}
                   </div>
                 )}
-                {submission.status === 'rejected' && (
+                {data.appeal && !appealDone && (
+                  <div className={`rounded-xl border p-3 text-xs ${data.appeal.status === 'denied' ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200' : data.appeal.status === 'upheld' ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200' : 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200'}`}>
+                    <p className="font-bold flex items-center gap-1.5">
+                      <Flag className="w-3.5 h-3.5" />
+                      {data.appeal.status === 'open' ? 'Appeal sent — waiting for a second review' : data.appeal.status === 'upheld' ? 'Appeal accepted — your proof is being reviewed again' : 'Appeal not accepted'}
+                    </p>
+                    <p className="mt-1 opacity-80">“{data.appeal.reason}”</p>
+                    {data.appeal.review_notes && <p className="mt-1"><span className="font-bold">Review team:</span> {data.appeal.review_notes}</p>}
+                  </div>
+                )}
+                {submission.status === 'rejected' && (data.can_appeal || appealDone) && (
                   <div className="rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-3">
                     {appealDone ? (
                       <p className="text-xs text-amber-900 dark:text-amber-200 flex items-start gap-1.5">

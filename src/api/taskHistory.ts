@@ -161,7 +161,7 @@ export interface TaskHistoryDetail {
     platform_post_url: string | null;
     platform_posted_at: string | null;
     post_verifications?: PostVerificationRecord[];
-    appeal?: { id: number; status: 'open' | 'upheld' | 'denied'; reason: string; review_notes: string | null; created_at: string; decided_at: string | null; decider?: { id: number; name: string } | null } | null;
+    appeal?: { id: number; status: 'open' | 'upheld' | 'denied'; reason: string; review_notes: string | null; created_at: string; reviewed_at: string | null; reviewer?: { id: number; name: string } | null } | null;
     business_reason: string | null;
     created_at: string;
     files: ProofFile[];

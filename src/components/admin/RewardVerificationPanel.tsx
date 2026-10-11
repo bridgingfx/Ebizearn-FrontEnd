@@ -191,7 +191,7 @@ export const RewardVerificationPanel: React.FC<{ data: TaskHistoryDetail; assign
           <div className={`rounded-xl border p-3 text-xs ${sub.appeal.status === 'open' ? 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200' : 'border-gray-200 bg-gray-50 text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300'}`}>
             <p className="font-bold">
               Appeal {sub.appeal.status === 'open' ? 'waiting for a decision' : sub.appeal.status === 'upheld' ? 'upheld — sent back for review' : 'denied'}
-              {sub.appeal.decider ? ` · ${sub.appeal.decider.name}` : ''}
+              {sub.appeal.reviewer ? ` · ${sub.appeal.reviewer.name}` : ''}
             </p>
             <p className="mt-1">“{sub.appeal.reason}”</p>
             {sub.appeal.review_notes && <p className="mt-1 opacity-80">Decision note: {sub.appeal.review_notes}</p>}

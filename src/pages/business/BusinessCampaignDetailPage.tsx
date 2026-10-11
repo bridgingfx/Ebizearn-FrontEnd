@@ -182,6 +182,24 @@ export const BusinessCampaignDetailPage: React.FC = () => {
               <p className="mt-2 whitespace-pre-wrap leading-relaxed">{campaign.instructions_markdown}</p>
             </details>
           )}
+          {(campaign.media?.length ?? 0) > 0 && (
+            <div className="mt-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1.5">
+                Photos & videos for contributors ({campaign.media!.length})
+              </p>
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 max-w-2xl">
+                {campaign.media!.map((m) =>
+                  m.type === 'video' ? (
+                    <video key={m.id} src={m.url} controls preload="metadata" className="aspect-square w-full rounded-xl bg-black object-cover" />
+                  ) : (
+                    <a key={m.id} href={m.url} target="_blank" rel="noopener noreferrer" className="aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                      <img src={m.url} alt={m.original_name ?? 'Campaign photo'} loading="lazy" className="w-full h-full object-cover" />
+                    </a>
+                  ),
+                )}
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {canToggle && (

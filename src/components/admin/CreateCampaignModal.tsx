@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Loader2, Building2, Wallet, Save, FileText } from 'lucide-react';
-import { adminApi, getApiError } from '../../api';
+import { adminApi, campaignMediaApi, getApiError } from '../../api';
+import { toast } from '../../utils/toast';
+import { CampaignMediaPicker } from '../campaign/CampaignMediaPicker';
 import { api } from '../../api/client';
 import { fmtMoney } from '../common/ui';
 import { PLATFORM_OPTIONS, PlatformBrandIcon } from '../common/PlatformBrandIcon';
@@ -123,6 +125,9 @@ export const CreateCampaignModal: React.FC<{
   const [minLevel, setMinLevel] = useState(draftSeed?.minLevel ?? 'starter');
 
   const [submitting, setSubmitting] = useState(false);
+  // Photos & videos for contributors — uploaded to the campaign once it exists.
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [uploadPct, setUploadPct] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [seeding, setSeeding] = useState(false);
 
@@ -252,6 +257,18 @@ export const CreateCampaignModal: React.FC<{
         min_contributor_level: minLevel,
       });
       if (res.success) {
+        const campaignId = (res.data as { id?: number } | undefined)?.id;
+        if (campaignId && mediaFiles.length > 0) {
+          setUploadPct(0);
+          try {
+            await campaignMediaApi.upload(campaignId, mediaFiles, setUploadPct);
+          } catch (e) {
+            // The campaign is created either way — the media can be added from its page.
+            toast.error(getApiError(e, 'Campaign posted, but the photos / videos could not be uploaded. Add them from the campaign page.'));
+          } finally {
+            setUploadPct(null);
+          }
+        }
         // Published — the draft is no longer needed.
         if (draftId) deleteDraft(draftId);
         submittedRef.current = true;
@@ -546,6 +563,11 @@ export const CreateCampaignModal: React.FC<{
                     className={`${inputCls} resize-none`}
                   />
                 </div>
+                <div className="sm:col-span-2">
+                  <label className={labelCls}>Photos & videos (optional)</label>
+                  <CampaignMediaPicker files={mediaFiles} onChange={setMediaFiles} disabled={submitting} />
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Shown to contributors on the task page (downloadable) and to the business on its campaign.</p>
+                </div>
               </div>
 
               {rewardsBudget > 0 && (
@@ -599,7 +621,7 @@ export const CreateCampaignModal: React.FC<{
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-[#168BFF] hover:bg-[#0f7ae5] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            Post campaign
+            {uploadPct !== null ? `Uploading media… ${uploadPct}%` : 'Post campaign'}
           </button>
         </div>
       </div>

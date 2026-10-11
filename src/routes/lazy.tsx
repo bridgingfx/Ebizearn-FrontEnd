@@ -213,6 +213,9 @@ export const LazyAdminVerificationCenterPage = React.lazy(() =>
 export const LazyAdminFraudPage = React.lazy(() =>
   named(import('../pages/admin/AdminFraudPage'), 'AdminFraudPage'),
 );
+export const LazyAdminAppealsPage = React.lazy(() =>
+  named(import('../pages/admin/AdminAppealsPage'), 'AdminAppealsPage'),
+);
 export const LazyAdminPayoutsPage = React.lazy(() =>
   named(import('../pages/admin/AdminPayoutsPage'), 'AdminPayoutsPage'),
 );

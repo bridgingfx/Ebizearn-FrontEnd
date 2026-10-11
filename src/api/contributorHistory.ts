@@ -52,4 +52,7 @@ export const contributorHistoryApi = {
       )
       .then((r) => r.data),
   show: (id: number | string) => api.get<ApiResponse<ContributorHistoryDetail>>(`/contributor/task-history/${id}`).then((r) => r.data),
+  /** POST /contributor/task-history/{id}/appeal — challenge a rejected submission. */
+  appeal: (id: number | string, reason: string) =>
+    api.post<ApiResponse<{ id: number; status: string }>>(`/contributor/task-history/${id}/appeal`, { reason }).then((r) => r.data),
 };

@@ -56,6 +56,29 @@ export const ContributorTaskHistoryDetailPage: React.FC = () => {
   const { fmt } = useMoney();
   const [data, setData] = useState<ContributorHistoryDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [appealFormOpen, setAppealFormOpen] = useState(false);
+  const [appealReason, setAppealReason] = useState('');
+  const [appealBusy, setAppealBusy] = useState(false);
+  const [appealDone, setAppealDone] = useState(false);
+  const [appealError, setAppealError] = useState<string | null>(null);
+
+  const submitAppeal = async () => {
+    if (!id || appealReason.trim().length < 10) {
+      setAppealError('Please explain in at least 10 characters why you believe the rejection was wrong.');
+      return;
+    }
+    setAppealBusy(true);
+    setAppealError(null);
+    try {
+      await contributorHistoryApi.appeal(id, appealReason.trim());
+      setAppealDone(true);
+      setAppealFormOpen(false);
+    } catch (e) {
+      setAppealError(getApiError(e, 'Could not send your appeal. Please try again.'));
+    } finally {
+      setAppealBusy(false);
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -179,6 +202,55 @@ export const ContributorTaskHistoryDetailPage: React.FC = () => {
                   <div className={`text-xs rounded-xl p-3 border ${submission.status === 'rejected' ? 'bg-red-50 border-red-200 text-red-800 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-200' : 'bg-gray-50 border-gray-200 text-gray-700 dark:bg-white/5 dark:border-white/10 dark:text-gray-300'}`}>
                     <span className="font-bold block mb-0.5">{submission.status === 'rejected' ? <XCircle className="w-3.5 h-3.5 inline mr-1" /> : null}Reviewer note</span>
                     {submission.review_notes}
+                  </div>
+                )}
+                {submission.status === 'rejected' && (
+                  <div className="rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-3">
+                    {appealDone ? (
+                      <p className="text-xs text-amber-900 dark:text-amber-200 flex items-start gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+                        Your appeal was sent. A reviewer will take a second look — you'll see the outcome here.
+                      </p>
+                    ) : appealFormOpen ? (
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-amber-900 dark:text-amber-200">Appeal this decision</p>
+                        <p className="text-[11px] text-amber-800 dark:text-amber-300/80">Tell us why you believe the rejection was wrong. A different reviewer will re-check your proof.</p>
+                        <textarea
+                          value={appealReason}
+                          onChange={(e) => setAppealReason(e.target.value)}
+                          rows={3}
+                          maxLength={2000}
+                          placeholder="Explain what the reviewer may have missed…"
+                          className="w-full text-xs rounded-xl border border-amber-200 dark:border-amber-500/30 bg-white dark:bg-[#0C1322] p-2.5 text-gray-800 dark:text-gray-200 outline-none focus:ring-2 focus:ring-amber-400/50"
+                        />
+                        {appealError && <p className="text-[11px] text-red-600 dark:text-red-300">{appealError}</p>}
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={submitAppeal}
+                            disabled={appealBusy}
+                            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white text-xs font-bold transition-colors"
+                          >
+                            {appealBusy ? 'Sending…' : 'Send appeal'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setAppealFormOpen(false); setAppealError(null); }}
+                            className="px-4 py-2 rounded-xl border border-amber-300 dark:border-amber-500/40 text-amber-800 dark:text-amber-200 text-xs font-bold"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setAppealFormOpen(true)}
+                        className="text-xs font-bold text-amber-800 dark:text-amber-200 hover:underline flex items-center gap-1.5"
+                      >
+                        <Flag className="w-3.5 h-3.5" /> Think this is wrong? Appeal for a second review
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

@@ -30,6 +30,14 @@ export const adminApi = {
     api.get(`/admin/submissions/${submissionId}`).then((r) => r.data as { success: boolean; data: TaskSubmission }),
   recordDecision: (submissionId: number | string, payload: { decision: string; reason_code: string; notes?: string }) =>
     api.post(`/admin/submissions/${submissionId}/decision`, payload).then((r) => r.data),
+  submissionAppeals: (params?: { status?: 'open' | 'upheld' | 'denied' }) =>
+    api.get('/admin/submission-appeals', { params }).then((r) => r.data as {
+      success: boolean; message?: string;
+      data: { id: number; uuid: string; submission_id: number; reason: string; status: 'open' | 'upheld' | 'denied'; created_at: string; review_notes: string | null; submission?: { id: number; task?: { title: string } }; user?: { name: string; profile?: { display_name?: string } } }[];
+      meta?: { current_page: number; last_page: number; total: number };
+    }),
+  decideAppeal: (appealId: number | string, payload: { decision: 'uphold' | 'deny'; notes?: string }) =>
+    api.post(`/admin/submission-appeals/${appealId}/decision`, payload).then((r) => r.data),
   fraudAlerts: () => api.get('/admin/fraud-alerts').then((r) => r.data as { success: boolean; message?: string; data: FraudEvent[]; meta?: unknown }),
   payouts: (params?: { status?: string }) =>
     api.get('/admin/payouts', { params }).then((r) => r.data as { success: boolean; message?: string; data: WithdrawalRequest[]; meta?: unknown }),

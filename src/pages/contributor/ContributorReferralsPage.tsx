@@ -174,7 +174,7 @@ export const ContributorReferralsPage: React.FC = () => {
     return Object.values(data.by_level).reduce((s, st) => s + (st?.rewarded ?? 0), 0);
   }, [data]);
 
-  /** Level-1 direct reward: what you earn when a friend completes their first verified task. */
+  /** Level-1 direct reward: what you earn when a friend joins with your link and verifies their email. */
   const rewardPerReferral = data?.by_level?.[1]?.reward_cents != null ? fmt(data.by_level[1].reward_cents) : '—';
 
   return (
@@ -192,8 +192,8 @@ export const ContributorReferralsPage: React.FC = () => {
           </h1>
           <p className="mt-1.5 text-sm sm:text-base text-slate-300 max-w-xl">
             Share your link and earn <span className="font-extrabold text-white">{rewardPerReferral}</span> when
-            a friend completes their first verified task. Rewards land in your wallet only after
-            qualification — never estimated.
+            a friend joins with your link and verifies their email. Rewards land in your wallet
+            as soon as they verify — never estimated.
           </p>
         </div>
       </div>
@@ -316,7 +316,7 @@ export const ContributorReferralsPage: React.FC = () => {
             <div className="grid sm:grid-cols-3 gap-4">
               {[
                 { icon: Share2, step: '1', title: 'Share your link', desc: 'Send your unique link to friends, groups, and communities.', gradient: 'from-[#168BFF] to-[#20C4E8]', shadow: 'shadow-blue-500/25' },
-                { icon: UserPlus, step: '2', title: 'They join free', desc: 'Friends sign up free and complete their first verified task.', gradient: 'from-[#7257FF] to-[#9D7BFF]', shadow: 'shadow-violet-500/25' },
+                { icon: UserPlus, step: '2', title: 'They join free', desc: 'Friends sign up free and verify their email.', gradient: 'from-[#7257FF] to-[#9D7BFF]', shadow: 'shadow-violet-500/25' },
                 { icon: BadgeDollarSign, step: '3', title: 'You earn', desc: 'Your reward is credited to your wallet after qualification.', gradient: 'from-[#16B364] to-[#0EA968]', shadow: 'shadow-emerald-500/25' },
               ].map((s) => {
                 const Icon = s.icon;
@@ -340,7 +340,7 @@ export const ContributorReferralsPage: React.FC = () => {
             {data.referrals.length === 0 ? (
               <EmptyState
                 title="No referrals yet"
-                description="Nobody has joined with your link yet. When a friend signs up and completes their first verified task, they'll appear here with the reward you earned."
+                description="Nobody has joined with your link yet. When a friend signs up with your link and verifies their email, they'll appear here with the reward you earned."
                 icon={Users}
               />
             ) : (

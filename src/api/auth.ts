@@ -83,11 +83,13 @@ export const authApi = {
    * the backend records terms_accepted_at server-side. Omitted for plain
    * sign-in of an existing account.
    */
-  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal, extra?: { name?: string; email?: string }, terms?: TermsAcceptance) =>
+  socialLogin: (provider: 'google' | 'apple', idToken: string, portal?: LoginPortal, extra?: { name?: string; email?: string }, terms?: TermsAcceptance, referralCode?: string) =>
     api
       .post<ApiResponse<AuthSession>>(`/auth/social/${provider}`, {
         id_token: idToken,
         ...(portal ? { portal } : {}),
+        // Affiliate link (?ref=CODE): a Google/Apple signup from a referral link attributes the new account.
+        ...(referralCode ? { referral_code: referralCode } : {}),
         // Apple sends the name / email only on the very first sign-in.
         ...(extra?.name ? { name: extra.name } : {}),
         ...(extra?.email ? { email: extra.email } : {}),

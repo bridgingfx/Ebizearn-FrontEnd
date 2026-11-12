@@ -153,7 +153,7 @@ export const ContributorLayout: React.FC = () => {
             )}
           </div>
 
-          <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar -mx-1 px-1 py-1">
+          <nav className="space-y-1 flex-1 min-h-0 overflow-y-auto overscroll-contain sidebar-scroll -mx-1 px-1 py-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const active = isActive(tab);

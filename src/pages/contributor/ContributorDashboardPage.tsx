@@ -169,7 +169,7 @@ export const ContributorDashboardPage: React.FC = () => {
           />
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {recommended.slice(0, 6).map((task) => (
+            {recommended.map((task) => (
               <TaskCard key={task.uuid || task.id} task={task} />
             ))}
           </div>
@@ -188,7 +188,7 @@ export const ContributorDashboardPage: React.FC = () => {
         <div className="relative flex-1">
           <p className="text-lg font-black tracking-tight">Invite friends, earn together</p>
           <p className="text-sm text-slate-300 mt-1">
-            Share your referral link — earn a reward when friends complete verified tasks.
+            Share your referral link — earn a reward when friends join and verify their email.
           </p>
         </div>
         <span className="relative w-12 h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-all">

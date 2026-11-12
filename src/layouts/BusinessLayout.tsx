@@ -128,7 +128,7 @@ export const BusinessLayout: React.FC = () => {
           </Link>
 
           {/* Nav Items */}
-          <nav className="space-y-1.5 flex-1 min-h-0 overflow-y-auto overscroll-contain no-scrollbar -mx-1 px-1 py-1">
+          <nav className="space-y-1.5 flex-1 min-h-0 overflow-y-auto overscroll-contain sidebar-scroll -mx-1 px-1 py-1">
             {navItems.map((item) => {
               const isActive = item.exact
                 ? location.pathname === item.path

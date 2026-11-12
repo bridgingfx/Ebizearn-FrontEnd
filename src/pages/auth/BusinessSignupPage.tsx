@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
   Building2,
@@ -35,6 +35,9 @@ const STRONG_PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{1
 
 
 export const BusinessSignupPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  /** Affiliate link (?ref=CODE): pre-fill the referral code, exactly like the contributor page. */
+  const refCodeFromUrl = searchParams.get('ref') || '';
   const [name, setName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
@@ -60,7 +63,7 @@ export const BusinessSignupPage: React.FC = () => {
       cancelled = true;
     };
   }, []);
-  const [referralCode, setReferralCode] = useState('');
+  const [referralCode, setReferralCode] = useState(refCodeFromUrl);
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showReferral, setShowReferral] = useState(!!referralCode);

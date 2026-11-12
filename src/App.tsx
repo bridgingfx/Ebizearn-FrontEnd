@@ -222,10 +222,14 @@ export const App: React.FC = () => {
           {/* Hidden Super Admin console sign-in (no public chrome; unlinked everywhere). */}
           <Route path="/secure-control-panel/login" element={<LazySuperAdminLoginPage />} />
 
-          {/* Legacy signup aliases */}
-          <Route path="/signup" element={<Navigate to="/contributor/register" replace />} />
-          <Route path="/signup/contributor" element={<Navigate to="/contributor/register" replace />} />
-          <Route path="/signup/business" element={<Navigate to="/business/register" replace />} />
+          {/* Legacy signup aliases — the pages render HERE, not via a
+              redirect: <Navigate to="..."> drops the query string, which
+              silently lost the affiliate ?ref= code on every referral
+              link (no referrer was ever recorded, so no commission ever
+              paid). Rendering directly keeps ?ref= intact. */}
+          <Route path="/signup" element={<LazyContributorSignupPage />} />
+          <Route path="/signup/contributor" element={<LazyContributorSignupPage />} />
+          <Route path="/signup/business" element={<LazyBusinessSignupPage />} />
 
           {/* Contributor Portal Routes */}
           <Route path="/app" element={<RoleGuard allowedRoles={['contributor']}><LazyContributorLayout /></RoleGuard>}>

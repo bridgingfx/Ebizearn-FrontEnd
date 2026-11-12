@@ -118,7 +118,10 @@ function useSocialFinish(portal: LoginPortal | undefined, mode: Mode) {
           mode === 'register' && terms
             ? { terms_version: terms.version, terms_accepted_at: terms.acceptedAt }
             : undefined;
-        const role = await socialLogin(provider, idToken, portal, extra, acceptance);
+        // Affiliate link (?ref=CODE): a Google/Apple signup from a referral
+        // link must attribute the new account, exactly like email signup.
+        const referralCode = new URLSearchParams(location.search).get('ref') || undefined;
+        const role = await socialLogin(provider, idToken, portal, extra, acceptance, referralCode);
         if (!role) {
           toast.error('Sign-in did not complete. Please try again.');
           return;

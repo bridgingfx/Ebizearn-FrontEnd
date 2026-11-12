@@ -385,6 +385,34 @@ body::-webkit-scrollbar,
   height: 0;
 }
 
+/* Sidebar exception (restored 2026-11-12): the site-wide hide above also
+   hid the left-menu scrollbars, so nobody could tell the admin /
+   contributor / business menus scrolled or drag them — the menus looked
+   stuck. .sidebar-scroll (all three layouts) keeps a thin always-visible
+   scrollbar. Class specificity beats the `*` rules above, but `display`
+   must be set explicitly: the `*` rule's `display: none` would otherwise
+   still apply, since nothing else declares it. */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  -ms-overflow-style: scrollbar;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  display: block;
+  width: 6px;
+  height: 6px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
 /* The floating live-chat launcher hides while a ticket chat / drawer is
    open so it never covers the composer's Send button. */
 body.chat-widget-hidden .chat-widget-root {

@@ -262,6 +262,28 @@ export const SEO_BY_PATH: Record<string, PageSeo> = {
     description: 'Register your business on eBizEarn and launch verified social-media campaigns in minutes.',
     noindex: true,
   },
+  /* Legacy signup aliases (render the signup pages directly, keeping
+     ?ref= intact — the affiliate link lands here). Canonicals point at
+     the primary routes; without these entries the tab title fell back
+     to "Page not found". */
+  '/signup': {
+    title: 'Create Free Contributor Account | eBizEarn',
+    description: 'Create your free eBizEarn contributor account and start completing verified social media tasks for cash rewards.',
+    canonical: '/contributor/register',
+    noindex: true,
+  },
+  '/signup/contributor': {
+    title: 'Create Free Contributor Account | eBizEarn',
+    description: 'Create your free eBizEarn contributor account and start completing verified social media tasks for cash rewards.',
+    canonical: '/contributor/register',
+    noindex: true,
+  },
+  '/signup/business': {
+    title: 'Register Your Business | eBizEarn',
+    description: 'Register your business on eBizEarn and launch verified social-media campaigns in minutes.',
+    canonical: '/business/register',
+    noindex: true,
+  },
   '/moderator/login': {
     title: 'Moderator Sign In | eBizEarn',
     description: 'Moderator sign-in for the eBizEarn operations team.',

@@ -221,7 +221,7 @@ export const BlogPostPage: React.FC = () => {
         {/* Body + TOC */}
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">
           <div className="max-w-3xl">
-            <BlockRenderer blocks={post.content} />
+            <BlockRenderer blocks={post.content} heroImage={post.heroImage} />
 
             {/* Share */}
             <div className="mt-12 pt-8 border-t border-[#E4EAF2] dark:border-white/10">

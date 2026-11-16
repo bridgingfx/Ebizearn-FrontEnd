@@ -52,40 +52,59 @@ function EmptyState(): React.ReactElement {
 
 function FeaturedHero({ post }: { post: BlogPost }): React.ReactElement {
   const style = categoryStyle(post.category);
+  // Fall back to the gradient hero if the photo file is missing (404).
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = post.heroImage && !imageFailed;
   return (
     <Link
       to={`/blog/${post.slug}`}
-      className="group relative block overflow-hidden rounded-3xl border border-[#E4EAF2] dark:border-white/10 shadow-lg hover:shadow-2xl transition-all duration-300"
+      className="group relative flex items-end overflow-hidden rounded-3xl border border-[#E4EAF2] dark:border-white/10 shadow-lg hover:shadow-2xl active:scale-[0.99] transition-all duration-300 min-h-[380px] sm:min-h-[440px]"
     >
-      <div className={`relative bg-gradient-to-br ${style.gradient} px-6 py-12 sm:px-12 sm:py-16`}>
-        <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-20 -left-16 w-80 h-80 rounded-full bg-black/25 blur-3xl" />
-        <div className="relative z-10 max-w-2xl space-y-4">
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold uppercase tracking-wider">
-              Featured
-            </span>
-            <span
-              className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider backdrop-blur-md ${style.badge}`}
-            >
-              {post.category}
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight group-hover:underline decoration-2 underline-offset-4">
-            {post.title}
-          </h2>
-          <p className="text-sm sm:text-base text-white/80 leading-relaxed line-clamp-2">
-            {post.excerpt}
-          </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/70 pt-1">
-            <span className="font-semibold text-white">{post.author}</span>
-            <span aria-hidden>·</span>
-            <span>{formatBlogDate(post.publishedAt)}</span>
-            <span className="inline-flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" />
-              {post.readingMinutes} min read
-            </span>
-          </div>
+      {/* The featured post's own photo — always relatable to the story. */}
+      {showImage ? (
+        <img
+          src={post.heroImage}
+          alt=""
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          onError={() => setImageFailed(true)}
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+      ) : (
+        <div className={`absolute inset-0 bg-gradient-to-br ${style.gradient}`}>
+          <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute -bottom-20 -left-16 w-80 h-80 rounded-full bg-black/25 blur-3xl" />
+        </div>
+      )}
+      {/* Dark scrim: bottom-heavy + left-weighted, white text stays readable */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/15" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/15 to-transparent" aria-hidden />
+      <div className="relative z-10 max-w-2xl space-y-4 p-6 sm:p-12">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold uppercase tracking-wider">
+            Featured
+          </span>
+          <span
+            className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider backdrop-blur-md ${style.badge}`}
+          >
+            {post.category}
+          </span>
+        </div>
+        <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-lg group-hover:underline decoration-2 underline-offset-4">
+          {post.title}
+        </h2>
+        <p className="text-sm sm:text-base text-white/85 leading-relaxed line-clamp-2 drop-shadow">
+          {post.excerpt}
+        </p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/75 pt-1">
+          <span className="font-semibold text-white">{post.author}</span>
+          <span aria-hidden>·</span>
+          <span>{formatBlogDate(post.publishedAt)}</span>
+          <span className="inline-flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5" />
+            {post.readingMinutes} min read
+          </span>
         </div>
       </div>
     </Link>

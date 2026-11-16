@@ -146,82 +146,77 @@ export const BlogPostPage: React.FC = () => {
           </ol>
         </nav>
 
-        {/* Hero */}
-        <header className="max-w-3xl">
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${style.badge}`}>
-              {post.category}
-            </span>
-            {post.tags.slice(0, 3).map((t) => (
-              <span
-                key={t}
-                className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-white/5 text-[11px] font-bold text-gray-500 dark:text-gray-400"
-              >
-                #{t}
-              </span>
-            ))}
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight leading-[1.15] text-gray-900 dark:text-gray-100">
-            {post.title}
-          </h1>
-          <p className="mt-4 text-base sm:text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
-            {post.excerpt}
-          </p>
-          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
-            <span className="inline-flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-gradient-brand text-white flex items-center justify-center">
-                <User className="w-4 h-4" />
-              </span>
-              <span className="font-bold text-gray-700 dark:text-gray-300">{post.author}</span>
-            </span>
-            <span aria-hidden>·</span>
-            <span>Published {formatBlogDate(post.publishedAt)}</span>
-            {updated && (
-              <>
-                <span aria-hidden>·</span>
-                <span>Updated {formatBlogDate(post.updatedAt)}</span>
-              </>
-            )}
-            <span aria-hidden>·</span>
-            <span className="inline-flex items-center gap-1">
-              <Clock className="w-3.5 h-3.5" />
-              {post.readingMinutes} min read
-            </span>
-          </div>
-        </header>
-
-        {/* Hero image or premium gradient hero */}
-        <div className="mt-8 rounded-3xl overflow-hidden border border-[#E4EAF2] dark:border-white/10 shadow-lg">
+        {/* Hero: the post's real photo, full-bleed, with a dark scrim so the
+            title stays readable. Falls back to the category gradient when
+            there is no photo or it fails to load.
+            NOTE: plain <img>, no <picture> webp twin — most posts only ship
+            a .jpg, and a missing .webp made the browser fire onError and
+            hide the photo behind the gradient (2026-11-16). */}
+        <header className="relative overflow-hidden rounded-3xl border border-[#E4EAF2] dark:border-white/10 shadow-lg min-h-[440px] sm:min-h-[500px] flex items-end">
           {post.heroImage && failedImage !== post.heroImage ? (
-            <picture>
-              <source
-                srcSet={post.heroImage.replace(/\.jpe?g$/i, '.webp')}
-                type="image/webp"
-              />
-              <img
-                src={post.heroImage}
-                alt={post.title}
-                width={1920}
-                height={1280}
-                loading="lazy"
-                onError={() => setFailedImage(post.heroImage ?? null)}
-                className="w-full max-h-[420px] object-cover"
-              />
-            </picture>
+            <img
+              src={post.heroImage}
+              alt=""
+              width={1920}
+              height={1280}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              onError={() => setFailedImage(post.heroImage ?? null)}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           ) : (
-            <div className={`relative bg-gradient-to-br ${style.gradient} px-8 py-14 sm:py-20`}>
+            <div className={`absolute inset-0 bg-gradient-to-br ${style.gradient}`}>
               <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
               <div className="absolute -bottom-20 -left-16 w-80 h-80 rounded-full bg-black/25 blur-3xl" />
-              <div className="relative z-10 max-w-2xl mx-auto text-center">
-                <div className="inline-block rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 px-8 py-6">
-                  <p className="text-white/95 text-xl sm:text-2xl font-extrabold tracking-tight leading-snug">
-                    {post.title}
-                  </p>
-                </div>
-              </div>
             </div>
           )}
-        </div>
+          {/* Dark scrim: bottom-heavy + left-weighted, white text stays readable */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/15" aria-hidden />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/15 to-transparent" aria-hidden />
+          <div className="relative z-10 max-w-3xl p-6 sm:p-10">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow ${style.badge}`}>
+                {post.category}
+              </span>
+              {post.tags.slice(0, 3).map((t) => (
+                <span
+                  key={t}
+                  className="px-2.5 py-1 rounded-lg bg-white/15 backdrop-blur-md border border-white/20 text-[11px] font-bold text-white"
+                >
+                  #{t}
+                </span>
+              ))}
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight leading-[1.15] text-white drop-shadow-lg">
+              {post.title}
+            </h1>
+            <p className="mt-4 text-base sm:text-lg text-white/85 leading-relaxed drop-shadow">
+              {post.excerpt}
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-white/75">
+              <span className="inline-flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-gradient-brand text-white flex items-center justify-center">
+                  <User className="w-4 h-4" />
+                </span>
+                <span className="font-bold text-white">{post.author}</span>
+              </span>
+              <span aria-hidden>·</span>
+              <span>Published {formatBlogDate(post.publishedAt)}</span>
+              {updated && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>Updated {formatBlogDate(post.updatedAt)}</span>
+                </>
+              )}
+              <span aria-hidden>·</span>
+              <span className="inline-flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                {post.readingMinutes} min read
+              </span>
+            </div>
+          </div>
+        </header>
 
         {/* Body + TOC */}
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-10">

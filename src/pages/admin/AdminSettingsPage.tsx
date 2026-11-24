@@ -1,3 +1,4 @@
+import { TrustedIpsSettings } from './TrustedIpsSettings';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Settings, Save, Loader2, AlertCircle, CheckCircle2, Sliders, ShieldAlert, ToggleLeft } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
@@ -284,6 +285,8 @@ export const AdminSettingsPage: React.FC = () => {
         )}
       </div>
 
+      <TrustedIpsSettings value={drafts.trusted_ips ?? ''} onSaved={load} />
+
       {/* System settings */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xs p-6">
         <h3 className="text-sm font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-4">
@@ -293,7 +296,7 @@ export const AdminSettingsPage: React.FC = () => {
           <EmptyState icon={Settings} title="No system settings" description="No system settings have been defined on the backend yet." />
         ) : (
           <div className="space-y-3">
-            {settings.map((s) => (
+            {settings.filter((s) => s.key !== 'trusted_ips').map((s) => (
               <div key={s.key} className="flex flex-col sm:flex-row sm:items-center gap-2.5">
                 <div className="sm:w-64 shrink-0">
                   <p className="text-xs font-bold text-gray-900 dark:text-gray-100 font-mono">{s.key}</p>

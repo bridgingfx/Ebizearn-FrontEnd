@@ -124,6 +124,10 @@ export const TaskDetailPage: React.FC = () => {
     };
   }, [started, hasPostContent, taskKey]);
 
+  // The reviewer asked for changes — the contributor gets the proof form
+  // again, labelled as a resubmission, instead of the "Proof submitted" panel.
+  const needsResubmit = submission?.status === 'action_required';
+
   const handleStart = async () => {
     if (!task) return;
     setStarting(true);
@@ -200,11 +204,16 @@ export const TaskDetailPage: React.FC = () => {
 
     setSubmitting(true);
     try {
-      const res = await tasksApi.submit(task.uuid || task.id, {
+      // ACTION_REQUIRED submissions resubmit through their own endpoint —
+      // the reviewer asked for changes, this is not a first submission.
+      const payload = {
         proof_url: url || undefined,
         proof_screenshot: screenshot,
         note: note.trim() || undefined,
-      });
+      };
+      const res = needsResubmit
+        ? await tasksApi.resubmit(task.uuid || task.id, payload)
+        : await tasksApi.submit(task.uuid || task.id, payload);
       if (res.success) {
         const fresh: TaskSubmission = {
           id: res.data?.submission?.id || Date.now(),
@@ -342,7 +351,7 @@ export const TaskDetailPage: React.FC = () => {
         {/* RIGHT — action panel */}
         <div className="lg:sticky lg:top-6 space-y-5 min-w-0">
           <div className="bg-white dark:bg-[#0C1322] rounded-3xl border border-[#E7ECF3] dark:border-white/10 p-5 sm:p-6 shadow-xs">
-            {submission ? (
+            {submission && !needsResubmit ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 flex items-center justify-center">
@@ -369,7 +378,7 @@ export const TaskDetailPage: React.FC = () => {
                   View all my tasks <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
-            ) : !started ? (
+            ) : !started && !needsResubmit ? (
               <div className="space-y-4 text-center">
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-[#168BFF] flex items-center justify-center mx-auto">
                   <ShieldCheck className="w-6 h-6" />
@@ -448,11 +457,22 @@ export const TaskDetailPage: React.FC = () => {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <h2 className="text-base font-black text-gray-900 dark:text-gray-100">Submit your proof</h2>
+                  <h2 className="text-base font-black text-gray-900 dark:text-gray-100">
+                    {needsResubmit ? 'Resubmit proof' : 'Submit your proof'}
+                  </h2>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                    Upload a screenshot of the completed action and/or paste the proof link.
+                    {needsResubmit
+                      ? 'The reviewer asked for changes — fix what they flagged and send your proof again.'
+                      : 'Upload a screenshot of the completed action and/or paste the proof link.'}
                   </p>
                 </div>
+
+                {needsResubmit && submission?.review_notes && (
+                  <div className="p-3 bg-amber-50 dark:bg-amber-500/15 rounded-xl border border-amber-200 dark:border-amber-500/30 text-xs">
+                    <span className="text-amber-800 dark:text-amber-200 font-bold block mb-0.5">What the reviewer asked for</span>
+                    <p className="text-amber-900">{submission.review_notes}</p>
+                  </div>
+                )}
 
                 {/* Post text to copy-paste — provided by the platform (own version in auto mode). */}
                 {task.hasPostContent && (
@@ -562,7 +582,15 @@ export const TaskDetailPage: React.FC = () => {
                   className="w-full py-3.5 bg-[#16B364] hover:bg-[#12995a] text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                  <span>{submitting ? 'Submitting…' : 'Submit proof for verification'}</span>
+                  <span>
+                    {submitting
+                      ? needsResubmit
+                        ? 'Resubmitting…'
+                        : 'Submitting…'
+                      : needsResubmit
+                        ? 'Resubmit proof for verification'
+                        : 'Submit proof for verification'}
+                  </span>
                 </button>
 
                 <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-relaxed">

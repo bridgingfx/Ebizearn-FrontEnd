@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldAlert, AlertTriangle, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, Loader2, AlertCircle, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { FraudEvent } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -9,19 +9,33 @@ import { EmptyState } from '../../components/common/EmptyState';
  * Fraud alerts come only from GET /admin/fraud-alerts. No demo alerts, no
  * fabricated severity counts, no invented incident values.
  */
+/** Status filter values the API accepts (GET /admin/fraud-alerts?status=). */
+const STATUS_FILTERS: { id: string; label: string }[] = [
+  { id: 'flagged', label: 'Open' },
+  { id: 'reviewed', label: 'Reviewed' },
+  { id: 'dismissed', label: 'Dismissed' },
+  { id: 'all', label: 'All' },
+];
+
+const PER_PAGE = 20;
+
 export const AdminFraudPage: React.FC = () => {
   const [alerts, setAlerts] = useState<FraudEvent[]>([]);
+  const [meta, setMeta] = useState<{ current_page: number; last_page: number; total: number; open_count?: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [severity, setSeverity] = useState('all');
+  const [status, setStatus] = useState('flagged');
+  const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await adminApi.fraudAlerts();
+      const res = await adminApi.fraudAlerts({ page, status, per_page: PER_PAGE });
       if (res.success) {
         setAlerts(res.data || []);
+        setMeta(res.meta ?? null);
       } else {
         setError(res.message || 'Could not load fraud alerts.');
       }
@@ -30,11 +44,16 @@ export const AdminFraudPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, status]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  // Open-alert count: the API's flagged count when it sends one, else the
+  // paginator total, else the rows on screen.
+  const openCount = meta?.open_count ?? meta?.total ?? alerts.length;
+  const lastPage = meta?.last_page ?? 1;
 
   const filtered = useMemo(() => {
     if (severity === 'all') return alerts;
@@ -58,23 +77,43 @@ export const AdminFraudPage: React.FC = () => {
       <div>
         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Fraud & Risk</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Alerts raised by the platform fraud service. {alerts.length} open alert{alerts.length === 1 ? '' : 's'}.
+          Alerts raised by the platform fraud service. {openCount} open alert{openCount === 1 ? '' : 's'}.
         </p>
       </div>
 
-      <div className="flex gap-2 flex-wrap">
-        {['all', 'critical', 'high', 'medium', 'low'].map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setSeverity(s)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-colors ${
-              severity === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
-            }`}
-          >
-            {s}
-          </button>
-        ))}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => {
+                setStatus(f.id);
+                setPage(1);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+                status === f.id ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <span className="hidden sm:block text-gray-300 dark:text-gray-600">|</span>
+        <div className="flex gap-2 flex-wrap">
+          {['all', 'critical', 'high', 'medium', 'low'].map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setSeverity(s)}
+              className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-colors ${
+                severity === s ? 'bg-[#07182F] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200'
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading && (
@@ -125,6 +164,11 @@ export const AdminFraudPage: React.FC = () => {
                   >
                     {a.severity} severity
                   </span>
+                  {a.confidence && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400">
+                      {a.confidence} confidence
+                    </span>
+                  )}
                   <span className="text-[11px] text-gray-400 dark:text-gray-500">
                     {a.status ? `· ${a.status.replace(/_/g, ' ')} ` : ''}· {new Date(a.created_at).toLocaleString()}
                   </span>
@@ -148,6 +192,33 @@ export const AdminFraudPage: React.FC = () => {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {!loading && !error && filtered.length > 0 && lastPage > 1 && (
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Page {meta?.current_page ?? page} of {lastPage}
+            {meta ? ` · ${meta.total.toLocaleString()} alerts` : ''}
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              disabled={page <= 1 || loading}
+              onClick={() => setPage((p) => p - 1)}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 disabled:opacity-40"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Previous
+            </button>
+            <button
+              type="button"
+              disabled={page >= lastPage || loading}
+              onClick={() => setPage((p) => p + 1)}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 disabled:opacity-40"
+            >
+              Next <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       )}
     </div>

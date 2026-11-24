@@ -25,7 +25,7 @@ export const adminApi = {
   trafficSession: (sessionId: string) =>
     api.get(`/admin/traffic/sessions/${sessionId}`).then((r) => r.data),
   verificationQueue: (params?: { status?: string; search?: string; business_decision?: 'approved' | 'rejected' | 'none' }) =>
-    api.get('/admin/verification-queue', { params }).then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: unknown }),
+    api.get('/admin/verification-queue', { params }).then((r) => r.data as { success: boolean; message?: string; data: TaskSubmission[]; meta?: { total_value_cents?: number } }),
   submissionDetail: (submissionId: number | string) =>
     api.get(`/admin/submissions/${submissionId}`).then((r) => r.data as { success: boolean; data: TaskSubmission }),
   recordDecision: (submissionId: number | string, payload: { decision: string; reason_code: string; notes?: string }) =>
@@ -38,7 +38,16 @@ export const adminApi = {
     }),
   decideAppeal: (appealId: number | string, payload: { decision: 'uphold' | 'deny'; notes?: string }) =>
     api.post(`/admin/submission-appeals/${appealId}/decision`, payload).then((r) => r.data),
-  fraudAlerts: () => api.get('/admin/fraud-alerts').then((r) => r.data as { success: boolean; message?: string; data: FraudEvent[]; meta?: unknown }),
+  fraudAlerts: (params?: { page?: number; status?: string; per_page?: number }) =>
+    api.get('/admin/fraud-alerts', { params }).then(
+      (r) =>
+        r.data as {
+          success: boolean;
+          message?: string;
+          data: FraudEvent[];
+          meta?: { current_page: number; last_page: number; total: number; open_count?: number };
+        },
+    ),
   payouts: (params?: { status?: string }) =>
     api.get('/admin/payouts', { params }).then((r) => r.data as { success: boolean; message?: string; data: WithdrawalRequest[]; meta?: unknown }),
   processPayout: (payoutId: number | string, payload: { action: 'approve' | 'reject'; reason?: string; provider_tx_id?: string }) =>

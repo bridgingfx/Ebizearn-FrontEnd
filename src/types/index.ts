@@ -449,6 +449,8 @@ export interface FraudEvent {
   submission_id?: number;
   event_type: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
+  /** Fraud-engine confidence (high | medium | low) — only when the backend sends it. */
+  confidence?: 'high' | 'medium' | 'low';
   details_json?: Record<string, any>;
   status: string;
   created_at: string;
@@ -578,6 +580,8 @@ export interface AdminDashboardMetrics {
   today_revenue_cents?: number;
   pending_deposits?: number;
   pending_deposits_cents?: number;
+  /** Identity-docs pending + country-change pending — only when the backend sends it. */
+  pending_kyc_total?: number;
 }
 
 export interface RevenueChartPoint {

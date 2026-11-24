@@ -218,7 +218,11 @@ export const AdminTaskHistoryDetailPage: React.FC = () => {
             ) : null}
             <div className="min-w-0">
               <p className="text-[11px] font-bold uppercase tracking-widest text-blue-200/80">
-                {campaign?.business?.company_name ?? 'Task'} · Record #{assignment.id}
+                {campaign?.business?.company_name ?? 'Task'} ·{' '}
+                {submission ? `Submission #${submission.id}` : `Assignment #${assignment.id}`}
+                {submission && (
+                  <span className="normal-case font-medium text-blue-200/60"> · Assignment #{assignment.id}</span>
+                )}
               </p>
               <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight truncate">{task?.title ?? 'Deleted task'}</h1>
               <p className="text-sm text-blue-100/80 mt-0.5">

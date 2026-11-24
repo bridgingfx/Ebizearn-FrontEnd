@@ -65,8 +65,10 @@ export const CampaignMediaPanel: React.FC<{ campaignId: number | string }> = ({ 
     setUploading(true);
     setProgress(0);
     try {
-      const res = await campaignMediaApi.upload(campaignId, files, setProgress);
-      setItems(res.data);
+      await campaignMediaApi.upload(campaignId, files, setProgress);
+      // Re-read the list from the server — the upload response alone may
+      // not reflect the campaign's full media (e.g. a concurrent removal).
+      await load();
     } catch (e) {
       setError(getApiError(e, 'Upload failed.'));
     } finally {

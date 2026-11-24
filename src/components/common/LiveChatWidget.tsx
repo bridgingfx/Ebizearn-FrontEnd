@@ -170,7 +170,7 @@ Our Support Desk investigates all priority tickets with a response target of **<
 
 export const LiveChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(1);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isHumanActive, setIsHumanActive] = useState(false);

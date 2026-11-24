@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Building2, CheckSquare, Eye, Megaphone, Plus, Target, Wallet, X, Zap, FileText, Trash2, Play } from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Building2, CheckSquare, ChevronLeft, ChevronRight, Eye, Megaphone, Plus, Target, Wallet, X, Zap, FileText, Trash2, Play } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
 import type { Campaign } from '../../types';
 import { useAuth } from '../../context/AuthContext';
@@ -19,6 +19,14 @@ type Tab = 'active' | 'pending_review' | 'draft' | 'paused' | 'cancelled' | 'all
 
 const PAGE_SIZE = 100;
 
+/** Platform-wide totals from GET /staff/campaigns — sent once the backend
+ *  deploys them; until then the KPI cards fall back to the loaded rows. */
+interface CampaignTotals {
+  counts: Partial<Record<Campaign['status'], number>>;
+  total_budget_cents: number;
+  total_campaigns: number;
+}
+
 /**
  * Platform-wide campaign oversight. Lists every campaign (GET
  * /staff/campaigns) as cards with pause/resume, approval of in-review
@@ -34,6 +42,9 @@ export const AdminCampaignsOversightPage: React.FC = () => {
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [totals, setTotals] = useState<CampaignTotals | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('all');
@@ -55,7 +66,10 @@ export const AdminCampaignsOversightPage: React.FC = () => {
   }, [refreshDrafts, showCreate]);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(search.trim()), 350);
+    const t = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+      setPage(1);
+    }, 350);
     return () => clearTimeout(t);
   }, [search]);
 
@@ -63,12 +77,20 @@ export const AdminCampaignsOversightPage: React.FC = () => {
     setLoading(true);
     setLoadError(null);
     try {
-      const res = await adminApi.staffCampaigns({ search: debouncedSearch || undefined, per_page: PAGE_SIZE });
+      // Tab filtering is server-side (?status=); paging via ?page=.
+      const res = await adminApi.staffCampaigns({
+        status: tab === 'all' ? undefined : tab,
+        search: debouncedSearch || undefined,
+        per_page: PAGE_SIZE,
+        page,
+      });
       if (res.success) {
         const pager = res.data;
         const rows: Campaign[] = Array.isArray(pager) ? pager : pager?.data ?? [];
         setCampaigns(rows);
         setTotal(Array.isArray(pager) ? rows.length : pager?.total ?? rows.length);
+        setLastPage(Array.isArray(pager) ? 1 : pager?.last_page ?? 1);
+        setTotals((res as { totals?: CampaignTotals }).totals ?? null);
       } else {
         setLoadError(res.message || 'Could not load campaigns.');
       }
@@ -77,7 +99,7 @@ export const AdminCampaignsOversightPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch, tab, page]);
 
   useEffect(() => {
     void load();
@@ -123,25 +145,32 @@ export const AdminCampaignsOversightPage: React.FC = () => {
     }
   };
 
-  const count = (s: Campaign['status']) => campaigns.filter((c) => c.status === s).length;
-  const tabs: { id: Tab; label: string; count: number }[] = [
+  // Tab counts: the API totals when the backend sends them; otherwise the
+  // loaded rows — but only while the list is unfiltered (tab 'all'), since
+  // a filtered page can't say anything about the other tabs.
+  const clientCount = (s: Campaign['status']) => campaigns.filter((c) => c.status === s).length;
+  const count = (s: Campaign['status']) => totals?.counts?.[s] ?? (tab === 'all' ? clientCount(s) : undefined);
+  const tabs: { id: Tab; label: string; count: number | undefined }[] = [
     { id: 'active', label: 'Active', count: count('active') },
     { id: 'pending_review', label: 'In review', count: count('pending_review') },
     { id: 'draft', label: 'Drafts', count: count('draft') },
     { id: 'paused', label: 'Paused', count: count('paused') },
     { id: 'cancelled', label: 'Cancelled', count: count('cancelled') },
-    { id: 'all', label: 'All', count: campaigns.length },
+    { id: 'all', label: 'All', count: totals?.total_campaigns ?? (tab === 'all' ? total : undefined) },
   ];
 
-  const filtered = useMemo(() => (tab === 'all' ? campaigns : campaigns.filter((c) => c.status === tab)), [campaigns, tab]);
+  // Rows are already filtered server-side by tab.
+  const filtered = campaigns;
 
-  const totalBudget = campaigns.reduce((s, c) => s + (c.total_budget_cents ?? 0), 0);
+  // KPIs: the API totals when present, else the loaded rows (today's behaviour).
+  const activeCount = totals?.counts?.active ?? clientCount('active');
+  const totalBudget = totals?.total_budget_cents ?? campaigns.reduce((s, c) => s + (c.total_budget_cents ?? 0), 0);
   const verified = campaigns.reduce((s, c) => s + (c.completed_contributors_count ?? 0), 0);
   const avgReward = campaigns.length
     ? Math.round(campaigns.reduce((s, c) => s + (c.reward_per_task_cents ?? 0), 0) / campaigns.length)
     : 0;
   const kpis = [
-    { icon: Zap, label: 'Active Campaigns', value: String(count('active')), tone: 'text-[#168BFF]', bg: 'bg-blue-100 dark:bg-blue-500/15' },
+    { icon: Zap, label: 'Active Campaigns', value: String(activeCount), tone: 'text-[#168BFF]', bg: 'bg-blue-100 dark:bg-blue-500/15' },
     { icon: Wallet, label: 'Total Budget', value: fmtMoney(totalBudget), tone: 'text-violet-600 dark:text-violet-300', bg: 'bg-violet-100 dark:bg-violet-500/15' },
     { icon: CheckSquare, label: 'Verified Tasks', value: verified.toLocaleString(), tone: 'text-emerald-600 dark:text-emerald-300', bg: 'bg-emerald-100 dark:bg-emerald-500/15' },
     { icon: Target, label: 'Avg. Reward / Task', value: fmtMoney(avgReward), tone: 'text-amber-600 dark:text-amber-300', bg: 'bg-amber-100 dark:bg-amber-500/15' },
@@ -239,14 +268,17 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                   <button
                     key={t.id}
                     type="button"
-                    onClick={() => setTab(t.id)}
+                    onClick={() => {
+                      setTab(t.id);
+                      setPage(1);
+                    }}
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
                       tab === t.id
                         ? 'bg-[#07182F] dark:bg-[#168BFF] text-white'
                         : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15'
                     }`}
                   >
-                    {t.label} <span className="opacity-70">({t.count})</span>
+                    {t.label} <span className="opacity-70">({t.count ?? '·'})</span>
                   </button>
                 ))}
               </div>
@@ -256,9 +288,10 @@ export const AdminCampaignsOversightPage: React.FC = () => {
             </div>
           </div>
 
-          {total > campaigns.length && (
+          {total > 0 && (
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Showing the latest {campaigns.length} of {total} campaigns — search to narrow down.
+              Showing {campaigns.length} of {total.toLocaleString()} campaigns
+              {lastPage > 1 ? ` — page ${page} of ${lastPage}` : ''}.
             </p>
           )}
 
@@ -296,6 +329,30 @@ export const AdminCampaignsOversightPage: React.FC = () => {
                   }
                 />
               ))}
+            </div>
+          )}
+
+          {lastPage > 1 && (
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400">Page {page} of {lastPage}</p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={page <= 1 || loading}
+                  onClick={() => setPage((p) => p - 1)}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 disabled:opacity-40"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" /> Previous
+                </button>
+                <button
+                  type="button"
+                  disabled={page >= lastPage || loading}
+                  onClick={() => setPage((p) => p + 1)}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 disabled:opacity-40"
+                >
+                  Next <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           )}
         </>

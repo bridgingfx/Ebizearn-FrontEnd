@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Info, Loader2, X } from 'lucide-react';
 import { getApiError } from '../../api';
+import { useAuth } from '../../context/AuthContext';
+import { CampaignMediaPanel } from '../admin/CampaignMediaPanel';
 import type { Campaign, CampaignEditInput, ContributorLevel } from '../../types';
 
 const CONTRIBUTOR_LEVELS: ContributorLevel[] = ['starter', 'explorer', 'trusted', 'pro', 'elite'];
@@ -20,6 +22,11 @@ export const EditCampaignModal: React.FC<{
   onClose: () => void;
   onSaved: (c: Campaign) => void;
 }> = ({ campaign, save, onClose, onSaved }) => {
+  const { user } = useAuth();
+  // The media panel talks to the staff media endpoint — the business portal
+  // reuses this modal, and business users have no media endpoint, so the
+  // section is staff-only rather than showing them an error.
+  const isStaff = user?.role === 'superadmin' || user?.role === 'admin' || user?.role === 'moderator';
   const [title, setTitle] = useState(campaign.title);
   const [objective, setObjective] = useState(campaign.objective ?? '');
   const [description, setDescription] = useState(campaign.description ?? '');
@@ -111,6 +118,8 @@ export const EditCampaignModal: React.FC<{
               <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} rows={4} className={`${inputCls} resize-none`} />
             </div>
           </div>
+
+          {isStaff && <CampaignMediaPanel campaignId={campaign.id} />}
 
           <div className="flex items-start gap-2.5 bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/25 rounded-xl px-4 py-3 text-xs text-blue-900 dark:text-blue-200">
             <Info className="w-4 h-4 mt-0.5 shrink-0 text-[#168BFF]" />

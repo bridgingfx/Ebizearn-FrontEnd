@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ShieldCheck, Search, Loader2, X, CheckCircle2, XCircle, AlertCircle, RefreshCw, FileText, Eye } from 'lucide-react';
-import { staffKycApi, getApiError } from '../../api';
+import { staffKycApi, staffCountryChangeApi, getApiError } from '../../api';
 import type { KycDocumentSide, KycDocumentType, KycStatus, KycSubmission } from '../../types';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PageHeader } from '../../components/common/ui';
@@ -87,6 +87,26 @@ export const AdminKycPage: React.FC = () => {
     void load();
   }, [load]);
 
+  // The country-change pending count used to load only when its tab opened —
+  // fetch it on mount so the header shows one combined pending total.
+  useEffect(() => {
+    let alive = true;
+    staffCountryChangeApi
+      .list({ status: 'pending' })
+      .then((res) => {
+        if (alive) setCountryPending(res.meta?.pending_count ?? 0);
+      })
+      .catch(() => {
+        /* the tab's own queue reports its own errors when opened */
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Combined pending: identity documents + country changes.
+  const pendingTotal = (pendingCount ?? 0) + countryPending;
+
   // Fetch the selected user's documents; revoke object URLs on change/close.
   useEffect(() => {
     if (!selected) return;
@@ -152,13 +172,23 @@ export const AdminKycPage: React.FC = () => {
         title="KYC Review"
         subtitle="Identity documents submitted by contributors. Approving unlocks their withdrawals."
         actions={
-          <button
-            type="button"
-            onClick={() => void load()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            {pendingCount !== null && (
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 text-xs font-bold text-amber-700 dark:text-amber-300"
+                title={`${pendingCount} identity document${pendingCount === 1 ? '' : 's'} + ${countryPending} country change${countryPending === 1 ? '' : 's'} awaiting review`}
+              >
+                {pendingTotal} pending
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => void load()}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
+            </button>
+          </div>
         }
       />
 

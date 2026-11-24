@@ -30,6 +30,7 @@ const mapSubmissionForReview = (submission: TaskSubmission) => {
     ...submission,
     contributorAvatar: submission.user?.profile?.avatar_url,
     contributorName: submission.user?.name || 'Contributor',
+    contributorEmail: submission.user?.email || '',
     contributorLevel: submission.user?.profile?.contributor_level || 'starter',
     location: [submission.user?.profile?.city, submission.user?.profile?.country_code].filter(Boolean).join(', ') || 'Global',
     reward: `${task?.reward_cents ? (task.reward_cents / 100).toFixed(2) : '0.00'} ${submission.user?.wallet?.currency || 'USD'}`,
@@ -79,9 +80,13 @@ export const AdminVerificationCenterPage: React.FC = () => {
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<number | null>(null);
   const [decisionNotes, setDecisionNotes] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [decisionExecuted, setDecisionExecuted] = useState<string | null>(null);
+  // The last recorded decision, tied to its own submission — the banner can
+  // only ever describe that submission, never the one shown afterwards.
+  const [decisionExecuted, setDecisionExecuted] = useState<{ decision: string; submissionId: number } | null>(null);
   const [decisionError, setDecisionError] = useState<string | null>(null);
   const [showSopGuide, setShowSopGuide] = useState(false);
+  // Total value of the loaded queue, from the API when it sends it.
+  const [queueValueMeta, setQueueValueMeta] = useState<number | null>(null);
 
   const [bizFilter, setBizFilter] = useState<BusinessFilter>('all');
   const [rejectCode, setRejectCode] = useState(REJECT_REASONS[0].code);
@@ -97,6 +102,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
       if (res.success) {
         const mapped = res.data.map(mapSubmissionForReview);
         setRealQueue(mapped);
+        setQueueValueMeta(res.meta?.total_value_cents ?? null);
         setSelectedSubmissionId((current) => current ?? mapped[0]?.id ?? null);
       } else {
         setLoadError(res.message || 'Could not load verification queue.');
@@ -113,6 +119,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
     void (async () => {
       if (!alive) return;
       setSelectedSubmissionId(null);
+      setDecisionExecuted(null);
       await reloadQueue(bizFilter);
     })();
     return () => {
@@ -124,6 +131,10 @@ export const AdminVerificationCenterPage: React.FC = () => {
   // Queue comes from the real API only — no demo fallback.
   const queue = realQueue;
   const currentSubmission = queue.find((q) => q.id === selectedSubmissionId) || queue[0];
+  // Queue value: the API total when provided, else the sum of the loaded
+  // rows' rewards (same figure the old backend implies).
+  const queueValueCents =
+    queueValueMeta ?? queue.reduce((s, q) => s + (q.task?.reward_cents ?? 0), 0);
 
   const presetReasons = [
     'Verified: Post content, hashtags, and timestamp fully compliant.',
@@ -142,6 +153,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
 
     setIsProcessing(true);
     setDecisionError(null);
+    setDecisionExecuted(null);
     try {
       const res = await adminApi.recordDecision(currentSubmission.id, {
         decision: action,
@@ -151,7 +163,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
       });
       if (res.success) {
         setRealQueue((items) => items.filter((item) => item.id !== currentSubmission.id));
-        setDecisionExecuted(action);
+        setDecisionExecuted({ decision: action, submissionId: currentSubmission.id });
         setDecisionNotes('');
         // Pick next pending submission
         const remaining = queue.filter((s) => s.id !== currentSubmission.id);
@@ -209,6 +221,14 @@ export const AdminVerificationCenterPage: React.FC = () => {
           </div>
           <div className="text-2xl font-black text-purple-700">{queue.length}</div>
           <div className="text-[10px] text-gray-400 dark:text-gray-500">Submissions awaiting a human decision</div>
+        </div>
+        <div className="bg-white dark:bg-[#0C1322] rounded-2xl p-5 border border-[#E4EAF2] dark:border-white/10 shadow-sm space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Queue value</span>
+            <Clock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="text-2xl font-black text-emerald-700">${(queueValueCents / 100).toFixed(2)}</div>
+          <div className="text-[10px] text-gray-400 dark:text-gray-500">Rewards held in the loaded queue</div>
         </div>
       </div>
 
@@ -327,7 +347,10 @@ export const AdminVerificationCenterPage: React.FC = () => {
                     <button
                       key={sub.id}
                       type="button"
-                      onClick={() => setSelectedSubmissionId(sub.id)}
+                      onClick={() => {
+                        setSelectedSubmissionId(sub.id);
+                        setDecisionExecuted(null);
+                      }}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                         isSelected
                           ? 'bg-[#168BFF] text-white shadow-sm ring-2 ring-[#168BFF]/30'
@@ -335,7 +358,14 @@ export const AdminVerificationCenterPage: React.FC = () => {
                       }`}
                     >
                       <UserAvatar src={sub.contributorAvatar} name={sub.contributorName} size="xs" />
-                      <span className="truncate max-w-[120px]">{sub.contributorName}</span>
+                      <span className="flex flex-col items-start leading-tight min-w-0">
+                        <span className="truncate max-w-[120px]">{sub.contributorName}</span>
+                        {sub.contributorEmail && (
+                          <span className={`truncate max-w-[140px] text-[9px] font-medium ${isSelected ? 'text-white/80' : 'text-gray-400 dark:text-gray-500'}`}>
+                            {sub.contributorEmail}
+                          </span>
+                        )}
+                      </span>
                       {sub.business_decision && (
                         <span
                           title={`Business ${sub.business_decision}`}
@@ -363,6 +393,9 @@ export const AdminVerificationCenterPage: React.FC = () => {
                 <UserAvatar src={currentSubmission.contributorAvatar} name={currentSubmission.contributorName} className="ring-2 ring-[#168BFF]/20" />
                 <div>
                   <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100">{currentSubmission.contributorName}</h4>
+                  {currentSubmission.contributorEmail && (
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate max-w-[220px]">{currentSubmission.contributorEmail}</p>
+                  )}
                   <div className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                     <span className="text-[#16B364] dark:text-emerald-300 font-semibold">{currentSubmission.contributorLevel}</span>
                     <span>•</span>
@@ -560,7 +593,7 @@ export const AdminVerificationCenterPage: React.FC = () => {
             {decisionExecuted && (
               <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Decision recorded: {decisionExecuted.toUpperCase()}. The server applied the outcome.</span>
+                <span>Decision recorded: {decisionExecuted.decision.toUpperCase()} for submission #{decisionExecuted.submissionId}. The server applied the outcome.</span>
               </div>
             )}
 

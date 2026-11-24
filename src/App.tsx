@@ -1,4 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
+import { Clock, Loader2, LogOut } from 'lucide-react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PhoneRequiredModal } from './components/auth/PhoneRequiredModal';
@@ -127,10 +128,56 @@ const PageViewTracker: React.FC = () => {
   return null;
 };
 
-/** Enforces the Super Admin-configured inactivity auto-logout. */
+/** Enforces the Super Admin-configured inactivity auto-logout, with a
+ *  persistent in-app countdown banner 5 minutes before logout. "Stay
+ *  signed in" refreshes the token in place, so open forms keep their state. */
 const SessionTimeoutEnforcer: React.FC = () => {
-  useSessionTimeout();
-  return null;
+  const { warning, stay, signOutNow } = useSessionTimeout();
+  if (!warning) return null;
+  const mins = Math.floor(warning.secondsLeft / 60);
+  const secs = warning.secondsLeft % 60;
+  return (
+    <div
+      role="alert"
+      className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-4 sm:bottom-6 sm:max-w-md z-[70] rounded-2xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-[#1c1503] shadow-2xl p-4"
+    >
+      <div className="flex items-start gap-3">
+        <span className="p-2 rounded-xl bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 shrink-0">
+          <Clock className="w-5 h-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-extrabold text-amber-900 dark:text-amber-100">
+            Still there? You&apos;ll be signed out in {mins}:{String(secs).padStart(2, '0')}
+          </p>
+          <p className="text-xs text-amber-800 dark:text-amber-200/80 mt-0.5 leading-relaxed">
+            You&apos;ve been inactive for a while. Stay signed in to keep working — nothing you&apos;re
+            doing will be lost.
+          </p>
+          {warning.error && (
+            <p className="text-xs font-bold text-red-700 dark:text-red-300 mt-1.5">{warning.error}</p>
+          )}
+          <div className="flex flex-wrap gap-2 mt-3">
+            <button
+              type="button"
+              onClick={stay}
+              disabled={warning.staying}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#07182F] hover:bg-[#168BFF] text-white text-xs font-bold transition-colors disabled:opacity-60"
+            >
+              {warning.staying && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {warning.staying ? 'Staying signed in…' : 'Stay signed in'}
+            </button>
+            <button
+              type="button"
+              onClick={signOutNow}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-amber-300 dark:border-amber-500/40 text-amber-900 dark:text-amber-100 text-xs font-bold hover:bg-amber-100 dark:hover:bg-amber-500/10 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" /> Sign out now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 /** Re-apply the current Google translation on SPA route changes — Google

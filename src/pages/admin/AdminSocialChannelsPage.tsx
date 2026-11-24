@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, ExternalLink, Loader2, RefreshCw, Search, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, ChevronRight, ExternalLink, Loader2, RefreshCw, Search, XCircle } from 'lucide-react';
 import { staffSocialChannelsApi, getApiError } from '../../api';
 import type { SocialChannel, SocialChannelStatus, SocialPlatform } from '../../api';
 import { PageHeader } from '../../components/common/ui';
@@ -28,6 +28,9 @@ const STATUS_STYLES: Record<SocialChannelStatus, string> = {
 export const AdminSocialChannelsPage: React.FC = () => {
   const [rows, setRows] = useState<SocialChannel[]>([]);
   const [pendingCount, setPendingCount] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>('pending');
@@ -39,7 +42,10 @@ export const AdminSocialChannelsPage: React.FC = () => {
   const [busy, setBusy] = useState<number | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setDebounced(search.trim()), 300);
+    const t = setTimeout(() => {
+      setDebounced(search.trim());
+      setPage(1);
+    }, 300);
     return () => clearTimeout(t);
   }, [search]);
 
@@ -47,15 +53,17 @@ export const AdminSocialChannelsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await staffSocialChannelsApi.list({ status: filter, search: debounced || undefined });
+      const res = await staffSocialChannelsApi.list({ status: filter, search: debounced || undefined, page });
       setRows(res.data);
       setPendingCount(res.meta.pending);
+      setLastPage(res.meta.last_page ?? 1);
+      setTotal(res.meta.total ?? res.data.length);
     } catch (err) {
       setError(getApiError(err, 'Could not load social channels.'));
     } finally {
       setLoading(false);
     }
-  }, [filter, debounced]);
+  }, [filter, debounced, page]);
 
   useEffect(() => {
     load();
@@ -107,7 +115,10 @@ export const AdminSocialChannelsPage: React.FC = () => {
               <button
                 key={f}
                 type="button"
-                onClick={() => setFilter(f)}
+                onClick={() => {
+                  setFilter(f);
+                  setPage(1);
+                }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-colors ${
                   filter === f ? 'bg-[#07182F] dark:bg-[#168BFF] text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/15'
                 }`}
@@ -247,6 +258,32 @@ export const AdminSocialChannelsPage: React.FC = () => {
           </ul>
         )}
       </div>
+
+      {lastPage > 1 && (
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Page {page} of {lastPage} · {total.toLocaleString()} channels
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              disabled={page <= 1 || loading}
+              onClick={() => setPage((p) => p - 1)}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 disabled:opacity-40"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Previous
+            </button>
+            <button
+              type="button"
+              disabled={page >= lastPage || loading}
+              onClick={() => setPage((p) => p + 1)}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0C1322] text-xs font-bold text-gray-700 dark:text-gray-300 disabled:opacity-40"
+            >
+              Next <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

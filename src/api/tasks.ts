@@ -14,6 +14,11 @@ export const tasksApi = {
     }),
   submit: (id: number | string, payload: { proof_url?: string; proof_screenshot?: string | null; text_answer?: string; note?: string }) =>
     api.post(`/tasks/${id}/submit`, payload).then((r) => r.data),
+  /** Resubmit proof for an ACTION_REQUIRED submission. Returns the updated
+   *  submission (same shape as submit). 404s until the backend deploys it —
+   *  callers must surface that error honestly, never fake success. */
+  resubmit: (id: number | string, payload: { proof_url?: string; proof_screenshot?: string | null; text_answer?: string; note?: string }) =>
+    api.post(`/tasks/${id}/resubmit`, payload).then((r) => r.data),
   contributorDashboard: () => api.get('/contributor/dashboard').then((r) => r.data),
   myTasks: (params?: { status?: string }) =>
     api.get('/contributor/my-tasks', { params }).then((r) => r.data as { success: boolean; data: TaskSubmission[]; meta?: unknown }),

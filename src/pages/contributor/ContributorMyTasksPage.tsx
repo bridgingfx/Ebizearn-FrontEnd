@@ -249,12 +249,22 @@ export const ContributorMyTasksPage: React.FC = () => {
                     <Eye className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> View proof
                   </button>
                   {task && (
-                    <Link
-                      to={`/app/tasks/${task.uuid || task.id}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-[#168BFF] hover:underline"
-                    >
-                      Open task <ChevronRight className="w-3.5 h-3.5" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      {s.status === 'action_required' && (
+                        <Link
+                          to={`/app/tasks/${task.uuid || task.id}`}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors"
+                        >
+                          Resubmit proof <ChevronRight className="w-3.5 h-3.5" />
+                        </Link>
+                      )}
+                      <Link
+                        to={`/app/tasks/${task.uuid || task.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-[#168BFF] hover:underline"
+                      >
+                        Open task <ChevronRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>

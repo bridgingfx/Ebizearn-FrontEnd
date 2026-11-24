@@ -16,14 +16,16 @@ import {
   CheckCircle2,
   RotateCcw,
 } from 'lucide-react';
-import { taskHistoryApi, getApiError } from '../../api';
+import { taskHistoryApi, adminApi, getApiError } from '../../api';
 import type { TaskHistoryFilter, TaskHistoryRow } from '../../api';
+import type { User } from '../../types';
 import { PageHeader, SearchInput, LoadingBlock, ErrorBlock, fmtMoney } from '../../components/common/ui';
 import { RewardStatusBadge } from '../../components/task/RewardStatusBadge';
 import { UserAvatar } from '../../components/common/UserAvatar';
 import { PlatformBrandIcon } from '../../components/common/PlatformBrandIcon';
 
-const TABS: { value: TaskHistoryFilter; label: string }[] = [
+/** Submission-status tabs: where the proof itself stands. */
+const SUBMISSION_TABS: { value: TaskHistoryFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'in_progress', label: 'In progress' },
   { value: 'in_review', label: 'In review' },
@@ -31,11 +33,16 @@ const TABS: { value: TaskHistoryFilter; label: string }[] = [
   { value: 'approved', label: 'Approved' },
   { value: 'rejected', label: 'Rejected' },
   { value: 'expired', label: 'Expired' },
+  { value: 'appeals', label: 'Open appeals' },
+];
+
+/** Reward-status tabs: where the money stands. These OVERLAP the submission
+ *  statuses by design — the same record can appear under both groups. */
+const REWARD_TABS: { value: TaskHistoryFilter; label: string }[] = [
   { value: 'pending_duration', label: 'Pending duration' },
   { value: 'reverification_required', label: 'Reverification' },
   { value: 'released', label: 'Completed' },
   { value: 'refunded', label: 'Refunded' },
-  { value: 'appeals', label: 'Open appeals' },
 ];
 
 const PLATFORMS = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'X', 'WhatsApp', 'LinkedIn', 'Google Reviews', 'Trustpilot'];
@@ -97,6 +104,15 @@ export const AdminTaskHistoryPage: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Contributor filter: a searchable pick over real contributor accounts
+  // (GET /admin/users?role=contributor&search=) — sends user_id.
+  const [contributor, setContributor] = useState<{ id: number; name: string; email: string } | null>(null);
+  const [contributorQuery, setContributorQuery] = useState('');
+  const [contributorOptions, setContributorOptions] = useState<User[]>([]);
+  const [contributorOpen, setContributorOpen] = useState(false);
+  // Business filter: businesses that posted campaigns (staff endpoint).
+  const [businesses, setBusinesses] = useState<{ id: number; company_name: string }[]>([]);
+  const [businessId, setBusinessId] = useState<number | ''>('');
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -106,11 +122,52 @@ export const AdminTaskHistoryPage: React.FC = () => {
     return () => window.clearTimeout(t);
   }, [search]);
 
+  // Business options for the filter dropdown.
+  useEffect(() => {
+    adminApi
+      .staffBusinessOptions()
+      .then((res) => {
+        if (res.success) setBusinesses((res.data ?? []).map((b) => ({ id: b.id, company_name: b.company_name })));
+      })
+      .catch(() => {
+        /* filter simply stays empty */
+      });
+  }, []);
+
+  // Contributor search (debounced) for the picker dropdown.
+  useEffect(() => {
+    const q = contributorQuery.trim();
+    if (q.length < 2) {
+      setContributorOptions([]);
+      setContributorOpen(false);
+      return;
+    }
+    const t = window.setTimeout(() => {
+      adminApi
+        .users({ role: 'contributor', search: q })
+        .then((res) => {
+          setContributorOptions((res.data ?? []).slice(0, 8));
+          setContributorOpen(true);
+        })
+        .catch(() => setContributorOptions([]));
+    }, 300);
+    return () => window.clearTimeout(t);
+  }, [contributorQuery]);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await taskHistoryApi.list({ status: tab, search: query || undefined, platform: platform || undefined, from: from || undefined, to: to || undefined, page });
+      const res = await taskHistoryApi.list({
+        status: tab,
+        search: query || undefined,
+        platform: platform || undefined,
+        from: from || undefined,
+        to: to || undefined,
+        page,
+        user_id: contributor?.id,
+        business_id: businessId === '' ? undefined : businessId,
+      });
       setRows(res.data);
       setCounts(res.meta.counts);
       setTotals(res.meta.totals ?? null);
@@ -121,19 +178,22 @@ export const AdminTaskHistoryPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [tab, query, platform, from, to, page]);
+  }, [tab, query, platform, from, to, page, contributor?.id, businessId]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const hasFilters = !!(query || platform || from || to);
+  const hasFilters = !!(query || platform || from || to || contributor || businessId !== '');
   const clearFilters = () => {
     setSearch('');
     setQuery('');
     setPlatform('');
     setFrom('');
     setTo('');
+    setContributor(null);
+    setContributorQuery('');
+    setBusinessId('');
     setPage(1);
   };
 
@@ -180,36 +240,122 @@ export const AdminTaskHistoryPage: React.FC = () => {
         </div>
       )}
 
-      {/* Status tabs with live counts */}
-      <div className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
-        {TABS.map((t) => {
-          const active = tab === t.value;
-          return (
-            <button
-              key={t.value}
-              type="button"
-              onClick={() => {
-                setTab(t.value);
-                setPage(1);
-              }}
-              className={`shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-                active
-                  ? 'bg-[#07182F] dark:bg-[#168BFF] text-white shadow-sm'
-                  : 'bg-white dark:bg-[#0C1322] text-gray-600 dark:text-gray-300 border border-[#E7ECF3] dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
-              }`}
-            >
-              {t.label}
-              <span className={`min-w-[20px] px-1.5 py-0.5 rounded-md text-[10px] tabular-nums ${active ? 'bg-white/20' : 'bg-gray-100 dark:bg-white/10'}`}>
-                {counts[t.value] ?? '·'}
-              </span>
-            </button>
-          );
-        })}
+      {/* Status tabs with live counts — grouped by dimension. Reward chips
+          overlap submission statuses by design: the same record can appear
+          under both (e.g. approved proof + pending reward). */}
+      <div className="space-y-2">
+        {[
+          { label: 'Submission status', tabs: SUBMISSION_TABS },
+          { label: 'Reward status (overlaps)', tabs: REWARD_TABS },
+        ].map((group) => (
+          <div key={group.label} className="flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500 w-32 shrink-0 hidden md:block">
+              {group.label}
+            </span>
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
+              {group.tabs.map((t) => {
+                const active = tab === t.value;
+                return (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => {
+                      setTab(t.value);
+                      setPage(1);
+                    }}
+                    className={`shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                      active
+                        ? 'bg-[#07182F] dark:bg-[#168BFF] text-white shadow-sm'
+                        : 'bg-white dark:bg-[#0C1322] text-gray-600 dark:text-gray-300 border border-[#E7ECF3] dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20'
+                    }`}
+                  >
+                    {t.label}
+                    <span className={`min-w-[20px] px-1.5 py-0.5 rounded-md text-[10px] tabular-nums ${active ? 'bg-white/20' : 'bg-gray-100 dark:bg-white/10'}`}>
+                      {counts[t.value] ?? '·'}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+        <p className="text-[11px] text-gray-400 dark:text-gray-500 md:pl-32">
+          Reward chips overlap submission statuses — a record with an approved proof can still show under
+          &ldquo;Pending duration&rdquo; until its reward is released.
+        </p>
       </div>
 
       {/* Filters */}
       <div className="bg-white dark:bg-[#0C1322] rounded-2xl border border-[#E7ECF3] dark:border-white/10 p-3 flex flex-wrap items-center gap-2">
         <SearchInput value={search} onChange={setSearch} placeholder="Search contributor or task…" />
+        {/* Contributor picker: type 2+ characters, pick a real account. */}
+        <div className="relative">
+          {contributor ? (
+            <span className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl bg-[#168BFF]/10 border border-[#168BFF]/30 text-xs font-bold text-[#168BFF] dark:text-blue-300">
+              {contributor.name}
+              <button
+                type="button"
+                aria-label="Clear contributor filter"
+                onClick={() => {
+                  setContributor(null);
+                  setPage(1);
+                }}
+                className="p-0.5 rounded-full hover:bg-[#168BFF]/20"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </span>
+          ) : (
+            <>
+              <input
+                type="text"
+                value={contributorQuery}
+                onChange={(e) => setContributorQuery(e.target.value)}
+                onFocus={() => contributorOptions.length > 0 && setContributorOpen(true)}
+                onBlur={() => window.setTimeout(() => setContributorOpen(false), 150)}
+                placeholder="Filter by contributor…"
+                className={inputCls}
+                aria-label="Filter by contributor"
+              />
+              {contributorOpen && contributorOptions.length > 0 && (
+                <ul className="absolute z-20 top-full left-0 mt-1 w-72 max-h-64 overflow-y-auto bg-white dark:bg-[#141821] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl py-1">
+                  {contributorOptions.map((u) => (
+                    <li key={u.id}>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          setContributor({ id: u.id, name: u.name, email: u.email });
+                          setContributorQuery('');
+                          setContributorOpen(false);
+                          setPage(1);
+                        }}
+                        className="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-white/5"
+                      >
+                        <span className="block text-xs font-bold text-gray-900 dark:text-gray-100 truncate">{u.name}</span>
+                        <span className="block text-[11px] text-gray-500 dark:text-gray-400 truncate">{u.email}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          )}
+        </div>
+        <select
+          value={businessId}
+          onChange={(e) => {
+            setBusinessId(e.target.value === '' ? '' : Number(e.target.value));
+            setPage(1);
+          }}
+          className={inputCls}
+          aria-label="Business"
+        >
+          <option value="">All businesses</option>
+          {businesses.map((b) => (
+            <option key={b.id} value={b.id}>{b.company_name}</option>
+          ))}
+        </select>
         <select value={platform} onChange={(e) => { setPlatform(e.target.value); setPage(1); }} className={inputCls} aria-label="Platform">
           <option value="">All platforms</option>
           {PLATFORMS.map((p) => (
@@ -247,6 +393,7 @@ export const AdminTaskHistoryPage: React.FC = () => {
               <thead>
                 <tr className="bg-gray-50/80 dark:bg-white/[0.03] text-[10px] font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">
                   <th className="px-5 py-3">Contributor</th>
+                  <th className="px-4 py-3">ID</th>
                   <th className="px-4 py-3">Task</th>
                   <th className="px-4 py-3">Proof</th>
                   <th className="px-4 py-3">Status</th>
@@ -268,6 +415,12 @@ export const AdminTaskHistoryPage: React.FC = () => {
                           </p>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-4 py-3.5 whitespace-nowrap">
+                      <p className="text-xs font-bold text-gray-900 dark:text-gray-100 font-mono">
+                        {r.submission_id ? `Submission #${r.submission_id}` : '—'}
+                      </p>
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">Assignment #{r.id}</p>
                     </td>
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2.5 min-w-0">
@@ -327,6 +480,9 @@ export const AdminTaskHistoryPage: React.FC = () => {
                   <p className="text-sm font-bold text-gray-800 dark:text-gray-200 truncate">{r.task?.title}</p>
                   <span className="ml-auto text-xs font-black text-[#16B364] shrink-0">{fmtMoney(r.task?.reward_cents)}</span>
                 </div>
+                <p className="mt-1.5 text-[11px] text-gray-400 dark:text-gray-500 font-mono">
+                  {r.submission_id ? `Submission #${r.submission_id} · ` : ''}Assignment #{r.id}
+                </p>
                 <div className="mt-3 flex items-center justify-between gap-3">
                   <ProofSummary row={r} />
                   <span className="text-[10px] text-gray-400 flex items-center gap-1 shrink-0">

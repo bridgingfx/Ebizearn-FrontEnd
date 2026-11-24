@@ -37,7 +37,7 @@ export interface TaskHistoryRow {
   submitted_at: string | null;
   reviewed_at: string | null;
   user: { id: number; name: string; email: string; country_code: string | null; avatar_url: string | null } | null;
-  task: { id: number; uuid: string; title: string; platform: string | null; reward_cents: number; business: string | null } | null;
+  task: { id: number; uuid: string; title: string; platform: string | null; reward_cents: number; business: string | null; business_id?: number } | null;
   submission_id: number | null;
   reward_status: RewardStatus | null;
   final_check_due_at: string | null;
@@ -173,7 +173,7 @@ export interface TaskHistoryDetail {
 }
 
 export const taskHistoryApi = {
-  list: (params: { status?: TaskHistoryFilter; search?: string; platform?: string; from?: string; to?: string; page?: number }) =>
+  list: (params: { status?: TaskHistoryFilter; search?: string; platform?: string; from?: string; to?: string; page?: number; user_id?: number; business_id?: number }) =>
     api
       .get<TaskHistoryList>('/staff/task-history', { params: { ...params, status: params.status === 'all' ? undefined : params.status } })
       .then((r) => r.data),

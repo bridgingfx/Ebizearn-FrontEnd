@@ -13,6 +13,7 @@ import {
   DollarSign,
   TrendingUp,
   UserPlus,
+  UserCheck,
   Wallet,
 } from 'lucide-react';
 import { adminApi, getApiError } from '../../api';
@@ -110,6 +111,21 @@ export const AdminOverviewPage: React.FC = () => {
       shadow: 'shadow-red-500/25',
       icon: ShieldCheck,
     },
+    // Shown only once the backend sends the combined KYC total (identity
+    // documents pending + country changes pending) — hidden on older APIs.
+    ...(metrics?.pending_kyc_total != null
+      ? [
+          {
+            to: '/admin/kyc',
+            label: 'KYC review',
+            count: metrics.pending_kyc_total,
+            desc: 'Identity documents & country changes',
+            gradient: 'from-teal-500 to-cyan-600',
+            shadow: 'shadow-teal-500/25',
+            icon: UserCheck,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -167,8 +183,8 @@ export const AdminOverviewPage: React.FC = () => {
 
       {/* Queue quick actions */}
       <div>
-        <SectionHeader title="Needs your attention" subtitle="The three operational queues, live." />
-        <div className="grid sm:grid-cols-3 gap-4">
+        <SectionHeader title="Needs your attention" subtitle="The operational queues, live." />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {queueActions.map((a) => {
             const Icon = a.icon;
             return (

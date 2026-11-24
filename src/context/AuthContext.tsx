@@ -25,6 +25,13 @@ interface AuthContextType {
    * Returns the user's role for post-auth routing.
    */
   completeSession: (user: User, token: string) => UserRole;
+  /**
+   * Extend the session without a password: POST /auth/refresh, persist the
+   * fresh token. Falls back to re-validating via /auth/me when refresh
+   * fails (e.g. the backend hasn't deployed it yet). Returns true when the
+   * session is still valid afterwards.
+   */
+  refreshSession: () => Promise<boolean>;
   logout: () => void;
   updateUser: (user: User) => void;
   refreshMe: () => Promise<void>;
@@ -154,6 +161,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem(ACTIVE_ROLE_KEY, user.role);
     setIsLoading(false);
     return user.role;
+  };
+
+  const refreshSession = async (): Promise<boolean> => {
+    try {
+      const res = await authApi.refresh();
+      if (res.success && res.data?.token) {
+        if (res.data.user) updateAndPersistUser(res.data.user);
+        setToken(res.data.token);
+        localStorage.setItem(TOKEN_KEY, res.data.token);
+        return true;
+      }
+    } catch {
+      // Refresh endpoint missing or failed — fall through to re-validation.
+    }
+    try {
+      const res = await authApi.me();
+      if (res.success && res.data?.user) {
+        updateAndPersistUser(res.data.user);
+        return true;
+      }
+    } catch {
+      // Session is dead; SESSION_EXPIRED_EVENT (on 401) handles the rest.
+    }
+    return false;
   };
 
   const logout = () => {
@@ -295,6 +326,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         socialLogin,
         register,
         completeSession,
+        refreshSession,
         logout,
         // Profile/KYC responses don't carry `permissions`; keep the current set.
         updateUser: (next: User) =>

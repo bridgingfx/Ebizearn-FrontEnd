@@ -129,6 +129,8 @@ export const CreateCampaignModal: React.FC<{
   const [mediaFiles, setMediaFiles] = useState<File[]>([]);
   const [uploadPct, setUploadPct] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // Shown when a submit fails and the form was kept as a local draft.
+  const [draftNotice, setDraftNotice] = useState(false);
   const [seeding, setSeeding] = useState(false);
 
   // Draft bookkeeping.
@@ -240,6 +242,7 @@ export const CreateCampaignModal: React.FC<{
     if (!canSubmit) return;
     setSubmitting(true);
     setSubmitError(null);
+    setDraftNotice(false);
     try {
       const res = await adminApi.createStaffCampaign({
         business_id: Number(businessId),
@@ -276,9 +279,14 @@ export const CreateCampaignModal: React.FC<{
         onClose();
       } else {
         setSubmitError(res.message || 'Could not create the campaign.');
+        // Keep the form as a draft so nothing typed is lost.
+        saveDraftNow();
+        setDraftNotice(true);
       }
     } catch (e) {
       setSubmitError(getApiError(e, 'Could not create the campaign.'));
+      saveDraftNow();
+      setDraftNotice(true);
     } finally {
       setSubmitting(false);
     }
@@ -330,8 +338,11 @@ export const CreateCampaignModal: React.FC<{
     setRestoredNotice(false);
   };
 
-  // Close: if there's unsaved work, ask first.
+  // Close: if there's unsaved work, ask first. Never while submitting —
+  // closing mid-upload would drop onCreated and leave the list one refresh
+  // behind (or lose the media upload entirely).
   const requestClose = () => {
+    if (submitting) return;
     if (submittedRef.current || !draftDirty) {
       onClose();
       return;
@@ -372,7 +383,8 @@ export const CreateCampaignModal: React.FC<{
             <button
               type="button"
               onClick={requestClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400"
+              disabled={submitting}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="Close"
             >
               <X className="w-5 h-5" />
@@ -592,6 +604,12 @@ export const CreateCampaignModal: React.FC<{
                   {submitError}
                 </div>
               )}
+              {draftNotice && (
+                <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-200 text-sm font-medium rounded-xl px-4 py-3">
+                  Your campaign was saved as a draft — nothing you typed is lost. Resume it anytime from the
+                  Campaigns page.
+                </div>
+              )}
               </div>
             </div>
           )}
@@ -601,13 +619,14 @@ export const CreateCampaignModal: React.FC<{
           <button
             type="button"
             onClick={requestClose}
-            className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+            disabled={submitting}
+            className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             type="button"
-            disabled={!draftDirty}
+            disabled={!draftDirty || submitting}
             onClick={() => { saveDraftNow(); closeKeepDraft(); }}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-white/15 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >

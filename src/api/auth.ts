@@ -65,6 +65,16 @@ export const authApi = {
 
   logout: () => api.post('/auth/logout'),
 
+  /**
+   * Refresh the Sanctum session without asking for the password again.
+   * Returns a fresh token in the same payload shape as login
+   * ({ user, token }). Used by the session-timeout banner's
+   * "Stay signed in" button; 404s on backends that haven't deployed it
+   * yet, in which case the caller falls back to authApi.me().
+   */
+  refresh: () =>
+    api.post<ApiResponse<AuthSession>>('/auth/refresh').then((r) => r.data),
+
   me: () => api.get<ApiResponse<{ user: User }>>('/auth/me').then((r) => r.data),
 
   forgotPassword: (email: string) =>
